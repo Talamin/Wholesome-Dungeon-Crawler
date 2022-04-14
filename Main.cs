@@ -48,7 +48,14 @@ public class Main : IProduct
 
     public void Dispose()
     {
-        throw new NotImplementedException();
+        try
+        {
+
+        }
+        catch (Exception e)
+        {
+            WriteDebug("Main -> Dispose(): " + e);
+        }
     }
 }
 
