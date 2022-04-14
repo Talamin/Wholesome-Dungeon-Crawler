@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,7 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="RDManaged">
+      <HintPath>Dependencies\RDManaged.dll</HintPath>
+    </Reference>
     <Reference Include="robotManager, Version=1.0.0.20232, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dependencies\robotManager.dll</HintPath>
@@ -39,31 +43,42 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
     <Reference Include="wManager, Version=1.0.0.20240, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Dependencies\wManager.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bot\Settings.cs" />
+    <Compile Include="GUI\ProductSettingsControl.xaml.cs">
+      <DependentUpon>ProductSettingsControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Settings\Settings.cs" />
     <Compile Include="Bot\WholesomeDungeonCrawler.cs" />
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="GUI\" />
     <Folder Include="States\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Dependencies\robotManager.dll" />
     <Content Include="Dependencies\wManager.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="GUI\ProductSettingsControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="Wholesome-Toolbox\Wholesome_Toolbox.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

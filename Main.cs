@@ -1,14 +1,15 @@
 ﻿using robotManager.Products;
 using System;
+using System.Windows.Controls;
 using Wholesome_Dungeon_Crawler.Bot;
 using Wholesome_Dungeon_Crawler.Helpers;
-
+using WholesomeDungeonCrawler.GUI;
 
 public class Main : IProduct
 {
-    public System.Windows.Controls.UserControl Settings => throw new NotImplementedException();
+    //public System.Windows.Controls.UserControl Settings => throw new NotImplementedException();
     private readonly CrawlerBot _crawler = new CrawlerBot();
-
+    private ProductSettingsControl _settingsUserControl;
     public bool IsStarted { get; private set; }
 
     public void Initialize()
@@ -62,6 +63,28 @@ public class Main : IProduct
         catch (Exception e)
         {
             Logger.LogError("Main -> Dispose(): " + e);
+        }
+    }
+
+    // GUI
+    public UserControl Settings
+    {
+        get
+        {
+            try
+            {
+                if (_settingsUserControl == null)
+                {
+                    _settingsUserControl = new ProductSettingsControl();
+                }
+                return _settingsUserControl;
+            }
+            catch (Exception e)
+            {
+                Logger.Log("> Main > Settings(): " + e);
+            }
+
+            return null;
         }
     }
 }
