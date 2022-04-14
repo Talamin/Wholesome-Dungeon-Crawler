@@ -1,7 +1,9 @@
 ﻿using robotManager.FiniteStateMachine;
 using robotManager.Products;
 using System;
+using WholesomeToolbox;
 using static robotManager.Helpful.Logging;
+
 
 public class Main : IProduct
 {
@@ -18,7 +20,7 @@ public class Main : IProduct
         }
         catch(Exception e)
         {
-            WriteDebug("Main -> Initialize(): " + e);
+            WTLogger.LogError("Main -> Initialize(): " + e);
         }
     }
 
@@ -30,7 +32,7 @@ public class Main : IProduct
         }
         catch (Exception e)
         {
-            WriteDebug("Main -> Start(): " + e);
+            WTLogger.LogError("Main -> Start(): " + e);
         }
     }
 
@@ -42,7 +44,7 @@ public class Main : IProduct
         }
         catch (Exception e)
         {
-            WriteDebug("Main -> Stop(): " + e);
+            WTLogger.LogError("Main -> Stop(): " + e);
         }
     }
 
@@ -54,7 +56,7 @@ public class Main : IProduct
         }
         catch (Exception e)
         {
-            WriteDebug("Main -> Dispose(): " + e);
+            WTLogger.LogError("Main -> Dispose(): " + e);
         }
     }
 }
