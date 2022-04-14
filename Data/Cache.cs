@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WholesomeToolbox;
 using wManager.Events;
+using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Data
@@ -16,21 +17,29 @@ namespace WholesomeDungeonCrawler.Data
 
         private static object _cacheLock = new object();
 
-        public static void Initialize() => ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
+        public static void Initialize()
+        {
+            ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
+            EventsLua.AttachEventLua("WORLD_MAP_UPDATE", m => cacheOnEvents());
+        }
 
-        public static void Dispose() => ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
+
+        public static void Dispose()
+        {
+            ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
+        }
 
 
         private static void OnObjectManagerPulse()
         {
             lock (_cacheLock)
             {
-                cacheGeneral();
+                
             }
 
         }
 
-        private static void cacheGeneral()
+        private static void cacheOnEvents()
         {
             lock (_cacheLock)
             {
