@@ -1,6 +1,7 @@
 ﻿using robotManager.FiniteStateMachine;
 using robotManager.Products;
 using System;
+using WholesomeDungeonCrawler.Helpers;
 using WholesomeToolbox;
 using static robotManager.Helpful.Logging;
 
@@ -20,7 +21,7 @@ public class Main : IProduct
         }
         catch(Exception e)
         {
-            WTLogger.LogError("Main -> Initialize(): " + e);
+            Logger.LogError("Main -> Initialize(): " + e);
         }
     }
 
@@ -32,7 +33,7 @@ public class Main : IProduct
         }
         catch (Exception e)
         {
-            WTLogger.LogError("Main -> Start(): " + e);
+            Logger.LogError("Main -> Start(): " + e);
         }
     }
 
@@ -44,7 +45,7 @@ public class Main : IProduct
         }
         catch (Exception e)
         {
-            WTLogger.LogError("Main -> Stop(): " + e);
+            Logger.LogError("Main -> Stop(): " + e);
         }
     }
 
@@ -56,7 +57,7 @@ public class Main : IProduct
         }
         catch (Exception e)
         {
-            WTLogger.LogError("Main -> Dispose(): " + e);
+            Logger.LogError("Main -> Dispose(): " + e);
         }
     }
 }

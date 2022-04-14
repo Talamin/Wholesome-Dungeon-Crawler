@@ -1,6 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Drawing;
-
+using WholesomeDungeonCrawler.Bot;
 
 namespace WholesomeDungeonCrawler.Helpers
 {
@@ -8,17 +8,17 @@ namespace WholesomeDungeonCrawler.Helpers
     {
         public static void LogError(string message)
         {
-            Logging.Write($"[{Main.ProductName}]: {message}", Logging.LogType.Error, Color.DarkRed);
+            Logging.Write($"[{WholesomeDungeonCrawlerSettings.CurrentSetting.ProductName}]: {message}", Logging.LogType.Error, Color.DarkRed);
         }
 
         public static void Log(string message)
         {
-            Logging.Write($"[{Main.ProductName}]: {message}", Logging.LogType.Normal, Color.DarkSlateBlue);
+            Logging.Write($"[{WholesomeDungeonCrawlerSettings.CurrentSetting.ProductName}]: {message}", Logging.LogType.Normal, Color.DarkSlateBlue);
         }
 
         public static void LogDebug(string message)
         {
-            Logging.Write($"[{Main.ProductName}]: {message}", Logging.LogType.Debug, Color.DarkGoldenrod);
+            Logging.Write($"[{WholesomeDungeonCrawlerSettings.CurrentSetting.ProductName}]: {message}", Logging.LogType.Debug, Color.DarkGoldenrod);
         }
     }
 }

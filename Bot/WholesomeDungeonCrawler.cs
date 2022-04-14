@@ -3,6 +3,7 @@ using System;
 using wManager.Wow.Bot.States;
 using wManager.Wow.Helpers;
 using WholesomeToolbox;
+using WholesomeDungeonCrawler.Helpers;
 
 namespace WholesomeDungeonCrawler.Bot
 {
@@ -50,7 +51,7 @@ namespace WholesomeDungeonCrawler.Bot
             catch(Exception e)
             {
                 Dispose();
-                WTLogger.LogError("Bot > Bot > Pulse: " + e);
+                Logger.LogError("Bot > Bot > Pulse: " + e);
                 return false;
             }
         }
@@ -65,7 +66,7 @@ namespace WholesomeDungeonCrawler.Bot
             }
             catch(Exception e)
             {
-                WTLogger.LogError("Bot > Bot > Dispose: " + e);
+                Logger.LogError("Bot > Bot > Dispose: " + e);
             }
         }
 
