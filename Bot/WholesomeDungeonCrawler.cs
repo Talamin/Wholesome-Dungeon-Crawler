@@ -7,7 +7,7 @@ using Wholesome_Dungeon_Crawler.Helpers;
 
 namespace Wholesome_Dungeon_Crawler.Bot
 {
-    internal class WholesomeDungeonCrawler
+    internal class CrawlerBot
     {
         private readonly Engine _fsm = new Engine();
 

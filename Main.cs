@@ -7,7 +7,7 @@ using Wholesome_Dungeon_Crawler.Helpers;
 public class Main : IProduct
 {
     public System.Windows.Controls.UserControl Settings => throw new NotImplementedException();
-    private readonly WholesomeDungeonCrawler _crawler = new WholesomeDungeonCrawler();
+    private readonly CrawlerBot _crawler = new CrawlerBot();
 
     public bool IsStarted { get; private set; }
 
