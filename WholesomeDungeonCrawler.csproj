@@ -57,7 +57,10 @@
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="GUI\" />
+    <Folder Include="States\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Dependencies\robotManager.dll" />
     <Content Include="Dependencies\wManager.dll" />
