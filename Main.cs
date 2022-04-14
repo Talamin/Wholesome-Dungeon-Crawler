@@ -3,6 +3,7 @@ using System;
 using System.Windows.Controls;
 using Wholesome_Dungeon_Crawler.Bot;
 using Wholesome_Dungeon_Crawler.Helpers;
+using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.GUI;
 
 public class Main : IProduct
@@ -31,6 +32,7 @@ public class Main : IProduct
             IsStarted = true;
             if(_crawler.InitialSetup())
             {
+                Cache.Initialize();
                 Logger.Log("Started");
             }
         }
@@ -46,6 +48,7 @@ public class Main : IProduct
         try
         {
             IsStarted = false;
+            Cache.Dispose();
             _crawler.Dispose();
         }
         catch (Exception e)
