@@ -1,8 +1,8 @@
 ﻿using robotManager.Helpful;
 using System.Drawing;
-using WholesomeDungeonCrawler.Bot;
+using Wholesome_Dungeon_Crawler.Bot;
 
-namespace WholesomeDungeonCrawler.Helpers
+namespace Wholesome_Dungeon_Crawler.Helpers
 {
     class Logger
     {

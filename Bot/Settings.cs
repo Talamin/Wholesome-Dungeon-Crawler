@@ -5,11 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WholesomeDungeonCrawler.Helpers;
+using Wholesome_Dungeon_Crawler.Helpers;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
-namespace WholesomeDungeonCrawler.Bot
+namespace Wholesome_Dungeon_Crawler.Bot
 {
     [Serializable]
     public class WholesomeDungeonCrawlerSettings :  Settings

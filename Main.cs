@@ -1,17 +1,18 @@
 ﻿using robotManager.FiniteStateMachine;
 using robotManager.Products;
 using System;
-using WholesomeDungeonCrawler.Bot;
-using WholesomeDungeonCrawler.Helpers;
+using Wholesome_Dungeon_Crawler;
+using Wholesome_Dungeon_Crawler.Bot;
+using Wholesome_Dungeon_Crawler.Helpers;
 using WholesomeToolbox;
 using static robotManager.Helpful.Logging;
 
 
 public class Main : IProduct
 {
-    private static readonly Engine FSM = new Engine();
     public System.Windows.Controls.UserControl Settings => throw new NotImplementedException();
     public bool IsStarted => throw new NotImplementedException();
+    private readonly WholesomeDungeonCrawler _crawler = new WholesomeDungeonCrawler();
 
     public void Initialize()
     {
@@ -41,7 +42,7 @@ public class Main : IProduct
     {
         try
         {
-            
+            _crawler.Dispose();
         }
         catch (Exception e)
         {

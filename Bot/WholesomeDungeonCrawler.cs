@@ -3,9 +3,9 @@ using System;
 using wManager.Wow.Bot.States;
 using wManager.Wow.Helpers;
 using WholesomeToolbox;
-using WholesomeDungeonCrawler.Helpers;
+using Wholesome_Dungeon_Crawler.Helpers;
 
-namespace WholesomeDungeonCrawler.Bot
+namespace Wholesome_Dungeon_Crawler.Bot
 {
     internal class WholesomeDungeonCrawler
     {
