@@ -11,8 +11,9 @@ using static robotManager.Helpful.Logging;
 public class Main : IProduct
 {
     public System.Windows.Controls.UserControl Settings => throw new NotImplementedException();
-    public bool IsStarted => throw new NotImplementedException();
     private readonly WholesomeDungeonCrawler _crawler = new WholesomeDungeonCrawler();
+
+    public bool IsStarted { get; private set; }
 
     public void Initialize()
     {
@@ -30,10 +31,15 @@ public class Main : IProduct
     {
         try
         {
-
+            IsStarted = true;
+            if(_crawler.InitialSetup())
+            {
+                Logger.Log("Started");
+            }
         }
         catch (Exception e)
         {
+            IsStarted = false;
             Logger.LogError("Main -> Start(): " + e);
         }
     }
@@ -42,6 +48,7 @@ public class Main : IProduct
     {
         try
         {
+            IsStarted = false;
             _crawler.Dispose();
         }
         catch (Exception e)
