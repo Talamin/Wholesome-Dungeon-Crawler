@@ -14,7 +14,6 @@ public class Main : IProduct
     private static readonly Engine FSM = new Engine();
     public static readonly string ProductName = "Wholesome Dungeon Crawler";
     public System.Windows.Controls.UserControl Settings => throw new NotImplementedException();
-
     public bool IsStarted => throw new NotImplementedException();
 
     public void Initialize()
