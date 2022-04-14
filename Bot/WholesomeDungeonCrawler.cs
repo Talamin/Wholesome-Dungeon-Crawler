@@ -23,23 +23,16 @@ namespace Wholesome_Dungeon_Crawler.Bot
 
                 //FSM
                 _fsm.States.Clear();
+                _fsm.AddState(new Relogger { Priority = 200 });
+                _fsm.AddState(new Pause { Priority = 150 });
 
-                //_fsm.AddState(new BattlegrounderCombination { Priority = 15 });
-                //_fsm.AddState(new Resurrect { Priority = 13 });
-                //_fsm.AddState(new MyMacro { Priority = 12 });
-                //_fsm.AddState(new wManager.Wow.Bot.States.IsAttacked { Priority = 13 });
-                //_fsm.AddState(new BattlePetState { Priority = 11 });
-                //_fsm.AddState(new Looting { Priority = 9 });
-
-                //_fsm.AddState(new Farming { Priority = 8 });
-                //_fsm.AddState(new MillingState { Priority = 7 });
-                //_fsm.AddState(new ProspectingState { Priority = 6 });
-                //_fsm.AddState(new FlightMasterTakeTaxiState { Priority = 6 });
+                _fsm.AddState(new MyMacro { Priority = 12 });
+                _fsm.AddState(new Regeneration { Priority = 10 });
+                _fsm.AddState(new NPCScanState { Priority = 5 });
                 _fsm.AddState(new ToTown { Priority = 4 });
-                //_fsm.AddState(new FlightMasterDiscoverState { Priority = 3 });
-                //_fsm.AddState(new Talents { Priority = 3 });
                 _fsm.AddState(new Trainers { Priority = 3 });
-
+                _fsm.AddState(new Idle { Priority = 1 });
+                
                 _fsm.States.Sort();
 
                 _fsm.StartEngine(10, "WholesomeDungeonCrawler");
