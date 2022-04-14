@@ -1,13 +1,7 @@
-﻿using robotManager.Products;
+﻿using robotManager.FiniteStateMachine;
+using robotManager.Products;
 using System;
-using System.Windows.Controls;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using robotManager.FiniteStateMachine;
 using static robotManager.Helpful.Logging;
-using robotManager.Helpful;
 
 public class Main : IProduct
 {

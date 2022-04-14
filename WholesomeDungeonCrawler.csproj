@@ -58,5 +58,6 @@
     <Content Include="Dependencies\robotManager.dll" />
     <Content Include="Dependencies\wManager.dll" />
   </ItemGroup>
+  <Import Project="Wholesome-Toolbox\Wholesome_Toolbox.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
