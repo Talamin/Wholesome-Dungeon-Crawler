@@ -24,7 +24,7 @@ namespace WholesomeDungeonCrawler.Data
         public void Initialize()
         {
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
-            EventsLua.AttachEventLua("WORLD_MAP_UPDATE", m => cacheOnEvents());
+            EventsLua.AttachEventLua("WORLD_MAP_UPDATE", m => CacheIsInInstance());
         }
 
 
@@ -43,7 +43,7 @@ namespace WholesomeDungeonCrawler.Data
 
         }
 
-        private void cacheOnEvents()
+        private void CacheIsInInstance()
         {
             lock (_cacheLock)
             {
