@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\Cache.cs" />
+    <Compile Include="Data\ICycleable.cs" />
     <Compile Include="GUI\ProductSettingsControl.xaml.cs">
       <DependentUpon>ProductSettingsControl.xaml</DependentUpon>
     </Compile>
