@@ -13,9 +13,9 @@ namespace WholesomeDungeonCrawler.Data
     internal class Cache
     {
 
-        internal bool isInInstance { get; private set; }
+        private bool isInInstance;
 
-        internal object _cacheLock = new object();
+        private object cacheLock = new object();
 
         public Cache()
         {
@@ -23,10 +23,10 @@ namespace WholesomeDungeonCrawler.Data
 
         public void Initialize()
         {
+            isInInstance = WTLocation.IsInInstance();
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             EventsLua.AttachEventLua("WORLD_MAP_UPDATE", m => CacheIsInInstance());
         }
-
 
         public void Dispose()
         {
@@ -36,21 +36,19 @@ namespace WholesomeDungeonCrawler.Data
 
         private void OnObjectManagerPulse()
         {
-            lock (_cacheLock)
+            lock (cacheLock)
             {
                 
             }
-
         }
 
         private void CacheIsInInstance()
         {
-            lock (_cacheLock)
+            lock (cacheLock)
             {
                 isInInstance = WTLocation.IsInInstance();
             }
 
         }
-
     }
 }
