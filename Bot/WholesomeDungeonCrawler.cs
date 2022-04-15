@@ -28,6 +28,7 @@ namespace WholesomeDungeonCrawler.Bot
                 _fsm.States.Clear();
                 _fsm.AddState(new Relogger { Priority = 200 });
                 _fsm.AddState(new Pause { Priority = 150 });
+                _fsm.AddState(new OpenSatchel { Priority = 14 });
                 _fsm.AddState(new Loot { Priority = 13 });
                 _fsm.AddState(new MyMacro { Priority = 12 });
                 _fsm.AddState(new Regeneration { Priority = 10 });

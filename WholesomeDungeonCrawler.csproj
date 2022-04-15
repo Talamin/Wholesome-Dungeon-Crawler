@@ -73,6 +73,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="States\Loot.cs" />
+    <Compile Include="States\OpenSatchel.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

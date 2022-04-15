@@ -6,6 +6,7 @@ using wManager.Wow.ObjectManager;
 using wManager.Wow.Helpers;
 using robotManager.Helpful;
 using wManager.Wow.Bot.Tasks;
+using WholesomeDungeonCrawler.Data;
 
 namespace WholesomeDungeonCrawler.States
 {
