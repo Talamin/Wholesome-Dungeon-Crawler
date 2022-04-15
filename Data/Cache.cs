@@ -23,7 +23,9 @@ namespace WholesomeDungeonCrawler.Data
 
         public void Initialize()
         {
+            //First Initalization of Variables
             isInInstance = WTLocation.IsInInstance();
+            //Beginning of Event Subscriptions
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             EventsLua.AttachEventLua("WORLD_MAP_UPDATE", m => CacheIsInInstance());
         }
