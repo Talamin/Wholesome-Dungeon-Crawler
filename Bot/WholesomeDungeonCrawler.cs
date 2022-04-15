@@ -4,8 +4,9 @@ using wManager.Wow.Bot.States;
 using wManager.Wow.Helpers;
 using Wholesome_Dungeon_Crawler.Helpers;
 using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.States;
 
-namespace Wholesome_Dungeon_Crawler.Bot
+namespace WholesomeDungeonCrawler.Bot
 {
     internal class CrawlerBot
     {
@@ -27,7 +28,7 @@ namespace Wholesome_Dungeon_Crawler.Bot
                 _fsm.States.Clear();
                 _fsm.AddState(new Relogger { Priority = 200 });
                 _fsm.AddState(new Pause { Priority = 150 });
-
+                _fsm.AddState(new Loot { Priority = 13 });
                 _fsm.AddState(new MyMacro { Priority = 12 });
                 _fsm.AddState(new Regeneration { Priority = 10 });
                 _fsm.AddState(new NPCScanState { Priority = 5 });

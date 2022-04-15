@@ -12,7 +12,7 @@ using wManager.Wow.Bot.Tasks;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class Loot : State
+    public class Loot : State
     {
         public override string DisplayName
         {

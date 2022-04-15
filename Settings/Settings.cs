@@ -9,7 +9,7 @@ using Wholesome_Dungeon_Crawler.Helpers;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
-namespace Wholesome_Dungeon_Crawler.Bot
+namespace WholesomeDungeonCrawler.Bot
 {
     [Serializable]
     public class WholesomeDungeonCrawlerSettings :  Settings

@@ -1,8 +1,8 @@
 ﻿using robotManager.Products;
 using System;
 using System.Windows.Controls;
-using Wholesome_Dungeon_Crawler.Bot;
 using Wholesome_Dungeon_Crawler.Helpers;
+using WholesomeDungeonCrawler.Bot;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.GUI;
 
