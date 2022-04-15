@@ -13,7 +13,7 @@ namespace WholesomeDungeonCrawler.Data
     internal class Cache
     {
 
-        public static bool _IsInInstance { get; private set; }
+        internal bool isInInstance { get; private set; }
 
         private static object _cacheLock = new object();
 
@@ -47,7 +47,7 @@ namespace WholesomeDungeonCrawler.Data
         {
             lock (_cacheLock)
             {
-                _IsInInstance = WTLocation.IsInInstance();
+                isInInstance = WTLocation.IsInInstance();
             }
 
         }
