@@ -17,6 +17,11 @@ namespace WholesomeDungeonCrawler.Data
 
         private static object _cacheLock = new object();
 
+        public Cache(bool _cIsInInstance)
+        {
+            cIsInInstance = _cIsInInstance;
+        }
+
         public static void Initialize()
         {
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
