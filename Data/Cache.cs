@@ -10,12 +10,12 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Data
 {
-    internal class Cache : ICycleable
+    internal class Cache : ICycleable, ICache
     {
 
-        public bool isInInstance;
-
         private object cacheLock = new object();
+
+        public bool IsInInstance { get; private set; }
 
         public Cache()
         {
@@ -24,7 +24,7 @@ namespace WholesomeDungeonCrawler.Data
         public void Initialize()
         {
             //First Initalization of Variables
-            isInInstance = WTLocation.IsInInstance();
+            IsInInstance = WTLocation.IsInInstance();
             //Beginning of Event Subscriptions
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             EventsLua.AttachEventLua("WORLD_MAP_UPDATE", m => CacheIsInInstance());
@@ -48,7 +48,7 @@ namespace WholesomeDungeonCrawler.Data
         {
             lock (cacheLock)
             {
-                isInInstance = WTLocation.IsInInstance();
+                IsInInstance = WTLocation.IsInInstance();
             }
 
         }

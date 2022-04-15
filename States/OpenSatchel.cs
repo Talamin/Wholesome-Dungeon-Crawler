@@ -26,12 +26,12 @@ namespace WholesomeDungeonCrawler.States
 
         private int _priority;
 
-        private Cache _cache = new Cache();
+        private ICache _cache = new Cache();
         public override bool NeedToRun
         {
             get
             {
-                if (_cache.isInInstance)
+                if (_cache.IsInInstance)
                     return false;
 
                 if (Bag.GetBagItem().Count(item => item.Name.Contains("Satchel of")) > 0)
