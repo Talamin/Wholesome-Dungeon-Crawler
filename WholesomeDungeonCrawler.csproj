@@ -67,6 +67,7 @@
     <Compile Include="Data\Cache.cs" />
     <Compile Include="Data\ICache.cs" />
     <Compile Include="Data\ICycleable.cs" />
+    <Compile Include="Data\IWoWUnit.cs" />
     <Compile Include="GUI\ProductSettingsControl.xaml.cs">
       <DependentUpon>ProductSettingsControl.xaml</DependentUpon>
     </Compile>
