@@ -15,7 +15,7 @@ namespace WholesomeDungeonCrawler.Data
 
         internal bool isInInstance { get; private set; }
 
-        private static object _cacheLock = new object();
+        internal object _cacheLock = new object();
 
         public Cache()
         {
