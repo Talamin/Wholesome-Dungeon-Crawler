@@ -1,10 +1,7 @@
 ﻿using robotManager.FiniteStateMachine;
-using System;
 using Timer = robotManager.Helpful.Timer;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using wManager.Wow.ObjectManager;
 using wManager.Wow.Helpers;
 using robotManager.Helpful;
@@ -18,6 +15,13 @@ namespace WholesomeDungeonCrawler.States
         {
             get { return "Looting"; }
         }
+        public override int Priority
+        {
+            get { return _priority; }
+            set { _priority = value; }
+        }
+
+        private int _priority;
 
         private  int LootRange = 20;
         public static Timer ResetLootBlacklist = new Timer();
