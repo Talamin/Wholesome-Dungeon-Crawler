@@ -2,7 +2,6 @@
 using System;
 using wManager.Wow.Bot.States;
 using wManager.Wow.Helpers;
-using WholesomeToolbox;
 using Wholesome_Dungeon_Crawler.Helpers;
 using WholesomeDungeonCrawler.Data;
 
@@ -11,7 +10,7 @@ namespace Wholesome_Dungeon_Crawler.Bot
     internal class CrawlerBot
     {
         private readonly Engine _fsm = new Engine();
-        private Cache _cache;
+        private Cache _cache = new Cache();
         internal bool InitialSetup()
         {
             try
