@@ -56,6 +56,7 @@ namespace Wholesome_Dungeon_Crawler.Bot
         {
             try
             {
+                _cache.Dispose();
                 CustomClass.DisposeCustomClass();
                 _fsm.StopEngine();
                 Fight.StopFight();
