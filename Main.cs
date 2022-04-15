@@ -12,7 +12,6 @@ public class Main : IProduct
     private readonly CrawlerBot _crawler = new CrawlerBot();
     private ProductSettingsControl _settingsUserControl;
     public bool IsStarted { get; private set; }
-    Cache _cache = new Cache();
 
     public void Initialize()
     {
@@ -33,7 +32,6 @@ public class Main : IProduct
             IsStarted = true;
             if(_crawler.InitialSetup())
             {
-                _cache.Initialize();
                 Logger.Log("Started");
             }
         }
@@ -50,7 +48,6 @@ public class Main : IProduct
         {
             IsStarted = false;
 
-            _cache.Dispose();
             _crawler.Dispose();
         }
         catch (Exception e)
