@@ -10,7 +10,7 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Data
 {
-    internal class Cache : ICache
+    internal class Cache : ICycleable
     {
 
         private bool isInInstance;

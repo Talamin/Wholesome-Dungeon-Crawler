@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WholesomeDungeonCrawler.Data
 {
-    interface ICache
+    interface ICycleable
     {
         void Initialize();
         void Dispose();
