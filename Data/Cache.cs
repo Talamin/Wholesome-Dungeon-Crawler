@@ -17,25 +17,24 @@ namespace WholesomeDungeonCrawler.Data
 
         private static object _cacheLock = new object();
 
-        public Cache(bool _cIsInInstance)
+        public Cache()
         {
-            cIsInInstance = _cIsInInstance;
         }
 
-        public static void Initialize()
+        public void Initialize()
         {
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             EventsLua.AttachEventLua("WORLD_MAP_UPDATE", m => cacheOnEvents());
         }
 
 
-        public static void Dispose()
+        public void Dispose()
         {
             ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
         }
 
 
-        private static void OnObjectManagerPulse()
+        private void OnObjectManagerPulse()
         {
             lock (_cacheLock)
             {
@@ -44,7 +43,7 @@ namespace WholesomeDungeonCrawler.Data
 
         }
 
-        private static void cacheOnEvents()
+        private void cacheOnEvents()
         {
             lock (_cacheLock)
             {
