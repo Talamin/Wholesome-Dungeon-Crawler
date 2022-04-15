@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Wholesome_Dungeon_Crawler.Helpers;
+using WholesomeDungeonCrawler.Data;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -24,10 +25,15 @@ namespace WholesomeDungeonCrawler.States
         }
 
         private int _priority;
+
+        private Cache _cache = new Cache();
         public override bool NeedToRun
         {
             get
             {
+                if (_cache.isInInstance)
+                    return false;
+
                 if (Bag.GetBagItem().Count(item => item.Name.Contains("Satchel of")) > 0)
                     return true;
 

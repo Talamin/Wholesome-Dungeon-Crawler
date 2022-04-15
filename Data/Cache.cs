@@ -13,7 +13,7 @@ namespace WholesomeDungeonCrawler.Data
     internal class Cache : ICycleable
     {
 
-        private bool isInInstance;
+        public bool isInInstance;
 
         private object cacheLock = new object();
 
