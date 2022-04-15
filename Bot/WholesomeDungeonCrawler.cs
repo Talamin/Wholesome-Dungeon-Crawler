@@ -15,7 +15,7 @@ namespace Wholesome_Dungeon_Crawler.Bot
         {
             try
             {
-                _cache = new Cache();
+                _cache.Initialize();
 
                 //Update Spellbook after Initialization
                 SpellManager.UpdateSpellBook();
