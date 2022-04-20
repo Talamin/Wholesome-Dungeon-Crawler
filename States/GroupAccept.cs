@@ -31,7 +31,7 @@ namespace WholesomeDungeonCrawler.States
                 {
                     return false;
                 }
-                if(_cache.PartyInviteRequest)
+                if(_cache.IsPartyInviteRequest)
                 {
                     return true;
                 }

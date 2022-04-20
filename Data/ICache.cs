@@ -9,6 +9,6 @@ namespace WholesomeDungeonCrawler.Data
     interface ICache
     {
         bool IsInInstance { get;}
-        bool PartyInviteRequest { get; }
+        bool IsPartyInviteRequest { get; }
     }
 }
