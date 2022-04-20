@@ -19,8 +19,6 @@ namespace WholesomeDungeonCrawler.Data
         public bool IsInInstance { get; private set; }
         public bool IsPartyInviteRequest { get; private set; }
 
-        public string StaticPopupText = Lua.LuaDoString<string>("StaticPopup1Text:GetText()");
-
         public Cache()
         {
         }
@@ -28,8 +26,8 @@ namespace WholesomeDungeonCrawler.Data
         public void Initialize()
         {
             //First Initalization of Variables
-            IsInInstance = WTLocation.IsInInstance();
-            IsPartyInviteRequest = StaticPopupText.Contains("invites you to a group");
+            CacheIsInInstance();
+            CachePartyInviteRequest();
             //Beginning of Event Subscriptions
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             EventsLua.AttachEventLua("WORLD_MAP_UPDATE", m => CacheIsInInstance());
@@ -60,7 +58,7 @@ namespace WholesomeDungeonCrawler.Data
         }
         private void CachePartyInviteRequest()
         {
-
+            string StaticPopupText = Lua.LuaDoString<string>("StaticPopup1Text:GetText()");
             IsPartyInviteRequest = StaticPopupText.Contains("invites you to a group");
         }
     }
