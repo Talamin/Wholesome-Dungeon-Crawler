@@ -10,7 +10,7 @@ using WholesomeDungeonCrawler.Data;
 
 namespace WholesomeDungeonCrawler.States
 {
-    public class Loot : State
+    public class Loot : State, IState
     {
         public override string DisplayName
         {

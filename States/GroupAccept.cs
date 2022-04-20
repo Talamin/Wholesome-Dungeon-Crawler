@@ -1,22 +1,19 @@
 ﻿using robotManager.FiniteStateMachine;
-using robotManager.Helpful;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wholesome_Dungeon_Crawler.Helpers;
 using WholesomeDungeonCrawler.Data;
 using wManager.Wow.Helpers;
-using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class OpenSatchel : State, IState
+    class GroupAccept : State, IState
     {
         public override string DisplayName
         {
-            get { return "Open Satchel"; }
+            get { return "Group Accept"; }
         }
         public override int Priority
         {
@@ -25,31 +22,36 @@ namespace WholesomeDungeonCrawler.States
         }
 
         private int _priority;
-
         private ICache _cache = new Cache();
         public override bool NeedToRun
         {
             get
             {
-                if (_cache.IsInInstance)
+                if(_cache.IsInInstance)
+                {
                     return false;
-
-                if (Bag.GetBagItem().Count(item => item.Name.Contains("Satchel of")) > 0)
+                }
+                if(_cache.PartyInviteRequest)
+                {
                     return true;
-
+                }
                 return false;
             }
-
         }
+
 
         public override void Run()
         {
-            WoWItem item = Bag.GetBagItem().FirstOrDefault(x => x.Name.Contains("Satchel of"));
-            if (item != null)
+            string StaticPopupText = Lua.LuaDoString<string>("StaticPopup1Text:GetText()");
+            if(StaticPopupText.Contains("Tankname"))
             {
-                Logger.Log($"Found Satchel {item}");
-                ItemsManager.UseItem(item.Name);
+                Lua.LuaDoString("StaticPopup1Button1:Click()");
+            }
+            else
+            {
+                Lua.LuaDoString("StaticPopup1Button2:Click()");
             }
         }
+
     }
 }

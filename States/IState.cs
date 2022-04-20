@@ -4,11 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WholesomeDungeonCrawler.Data
+namespace WholesomeDungeonCrawler.States
 {
-    interface ICache
+    internal interface IState
     {
-        bool IsInInstance { get;}
-        bool PartyInviteRequest { get; }
     }
 }

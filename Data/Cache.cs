@@ -16,6 +16,7 @@ namespace WholesomeDungeonCrawler.Data
         private object cacheLock = new object();
 
         public bool IsInInstance { get; private set; }
+        public bool PartyInviteRequest { get; private set; }
 
         public Cache()
         {
@@ -28,6 +29,7 @@ namespace WholesomeDungeonCrawler.Data
             //Beginning of Event Subscriptions
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             EventsLua.AttachEventLua("WORLD_MAP_UPDATE", m => CacheIsInInstance());
+            EventsLua.AttachEventLua("PARTY_INVITE_REQUEST", m => CachePartyInviteRequest());
         }
 
         public void Dispose()
@@ -51,6 +53,19 @@ namespace WholesomeDungeonCrawler.Data
                 IsInInstance = WTLocation.IsInInstance();
             }
 
+        }
+        private void CachePartyInviteRequest()
+        {
+            string StaticPopupText = Lua.LuaDoString<string>("StaticPopup1Text:GetText()");
+            if (StaticPopupText.Contains("invites you"))
+            {
+                PartyInviteRequest = true;
+            }
+            else 
+            {
+                PartyInviteRequest = false;
+            }
+                
         }
     }
 }
