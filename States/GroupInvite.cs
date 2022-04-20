@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Wholesome_Dungeon_Crawler.Helpers;
+using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Data;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
@@ -43,7 +43,7 @@ namespace WholesomeDungeonCrawler.States
 
                 if(Party.GetPartyNumberPlayers() < 5)
                 {
-                    return true;
+                     return true;
                 }
 
                 return false;

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wholesome_Dungeon_Crawler.Helpers;
+using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Data;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;

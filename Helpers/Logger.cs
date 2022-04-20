@@ -2,7 +2,7 @@
 using System.Drawing;
 using WholesomeDungeonCrawler.Bot;
 
-namespace Wholesome_Dungeon_Crawler.Helpers
+namespace WholesomeDungeonCrawler.Helpers
 {
     class Logger
     {
