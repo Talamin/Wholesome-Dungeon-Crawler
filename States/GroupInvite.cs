@@ -26,7 +26,8 @@ namespace WholesomeDungeonCrawler.States
             Priority = priority;
         }
 
-        private List<string> groupmembers = new List<string> { "DPSone", "DPStwo", "DPSthree", "Heal" };
+        public List<string> groupmembers = new List<string> { "DPSone", "DPStwo", "DPSthree", "Heal" };
+        
         public override bool NeedToRun
         {
             get
@@ -50,10 +51,11 @@ namespace WholesomeDungeonCrawler.States
         }
 
         public override void Run()
-        {
+        {            
             foreach(var player in groupmembers)
             {
-                if(!InParty(player))
+                _cache.PartymemberName = player;
+                if(!_cache.InParty)
                 {
                     Logger.Log($"Inviting {player} to Group");
                     Lua.LuaDoString(Usefuls.WowVersion > 5875
@@ -62,17 +64,6 @@ namespace WholesomeDungeonCrawler.States
                 }
                 Thread.Sleep(1000);
             }
-        }
-        private bool InParty(string name)
-        {
-            return Lua.LuaDoString<bool>($@"
-            for i=1,4 do
-                if (string.lower(UnitName('party'..i)) == '{name.ToLower()}') then
-                    return true;
-                end
-            end
-            return false;
-        ");
         }
     }
 }

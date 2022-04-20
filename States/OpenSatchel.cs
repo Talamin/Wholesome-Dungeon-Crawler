@@ -37,7 +37,7 @@ namespace WholesomeDungeonCrawler.States
                 {
                     return false;
                 }
-                if (Bag.GetBagItem().Count(item => item.Name.Contains("Satchel of")) > 0)
+                if (_cache.HaveSatchel)
                 {
                     return true;
                 }
