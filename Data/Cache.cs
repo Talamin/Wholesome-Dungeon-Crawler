@@ -82,11 +82,16 @@ namespace WholesomeDungeonCrawler.Data
         {
             ClearCachedLists();
             lock (cacheLock)
-            { 
-                foreach(var member in Party.GetPartyHomeAndInstance())
-                {
-                    ListPartyMember.Add(member.Name);
-                }
+            {
+                var plist = Lua.LuaDoString<string>(@"
+                    plist='';
+                    for i=1,4 do
+                        if (UnitName('party'..i)) then
+                            plist = plist .. UnitName('party'..i) ..','
+                        end
+                    end", "plist");
+
+                ListPartyMember =  plist.Remove(plist.Length - 1, 1).Split(',').ToList();
             }
         }
     }
