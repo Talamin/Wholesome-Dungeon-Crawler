@@ -18,15 +18,13 @@ namespace WholesomeDungeonCrawler.States
         {
             get { return "Open Satchel"; }
         }
-        public override int Priority
+        private readonly ICache _cache;
+        public OpenSatchel(ICache iCache, int priority)
         {
-            get { return _priority; }
-            set { _priority = value; }
+            _cache = iCache;
+            Priority = priority;
         }
 
-        private int _priority;
-
-        private readonly ICache _cache;
         public override bool NeedToRun
         {
             get

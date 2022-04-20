@@ -18,14 +18,13 @@ namespace WholesomeDungeonCrawler.States
         {
             get { return "Group Invite"; }
         }
-        public override int Priority
-        {
-            get { return _priority; }
-            set { _priority = value; }
-        }
-
-        private int _priority;
         private readonly ICache _cache;
+
+        public GroupInvite(ICache iCache, int priority)
+        {
+            _cache = iCache;
+            Priority = priority;
+        }
 
         private List<string> groupmembers = new List<string> { "DPSone", "DPStwo", "DPSthree", "Heal" };
         public override bool NeedToRun

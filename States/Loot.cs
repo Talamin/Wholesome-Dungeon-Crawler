@@ -16,13 +16,10 @@ namespace WholesomeDungeonCrawler.States
         {
             get { return "Looting"; }
         }
-        public override int Priority
+        public Loot(int priority)
         {
-            get { return _priority; }
-            set { _priority = value; }
+            Priority = priority;
         }
-
-        private int _priority;
 
         private  int LootRange = 20;
         public WoWUnit LootUnit;

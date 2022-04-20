@@ -17,14 +17,14 @@ namespace WholesomeDungeonCrawler.States
         {
             get { return "Group Accept"; }
         }
-        public override int Priority
-        {
-            get { return _priority; }
-            set { _priority = value; }
-        }
 
-        private int _priority;
         private readonly ICache _cache;
+
+        public GroupAccept(ICache iCache, int priority)
+        {
+            _cache = iCache;
+            Priority = priority;
+        }
         public override bool NeedToRun
         {
             get

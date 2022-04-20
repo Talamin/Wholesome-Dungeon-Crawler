@@ -14,6 +14,11 @@ namespace WholesomeDungeonCrawler.States
     class GroupQueue : State, IState
     {
         private readonly ICache _cache;
+        public GroupQueue(ICache iCache, int priority)
+        {
+            _cache = iCache;
+            Priority = priority;
+        }
         public override bool NeedToRun 
         { 
             get
