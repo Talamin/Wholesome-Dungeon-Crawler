@@ -31,11 +31,12 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if(!Conditions.InGameAndConnected
-                    || !ObjectManager.Me.IsValid
-                    || Fight.InFight)
+                if (!Conditions.InGameAndConnected || !ObjectManager.Me.IsValid || Fight.InFight)
+                {
+                    return false;
+                }
 
-                if(Bag.GetContainerNumFreeSlots <= 2)
+                if (Bag.GetContainerNumFreeSlots <= 2)
                     return false;
 
                 if (GetListLootableUnits().Count > 0)

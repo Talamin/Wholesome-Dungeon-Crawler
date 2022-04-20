@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Wholesome_Dungeon_Crawler.Helpers;
 using WholesomeDungeonCrawler.Data;
 using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
@@ -25,16 +27,15 @@ namespace WholesomeDungeonCrawler.States
         private int _priority;
         private ICache _cache = new Cache();
 
-        //ToDo: Generate  Memberlist through
-        //ToDo: UserInterface Use LUA instead of  Party. Function
-        //ToDo: Use Lock for LUA  Calls
-        //ToDo:Use another Method instead of Sleep
-
         private List<string> groupmembers = new List<string> { "DPSone", "DPStwo", "DPSthree", "Heal" };
         public override bool NeedToRun
         {
             get
             {
+                if (!Conditions.InGameAndConnected || !ObjectManager.Me.IsValid || Fight.InFight)
+                {
+                    return false;
+                }
                 if (!_cache.IsInInstance)
                 {
                     return false;
@@ -55,6 +56,7 @@ namespace WholesomeDungeonCrawler.States
             {
                 if(!InParty(player))
                 {
+                    Logger.Log($"Inviting {player} to Group");
                     Lua.LuaDoString(Usefuls.WowVersion > 5875
                         ? $@"InviteUnit('{player}');"
                         : $@"InviteByName('{player}');");

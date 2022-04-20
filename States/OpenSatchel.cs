@@ -31,12 +31,18 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (_cache.IsInInstance)
+                if (!Conditions.InGameAndConnected || !ObjectManager.Me.IsValid || Fight.InFight)
+                {
                     return false;
-
+                }
+                if (_cache.IsInInstance)
+                {
+                    return false;
+                }
                 if (Bag.GetBagItem().Count(item => item.Name.Contains("Satchel of")) > 0)
+                {
                     return true;
-
+                }
                 return false;
             }
 
