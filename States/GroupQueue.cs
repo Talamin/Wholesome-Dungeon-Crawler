@@ -13,7 +13,7 @@ namespace WholesomeDungeonCrawler.States
 {
     class GroupQueue : State, IState
     {
-        private ICache _cache = new Cache();
+        private readonly ICache _cache;
         public override bool NeedToRun 
         { 
             get

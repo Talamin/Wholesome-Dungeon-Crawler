@@ -25,7 +25,6 @@ namespace WholesomeDungeonCrawler.States
         private int _priority;
 
         private  int LootRange = 20;
-        public static Timer ResetLootBlacklist = new Timer();
         public WoWUnit LootUnit;
         public override bool NeedToRun
         {

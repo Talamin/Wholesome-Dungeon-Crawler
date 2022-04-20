@@ -25,7 +25,7 @@ namespace WholesomeDungeonCrawler.States
         }
 
         private int _priority;
-        private ICache _cache = new Cache();
+        private readonly ICache _cache;
 
         private List<string> groupmembers = new List<string> { "DPSone", "DPStwo", "DPSthree", "Heal" };
         public override bool NeedToRun

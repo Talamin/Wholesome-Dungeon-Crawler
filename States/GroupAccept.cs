@@ -24,7 +24,7 @@ namespace WholesomeDungeonCrawler.States
         }
 
         private int _priority;
-        private ICache _cache = new Cache();
+        private readonly ICache _cache;
         public override bool NeedToRun
         {
             get
