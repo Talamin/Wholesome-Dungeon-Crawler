@@ -11,7 +11,6 @@ namespace WholesomeDungeonCrawler.Data
         bool IsInInstance { get;}
         bool IsPartyInviteRequest { get; }
         bool HaveSatchel { get; }
-        bool InParty { get; }
-        string PartymemberName { get; set; }
+        List<string> ListPartyMember { get; }
     }
 }

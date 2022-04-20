@@ -19,8 +19,7 @@ namespace WholesomeDungeonCrawler.Data
         public bool IsInInstance { get; private set; }
         public bool IsPartyInviteRequest { get; private set; }
         public bool HaveSatchel { get; private set; }
-        public bool InParty { get; private set; }
-        public string PartymemberName { get; set; }
+        public List <string> ListPartyMember { get; private set; }
 
         public Cache()
         {
@@ -29,10 +28,12 @@ namespace WholesomeDungeonCrawler.Data
         public void Initialize()
         {
             //First Initalization of Variables
+            ClearCachedLists();
             CacheIsInInstance();
             CachePartyInviteRequest();
             CacheLFGCompletionReward();
             CachePartyInviteRequest();
+            CachePartyMemberChanged();
             //Beginning of Event Subscriptions
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             EventsLua.AttachEventLua("WORLD_MAP_UPDATE", m => CacheIsInInstance());
@@ -73,19 +74,20 @@ namespace WholesomeDungeonCrawler.Data
                 HaveSatchel = Bag.GetBagItem().Count(item => item.Name.Contains("Satchel of")) > 0;
             }
         }
+        private void ClearCachedLists()
+        {
+            ListPartyMember.Clear();
+        }
         private void CachePartyMemberChanged()
         {
-
-                InParty = Lua.LuaDoString<bool>($@"
-                for i=1,4 do
-                    if (string.lower(UnitName('party'..i)) == '{PartymemberName.ToLower()}') then
-                        return true;
-                    end
-                end
-                return false;
-            ");
-            
-
+            ClearCachedLists();
+            lock (cacheLock)
+            { 
+                foreach(var member in Party.GetPartyHomeAndInstance())
+                {
+                    ListPartyMember.Add(member.Name);
+                }
+            }
         }
     }
 }

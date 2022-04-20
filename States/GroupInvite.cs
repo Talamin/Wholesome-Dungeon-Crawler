@@ -41,7 +41,7 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                if(Party.GetPartyNumberPlayers() < 5)
+                if(_cache.ListPartyMember.Count() < 5)
                 {
                      return true;
                 }
@@ -54,8 +54,7 @@ namespace WholesomeDungeonCrawler.States
         {            
             foreach(var player in groupmembers)
             {
-                _cache.PartymemberName = player;
-                if(!_cache.InParty)
+                if(!_cache.ListPartyMember.Contains(player))
                 {
                     Logger.Log($"Inviting {player} to Group");
                     Lua.LuaDoString(Usefuls.WowVersion > 5875
