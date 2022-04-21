@@ -68,9 +68,14 @@
     <Compile Include="Data\ICache.cs" />
     <Compile Include="Data\ICycleable.cs" />
     <Compile Include="Data\IWoWUnit.cs" />
+    <Compile Include="Dungeonlogic\LogicRunner.cs" />
+    <Compile Include="Dungeonlogic\Profile.cs" />
+    <Compile Include="Dungeonlogic\Step.cs" />
     <Compile Include="GUI\ProductSettingsControl.xaml.cs">
       <DependentUpon>ProductSettingsControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\Lists.cs" />
+    <Compile Include="Profiles\Base\Execute.cs" />
     <Compile Include="Settings\Settings.cs" />
     <Compile Include="Bot\WholesomeDungeonCrawler.cs" />
     <Compile Include="Helpers\Logger.cs" />
