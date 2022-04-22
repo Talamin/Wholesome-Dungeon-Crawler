@@ -35,7 +35,7 @@ namespace WholesomeDungeonCrawler.States
                 {
                     return false;
                 }
-                if(LUAGetLFGMode() == "nil" && !ObjectManager.Me.HaveBuff("Dungeon Deserter"))
+                if(_cache.NotInLFG && !ObjectManager.Me.HaveBuff("Dungeon Deserter"))
                 {
                     return true;
                 }
@@ -59,11 +59,6 @@ namespace WholesomeDungeonCrawler.States
             {
                 Lua.LuaDoString("LFDQueueFrameFindGroupButton:Click()");
             }
-        }
-
-        private string LUAGetLFGMode()
-        {
-            return Lua.LuaDoString<string>("mode, submode= GetLFGMode(); if mode == nil then return 'nil' else return mode end;");
         }
     }
 }
