@@ -2,9 +2,9 @@
 using System;
 using wManager.Wow.Bot.States;
 using wManager.Wow.Helpers;
-using Wholesome_Dungeon_Crawler.Helpers;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.States;
+using WholesomeDungeonCrawler.Helpers;
 
 namespace WholesomeDungeonCrawler.Bot
 {
