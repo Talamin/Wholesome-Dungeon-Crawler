@@ -163,7 +163,7 @@ namespace WholesomeDungeonCrawler.Data
             InterruptibleEnemyUnits = interruptibleEnemyUnits.ToArray();
             EnemyUnitsTargetingPlayer = enemyUnitsTargetingPlayer.ToArray();
             EnemyUnitsLootable = enemyUnitsLootable.ToArray();
-
+            EnemyAttackingGroup = enemyAttackingGroup.ToArray();
         }
 
     }
