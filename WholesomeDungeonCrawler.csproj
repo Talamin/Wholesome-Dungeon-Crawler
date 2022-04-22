@@ -75,7 +75,9 @@
       <DependentUpon>ProductSettingsControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\Lists.cs" />
+    <Compile Include="Helpers\MoveHelper.cs" />
     <Compile Include="Profiles\Base\Execute.cs" />
+    <Compile Include="Profiles\Base\MoveAlongPath.cs" />
     <Compile Include="Settings\Settings.cs" />
     <Compile Include="Bot\WholesomeDungeonCrawler.cs" />
     <Compile Include="Helpers\Logger.cs" />
