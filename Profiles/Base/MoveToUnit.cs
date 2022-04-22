@@ -20,6 +20,13 @@ namespace WholesomeDungeonCrawler.Profiles.Base
         private readonly bool _interactwithunit;
         private readonly int _gossip;
 
+        private readonly IMoveHelper _movehelper;
+
+        public MoveToUnit(IMoveHelper imovehelper)
+        {
+            _movehelper = imovehelper;
+        }
+
         public MoveToUnit(int unitId, Vector3 expectedPosition, string stepName = "MoveToUnit",
             bool findClosest = false, bool skipIfNotFound = false, bool interactWithUnit = false, int Gossip = 1) : base(stepName)
         {
@@ -44,7 +51,7 @@ namespace WholesomeDungeonCrawler.Profiles.Base
                 if (myPosition.DistanceTo(_expectedPosition) > 4)
                 {
                     // Goto expected position
-                    MoveHelper.StartGoToThread(_expectedPosition);
+                    _movehelper.StartGoToThread(_expectedPosition);
                 }
                 else if (_skipIfNotFound)
                 {
@@ -69,9 +76,9 @@ namespace WholesomeDungeonCrawler.Profiles.Base
                 }
 
                 // Goto found unit
-                if (!MoveHelper.IsMovementThreadRunning ||
-                    MoveHelper.CurrentTarget.DistanceTo(targetPosition) > targetInteractDistance)
-                    MoveHelper.StartGoToThread(targetPosition);
+                if (!_movehelper.IsMovementThreadRunning ||
+                    _movehelper.CurrentTarget.DistanceTo(targetPosition) > targetInteractDistance)
+                    _movehelper.StartGoToThread(targetPosition);
             }
 
             return false;

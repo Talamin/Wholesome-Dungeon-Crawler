@@ -11,13 +11,19 @@ using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.Helpers
 {
-    public class MoveHelper
+    internal class MoveHelper
     {
+        public Vector3 CurrentTarget { get; private set; } = Empty;
+        public bool IsMovementThreadRunning => CurrentTarget != Empty/* || MovementManager.CurrentPath.Count > 0*/;
         private static readonly Vector3 Empty = Vector3.Empty;
         private static readonly object Lock = new object();
         private static bool Running = false;
 
-        private static void Wait()
+        public MoveHelper()
+        {
+        }
+
+        private void Wait()
         {
             if (CurrentTarget != Empty)
             {
@@ -25,7 +31,7 @@ namespace WholesomeDungeonCrawler.Helpers
             }
         }
 
-        public static void StopAllMove(bool stopWalking = false)
+        private void StopAllMove(bool stopWalking = false)
         {
             lock (Lock)
             {
@@ -38,11 +44,7 @@ namespace WholesomeDungeonCrawler.Helpers
             }
         }
 
-        public static Vector3 CurrentTarget { get; private set; } = Empty;
-
-        public static bool IsMovementThreadRunning => CurrentTarget != Empty/* || MovementManager.CurrentPath.Count > 0*/;
-
-        public static void StartGoToThread(Vector3 target, string log = null)
+        private void StartGoToThread(Vector3 target, string log = null)
         {
             lock (Lock)
             {
@@ -72,7 +74,7 @@ namespace WholesomeDungeonCrawler.Helpers
             }
         }
 
-        public static void StartMoveAlongThread(List<Vector3> path, string log = null)
+        public void StartMoveAlongThread(List<Vector3> path, string log = null)
         {
             lock (Lock)
             {

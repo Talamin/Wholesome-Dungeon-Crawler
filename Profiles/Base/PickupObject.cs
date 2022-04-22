@@ -21,6 +21,13 @@ namespace WholesomeDungeonCrawler.Profiles.Base
         private readonly bool _strictPosition;
         private readonly float _interactDistance;
 
+        private readonly IMoveHelper _movehelper;
+
+        public PickupObject(IMoveHelper imovehelper)
+        {
+            _movehelper = imovehelper;
+        }
+
         public PickupObject(uint itemId,
             int objectId,
             Vector3 expectedPosition,
@@ -47,10 +54,10 @@ namespace WholesomeDungeonCrawler.Profiles.Base
                 : ObjectManager.GetObjectWoWGameObject().FirstOrDefault(o => o.Entry == _objectId);
 
             // Move close to expected object position
-            if (!MoveHelper.IsMovementThreadRunning && ObjectManager.Me.PositionWithoutType.DistanceTo(_expectedPosition) > 10)
+            if (!_movehelper.IsMovementThreadRunning && ObjectManager.Me.PositionWithoutType.DistanceTo(_expectedPosition) > 10)
             {
                 Logger.Log($"Moving to object {_objectId} at {_expectedPosition}");
-                MoveHelper.StartGoToThread(_expectedPosition);
+                _movehelper.StartGoToThread(_expectedPosition);
                 return IsCompleted = false;
             }
 
@@ -70,15 +77,15 @@ namespace WholesomeDungeonCrawler.Profiles.Base
             }
 
             // Move to real object position
-            if ((!MoveHelper.IsMovementThreadRunning && ObjectManager.Me.PositionWithoutType.DistanceTo(foundObject.Position) > _interactDistance))
+            if ((!_movehelper.IsMovementThreadRunning && ObjectManager.Me.PositionWithoutType.DistanceTo(foundObject.Position) > _interactDistance))
             {
                 Logger.Log($"Interactive object found. Approaching {_objectId} at {foundObject.Position}");
-                MoveHelper.StartGoToThread(foundObject.Position);
+                _movehelper.StartGoToThread(foundObject.Position);
                 return IsCompleted = false;
             }
 
             // Interact with object
-            if (!MoveHelper.IsMovementThreadRunning)
+            if (!_movehelper.IsMovementThreadRunning)
             {
                 Interact.InteractGameObject(foundObject.GetBaseAddress);
                 Usefuls.WaitIsCasting();

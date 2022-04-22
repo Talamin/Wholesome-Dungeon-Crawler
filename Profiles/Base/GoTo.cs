@@ -17,6 +17,13 @@ namespace WholesomeDungeonCrawler.Profiles.Base
         private readonly float _randomization;
         private readonly Vector3 _targetPosition;
 
+        private readonly IMoveHelper _movehelper;
+
+        public GoTo(IMoveHelper imovehelper)
+        {
+            _movehelper = imovehelper;
+        }
+
         public GoTo(Vector3 targetPosition, string stepName = "GoTo", float precision = 2f, float randomizeEnd = 0, float randomization = 0) : base(stepName)
         {
             _targetPosition = targetPosition;
@@ -33,9 +40,9 @@ namespace WholesomeDungeonCrawler.Profiles.Base
                 return true;
             }
 
-            if (!MoveHelper.IsMovementThreadRunning || MoveHelper.CurrentTarget.DistanceTo(_targetPosition) > _precision)
+            if (!_movehelper.IsMovementThreadRunning || _movehelper.CurrentTarget.DistanceTo(_targetPosition) > _precision)
             {
-                MoveHelper.StartGoToThread(_targetPosition);
+                _movehelper.StartGoToThread(_targetPosition);
             }
 
             return IsCompleted;

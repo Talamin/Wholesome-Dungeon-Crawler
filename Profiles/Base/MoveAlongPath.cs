@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Dungeonlogic;
 using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.Helpers;
@@ -13,6 +14,14 @@ namespace WholesomeDungeonCrawler.Profiles.Base
 {
     internal class MoveAlongPath : Step
     {
+
+        private readonly IMoveHelper _movehelper;
+
+        public MoveAlongPath(IMoveHelper imovehelper)
+        {
+            _movehelper = imovehelper;
+        }
+
         private readonly List<Vector3> _path;
         private readonly float _randomization;
         private readonly Vector3 _target;
@@ -48,9 +57,9 @@ namespace WholesomeDungeonCrawler.Profiles.Base
                 return true;
             }
 
-            if (!MoveHelper.IsMovementThreadRunning || MoveHelper.CurrentTarget.DistanceTo(_target) > 2)
+            if (!_movehelper.IsMovementThreadRunning || _movehelper.CurrentTarget.DistanceTo(_target) > 2)
             {
-                MoveHelper.StartMoveAlongThread(PathFromClosestPoint(_path));
+                _movehelper.StartMoveAlongThread(PathFromClosestPoint(_path));
             }
 
             return IsCompleted;
