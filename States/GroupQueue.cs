@@ -31,6 +31,10 @@ namespace WholesomeDungeonCrawler.States
                 {
                     return false;
                 }
+                if(_cache.ListPartyMember.Count() < 5)
+                {
+                    return false;
+                }
                 if(LUAGetLFGMode() == "nil" && !ObjectManager.Me.HaveBuff("Dungeon Deserter"))
                 {
                     return true;

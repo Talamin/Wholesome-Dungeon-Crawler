@@ -20,6 +20,8 @@ namespace WholesomeDungeonCrawler.Data
         public bool IsPartyInviteRequest { get; private set; }
         public bool HaveSatchel { get; private set; }
         public List <string> ListPartyMember { get; private set; }
+        public bool LFDQueueFrameVisible { get; private set; }
+        public bool LFDQueueRandomFrameVisible { get; private set; }
 
         public Cache()
         {
