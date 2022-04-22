@@ -31,7 +31,7 @@ namespace WholesomeDungeonCrawler.Helpers
             }
         }
 
-        private void StopAllMove(bool stopWalking = false)
+        public void StopAllMove(bool stopWalking = false)
         {
             lock (Lock)
             {
@@ -44,7 +44,7 @@ namespace WholesomeDungeonCrawler.Helpers
             }
         }
 
-        private void StartGoToThread(Vector3 target, string log = null)
+        public void StartGoToThread(Vector3 target, string log = null)
         {
             lock (Lock)
             {
