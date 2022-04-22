@@ -1,0 +1,170 @@
+﻿using robotManager.Helpful;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using wManager.Events;
+using wManager.Wow.Enums;
+using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
+
+namespace WholesomeDungeonCrawler.Data
+{
+    internal class EntityCache : ICycleable, IEntityCache
+    {
+        private object cacheLock = new object();
+        public EntityCache()
+        {
+        }
+
+        public void Dispose() => ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
+
+        public void Initialize() => ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
+
+        public IWoWUnit Target { get; private set; }
+        public IWoWUnit Pet { get; private set; }
+        public IWoWUnit[] EnemyUnitsNearTarget { get; private set; } = new IWoWUnit[0];
+        public IWoWUnit[] EnemyUnitsNearPlayer { get; private set; } = new IWoWUnit[0];
+        public IWoWUnit[] InterruptibleEnemyUnits { get; private set; } = new IWoWUnit[0];
+        public IWoWUnit[] EnemyUnitsTargetingPlayer { get; private set; } = new IWoWUnit[0];
+        public IWoWUnit[] EnemyUnitsTargetingGroup { get; private set; } = new IWoWUnit[0];
+        public IWoWUnit[] EnemyUnitsLootable { get; private set; } = new IWoWUnit[0];
+        public IWoWLocalPlayer Me { get; private set; }
+
+        public IWoWUnit[] EnemyAttackingGroup { get; private set; } = new IWoWUnit[0];
+
+        private float EnemiesNearTargetRange;
+        private float EnemiesNearMeRange;
+        private float InterruptibleEnemiesRange;
+
+        private static IWoWUnit Cache(WoWUnit unit) => new CachedWoWUnit(unit);
+        private static bool Reachable(Vector3 a, Vector3 b) => !TraceLine.TraceLineGo(a, b, CGWorldFrameHitFlags.HitTestSpellLoS);
+        private static bool Reachable(Vector3 a, Vector3 b, ref bool? cachedReachable)
+        {
+            if (cachedReachable is bool reachable)
+            {
+                return reachable;
+            }
+            reachable = Reachable(a, b);
+            cachedReachable = reachable;
+            return reachable;
+        }
+
+        private void OnObjectManagerPulse()
+        {
+            WoWLocalPlayer player;
+            IWoWUnit cachedTarget, cachedPet;
+            List<WoWUnit> units;
+            List<WoWPlayer> playerUnits;
+            IWoWLocalPlayer cachedPlayer;
+
+            lock (cacheLock)
+            {
+                player = ObjectManager.Me;
+                cachedPlayer = (IWoWLocalPlayer)Cache(player);
+
+                cachedTarget = Cache(new WoWUnit(0));
+                var targetObjectBaseAddress = ObjectManager.GetObjectByGuid(player.Target).GetBaseAddress;
+                if (targetObjectBaseAddress != 0)
+                {
+                    var target = new WoWUnit(targetObjectBaseAddress);
+                    if (Reachable(cachedPlayer.PositionWithoutType, target.PositionWithoutType))
+                    {
+                        cachedTarget = Cache(target);
+                    }
+                }
+
+                cachedPet = Cache(ObjectManager.Pet);
+                units = ObjectManager.GetObjectWoWUnit();
+                playerUnits = ObjectManager.GetObjectWoWPlayer();
+            }
+            var enemyUnitsNearTarget = new List<IWoWUnit>(units.Count);
+            var enemyUnitsNearPlayer = new List<IWoWUnit>(units.Count);
+            var interruptibleEnemyUnits = new List<IWoWUnit>(units.Count);
+            var enemyUnitsTargetingPlayer = new List<IWoWUnit>(units.Count);
+            var enemyUnitsLootable = new List<IWoWUnit>(units.Count);
+            var enemyAttackingGroup = new List<IWoWUnit>(units.Count);
+
+            var targetPosition = cachedTarget.PositionWithoutType;
+            var targetGuid = cachedTarget.Guid;
+            var playerPosition = cachedPlayer.PositionWithoutType;
+            var playerGuid = cachedPlayer.Guid;
+
+            foreach (var unit in units)
+            {
+                if(unit.IsLootable)
+                {
+                    continue;
+                }
+
+            }
+
+            foreach (var unit in units)
+            {
+                if (!unit.IsAlive)
+                {
+                    continue;
+                }
+
+                if (!unit.IsAttackable || unit.NotSelectable)
+                {
+                    continue;
+                }
+
+                var unitGuid = unit.Guid;
+
+                if (unitGuid != targetGuid && unit.Target != playerGuid)
+                {
+                    continue;
+                }
+
+                IWoWUnit cachedUnit = unitGuid == targetGuid ? cachedTarget : Cache(unit);
+                bool? cachedReachable = unitGuid == targetGuid ? true : (bool?)null;
+
+                if (unitGuid != targetGuid)
+                {
+                    enemyUnitsTargetingPlayer.Add(cachedUnit);
+                }
+
+                var unitPosition = unit.PositionWithoutType;
+
+                if (cachedUnit.IsLootable && Reachable(playerPosition, unitPosition, ref cachedReachable))
+                {
+                    enemyUnitsLootable.Add(cachedUnit);
+                }
+
+                if (targetPosition.DistanceTo(unitPosition) <= EnemiesNearTargetRange && Reachable(playerPosition, unitPosition, ref cachedReachable))
+                {
+                    enemyUnitsNearTarget.Add(cachedUnit);
+                }
+                if(cachedUnit.IsAttackingGroup && Reachable(playerPosition, unitPosition, ref cachedReachable))
+                {
+                    enemyAttackingGroup.Add(cachedUnit);
+                }
+
+                var playerDistance = playerPosition.DistanceTo(unitPosition);
+                if (playerDistance <= EnemiesNearMeRange && Reachable(playerPosition, unitPosition, ref cachedReachable))
+                {
+                    enemyUnitsNearPlayer.Add(cachedUnit);
+                }
+
+                if (playerDistance <= InterruptibleEnemiesRange && Reachable(playerPosition, unitPosition, ref cachedReachable) && unit.CanInterruptCasting)
+                {
+                    interruptibleEnemyUnits.Add(cachedUnit);
+                }
+            }
+            Me = cachedPlayer;
+            Target = cachedTarget;
+            Pet = cachedPet;
+
+            EnemyUnitsNearTarget = enemyUnitsNearTarget.ToArray();
+            EnemyUnitsNearPlayer = enemyUnitsNearPlayer.ToArray();
+            InterruptibleEnemyUnits = interruptibleEnemyUnits.ToArray();
+            EnemyUnitsTargetingPlayer = enemyUnitsTargetingPlayer.ToArray();
+            EnemyUnitsLootable = enemyUnitsLootable.ToArray();
+
+        }
+
+    }
+}
