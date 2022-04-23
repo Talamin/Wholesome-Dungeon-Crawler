@@ -1,14 +1,13 @@
 ﻿using robotManager.FiniteStateMachine;
-using System;
+using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Data;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
+using Timer = robotManager.Helpful.Timer;
 
 namespace WholesomeDungeonCrawler.States
 {
@@ -27,23 +26,30 @@ namespace WholesomeDungeonCrawler.States
         }
 
         public List<string> groupmembers = new List<string> { "DPSone", "DPStwo", "DPSthree", "Heal" };
-        
+        private Timer timer = new Timer(250);
+
         public override bool NeedToRun
         {
             get
             {
+                if (!timer.IsReady)
+                {
+                    return false;
+                }
+
                 if (!Conditions.InGameAndConnected || !ObjectManager.Me.IsValid || Fight.InFight)
                 {
                     return false;
                 }
-                if (!_cache.IsInInstance)
+                if (_cache.IsInInstance)
                 {
                     return false;
                 }
 
                 if(_cache.ListPartyMember.Count() < 5)
                 {
-                     return true;
+                    timer = new Timer(5000);
+                    return true;
                 }
 
                 return false;
