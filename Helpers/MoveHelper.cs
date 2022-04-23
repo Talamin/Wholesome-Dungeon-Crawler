@@ -11,10 +11,14 @@ using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.Helpers
 {
-    internal class MoveHelper
+    internal class MoveHelper : IMoveHelper
     {
-        public Vector3 CurrentTarget { get; private set; } = Empty;
+        public Vector3 CurrentTarget { get; set; } = Empty;
+
         public bool IsMovementThreadRunning => CurrentTarget != Empty/* || MovementManager.CurrentPath.Count > 0*/;
+
+        bool IMoveHelper.IsMovementThreadRunning { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         private static readonly Vector3 Empty = Vector3.Empty;
         private static readonly object Lock = new object();
         private static bool Running = false;

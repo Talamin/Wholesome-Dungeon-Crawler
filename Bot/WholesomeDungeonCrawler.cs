@@ -32,15 +32,15 @@ namespace WholesomeDungeonCrawler.Bot
                 //Custom  State
                 _fsm.AddState(new GroupAccept(_cache, 20));
                 _fsm.AddState(new GroupInvite(_cache, 19));
-                _fsm.AddState(new GroupQueue(_cache, 18));
-                _fsm.AddState(new OpenSatchel(_cache,17));
-                _fsm.AddState(new Loot(16));
+                //_fsm.AddState(new GroupQueue(_cache, 18));
+                //_fsm.AddState(new OpenSatchel(_cache,17));
+                //_fsm.AddState(new Loot(16));
                 //Default State
-                _fsm.AddState(new MyMacro { Priority = 12 });
-                _fsm.AddState(new Regeneration { Priority = 10 });
-                _fsm.AddState(new NPCScanState { Priority = 5 });
-                _fsm.AddState(new ToTown { Priority = 4 });
-                _fsm.AddState(new Trainers { Priority = 3 });
+                //_fsm.AddState(new MyMacro { Priority = 12 });
+                //_fsm.AddState(new Regeneration { Priority = 10 });
+                //_fsm.AddState(new NPCScanState { Priority = 5 });
+                //_fsm.AddState(new ToTown { Priority = 4 });
+                //_fsm.AddState(new Trainers { Priority = 3 });
                 _fsm.AddState(new Idle { Priority = 1 });
                 
                 _fsm.States.Sort();

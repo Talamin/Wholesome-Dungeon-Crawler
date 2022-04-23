@@ -19,8 +19,8 @@ namespace WholesomeDungeonCrawler.Data
         public bool IsInInstance { get; private set; }
         public bool IsPartyInviteRequest { get; private set; }
         public bool HaveSatchel { get; private set; }
-        public List <string> ListPartyMember { get; private set; }
-        public bool NotInLFG { get; private set; }
+        public List<string> ListPartyMember { get; private set; } = new List<string>();
+        public string GetLFGMode { get; private set; }
 
         public Cache()
         {
@@ -29,7 +29,6 @@ namespace WholesomeDungeonCrawler.Data
         public void Initialize()
         {
             //First Initalization of Variables
-            ClearCachedLists();
             CacheIsInInstance();
             CachePartyInviteRequest();
             CacheLFGCompletionReward();
@@ -82,7 +81,7 @@ namespace WholesomeDungeonCrawler.Data
         private void CachePartyMemberChanged()
         {
             ClearCachedLists();
-            CacheInLFG();
+            GetLFGModes();
             lock (cacheLock)
             {
                 var plist = Lua.LuaDoString<string>(@"
@@ -96,16 +95,9 @@ namespace WholesomeDungeonCrawler.Data
                 ListPartyMember =  plist.Remove(plist.Length - 1, 1).Split(',').ToList();
             }
         }
-        private void CacheInLFG()
-        { 
-            if(Lua.LuaDoString<string>("mode, submode= GetLFGMode(); if mode == nil then return 'nil' else return mode end;") == "nil")
-            {
-                NotInLFG = true;
-            }
-            else
-            {
-                NotInLFG = false;
-            }
+        private void GetLFGModes()
+        {
+            GetLFGMode = Lua.LuaDoString<string>("mode, submode= GetLFGMode();");
         }
     }
 }

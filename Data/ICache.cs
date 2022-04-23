@@ -12,6 +12,6 @@ namespace WholesomeDungeonCrawler.Data
         bool IsPartyInviteRequest { get; }
         bool HaveSatchel { get; }
         List<string> ListPartyMember { get; }
-        bool NotInLFG { get; }
+        string GetLFGMode { get; }
     }
 }

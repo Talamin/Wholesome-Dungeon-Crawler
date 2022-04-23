@@ -35,7 +35,7 @@ namespace WholesomeDungeonCrawler.States
                 {
                     return false;
                 }
-                if(_cache.NotInLFG && !ObjectManager.Me.HaveBuff("Dungeon Deserter"))
+                if(_cache.GetLFGMode == "nil" && !ObjectManager.Me.HaveBuff("Dungeon Deserter"))
                 {
                     return true;
                 }
