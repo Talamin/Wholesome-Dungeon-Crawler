@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WholesomeToolbox;
 using wManager.Events;
 using wManager.Wow.Helpers;
-using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Data
 {
-    internal class Cache : ICycleable, ICache
+    internal class Cache : ICache
     {
 
         private object cacheLock = new object();
@@ -51,7 +47,7 @@ namespace WholesomeDungeonCrawler.Data
         {
             lock (cacheLock)
             {
-                
+
             }
         }
 
@@ -62,22 +58,26 @@ namespace WholesomeDungeonCrawler.Data
                 IsInInstance = WTLocation.IsInInstance();
             }
         }
+
         private void CachePartyInviteRequest()
         {
             string StaticPopupText = Lua.LuaDoString<string>("StaticPopup1Text:GetText()");
             IsPartyInviteRequest = StaticPopupText.Contains("invites you to a group");
         }
+
         private void CacheLFGCompletionReward()
         {
-            lock(cacheLock)
+            lock (cacheLock)
             {
                 HaveSatchel = Bag.GetBagItem().Count(item => item.Name.Contains("Satchel of")) > 0;
             }
         }
+
         private void ClearCachedLists()
         {
             ListPartyMember.Clear();
         }
+
         private void CachePartyMemberChanged()
         {
             ClearCachedLists();
@@ -92,12 +92,13 @@ namespace WholesomeDungeonCrawler.Data
                         end
                     end", "plist");
 
-                ListPartyMember =  plist.Remove(plist.Length - 1, 1).Split(',').ToList();
+                ListPartyMember = plist.Remove(plist.Length - 1, 1).Split(',').ToList();
             }
         }
+
         private void GetLFGModes()
         {
-            GetLFGMode = Lua.LuaDoString<string>("mode, submode= GetLFGMode();");
+            GetLFGMode = Lua.LuaDoString<string>("local mode, submode = GetLFGMode(); return mode;");
         }
     }
 }

@@ -1,12 +1,10 @@
 ﻿using robotManager.Helpful;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Dungeonlogic;
 using WholesomeDungeonCrawler.Helpers;
+using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -20,13 +18,6 @@ namespace WholesomeDungeonCrawler.Profiles.Base
         private readonly bool _findClosest;
         private readonly bool _strictPosition;
         private readonly float _interactDistance;
-
-        private readonly IMoveHelper _movehelper;
-
-        public PickupObject(IMoveHelper imovehelper)
-        {
-            _movehelper = imovehelper;
-        }
 
         public PickupObject(uint itemId,
             int objectId,
@@ -54,10 +45,10 @@ namespace WholesomeDungeonCrawler.Profiles.Base
                 : ObjectManager.GetObjectWoWGameObject().FirstOrDefault(o => o.Entry == _objectId);
 
             // Move close to expected object position
-            if (!_movehelper.IsMovementThreadRunning && ObjectManager.Me.PositionWithoutType.DistanceTo(_expectedPosition) > 10)
+            if (ObjectManager.Me.PositionWithoutType.DistanceTo(_expectedPosition) > 10)
             {
                 Logger.Log($"Moving to object {_objectId} at {_expectedPosition}");
-                _movehelper.StartGoToThread(_expectedPosition);
+                GoToTask.ToPosition(_expectedPosition);
                 return IsCompleted = false;
             }
 
@@ -77,24 +68,24 @@ namespace WholesomeDungeonCrawler.Profiles.Base
             }
 
             // Move to real object position
-            if ((!_movehelper.IsMovementThreadRunning && ObjectManager.Me.PositionWithoutType.DistanceTo(foundObject.Position) > _interactDistance))
+            if ((ObjectManager.Me.PositionWithoutType.DistanceTo(foundObject.Position) > _interactDistance))
             {
                 Logger.Log($"Interactive object found. Approaching {_objectId} at {foundObject.Position}");
-                _movehelper.StartGoToThread(foundObject.Position);
+                GoToTask.ToPosition(foundObject.Position);
                 return IsCompleted = false;
             }
 
             // Interact with object
-            if (!_movehelper.IsMovementThreadRunning)
+            if (!MovementManager.InMovement)
             {
                 Interact.InteractGameObject(foundObject.GetBaseAddress);
                 Usefuls.WaitIsCasting();
             }
 
-            return IsCompleted;
+            return IsCompleted = false; ;
         }
 
-        private  WoWGameObject FindClosestObject(Func<WoWGameObject, bool> predicate, Vector3 referencePosition = null)
+        private WoWGameObject FindClosestObject(Func<WoWGameObject, bool> predicate, Vector3 referencePosition = null)
         { //same like FindClosestUnit
             WoWGameObject foundObject = null;
             var distanceToObject = float.MaxValue;
@@ -112,7 +103,6 @@ namespace WholesomeDungeonCrawler.Profiles.Base
                 else
                 {
                     float currentDistanceToObject = position.DistanceTo(gameObject.Position);
-                    //float currentDistanceToObject = CalculatePathTotalDistance(position, gameObject.Position);
                     if (currentDistanceToObject < distanceToObject)
                     {
                         foundObject = gameObject;

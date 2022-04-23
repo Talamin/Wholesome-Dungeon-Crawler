@@ -1,12 +1,7 @@
 ﻿using robotManager.FiniteStateMachine;
-using robotManager.Helpful;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -14,11 +9,9 @@ namespace WholesomeDungeonCrawler.States
 {
     class OpenSatchel : State, IState
     {
-        public override string DisplayName
-        {
-            get { return "Open Satchel"; }
-        }
+        public override string DisplayName => "Open Satchel";
         private readonly ICache _cache;
+
         public OpenSatchel(ICache iCache, int priority)
         {
             _cache = iCache;
@@ -29,21 +22,16 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected || !ObjectManager.Me.IsValid || Fight.InFight)
+                if (!Conditions.InGameAndConnected
+                    || !ObjectManager.Me.IsValid
+                    || Fight.InFight
+                    || _cache.IsInInstance)
                 {
                     return false;
                 }
-                if (_cache.IsInInstance)
-                {
-                    return false;
-                }
-                if (_cache.HaveSatchel)
-                {
-                    return true;
-                }
-                return false;
-            }
 
+                return _cache.HaveSatchel;
+            }
         }
 
         public override void Run()

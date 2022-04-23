@@ -2,6 +2,7 @@
 
 namespace WholesomeDungeonCrawler.Dungeonlogic
 {
+    // Make this class and its members not static, and add an interface
     internal static class LogicRunner
     {
         private static readonly object ProfileLocker = new object();

@@ -8,5 +8,4 @@ namespace WholesomeDungeonCrawler.Data
         {
         }
     }
-
 }

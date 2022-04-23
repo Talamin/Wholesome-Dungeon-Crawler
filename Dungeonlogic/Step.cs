@@ -2,6 +2,7 @@
 
 namespace WholesomeDungeonCrawler.Dungeonlogic
 {
+    // add and interface
     internal abstract class Step
     {
         public bool IsCompleted;

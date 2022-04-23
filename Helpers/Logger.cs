@@ -1,6 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Drawing;
-using WholesomeDungeonCrawler.Bot;
+using WholesomeDungeonCrawler.CrawlerSettings;
 
 namespace WholesomeDungeonCrawler.Helpers
 {

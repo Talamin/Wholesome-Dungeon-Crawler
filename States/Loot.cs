@@ -1,44 +1,36 @@
 ﻿using robotManager.FiniteStateMachine;
-using Timer = robotManager.Helpful.Timer;
+using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
-using wManager.Wow.ObjectManager;
-using wManager.Wow.Helpers;
-using robotManager.Helpful;
 using wManager.Wow.Bot.Tasks;
-using WholesomeDungeonCrawler.Data;
+using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
     public class Loot : State, IState
     {
-        public override string DisplayName
-        {
-            get { return "Looting"; }
-        }
+        public override string DisplayName => "Looting";
+        private readonly int LootRange = 20;
+
         public Loot(int priority)
         {
             Priority = priority;
         }
 
-        private  int LootRange = 20;
-        public WoWUnit LootUnit;
         public override bool NeedToRun
         {
             get
             {
-                if (!Conditions.InGameAndConnected || !ObjectManager.Me.IsValid || Fight.InFight)
+                if (!Conditions.InGameAndConnected 
+                    || !ObjectManager.Me.IsValid 
+                    || Fight.InFight
+                    || Bag.GetContainerNumFreeSlots <= 2) // could be interesting to cache that too
                 {
                     return false;
                 }
 
-                if (Bag.GetContainerNumFreeSlots <= 2)
-                    return false;
-
-                if (GetListLootableUnits().Count > 0)
-                    return true;
-
-                return false;
+                return GetListLootableUnits().Count > 0;
             }
         }
 
@@ -48,6 +40,7 @@ namespace WholesomeDungeonCrawler.States
             Lua.LuaDoString("CloseLoot()");
         }
 
+        // should use cache instead of this method
         private List<WoWUnit> GetListLootableUnits()
         {
             Vector3 myPosition = ObjectManager.Me.Position;
@@ -55,6 +48,5 @@ namespace WholesomeDungeonCrawler.States
                 .FindAll(u => u.Position.DistanceTo(myPosition) <= LootRange)
                 .ToList();
         }
-
     }
 }

@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WholesomeDungeonCrawler.Data
+﻿namespace WholesomeDungeonCrawler.Data
 {
     internal interface IAura
     {
         int Stacks { get; }
         int TimeLeft { get; }
     }
-
 }

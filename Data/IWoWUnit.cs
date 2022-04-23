@@ -1,9 +1,4 @@
 ﻿using robotManager.Helpful;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using wManager.Wow.Enums;
 
 namespace WholesomeDungeonCrawler.Data
@@ -24,6 +19,5 @@ namespace WholesomeDungeonCrawler.Data
         bool InCombatFlagOnly { get; }
         UnitFlags UnitFlags { get; }
         bool IsAttackingGroup { get; }
-
     }
 }

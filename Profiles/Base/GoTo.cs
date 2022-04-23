@@ -1,12 +1,6 @@
 ﻿using robotManager.Helpful;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using wManager.Wow.Bot.Tasks;
 using WholesomeDungeonCrawler.Dungeonlogic;
-using WholesomeDungeonCrawler.Helpers;
+using wManager.Wow.Bot.Tasks;
 using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Profiles.Base
@@ -17,13 +11,6 @@ namespace WholesomeDungeonCrawler.Profiles.Base
         private readonly float _randomizeEnd;
         private readonly float _randomization;
         private readonly Vector3 _targetPosition;
-
-        private readonly IMoveHelper _movehelper;
-
-        public GoTo(IMoveHelper imovehelper)
-        {
-            _movehelper = imovehelper;
-        }
 
         public GoTo(Vector3 targetPosition, string stepName = "GoTo", float precision = 2f, float randomizeEnd = 0, float randomization = 0) : base(stepName)
         {
@@ -41,12 +28,14 @@ namespace WholesomeDungeonCrawler.Profiles.Base
                 return true;
             }
 
+            GoToTask.ToPosition(_targetPosition);
+            return IsCompleted = false;
+            /*
             if (!_movehelper.IsMovementThreadRunning || _movehelper.CurrentTarget.DistanceTo(_targetPosition) > _precision)
             {
                 GoToTask.ToPosition(_targetPosition);
             }
-
-            return IsCompleted;
+            */
         }
     }
 }

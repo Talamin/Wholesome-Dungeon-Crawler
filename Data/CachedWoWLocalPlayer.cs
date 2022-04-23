@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using wManager.Wow.ObjectManager;
+﻿using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Data
 {

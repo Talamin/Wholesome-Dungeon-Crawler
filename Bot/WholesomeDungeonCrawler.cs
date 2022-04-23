@@ -1,23 +1,26 @@
 ﻿using robotManager.FiniteStateMachine;
 using System;
+using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.States;
 using wManager.Wow.Bot.States;
 using wManager.Wow.Helpers;
-using WholesomeDungeonCrawler.Data;
-using WholesomeDungeonCrawler.States;
-using WholesomeDungeonCrawler.Helpers;
 
 namespace WholesomeDungeonCrawler.Bot
 {
     internal class CrawlerBot
     {
         private readonly Engine _fsm = new Engine();
-        private Cache _cache = new Cache();
-        private EntityCache _entityCache = new EntityCache();
+        private ICache _cache;
+        private IEntityCache _entityCache;
+
         internal bool InitialSetup()
         {
             try
             {
+                _cache = new Cache();
                 _cache.Initialize();
+                _entityCache = new EntityCache();
                 _entityCache.Initialize();
                 //Update Spellbook after Initialization
                 SpellManager.UpdateSpellBook();
@@ -42,7 +45,7 @@ namespace WholesomeDungeonCrawler.Bot
                 //_fsm.AddState(new ToTown { Priority = 4 });
                 //_fsm.AddState(new Trainers { Priority = 3 });
                 _fsm.AddState(new Idle { Priority = 1 });
-                
+
                 _fsm.States.Sort();
 
                 _fsm.StartEngine(10, "WholesomeDungeonCrawler");
@@ -51,7 +54,7 @@ namespace WholesomeDungeonCrawler.Bot
 
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Dispose();
                 Logger.LogError("Bot > Bot > Pulse: " + e);
@@ -69,7 +72,7 @@ namespace WholesomeDungeonCrawler.Bot
                 _entityCache.Dispose();
                 Fight.StopFight();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Logger.LogError("Bot > Bot > Dispose: " + e);
             }

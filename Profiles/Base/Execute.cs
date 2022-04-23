@@ -3,6 +3,7 @@ using WholesomeDungeonCrawler.Dungeonlogic;
 
 namespace WholesomeDungeonCrawler.Profiles.Base
 {
+    // add an common interface for all Steps (they all have a Pulse() method)
     internal class Execute : Step
     {
         private readonly Action _action;

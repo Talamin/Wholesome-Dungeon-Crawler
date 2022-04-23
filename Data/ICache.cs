@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace WholesomeDungeonCrawler.Data
 {
-    interface ICache
+    interface ICache : ICycleable
     {
-        bool IsInInstance { get;}
+        bool IsInInstance { get; }
         bool IsPartyInviteRequest { get; }
         bool HaveSatchel { get; }
         List<string> ListPartyMember { get; }

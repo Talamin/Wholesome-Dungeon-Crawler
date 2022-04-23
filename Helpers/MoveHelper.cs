@@ -1,11 +1,5 @@
 ﻿using robotManager.Helpful;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using WholesomeToolbox;
 using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
 
@@ -27,7 +21,7 @@ namespace WholesomeDungeonCrawler.Helpers
 
         public void MovementThreadRunning()
         {
-            if(CurrentTarget != Empty)
+            if (CurrentTarget != Empty)
             {
                 IsMovementThreadRunning = true;
             }

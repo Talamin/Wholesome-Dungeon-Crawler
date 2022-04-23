@@ -1,25 +1,21 @@
 ﻿using robotManager.Helpful;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
-namespace WholesomeDungeonCrawler.Bot
+namespace WholesomeDungeonCrawler.CrawlerSettings
 {
     [Serializable]
-    public class WholesomeDungeonCrawlerSettings :  Settings
+    public class WholesomeDungeonCrawlerSettings : Settings
     {
 
         public string ProductName { get; set; }
 
         public WholesomeDungeonCrawlerSettings()
         {
-           ProductName = "Wholesome Dungeon Crawler";
+            ProductName = "Wholesome Dungeon Crawler";
         }
 
         public static WholesomeDungeonCrawlerSettings CurrentSetting { get; set; }

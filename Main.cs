@@ -2,13 +2,12 @@
 using System;
 using System.Windows.Controls;
 using WholesomeDungeonCrawler.Bot;
-using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.GUI;
 using WholesomeDungeonCrawler.Helpers;
 
 public class Main : IProduct
 {
-    //public System.Windows.Controls.UserControl Settings => throw new NotImplementedException();
     private readonly CrawlerBot _crawler = new CrawlerBot();
     private ProductSettingsControl _settingsUserControl;
     public bool IsStarted { get; private set; }
@@ -19,7 +18,7 @@ public class Main : IProduct
         {
             WholesomeDungeonCrawlerSettings.Load();
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Logger.LogError("Main -> Initialize(): " + e);
         }
@@ -30,7 +29,7 @@ public class Main : IProduct
         try
         {
             IsStarted = true;
-            if(_crawler.InitialSetup())
+            if (_crawler.InitialSetup())
             {
                 Logger.Log("Started");
             }
@@ -47,7 +46,6 @@ public class Main : IProduct
         try
         {
             IsStarted = false;
-
             _crawler.Dispose();
         }
         catch (Exception e)

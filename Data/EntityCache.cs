@@ -1,9 +1,5 @@
 ﻿using robotManager.Helpful;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using wManager.Events;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
@@ -11,7 +7,7 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Data
 {
-    internal class EntityCache : ICycleable, IEntityCache
+    internal class EntityCache : IEntityCache
     {
         private object cacheLock = new object();
         public EntityCache()
@@ -93,15 +89,6 @@ namespace WholesomeDungeonCrawler.Data
 
             foreach (var unit in units)
             {
-                if(unit.IsLootable)
-                {
-                    continue;
-                }
-
-            }
-
-            foreach (var unit in units)
-            {
                 if (!unit.IsAlive)
                 {
                     continue;
@@ -138,7 +125,7 @@ namespace WholesomeDungeonCrawler.Data
                 {
                     enemyUnitsNearTarget.Add(cachedUnit);
                 }
-                if(cachedUnit.IsAttackingGroup && Reachable(playerPosition, unitPosition, ref cachedReachable))
+                if (cachedUnit.IsAttackingGroup && Reachable(playerPosition, unitPosition, ref cachedReachable))
                 {
                     enemyAttackingGroup.Add(cachedUnit);
                 }
@@ -154,6 +141,7 @@ namespace WholesomeDungeonCrawler.Data
                     interruptibleEnemyUnits.Add(cachedUnit);
                 }
             }
+
             Me = cachedPlayer;
             Target = cachedTarget;
             Pet = cachedPet;

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WholesomeDungeonCrawler.Data
+﻿namespace WholesomeDungeonCrawler.Data
 {
-    internal interface IEntityCache
+    internal interface IEntityCache : ICycleable
     {
         IWoWUnit Target { get; }
         IWoWUnit Pet { get; }
@@ -19,5 +13,4 @@ namespace WholesomeDungeonCrawler.Data
         IWoWUnit[] EnemyUnitsLootable { get; }
         IWoWUnit[] EnemyAttackingGroup { get; }
     }
-
 }

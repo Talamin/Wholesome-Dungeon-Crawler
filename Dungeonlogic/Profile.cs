@@ -2,6 +2,7 @@
 
 namespace WholesomeDungeonCrawler.Dungeonlogic
 {
+    // add an interface
     internal abstract class Profile
     {
         private int _currentStep;
@@ -23,7 +24,6 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
         public Step GetCurrentStep() => _currentStep < _totalSteps ? Steps?[_currentStep] : null;
 
         public bool IsFinished() => _currentStep >= _totalSteps;
-
 
         public void Load()
         {

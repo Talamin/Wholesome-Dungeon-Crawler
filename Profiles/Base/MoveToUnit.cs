@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Dungeonlogic;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeToolbox;
+using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -19,13 +19,6 @@ namespace WholesomeDungeonCrawler.Profiles.Base
         private readonly int _unitId;
         private readonly bool _interactwithunit;
         private readonly int _gossip;
-
-        private readonly IMoveHelper _movehelper;
-
-        public MoveToUnit(IMoveHelper imovehelper)
-        {
-            _movehelper = imovehelper;
-        }
 
         public MoveToUnit(int unitId, Vector3 expectedPosition, string stepName = "MoveToUnit",
             bool findClosest = false, bool skipIfNotFound = false, bool interactWithUnit = false, int Gossip = 1) : base(stepName)
@@ -51,7 +44,7 @@ namespace WholesomeDungeonCrawler.Profiles.Base
                 if (myPosition.DistanceTo(_expectedPosition) > 4)
                 {
                     // Goto expected position
-                    _movehelper.StartGoToThread(_expectedPosition);
+                    GoToTask.ToPosition(_expectedPosition);
                 }
                 else if (_skipIfNotFound)
                 {
@@ -74,11 +67,10 @@ namespace WholesomeDungeonCrawler.Profiles.Base
                     IsCompleted = true;
                     return true;
                 }
-
-                // Goto found unit
-                if (!_movehelper.IsMovementThreadRunning ||
-                    _movehelper.CurrentTarget.DistanceTo(targetPosition) > targetInteractDistance)
-                    _movehelper.StartGoToThread(targetPosition);
+                else
+                {
+                    GoToTask.ToPosition(targetPosition);
+                }
             }
 
             return false;
@@ -105,7 +97,7 @@ namespace WholesomeDungeonCrawler.Profiles.Base
                 {
                     //float currentDistanceToUnit = myPosition.DistanceTo(unit.PositionWithoutType);
                     //checks the Distance of the Unit to the given Position
-                    float currentDistanceToUnit = CalculatePathTotalDistance(position, unit.PositionWithoutType);
+                    float currentDistanceToUnit = WTPathFinder.CalculatePathTotalDistance(position, unit.PositionWithoutType);
                     if (currentDistanceToUnit < distanceToUnit)
                     {
                         foundUnit = unit;
@@ -114,21 +106,6 @@ namespace WholesomeDungeonCrawler.Profiles.Base
                 }
             }
             return foundUnit;
-        }
-
-        private float CalculatePathTotalDistance(Vector3 from, Vector3 to) //calculate the total path distance from start to end
-        {
-            //sets distance to 0f
-            float distance = 0.0f;
-            //build List of vector3 from all pathing points, using pathfinder
-            List<Vector3> path = PathFinder.FindPath(from, to, false);
-            //checks for path for each path to path
-            for (int i = 0; i < path.Count - 1; i++)
-            {
-                distance += path[i].DistanceTo(path[i + 1]);
-            }
-            //returns actual real distance
-            return distance;
         }
     }
 }
