@@ -30,7 +30,7 @@ namespace WholesomeDungeonCrawler.Data
         public IWoWUnit[] EnemyUnitsTargetingPlayer { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsTargetingGroup { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsLootable { get; private set; } = new IWoWUnit[0];
-        public IWoWLocalPlayer Me { get; private set; }
+        public IWoWUnit Me { get; private set; }
 
         public IWoWUnit[] EnemyAttackingGroup { get; private set; } = new IWoWUnit[0];
 
@@ -54,15 +54,15 @@ namespace WholesomeDungeonCrawler.Data
         private void OnObjectManagerPulse()
         {
             WoWLocalPlayer player;
-            IWoWUnit cachedTarget, cachedPet;
+            IWoWUnit cachedTarget, cachedPet, cachedPlayer;
             List<WoWUnit> units;
             List<WoWPlayer> playerUnits;
-            IWoWLocalPlayer cachedPlayer;
+            //IWoWLocalPlayer cachedPlayer;
 
             lock (cacheLock)
             {
                 player = ObjectManager.Me;
-                cachedPlayer = (IWoWLocalPlayer)Cache(player); //This causes a problem. Can you take a look?
+                cachedPlayer = Cache(player); //This causes a problem. Can you take a look?
 
                 cachedTarget = Cache(new WoWUnit(0));
                 var targetObjectBaseAddress = ObjectManager.GetObjectByGuid(player.Target).GetBaseAddress;
