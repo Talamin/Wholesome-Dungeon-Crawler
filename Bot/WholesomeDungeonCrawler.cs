@@ -37,7 +37,7 @@ namespace WholesomeDungeonCrawler.Bot
                 _fsm.AddState(new GroupInvite(_cache, 19));
                 //_fsm.AddState(new GroupQueue(_cache, 18));
                 //_fsm.AddState(new OpenSatchel(_cache,17));
-                //_fsm.AddState(new Loot(16));
+                _fsm.AddState(new Loot(_cache, _entityCache, 16));
                 //Default State
                 //_fsm.AddState(new MyMacro { Priority = 12 });
                 //_fsm.AddState(new Regeneration { Priority = 10 });

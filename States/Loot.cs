@@ -2,20 +2,25 @@
 using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
+using WholesomeDungeonCrawler.Data;
 using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
-    public class Loot : State, IState
+     class Loot : State, IState
     {
         public override string DisplayName => "Looting";
         private readonly int LootRange = 20;
 
-        public Loot(int priority)
+        private readonly ICache _cache;
+        private readonly IEntityCache _entitycache;
+        public Loot(ICache iCache, IEntityCache entityCache, int priority)
         {
+            _cache = iCache;
             Priority = priority;
+            _entitycache = entityCache;
         }
 
         public override bool NeedToRun
@@ -30,9 +35,10 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                return GetListLootableUnits().Count > 0;
+                return _entitycache.EnemyUnitsLootable.Count() > 0;
             }
         }
+
 
         public override void Run()
         {
