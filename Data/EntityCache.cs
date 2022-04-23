@@ -62,7 +62,7 @@ namespace WholesomeDungeonCrawler.Data
             lock (cacheLock)
             {
                 player = ObjectManager.Me;
-                cachedPlayer = (IWoWLocalPlayer)Cache(player);
+                cachedPlayer = (IWoWLocalPlayer)Cache(player); //This causes a problem. Can you take a look?
 
                 cachedTarget = Cache(new WoWUnit(0));
                 var targetObjectBaseAddress = ObjectManager.GetObjectByGuid(player.Target).GetBaseAddress;

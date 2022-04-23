@@ -12,13 +12,13 @@ namespace WholesomeDungeonCrawler.Bot
     {
         private readonly Engine _fsm = new Engine();
         private Cache _cache = new Cache();
-        private EntityCache _entityCache = new EntityCache();
+        //private EntityCache _entityCache = new EntityCache();
         internal bool InitialSetup()
         {
             try
             {
                 _cache.Initialize();
-                _entityCache.Initialize();
+                //_entityCache.Initialize();
                 //Update Spellbook after Initialization
                 SpellManager.UpdateSpellBook();
 
@@ -66,7 +66,7 @@ namespace WholesomeDungeonCrawler.Bot
                 CustomClass.DisposeCustomClass();
                 _fsm.StopEngine();
                 _cache.Dispose();
-                _entityCache.Dispose();
+                //_entityCache.Dispose();
                 Fight.StopFight();
             }
             catch(Exception e)

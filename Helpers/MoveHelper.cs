@@ -15,9 +15,7 @@ namespace WholesomeDungeonCrawler.Helpers
     {
         public Vector3 CurrentTarget { get; set; } = Empty;
 
-        public bool IsMovementThreadRunning => CurrentTarget != Empty/* || MovementManager.CurrentPath.Count > 0*/;
-
-        bool IMoveHelper.IsMovementThreadRunning { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool IsMovementThreadRunning { get; set; }/* || MovementManager.CurrentPath.Count > 0*/
 
         private static readonly Vector3 Empty = Vector3.Empty;
         private static readonly object Lock = new object();
@@ -25,6 +23,18 @@ namespace WholesomeDungeonCrawler.Helpers
 
         public MoveHelper()
         {
+        }
+
+        public void MovementThreadRunning()
+        {
+            if(CurrentTarget != Empty)
+            {
+                IsMovementThreadRunning = true;
+            }
+            else
+            {
+                IsMovementThreadRunning = false;
+            }
         }
 
         private void Wait()
@@ -68,38 +78,6 @@ namespace WholesomeDungeonCrawler.Helpers
                         Logger.Log(log);
                     }
                     GoToTask.ToPosition(target, 0.5f, conditionExit: _ => Running);
-                    //Logger.LogDebug($"GoToTask finished towards {target}");
-                    lock (Lock)
-                    {
-                        CurrentTarget = Empty;
-                        Monitor.Pulse(Lock);
-                    }
-                });
-            }
-        }
-
-        public void StartMoveAlongThread(List<Vector3> path, string log = null)
-        {
-            lock (Lock)
-            {
-                if (CurrentTarget.Equals(MovementManager.CurrentMoveTo))
-                {
-                    return;
-                }
-
-                var pathIndex  = WTPathFinder.GetIndexOfClosestPoint(path);
-
-                Wait();
-
-                CurrentTarget = path[pathIndex];
-                Running = true;
-                ThreadPool.QueueUserWorkItem(_ =>
-                {
-                    if (log != null)
-                    {
-                        Logger.Log(log);
-                    }
-                    GoToTask.ToPosition(MovementManager.CurrentMoveTo, 0.5f, conditionExit: _ => Running);
                     //Logger.LogDebug($"GoToTask finished towards {target}");
                     lock (Lock)
                     {

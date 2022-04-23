@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using wManager.Wow.Bot.Tasks;
 using WholesomeDungeonCrawler.Dungeonlogic;
 using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.ObjectManager;
@@ -42,7 +43,7 @@ namespace WholesomeDungeonCrawler.Profiles.Base
 
             if (!_movehelper.IsMovementThreadRunning || _movehelper.CurrentTarget.DistanceTo(_targetPosition) > _precision)
             {
-                _movehelper.StartGoToThread(_targetPosition);
+                GoToTask.ToPosition(_targetPosition);
             }
 
             return IsCompleted;

@@ -33,7 +33,7 @@ namespace WholesomeDungeonCrawler.Data
             CachePartyInviteRequest();
             CacheLFGCompletionReward();
             CachePartyInviteRequest();
-            CachePartyMemberChanged();
+            //CachePartyMemberChanged();
             //Beginning of Event Subscriptions
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             EventsLua.AttachEventLua("WORLD_MAP_UPDATE", m => CacheIsInInstance());

@@ -11,7 +11,6 @@ namespace WholesomeDungeonCrawler.Helpers
     {
         Vector3 CurrentTarget { get; set; }
         bool IsMovementThreadRunning { get; set; }
-        void StartMoveAlongThread(List<Vector3> path, string log = null);
         void StartGoToThread(Vector3 target, string log = null);
     }
 }
