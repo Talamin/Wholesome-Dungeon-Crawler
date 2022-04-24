@@ -89,6 +89,25 @@ namespace WholesomeDungeonCrawler.Data
 
             foreach (var unit in units)
             {
+
+                if(unit.IsAlive)
+                {
+                    continue;
+                }
+
+                var unitGuid = unit.Guid;
+                IWoWUnit cachedUnit = unitGuid == targetGuid ? cachedTarget : Cache(unit);
+                bool? cachedReachable = unitGuid == targetGuid ? true : (bool?)null;
+                var unitPosition = unit.PositionWithoutType;
+
+                if (cachedUnit.IsLootable && Reachable(playerPosition, unitPosition, ref cachedReachable))
+                {
+                    enemyUnitsLootable.Add(cachedUnit);
+                }
+            }
+
+            foreach (var unit in units)
+            {
                 if (!unit.IsAlive)
                 {
                     continue;
@@ -115,11 +134,6 @@ namespace WholesomeDungeonCrawler.Data
                 }
 
                 var unitPosition = unit.PositionWithoutType;
-
-                if (cachedUnit.IsLootable && Reachable(playerPosition, unitPosition, ref cachedReachable))
-                {
-                    enemyUnitsLootable.Add(cachedUnit);
-                }
 
                 if (targetPosition.DistanceTo(unitPosition) <= EnemiesNearTargetRange && Reachable(playerPosition, unitPosition, ref cachedReachable))
                 {
