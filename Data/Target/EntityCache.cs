@@ -28,6 +28,7 @@ namespace WholesomeDungeonCrawler.Data
         public IWoWUnit[] EnemyUnitsLootable { get; private set; } = new IWoWUnit[0];
         public IWoWUnit Me { get; private set; }
 
+        //Groupplay  Section
         public IWoWUnit[] EnemyAttackingGroup { get; private set; } = new IWoWUnit[0];
 
         private float EnemiesNearTargetRange;
@@ -58,7 +59,7 @@ namespace WholesomeDungeonCrawler.Data
             lock (cacheLock)
             {
                 player = ObjectManager.Me;
-                cachedPlayer = Cache(player); //This causes a problem. Can you take a look?
+                cachedPlayer = Cache(player); 
 
                 cachedTarget = Cache(new WoWUnit(0));
                 var targetObjectBaseAddress = ObjectManager.GetObjectByGuid(player.Target).GetBaseAddress;

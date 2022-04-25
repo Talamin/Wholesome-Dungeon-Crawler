@@ -19,5 +19,6 @@ namespace WholesomeDungeonCrawler.Data
         bool InCombatFlagOnly { get; }
         UnitFlags UnitFlags { get; }
         bool IsAttackingGroup { get; }
+        bool IsPartyMember { get; }
     }
 }

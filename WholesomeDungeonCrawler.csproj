@@ -70,18 +70,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\Cache.cs" />
-    <Compile Include="Data\CachedAura.cs" />
-    <Compile Include="Data\CachedWoWLocalPlayer.cs" />
-    <Compile Include="Data\CachedWoWPlayer.cs" />
-    <Compile Include="Data\CachedWoWUnits.cs" />
-    <Compile Include="Data\EntityCache.cs" />
-    <Compile Include="Data\IAura.cs" />
+    <Compile Include="Data\Target\CachedAura.cs" />
+    <Compile Include="Data\Target\CachedWoWLocalPlayer.cs" />
+    <Compile Include="Data\Target\CachedWoWPlayer.cs" />
+    <Compile Include="Data\Target\CachedWoWUnits.cs" />
+    <Compile Include="Data\Target\EntityCache.cs" />
+    <Compile Include="Data\Target\IAura.cs" />
     <Compile Include="Data\ICache.cs" />
     <Compile Include="Data\ICycleable.cs" />
-    <Compile Include="Data\IEntityCache.cs" />
-    <Compile Include="Data\IWoWLocalPlayer.cs" />
-    <Compile Include="Data\IWoWPlayer.cs" />
-    <Compile Include="Data\IWoWUnit.cs" />
+    <Compile Include="Data\Target\IEntityCache.cs" />
+    <Compile Include="Data\Target\IWoWLocalPlayer.cs" />
+    <Compile Include="Data\Target\IWoWPlayer.cs" />
+    <Compile Include="Data\Target\IWoWUnit.cs" />
     <Compile Include="Dungeonlogic\LogicRunner.cs" />
     <Compile Include="Dungeonlogic\Profile.cs" />
     <Compile Include="Dungeonlogic\Step.cs" />
@@ -109,7 +109,9 @@
     <Compile Include="States\Loot.cs" />
     <Compile Include="States\OpenSatchel.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Data\Group\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Dependencies\robotManager.dll" />
     <Content Include="Dependencies\wManager.dll" />
