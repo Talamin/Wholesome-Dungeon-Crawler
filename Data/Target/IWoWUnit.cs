@@ -1,5 +1,6 @@
 ﻿using robotManager.Helpful;
 using wManager.Wow.Enums;
+using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Data
 {
@@ -20,5 +21,8 @@ namespace WholesomeDungeonCrawler.Data
         UnitFlags UnitFlags { get; }
         bool IsAttackingGroup { get; }
         bool IsPartyMember { get; }
+        public WoWClass IsWoWClass { get; }
+
+        public uint GetBaseAdress { get; }
     }
 }

@@ -105,6 +105,7 @@
     <Compile Include="States\GroupAccept.cs" />
     <Compile Include="States\GroupInvite.cs" />
     <Compile Include="States\GroupQueue.cs" />
+    <Compile Include="States\GroupRevive.cs" />
     <Compile Include="States\IState.cs" />
     <Compile Include="States\Loot.cs" />
     <Compile Include="States\OpenSatchel.cs" />
