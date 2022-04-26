@@ -6,12 +6,12 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class GroupAccept : State, IState
+    class GroupInviteAccept : State, IState
     {
         public override string DisplayName => "Group Accept";
         private readonly ICache _cache;
 
-        public GroupAccept(ICache iCache, int priority)
+        public GroupInviteAccept(ICache iCache, int priority)
         {
             _cache = iCache;
             Priority = priority;
@@ -42,11 +42,10 @@ namespace WholesomeDungeonCrawler.States
             {
                 Logger.Log($"Accepting Invite from Tank");
                 Lua.LuaDoString("StaticPopup1Button1:Click()");
+                return;
             }
-            else
-            {
-                Lua.LuaDoString("StaticPopup1Button2:Click()");
-            }
+            Lua.LuaDoString("StaticPopup1Button2:Click()");
+
         }
 
     }

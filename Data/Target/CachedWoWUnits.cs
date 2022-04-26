@@ -24,7 +24,7 @@ namespace WholesomeDungeonCrawler.Data
         public bool IsLootable { get; }
         public bool IsAttackingGroup { get; }
         public bool IsPartyMember { get; }
-        public WoWClass IsWoWClass { get; }
+        public WoWClass WoWClass { get; }
 
         public uint GetBaseAdress { get; }
 
@@ -45,7 +45,7 @@ namespace WholesomeDungeonCrawler.Data
             IsLootable = unit.IsLootable;
             IsAttackingGroup = unit.IsTargetingPartyMember;
             IsPartyMember = unit.IsPartyMember;
-            IsWoWClass = unit.WowClass;
+            WoWClass = unit.WowClass;
             GetBaseAdress = unit.GetBaseAddress;
 
 

@@ -21,7 +21,7 @@ namespace WholesomeDungeonCrawler.Data
         UnitFlags UnitFlags { get; }
         bool IsAttackingGroup { get; }
         bool IsPartyMember { get; }
-        public WoWClass IsWoWClass { get; }
+        public WoWClass WoWClass { get; }
 
         public uint GetBaseAdress { get; }
     }

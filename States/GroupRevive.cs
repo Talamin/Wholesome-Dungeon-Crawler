@@ -40,13 +40,13 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                return _entitycache.UnitIsGroupMember.Any(u => u.Dead) && _rezzClasses.ContainsKey(_entitycache.Me.IsWoWClass);
+                return _entitycache.ListGroupMember.Any(u => u.Dead) && _rezzClasses.ContainsKey(_entitycache.Me.WoWClass);
             }
         }
         public override void Run()
         {
-            var rezzUnit = _entitycache.UnitIsGroupMember.FirstOrDefault();
-            var spell = _rezzClasses[_entitycache.Me.IsWoWClass];
+            var rezzUnit = _entitycache.ListGroupMember.FirstOrDefault();
+            var spell = _rezzClasses[_entitycache.Me.WoWClass];
 
             if(_entitycache.Me.PositionWithoutType.DistanceTo(rezzUnit.PositionWithoutType) > 25)
             {

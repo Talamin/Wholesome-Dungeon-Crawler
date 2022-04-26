@@ -13,7 +13,7 @@
         IWoWUnit[] EnemyUnitsTargetingGroup { get; }
         IWoWUnit[] EnemyUnitsLootable { get; }
         IWoWUnit[] EnemyAttackingGroup { get; }
-        IWoWUnit[] UnitIsGroupMember { get; }
+        IWoWUnit[] ListGroupMember { get; }
 
     }
 }

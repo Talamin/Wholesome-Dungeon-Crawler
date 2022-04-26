@@ -26,7 +26,7 @@ namespace WholesomeDungeonCrawler.Data
         public IWoWUnit[] EnemyUnitsTargetingPlayer { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsTargetingGroup { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsLootable { get; private set; } = new IWoWUnit[0];
-        public IWoWUnit[] UnitIsGroupMember { get; private set; } = new IWoWUnit[0];
+        public IWoWUnit[] ListGroupMember { get; private set; } = new IWoWUnit[0];
         public IWoWUnit Me { get; private set; }
 
         //Groupplay  Section
@@ -83,7 +83,7 @@ namespace WholesomeDungeonCrawler.Data
             var enemyUnitsTargetingPlayer = new List<IWoWUnit>(units.Count);
             var enemyUnitsLootable = new List<IWoWUnit>(units.Count);
             var enemyAttackingGroup = new List<IWoWUnit>(units.Count);
-            var unitIsGroupMember = new List<IWoWUnit>();
+            var listGroupMember = new List<IWoWUnit>();
 
             var targetPosition = cachedTarget.PositionWithoutType;
             var targetGuid = cachedTarget.Guid;
@@ -103,7 +103,7 @@ namespace WholesomeDungeonCrawler.Data
                 }
                 if(unit.IsPartyMember)
                 {
-                    unitIsGroupMember.Add(cachedUnit);
+                    listGroupMember.Add(cachedUnit);
                 }
                 if (!unit.IsAlive)
                 {
@@ -157,7 +157,7 @@ namespace WholesomeDungeonCrawler.Data
             EnemyUnitsTargetingPlayer = enemyUnitsTargetingPlayer.ToArray();
             EnemyUnitsLootable = enemyUnitsLootable.ToArray();
             EnemyAttackingGroup = enemyAttackingGroup.ToArray();
-            UnitIsGroupMember = unitIsGroupMember.ToArray();
+            ListGroupMember = listGroupMember.ToArray();
         }
 
     }

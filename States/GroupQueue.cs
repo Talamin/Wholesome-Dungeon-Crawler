@@ -9,6 +9,7 @@ namespace WholesomeDungeonCrawler.States
 {
     class GroupQueue : State, IState
     {
+        public override string DisplayName => "GroupQueue";
         private readonly ICache _cache;
 
         public GroupQueue(ICache iCache, int priority)
