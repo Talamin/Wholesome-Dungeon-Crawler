@@ -10,6 +10,6 @@ namespace WholesomeDungeonCrawler.Data
         List<string> ListPartyMember { get; }
         string GetLFGMode { get; }
         string GetPlayerSpec { get; }
-        bool LFGProposalShown { get; private set; }
+        bool LFGProposalShown { get; }
     }
 }
