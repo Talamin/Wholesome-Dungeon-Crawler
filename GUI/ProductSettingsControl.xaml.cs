@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using WholesomeDungeonCrawler.CrawlerSettings;
 
@@ -10,6 +11,20 @@ namespace WholesomeDungeonCrawler.GUI
         {
             InitializeComponent();
             DataContext = WholesomeDungeonCrawlerSettings.CurrentSetting;
+        }
+
+        private void btnProfileEditor_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            try
+            {
+                ProfileEditor profileEditor = new ProfileEditor();
+                profileEditor.ShowDialog();
+            }
+            catch (Exception Ex)
+            {
+                MessageBox.Show(Ex.Message);
+            }
+            
         }
 
         private void SaveSettings(object sender, RoutedEventArgs e)

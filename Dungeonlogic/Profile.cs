@@ -1,20 +1,22 @@
 ﻿using robotManager.Helpful;
+using System.Collections.Generic;
+using WholesomeDungeonCrawler.Helpers;
 
 namespace WholesomeDungeonCrawler.Dungeonlogic
 {
-    // add an interface
-    internal abstract class Profile
+    public class Profile
     {
         private int _currentStep;
         private int _totalSteps;
-        protected Step[] Steps;
+        public Step[] Steps { get; set; }
+        public Dungeon Dungeon { get; set; }
 
-        protected Profile(string profileName = "Unnamed")
+        internal Profile(string profileName = "Unnamed")
         {
             Name = profileName;
         }
 
-        public string Name { get; }
+        public string Name { get; set; }
         public string CurrentState { get; private set; } = "Idle profile";
 
         public virtual bool OverrideNeedToRun => GetCurrentStep()?.OverrideNeedToRun ?? false;

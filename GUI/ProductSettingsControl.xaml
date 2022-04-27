@@ -7,6 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-            
+        <Button Height="20px" Width="80px" Content="Profile Editor" Name="btnProfileEditor" Click="btnProfileEditor_Click"></Button>
     </Grid>
 </UserControl>

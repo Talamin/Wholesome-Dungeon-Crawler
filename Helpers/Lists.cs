@@ -4,13 +4,12 @@ using WholesomeDungeonCrawler.Dungeonlogic;
 
 namespace WholesomeDungeonCrawler.Helpers
 {
-    class Dungeon
+    public class Dungeon
     {
         public string Name { get; set; }
         public int MapId { get; set; }
         public int DungeonId { get; set; }
-        public Vector3 Start { get; set; }
-        public Profile profile { get; set; }
+        public Vector3 Start { get; set; }        
         public Vector3 EntranceLoc { get; set; }
     }
 

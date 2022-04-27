@@ -3,7 +3,7 @@
 namespace WholesomeDungeonCrawler.Dungeonlogic
 {
     // add and interface
-    internal abstract class Step
+    public abstract class Step
     {
         public bool IsCompleted;
         public virtual bool OverrideNeedToRun => false;
@@ -14,6 +14,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
         }
 
         public string Name { get; }
+        public string Order { get; set; }
 
         public virtual bool Pulse() => throw new NotImplementedException();
     }
