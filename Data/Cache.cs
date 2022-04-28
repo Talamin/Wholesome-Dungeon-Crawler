@@ -5,6 +5,7 @@ using WholesomeToolbox;
 using wManager.Events;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Data
 {
@@ -19,6 +20,7 @@ namespace WholesomeDungeonCrawler.Data
         public bool HaveSatchel { get; private set; }
         public List<string> ListPartyMember { get; private set; } = new List<string>();
         public string GetLFGMode { get; private set; }
+        public bool MiniMapLFGFrameIcon { get; private set; }
         public string GetPlayerSpec { get; private set; }
         public bool LFGProposalShown { get; private set; }
 
@@ -32,11 +34,13 @@ namespace WholesomeDungeonCrawler.Data
         {
             //First Initalization of Variables
             CacheIsInInstance();
-            CachePartyInviteRequest();
             CacheLFGCompletionReward();
             CachePartyInviteRequest();
-            CachePlayerSpec();           
-            //CachePartyMemberChanged();
+            CachePlayerSpec();
+            if(ObjectManager.Me.IsInGroup)
+            {
+                CachePartyMemberChanged();
+            }
             //Beginning of Event Subscriptions
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             EventsLua.AttachEventLua("WORLD_MAP_UPDATE", m => CacheIsInInstance());
@@ -44,6 +48,7 @@ namespace WholesomeDungeonCrawler.Data
             EventsLua.AttachEventLua("LFG_COMPLETION_REWARD", m => CacheLFGCompletionReward());
             EventsLua.AttachEventLua("PARTY_MEMBERS_CHANGED", m => CachePartyMemberChanged());
             EventsLua.AttachEventLua("PLAYER_LEVEL_UP", m => CachePlayerSpec());
+            EventsLua.AttachEventLua("LFG_QUEUE_STATUS_UPDATE", m => GetLFGModes());
             EventsLua.AttachEventLua("LFG_PROPOSAL_SHOW", m => CacheLFGProposalShow());
             EventsLua.AttachEventLua("LFG_PROPOSAL_FAILED", m => CacheLFGProposalFailed());
             EventsLua.AttachEventLua("LFG_PROPOSAL_SUCCEEDED", m => CacheLFGProposalSucceeded());
@@ -117,7 +122,8 @@ namespace WholesomeDungeonCrawler.Data
 
         private void GetLFGModes()
         {
-            GetLFGMode = Lua.LuaDoString<string>("local mode, submode = GetLFGMode(); return mode;");
+            GetLFGMode = Lua.LuaDoString<string>("mode, submode= GetLFGMode(); if mode == nil then return 'nil' else return mode end;");
+            MiniMapLFGFrameIcon = Lua.LuaDoString<bool>("return MiniMapLFGFrameIcon: IsVisible()");
         }
 
         private void CachePlayerSpec()

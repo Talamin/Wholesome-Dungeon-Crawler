@@ -11,10 +11,13 @@ namespace WholesomeDungeonCrawler.States
     {
         public override string DisplayName => "GroupQueue";
         private readonly ICache _cache;
+        private readonly IEntityCache _entityCache;
+        private string tankname = "Tank";
 
-        public GroupQueue(ICache iCache, int priority)
+        public GroupQueue(ICache iCache, IEntityCache EntityCache, int priority)
         {
             _cache = iCache;
+            _entityCache = EntityCache;
             Priority = priority;
         }
 
@@ -25,20 +28,20 @@ namespace WholesomeDungeonCrawler.States
                 if (!Conditions.InGameAndConnected 
                     || !ObjectManager.Me.IsValid 
                     || Fight.InFight
-                    || !_cache.IsInInstance
-                    || _cache.ListPartyMember.Count() < 5)
+                    || ObjectManager.Me.HaveBuff("Dungeon Deserter")
+                    || _cache.IsInInstance
+                    || _cache.ListPartyMember.Count() < 4 //changed from 4 for testing
+                    || _entityCache.Me.Name != tankname)
                 {
                     return false;
                 }
 
-                return _cache.GetLFGMode == "nil" && !ObjectManager.Me.HaveBuff("Dungeon Deserter");
+                return Lua.LuaDoString<string>("mode, submode= GetLFGMode(); if mode == nil then return 'nil' else return mode end;") == "nil";
             }
         }
 
         public override void Run()
         {
-            Logger.Log("Queuing for Dungens!");
-
             if (!Lua.LuaDoString<bool>("return LFDQueueFrame: IsVisible()"))
             {
                 Lua.RunMacroText("/lfd");

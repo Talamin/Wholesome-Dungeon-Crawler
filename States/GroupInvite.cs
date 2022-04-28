@@ -15,7 +15,7 @@ namespace WholesomeDungeonCrawler.States
         public override string DisplayName => "Group Invite";
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
-        private List<string> groupmembers = new List<string> { "Tzuki", "DPStwo", "DPSthree", "Heal" };
+        private List<string> groupmembers = new List<string> { "Tzuki"/*, "DPStwo", "DPSthree", "Heal"*/ };
         private string tankname = "Tank";
         private Timer timer = new Timer(1000);
 
@@ -42,7 +42,7 @@ namespace WholesomeDungeonCrawler.States
 
                 timer = new Timer(1000);
 
-                return _cache.ListPartyMember.Count() < 5;
+                return _cache.ListPartyMember.Count() < 4; //changed from 5 for testing
             }
         }
 

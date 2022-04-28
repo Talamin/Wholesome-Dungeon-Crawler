@@ -9,6 +9,7 @@ namespace WholesomeDungeonCrawler.Data
         bool HaveSatchel { get; }
         List<string> ListPartyMember { get; }
         string GetLFGMode { get; }
+        bool MiniMapLFGFrameIcon { get; }
         string GetPlayerSpec { get; }
         bool LFGProposalShown { get; }
     }
