@@ -12,10 +12,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
         {
             get
             {
-                lock (ProfileLocker)
-                {
-                    return "[LogicRunner] " + (_currentProfile?.CurrentState ?? "No profile");
-                }
+                return "[LogicRunner] " + (_currentProfile?.CurrentState ?? "No profile");
             }
         }
 
@@ -25,10 +22,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
         {
             get
             {
-                lock (ProfileLocker)
-                {
-                    return _currentProfile?.OverrideNeedToRun ?? false;
-                }
+                return _currentProfile?.OverrideNeedToRun ?? false;
             }
         }
 
@@ -46,15 +40,12 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
 
         public bool Pulse()
         {
-            lock (ProfileLocker)
+            if (_currentProfile == null) return true;
+            if (_currentProfile.Pulse())
             {
-                if (_currentProfile == null) return true;
-                if (_currentProfile.Pulse())
-                {
-                    Logger.Log($"Finished {_currentProfile.Name} profile.");
-                    _currentProfile = null;
-                    return true;
-                }
+                Logger.Log($"Finished {_currentProfile.Name} profile.");
+                _currentProfile = null;
+                return true;
             }
             return false;
         }
