@@ -3,12 +3,12 @@
 namespace WholesomeDungeonCrawler.Dungeonlogic
 {
     // Make this class and its members not static, and add an interface
-    internal static class LogicRunner
+    internal class LogicRunner : ILogicRunner
     {
-        private static readonly object ProfileLocker = new object();
+        private static object ProfileLocker = new object();
         private static Profile _currentProfile;
 
-        public static string CurrentState
+        public string CurrentState
         {
             get
             {
@@ -19,9 +19,9 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
             }
         }
 
-        public static bool IsFinished => _currentProfile == null;
+        public bool IsFinished => _currentProfile == null;
 
-        public static bool OverrideNeedToRun
+        public bool OverrideNeedToRun
         {
             get
             {
@@ -32,7 +32,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
             }
         }
 
-        public static void CheckUpdate(Profile profile)
+        public void CheckUpdate(Profile profile)
         {
             lock (ProfileLocker)
             {
@@ -44,7 +44,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
             Logger.Log($"[LogicRunner] Loaded new profile {profile.Name}.");
         }
 
-        public static bool Pulse()
+        public bool Pulse()
         {
             lock (ProfileLocker)
             {
@@ -56,7 +56,6 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
                     return true;
                 }
             }
-
             return false;
         }
     }

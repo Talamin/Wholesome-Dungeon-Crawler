@@ -6,6 +6,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
 {
     public class Profile
     {
+        private ILogicRunner _logicRunner;
         private int _currentStep;
         private int _totalSteps;
         public Step[] Steps { get; set; }
@@ -29,7 +30,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
 
         public void Load()
         {
-            LogicRunner.CheckUpdate(this);
+            _logicRunner.CheckUpdate(this);
         }
 
         public void Reset()
