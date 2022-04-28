@@ -3,17 +3,12 @@
 namespace WholesomeDungeonCrawler.Dungeonlogic
 {
     // Make this class and its members not static, and add an interface
-    internal class LogicRunner : ILogicRunner
+    internal static class LogicRunner
     {
-        private readonly object ProfileLocker = new object();
-        private Profile _currentProfile;
-        public bool Pulse{ get; set; }
+        private static readonly object ProfileLocker = new object();
+        private static Profile _currentProfile;
 
-        public LogicRunner()
-        { 
-        }
-
-        public string CurrentState
+        public static string CurrentState
         {
             get
             {
@@ -24,9 +19,9 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
             }
         }
 
-        public bool IsFinished => _currentProfile == null;
+        public static bool IsFinished => _currentProfile == null;
 
-        public bool OverrideNeedToRun
+        public static bool OverrideNeedToRun
         {
             get
             {
@@ -37,7 +32,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
             }
         }
 
-        public void CheckUpdate(Profile profile)
+        public static void CheckUpdate(Profile profile)
         {
             lock (ProfileLocker)
             {
@@ -49,22 +44,20 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
             Logger.Log($"[LogicRunner] Loaded new profile {profile.Name}.");
         }
 
-        public void Pulses()
+        public static bool Pulse()
         {
             lock (ProfileLocker)
             {
-                if (_currentProfile == null)
-                {
-                    Pulse = true;
-                }
+                if (_currentProfile == null) return true;
                 if (_currentProfile.Pulse())
                 {
                     Logger.Log($"Finished {_currentProfile.Name} profile.");
                     _currentProfile = null;
-                    Pulse = true;
+                    return true;
                 }
             }
-            Pulse = false;
+
+            return false;
         }
     }
 }
