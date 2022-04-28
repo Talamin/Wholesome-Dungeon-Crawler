@@ -12,6 +12,6 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
         bool IsFinished { get; }
         bool OverrideNeedToRun { get; }
         void CheckUpdate(Profile profile);
-        bool Pulse { get; }
+        bool Pulse();
     }
 }
