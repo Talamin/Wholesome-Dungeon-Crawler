@@ -94,6 +94,7 @@
     <Compile Include="Data\Target\IWoWLocalPlayer.cs" />
     <Compile Include="Data\Target\IWoWPlayer.cs" />
     <Compile Include="Data\Target\IWoWUnit.cs" />
+    <Compile Include="Dungeonlogic\ILogicRunner.cs" />
     <Compile Include="Dungeonlogic\LogicRunner.cs" />
     <Compile Include="Dungeonlogic\Profile.cs" />
     <Compile Include="Dungeonlogic\Step.cs" />
