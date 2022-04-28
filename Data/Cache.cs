@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using WholesomeDungeonCrawler.Helpers;
 using WholesomeToolbox;
 using wManager.Events;
 using wManager.Wow.Enums;
@@ -72,8 +73,14 @@ namespace WholesomeDungeonCrawler.Data
 
         private void CachePartyInviteRequest()
         {
-            string StaticPopupText = Lua.LuaDoString<string>("StaticPopup1Text:GetText()");
-            IsPartyInviteRequest = StaticPopupText.Contains("invites you to a group");
+            string StaticPopupText = Lua.LuaDoString<string>("return StaticPopup1Text:GetText()");
+            bool isvisible = Lua.LuaDoString<bool>("return StaticPopup1 and StaticPopup1:IsVisible();");
+            if(isvisible && StaticPopupText.Contains("invites you to a group"))
+            {
+                IsPartyInviteRequest = true;
+                return;
+            }
+            IsPartyInviteRequest = false;         
         }
 
         private void CacheLFGCompletionReward()
@@ -91,6 +98,7 @@ namespace WholesomeDungeonCrawler.Data
 
         private void CachePartyMemberChanged()
         {
+            CachePartyInviteRequest();
             ClearCachedLists();
             GetLFGModes();
             lock (cacheLock)

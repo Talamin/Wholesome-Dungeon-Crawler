@@ -14,12 +14,15 @@ namespace WholesomeDungeonCrawler.States
     {
         public override string DisplayName => "Group Invite";
         private readonly ICache _cache;
-        private List<string> groupmembers = new List<string> { "DPSone", "DPStwo", "DPSthree", "Heal" };
-        private Timer timer = new Timer();
+        private readonly IEntityCache _entityCache;
+        private List<string> groupmembers = new List<string> { "Tzuki", "DPStwo", "DPSthree", "Heal" };
+        private string tankname = "Tank";
+        private Timer timer = new Timer(1000);
 
-        public GroupInvite(ICache iCache, int priority)
+        public GroupInvite(ICache iCache, IEntityCache EntityCache, int priority)
         {
             _cache = iCache;
+            _entityCache = EntityCache;
             Priority = priority;
         }
 
@@ -31,7 +34,8 @@ namespace WholesomeDungeonCrawler.States
                     || !Conditions.InGameAndConnected 
                     || !ObjectManager.Me.IsValid 
                     || Fight.InFight
-                    || _cache.IsInInstance)
+                    || _cache.IsInInstance
+                    || _entityCache.Me.Name != tankname)
                 {
                     return false;
                 }

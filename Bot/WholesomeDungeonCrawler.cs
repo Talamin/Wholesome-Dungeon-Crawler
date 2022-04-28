@@ -33,11 +33,16 @@ namespace WholesomeDungeonCrawler.Bot
                 _fsm.AddState(new Relogger { Priority = 200 });
                 _fsm.AddState(new Pause { Priority = 150 });
                 //Custom  State
-                _fsm.AddState(new GroupInviteAccept(_cache, 20));
-                _fsm.AddState(new GroupInvite(_cache, 19));
-                //_fsm.AddState(new GroupQueue(_cache, 18));
+
+                _fsm.AddState(new GroupInviteAccept(_cache, 30));
+                _fsm.AddState(new GroupInvite(_cache,_entityCache, 29));
+                //_fsm.AddState(new GroupInviteAccept(_cache, 28));
+                //_fsm.AddState(new GroupQueue(_cache, 27));
+                //_fsm.AddState(new GroupQueueAccept(_cache, 26));
+                //_fsm.AddState(new GroupRevive(_cache, _entityCache, 27));                
                 //_fsm.AddState(new OpenSatchel(_cache,17));
-                _fsm.AddState(new Loot(_cache, _entityCache, 16));
+                //_fsm.AddState(new Loot(_cache, _entityCache, 16));
+
                 //Default State
                 //_fsm.AddState(new MyMacro { Priority = 12 });
                 //_fsm.AddState(new Regeneration { Priority = 10 });

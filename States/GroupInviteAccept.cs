@@ -26,6 +26,7 @@ namespace WholesomeDungeonCrawler.States
                     || Fight.InFight
                     || _cache.IsInInstance)
                 {
+
                     return false;
                 }
 
@@ -36,16 +37,16 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            string StaticPopupText = Lua.LuaDoString<string>("StaticPopup1Text:GetText()");
-
-            if (StaticPopupText.Contains("Tankname"))
+            string StaticPopupText = Lua.LuaDoString<string>("return StaticPopup1Text:GetText()");
+            if (StaticPopupText.Contains("Tank"))
             {
                 Logger.Log($"Accepting Invite from Tank");
                 Lua.LuaDoString("StaticPopup1Button1:Click()");
+                Logger.Log("Accepted Invite");
                 return;
             }
             Lua.LuaDoString("StaticPopup1Button2:Click()");
-
+            Logger.Log("Denied Invite");
         }
 
     }
