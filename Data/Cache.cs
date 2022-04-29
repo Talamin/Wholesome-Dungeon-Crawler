@@ -151,15 +151,15 @@ namespace WholesomeDungeonCrawler.Data
 
         private void CacheLFGProposalShow()
         {
-            LFGProposalShown = true;
+            LFGProposalShown = Lua.LuaDoString<bool>("return LFDDungeonReadyDialogEnterDungeonButton:IsVisible()");
         }
         private void CacheLFGProposalFailed()
         {
-            LFGProposalShown = false;
+            LFGProposalShown = Lua.LuaDoString<bool>("return LFDDungeonReadyDialogEnterDungeonButton:IsVisible()");
         }
         private void CacheLFGProposalSucceeded()
         {
-            LFGProposalShown = false;
+            LFGProposalShown = Lua.LuaDoString<bool>("return LFDDungeonReadyDialogEnterDungeonButton:IsVisible()");
         }
         private void CacheRoleCheckShow()
         {
