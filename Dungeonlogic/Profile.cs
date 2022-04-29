@@ -10,17 +10,14 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
         private int _totalSteps;
         private LogicRunner _logicRunner;
 
-        public Profile(LogicRunner logicRunner)
-        {
-            _logicRunner = logicRunner;
-        }
 
         public Step[] Steps { get; set; }
         public Dungeon Dungeon { get; set; }
 
-        internal Profile(string profileName = "Unnamed")
+        public Profile( LogicRunner logicRunner, string profileName = "Unnamed")
         {
             Name = profileName;
+            _logicRunner = logicRunner;
         }
 
         public string Name { get; set; }
