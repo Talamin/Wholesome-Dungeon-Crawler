@@ -26,7 +26,7 @@ namespace WholesomeDungeonCrawler.States
 
         private Timer timer = new Timer();
 
-        private readonly bool LFDRoleCheckPopupAcceptButton = Lua.LuaDoString<bool>("return CacheLFDRoleCheckPopupAcceptButton:IsVisible()");
+        //private readonly bool LFDRoleCheckPopupAcceptButton = Lua.LuaDoString<bool>("return LFDRoleCheckPopupAcceptButton:IsVisible()");
         public override bool NeedToRun
         {
             get
@@ -35,14 +35,14 @@ namespace WholesomeDungeonCrawler.States
                     || !Conditions.InGameAndConnected
                     || !ObjectManager.Me.IsValid
                     || Fight.InFight
-                    || !_cache.IsInInstance
-                    || _cache.ListPartyMember.Count() < 5)
+                    || _cache.IsInInstance
+                    || _cache.ListPartyMember.Count() < 4) //changed from 4
                 {
                     return false;
                 }
                 timer = new Timer(1000);
 
-                return LFDRoleCheckPopupAcceptButton;
+                return _cache.LFGRoleCheckShown;
 
             }
  

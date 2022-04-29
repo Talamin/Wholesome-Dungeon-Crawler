@@ -35,10 +35,11 @@ namespace WholesomeDungeonCrawler.Bot
                 //Custom  State
 
                 _fsm.AddState(new GroupInviteAccept(_cache, 30));
-                _fsm.AddState(new GroupInvite(_cache,_entityCache, 29));
+                _fsm.AddState(new GroupInvite(_cache, _entityCache, 29));
                 _fsm.AddState(new GroupQueue(_cache, _entityCache, 28));
-                //_fsm.AddState(new GroupQueueAccept(_cache, 26));
-                //_fsm.AddState(new GroupRevive(_cache, _entityCache, 27));                
+                _fsm.AddState(new GroupQueueAccept(_cache, 27));
+
+                _fsm.AddState(new GroupRevive(_cache, _entityCache, 27));                
                 //_fsm.AddState(new OpenSatchel(_cache,17));
                 //_fsm.AddState(new Loot(_cache, _entityCache, 16));
 

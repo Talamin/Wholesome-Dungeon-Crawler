@@ -12,5 +12,6 @@ namespace WholesomeDungeonCrawler.Data
         bool MiniMapLFGFrameIcon { get; }
         string GetPlayerSpec { get; }
         bool LFGProposalShown { get; }
+        bool LFGRoleCheckShown { get; }
     }
 }

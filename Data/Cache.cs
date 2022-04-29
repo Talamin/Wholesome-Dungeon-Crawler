@@ -23,6 +23,7 @@ namespace WholesomeDungeonCrawler.Data
         public bool MiniMapLFGFrameIcon { get; private set; }
         public string GetPlayerSpec { get; private set; }
         public bool LFGProposalShown { get; private set; }
+        public bool LFGRoleCheckShown { get; private set; }
 
         //general
 
@@ -37,6 +38,7 @@ namespace WholesomeDungeonCrawler.Data
             CacheLFGCompletionReward();
             CachePartyInviteRequest();
             CachePlayerSpec();
+            CacheRoleCheckShow();
             if(ObjectManager.Me.IsInGroup)
             {
                 CachePartyMemberChanged();
@@ -52,6 +54,10 @@ namespace WholesomeDungeonCrawler.Data
             EventsLua.AttachEventLua("LFG_PROPOSAL_SHOW", m => CacheLFGProposalShow());
             EventsLua.AttachEventLua("LFG_PROPOSAL_FAILED", m => CacheLFGProposalFailed());
             EventsLua.AttachEventLua("LFG_PROPOSAL_SUCCEEDED", m => CacheLFGProposalSucceeded());
+            EventsLua.AttachEventLua("LFG_ROLE_CHECK_SHOW", m => CacheRoleCheckShow());
+            EventsLua.AttachEventLua("LFG_ROLE_CHECK_HIDE", m => CacheRoleCheckShow());
+            EventsLua.AttachEventLua("LFG_ROLE_CHECK_ROLE_CHOSEN", m => CacheRoleCheckShow());
+            EventsLua.AttachEventLua("LFG_ROLE_CHECK_UPDATE", m => CacheRoleCheckShow());
             //EventsLua.AttachEventLua(LuaEventsId.PLAYER_LEVEL_UP  <-- depreciated, only for lookup
         }
 
@@ -122,7 +128,7 @@ namespace WholesomeDungeonCrawler.Data
 
         private void GetLFGModes()
         {
-            GetLFGMode = Lua.LuaDoString<string>("mode, submode= GetLFGMode(); if mode == nil then return 'nil' else return mode end;");
+            GetLFGMode = Lua.LuaDoString<string>("local mode, submode= GetLFGMode(); if mode == nil then return 'nil' else return mode end;");
             MiniMapLFGFrameIcon = Lua.LuaDoString<bool>("return MiniMapLFGFrameIcon: IsVisible()");
         }
 
@@ -154,6 +160,10 @@ namespace WholesomeDungeonCrawler.Data
         private void CacheLFGProposalSucceeded()
         {
             LFGProposalShown = false;
+        }
+        private void CacheRoleCheckShow()
+        {
+            LFGRoleCheckShown = Lua.LuaDoString<bool>("return LFDRoleCheckPopupAcceptButton:IsVisible()");
         }
     }
 }
