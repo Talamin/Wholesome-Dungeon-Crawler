@@ -6,7 +6,11 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
     internal class LogicRunner : ILogicRunner
     {
         private object ProfileLocker = new object();
-        private static Profile _currentProfile;
+        private Profile _currentProfile;
+
+        public LogicRunner()
+        {
+        }
 
         public string CurrentState
         {

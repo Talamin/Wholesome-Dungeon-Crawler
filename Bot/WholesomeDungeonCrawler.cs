@@ -14,6 +14,7 @@ namespace WholesomeDungeonCrawler.Bot
         private readonly Engine _fsm = new Engine();
         private ICache _cache;
         private IEntityCache _entityCache;
+        private ILogicRunner _logicRunner;
 
         internal bool InitialSetup()
         {
@@ -23,6 +24,7 @@ namespace WholesomeDungeonCrawler.Bot
                 _cache.Initialize();
                 _entityCache = new EntityCache();
                 _entityCache.Initialize();
+                _logicRunner = new LogicRunner();
                 //Update Spellbook after Initialization
                 SpellManager.UpdateSpellBook();
 
@@ -40,7 +42,8 @@ namespace WholesomeDungeonCrawler.Bot
                 _fsm.AddState(new GroupQueue(_cache, _entityCache, 28));
                 _fsm.AddState(new GroupQueueAccept(_cache, 27));
 
-                _fsm.AddState(new GroupRevive(_cache, _entityCache, 27));                
+                _fsm.AddState(new GroupRevive(_cache, _entityCache, 26));
+                _fsm.AddState(new DungeonLogic(_cache, _entityCache, _logicRunner, 25));
                 //_fsm.AddState(new OpenSatchel(_cache,17));
                 //_fsm.AddState(new Loot(_cache, _entityCache, 16));
 

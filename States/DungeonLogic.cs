@@ -16,10 +16,11 @@ namespace WholesomeDungeonCrawler.States
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly ILogicRunner _logicRunner;
-        public DungeonLogic(ICache iCache, IEntityCache iEntityCache, int priority)
+        public DungeonLogic(ICache iCache, IEntityCache iEntityCache, ILogicRunner logicrunner, int priority)
         {
             _cache = iCache;
             _entityCache = iEntityCache;
+            _logicRunner = logicrunner;
             Priority = priority;
         }
         public override bool NeedToRun
