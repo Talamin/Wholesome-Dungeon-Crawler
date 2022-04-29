@@ -32,8 +32,7 @@ namespace WholesomeDungeonCrawler.States
                 && !_logicRunner.OverrideNeedToRun) //check if there is no needed Override
                 {
                     return true;
-                }
-            
+                }          
 
                 return false;
             }
@@ -41,7 +40,9 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            throw new NotImplementedException();
+            var actualDungeon = Lists.AllDungeons.Where(d => d.MapId == Usefuls.ContinentId).OrderBy(o => o.Start.DistanceTo(_entityCache.Me.PositionWithoutType)).FirstOrDefault();
+            //actualDungeon.Profile.Load();   <<< this is where the Dungeonprofile will be loaded
+            //_logicRunner.Pulse();
         }
     }
 }

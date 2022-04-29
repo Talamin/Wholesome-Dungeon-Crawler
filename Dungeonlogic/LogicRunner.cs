@@ -1,4 +1,5 @@
-﻿using WholesomeDungeonCrawler.Helpers;
+﻿using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.Helpers;
 
 namespace WholesomeDungeonCrawler.Dungeonlogic
 {
@@ -41,6 +42,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
 
             Logger.Log($"[LogicRunner] Loaded new profile {profile.Name}.");
         }
+
 
         public bool Pulse()
         {

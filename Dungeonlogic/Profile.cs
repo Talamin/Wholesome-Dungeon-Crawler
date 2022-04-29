@@ -9,6 +9,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
         private int _currentStep;
         private int _totalSteps;
         private LogicRunner _logicRunner;
+
         public Step[] Steps { get; set; }
         public Dungeon Dungeon { get; set; }
 
