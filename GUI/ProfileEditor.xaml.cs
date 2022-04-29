@@ -56,7 +56,7 @@ namespace WholesomeDungeonCrawler.GUI
             InitializeComponent();
 
             this.DataContext = this;
-            currentProfile = new Profile();
+            currentProfile = new Profile(new LogicRunner());
             currentProfile.Steps = new Step[0];
 
             Setup();
@@ -136,7 +136,7 @@ namespace WholesomeDungeonCrawler.GUI
 
         private void btnNewProfile_Click(object sender, RoutedEventArgs e)
         {
-            currentProfile = new Profile();
+            currentProfile = new Profile(new LogicRunner());
             currentProfile.Steps = new Step[0];
             Setup();
         }

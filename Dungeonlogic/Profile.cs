@@ -4,7 +4,7 @@ using WholesomeDungeonCrawler.Helpers;
 
 namespace WholesomeDungeonCrawler.Dungeonlogic
 {
-    internal class Profile
+    public class Profile
     {
         private int _currentStep;
         private int _totalSteps;
@@ -14,7 +14,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
         public Step[] Steps { get; set; }
         public Dungeon Dungeon { get; set; }
 
-        public Profile( LogicRunner logicRunner, string profileName = "Unnamed")
+        internal Profile( LogicRunner logicRunner, string profileName = "Unnamed")
         {
             Name = profileName;
             _logicRunner = logicRunner;
