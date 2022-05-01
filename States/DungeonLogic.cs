@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Dungeonlogic;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Manager;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
@@ -15,32 +16,32 @@ namespace WholesomeDungeonCrawler.States
     {
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
-        private readonly ILogicRunner _logicRunner;
-        public DungeonLogic(ICache iCache, IEntityCache iEntityCache, ILogicRunner logicrunner, int priority)
+        private readonly IProfileManager _profileManager;
+        public DungeonLogic(ICache iCache, IEntityCache iEntityCache, IProfileManager profilemanager, int priority)
         {
             _cache = iCache;
             _entityCache = iEntityCache;
-            _logicRunner = logicrunner;
+            _profileManager = profilemanager;
             Priority = priority;
         }
         public override bool NeedToRun
         {
             get
             {
-                if (!_logicRunner.IsFinished //check for finishing the Logicstate before
-                && Lists.AllDungeons.Count(d => d.MapId == Usefuls.ContinentId) > 0 //check if we are inside Dungeon
-                && !_logicRunner.OverrideNeedToRun) //check if there is no needed Override
+                if (!Conditions.InGameAndConnected
+                    || !_entityCache.Me.Valid
+                    || Fight.InFight)
                 {
-                    return true;
-                }          
+                    return false;
+                }
 
-                return false;
+                return _profileManager.actualDungeonProfile;
             }
         }
 
         public override void Run()
         {
-            var actualDungeon = Lists.AllDungeons.Where(d => d.MapId == Usefuls.ContinentId).OrderBy(o => o.Start.DistanceTo(_entityCache.Me.PositionWithoutType)).FirstOrDefault();
+            var actualDungeon = _profileManager.actualDungeon;
             //actualDungeon.Profile.Load();   <<< this is where the Dungeonprofile will be loaded
             //_logicRunner.Pulse();
         }

@@ -110,6 +110,8 @@
     <Compile Include="Helpers\IMoveHelper.cs" />
     <Compile Include="Helpers\Lists.cs" />
     <Compile Include="Helpers\MoveHelper.cs" />
+    <Compile Include="Manager\IProfileManager.cs" />
+    <Compile Include="Manager\ProfileManager.cs" />
     <Compile Include="Profiles\Base\Execute.cs" />
     <Compile Include="Profiles\Base\GoTo.cs" />
     <Compile Include="Profiles\Base\InteractWith.cs" />
