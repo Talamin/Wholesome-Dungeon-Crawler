@@ -23,7 +23,7 @@ namespace WholesomeDungeonCrawler.Manager
         }
         public void Initialize()
         {
-
+            CachePlayerEnteringWorld();
             //starting with Event Substcription
             EventsLua.AttachEventLua("PLAYER_ENTERING_WORLD", m => CachePlayerEnteringWorld());
             EventsLua.AttachEventLua("WORLD_MAP_UPDATE", m => CachePlayerEnteringWorld());
