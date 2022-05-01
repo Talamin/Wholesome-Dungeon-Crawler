@@ -27,7 +27,7 @@ namespace WholesomeDungeonCrawler.Bot
                 _entityCache = new EntityCache();
                 _entityCache.Initialize();
                 _logicRunner = new LogicRunner();
-                _profileManager = new ProfileManager();
+                _profileManager = new ProfileManager(_entityCache);
                 _profileManager.Initialize();
                 //Update Spellbook after Initialization
                 SpellManager.UpdateSpellBook();
