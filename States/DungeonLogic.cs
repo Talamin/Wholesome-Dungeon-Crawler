@@ -40,30 +40,12 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                return _profileManager.actualDungeonProfile;
+                return false;
             }
         }
 
         public override void Run()
         {
-            var actualDungeon = _profileManager.actualDungeon;
-            var profilePath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{actualDungeon.Name}");
-            var profilecount = profilePath.GetFiles().Count();
-            if (profilecount > 0)
-            {
-                var files = profilePath.GetFiles();
-                var chosenFile = files[new Random().Next(0, files.Length)];
-                var profile = chosenFile.FullName;
-
-                Profile dungeonProfile = JsonConvert.DeserializeObject<Profile>(File.ReadAllText(profile), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
-
-                Logger.Log($"Dungeon Profile loaded: {dungeonProfile.Name}.{Environment.NewLine} with the DungeonID { dungeonProfile.Dungeon.DungeonId}.{ Environment.NewLine} with at Total Steps { dungeonProfile.Steps.Count()}.{ Environment.NewLine}");
-                //PathFinder.OffMeshConnections.AddRange(dungeonProfile.offMeshConnections); <-- in its current state, Profile doesn´t hold any Offmeshes
-                dungeonProfile.Load();
-                _logicRunner.Pulse();
-                return;
-            }
-            Logger.Log("No Profile found!");
         }
     }
 }
