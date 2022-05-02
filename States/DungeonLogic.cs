@@ -59,8 +59,8 @@ namespace WholesomeDungeonCrawler.States
 
                 Logger.Log($"Dungeon Profile loaded: {dungeonProfile.Name}.{Environment.NewLine} with the DungeonID { dungeonProfile.Dungeon.DungeonId}.{ Environment.NewLine} with at Total Steps { dungeonProfile.Steps.Count()}.{ Environment.NewLine}");
                 //PathFinder.OffMeshConnections.AddRange(dungeonProfile.offMeshConnections); <-- in its current state, Profile doesn´t hold any Offmeshes
-                dungeonProfile.Load();
-                _logicRunner.Pulse();
+                //dungeonProfile.Load();
+                //_logicRunner.Pulse();
                 return;
             }
             Logger.Log("No Profile found!");

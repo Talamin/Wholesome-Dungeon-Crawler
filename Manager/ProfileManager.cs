@@ -34,9 +34,13 @@ namespace WholesomeDungeonCrawler.Manager
             lock(profileLock)
             {
                 actualDungeonProfile = Lists.AllDungeons.Any(d => d.MapId == Usefuls.ContinentId);
-                if(actualDungeonProfile)
+                if(actualDungeonProfile && Lists.AllDungeons.Count(d=> d.MapId == Usefuls.ContinentId) > 1)
                 {
                     actualDungeon = Lists.AllDungeons.Where(d => d.MapId == Usefuls.ContinentId).OrderBy(o => o.Start.DistanceTo(_entityCache.Me.PositionWithoutType)).FirstOrDefault();
+                }
+                if (actualDungeonProfile && Lists.AllDungeons.Count(d => d.MapId == Usefuls.ContinentId) == 1)
+                {
+                    actualDungeon = Lists.AllDungeons.Where(d => d.MapId == Usefuls.ContinentId).FirstOrDefault();
                 }
             }
         }
