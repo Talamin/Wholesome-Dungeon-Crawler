@@ -47,7 +47,7 @@ namespace WholesomeDungeonCrawler.States
         public override void Run()
         {
             var actualDungeon = _profileManager.actualDungeon;
-            var profilePath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/DungeonCrawler/{actualDungeon.Name}");
+            var profilePath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{actualDungeon.Name}");
             var profilecount = profilePath.GetFiles().Count();
             if (profilecount > 0)
             {
@@ -59,8 +59,8 @@ namespace WholesomeDungeonCrawler.States
 
                 Logger.Log($"Dungeon Profile loaded: {dungeonProfile.Name}.{Environment.NewLine} with the DungeonID { dungeonProfile.Dungeon.DungeonId}.{ Environment.NewLine} with at Total Steps { dungeonProfile.Steps.Count()}.{ Environment.NewLine}");
                 //PathFinder.OffMeshConnections.AddRange(dungeonProfile.offMeshConnections); <-- in its current state, Profile doesn´t hold any Offmeshes
-                //dungeonProfile.Load();
-                //_logicRunner.Pulse();
+                dungeonProfile.Load();
+                _logicRunner.Pulse();
                 return;
             }
             Logger.Log("No Profile found!");
