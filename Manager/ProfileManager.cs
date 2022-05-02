@@ -16,8 +16,10 @@ namespace WholesomeDungeonCrawler.Manager
     class ProfileManager : IProfileManager
     {
         private object profileLock = new object();
-        public bool actualDungeonProfile { get; private set; }
+        public bool actualDungeonProfileInList { get; private set; }
         public Dungeon actualDungeon { get; private set; }
+
+        public Profile dungeonProfile { get; private set; }
 
         private readonly IEntityCache _entityCache;
 
@@ -36,35 +38,52 @@ namespace WholesomeDungeonCrawler.Manager
         {
             lock (profileLock)
             {
-                actualDungeonProfile = Lists.AllDungeons.Any(d => d.MapId == Usefuls.ContinentId);
-                if (actualDungeonProfile && Lists.AllDungeons.Count(d => d.MapId == Usefuls.ContinentId) > 1)
+                CheckForDungeonProfile();
+            }
+        }
+
+        private void CheckForDungeonProfile()
+        {
+            CheckactualDungeonProfileInList();
+            CheckandChooseactualDungeon();
+
+            if (actualDungeonProfileInList && actualDungeon != null)
+            {
+                var profilePath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{actualDungeon.Name}");
+                var profilecount = profilePath.GetFiles().Count();
+                if (profilecount > 0)
+                {
+                    var files = profilePath.GetFiles();
+                    var chosenFile = files[new Random().Next(0, files.Length)];
+                    var profile = chosenFile.FullName;
+
+                    dungeonProfile = JsonConvert.DeserializeObject<Profile>(File.ReadAllText(profile), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+
+                    Logger.Log($"Dungeon Profile loaded: {dungeonProfile.Name}.{Environment.NewLine} with the DungeonID { dungeonProfile.Dungeon.DungeonId}.{ Environment.NewLine} with at Total Steps { dungeonProfile.Steps.Count()}.{ Environment.NewLine}");
+                    //PathFinder.OffMeshConnections.AddRange(dungeonProfile.offMeshConnections); <-- in its current state, Profile doesn´t hold any Offmeshes
+                }
+                Logger.Log("No Profile found!");
+                return;
+            }
+        }
+
+        private void CheckandChooseactualDungeon()
+        {
+            if(actualDungeonProfileInList)
+            {
+                if(Lists.AllDungeons.Count(d => d.MapId == Usefuls.ContinentId) > 1)
                 {
                     actualDungeon = Lists.AllDungeons.Where(d => d.MapId == Usefuls.ContinentId).OrderBy(o => o.Start.DistanceTo(_entityCache.Me.PositionWithoutType)).FirstOrDefault();
                 }
-                if (actualDungeonProfile && Lists.AllDungeons.Count(d => d.MapId == Usefuls.ContinentId) == 1)
+                if (Lists.AllDungeons.Count(d => d.MapId == Usefuls.ContinentId) == 1)
                 {
                     actualDungeon = Lists.AllDungeons.Where(d => d.MapId == Usefuls.ContinentId).FirstOrDefault();
                 }
-
-                if (actualDungeonProfile && actualDungeon != null)
-                {
-                    var profilePath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{actualDungeon.Name}");
-                    var profilecount = profilePath.GetFiles().Count();
-                    if (profilecount > 0)
-                    {
-                        var files = profilePath.GetFiles();
-                        var chosenFile = files[new Random().Next(0, files.Length)];
-                        var profile = chosenFile.FullName;
-
-                        Profile dungeonProfile = JsonConvert.DeserializeObject<Profile>(File.ReadAllText(profile), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
-
-                        Logger.Log($"Dungeon Profile loaded: {dungeonProfile.Name}.{Environment.NewLine} with the DungeonID { dungeonProfile.Dungeon.DungeonId}.{ Environment.NewLine} with at Total Steps { dungeonProfile.Steps.Count()}.{ Environment.NewLine}");
-                        //PathFinder.OffMeshConnections.AddRange(dungeonProfile.offMeshConnections); <-- in its current state, Profile doesn´t hold any Offmeshes
-                    }
-                    Logger.Log("No Profile found!");
-                    return;
-                }               
             }
+        }
+        private void CheckactualDungeonProfileInList()
+        {
+            actualDungeonProfileInList = Lists.AllDungeons.Any(d => d.MapId == Usefuls.ContinentId);
         }
 
         public void Dispose()
