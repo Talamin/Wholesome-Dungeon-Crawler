@@ -1,10 +1,7 @@
 ﻿using robotManager.FiniteStateMachine;
 using robotManager.Helpful;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Dungeonlogic;
 using WholesomeToolbox;
