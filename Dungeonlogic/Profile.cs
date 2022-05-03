@@ -1,70 +1,58 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
+using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Manager;
 
 namespace WholesomeDungeonCrawler.Dungeonlogic
 {
-    public class Profile
+    class Profile : IProfile
     {
-        private int _currentStep;
-        private int _totalSteps;
-        private LogicRunner _logicRunner;
+        public int MapId { get; private set; }
+        public int DungeonId { get; private set; }
+        public object Start { get; private set; }
+        public Vector3 EntranceLoc { get; private set; }
+        public List<Step> Steps { get; private set; }
+        public Dungeon Dungeon { get; private set; }
+        public string Name { get; private set; }
+        public string CurrentState { get; private set; }
+        public bool OverrideNeedToRun { get; private set; }
+
+        public string CurrentStepType { get; private set; }
+        public Step CurrentStep { get; private set; }
 
 
-        public Step[] Steps { get; set; }
-        public Dungeon Dungeon { get; set; }
+        private readonly IProfileManager _profileManager;
 
-        internal Profile( LogicRunner logicRunner, string profileName = "Unnamed")
+        public Profile(ProfileManager profileManager)
         {
-            Name = profileName;
-            _logicRunner = logicRunner;
+            _profileManager = profileManager;
         }
-
-        public string Name { get; set; }
-        public string CurrentState { get; private set; } = "Idle profile";
-
-        public virtual bool OverrideNeedToRun => GetCurrentStep()?.OverrideNeedToRun ?? false;
-
-        protected virtual Step[] GetSteps() => new Step[0];
-
-        public Step GetCurrentStep() => _currentStep < _totalSteps ? Steps?[_currentStep] : null;
-
-        public bool IsFinished() => _currentStep >= _totalSteps;
 
         public void Load()
         {
-            _logicRunner.CheckUpdate(this);
+            MapId = _profileManager.dungeonProfile.MapId;
+            DungeonId = _profileManager.dungeonProfile.DungeonId;
+            Start = _profileManager.dungeonProfile.Start;
+            EntranceLoc = _profileManager.dungeonProfile.EntranceLoc;
+            Steps = _profileManager.dungeonProfile.Steps;
+            Dungeon = _profileManager.dungeonProfile.Dungeon;
+            Name = _profileManager.dungeonProfile.Name;
         }
 
-        public void Reset()
+        public void ExecuteSteps()
         {
-            Steps = GetSteps();
-            _currentStep = 0;
-            _totalSteps = Steps.Length;
-        }
-
-        protected virtual void UpdateSteps() { }
-
-        public bool Pulse()
-        {
-            if (IsFinished()) return true;
-
-            UpdateSteps();
-
-            Step step = Steps[_currentStep];
-
-            if (!step.IsCompleted)
+            Load();
+            for (int i = 0; i <Steps.Count(); i++)
             {
-                CurrentState = $"Executing step {step.Name} ({_currentStep + 1}/{_totalSteps}).";
-                if (step.Pulse()) _currentStep++;
+                var actualStep = Steps[i];
+                if(!actualStep.IsCompleted)
+                {
+                    CurrentStepType = actualStep.Type;
+                    CurrentStep = actualStep;
+                    return;
+                }
             }
-            else
-            {
-                Logging.WriteDebug($"[LogicRunner] Skipping step {step.Name} ({_currentStep + 1}/{_totalSteps}).");
-                _currentStep++;
-            }
-
-            return IsFinished();
         }
     }
 }

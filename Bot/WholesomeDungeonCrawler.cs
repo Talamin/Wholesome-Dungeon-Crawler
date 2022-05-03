@@ -15,7 +15,6 @@ namespace WholesomeDungeonCrawler.Bot
         private readonly Engine _fsm = new Engine();
         private ICache _cache;
         private IEntityCache _entityCache;
-        private ILogicRunner _logicRunner;
         private IProfileManager _profileManager;
 
         internal bool InitialSetup()
@@ -26,7 +25,6 @@ namespace WholesomeDungeonCrawler.Bot
                 _cache.Initialize();
                 _entityCache = new EntityCache();
                 _entityCache.Initialize();
-                _logicRunner = new LogicRunner();
                 _profileManager = new ProfileManager(_entityCache);
                 _profileManager.Initialize();
                 //Update Spellbook after Initialization

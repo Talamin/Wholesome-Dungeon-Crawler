@@ -1,21 +1,21 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using robotManager.Helpful;
+using System;
+using System.Collections.Generic;
 
 namespace WholesomeDungeonCrawler.Dungeonlogic
 {
-    // add and interface
     public abstract class Step
     {
-        public bool IsCompleted;
-        public virtual bool OverrideNeedToRun => false;
+        [JsonProperty("$type")]
+        public string Type { get; set; }
+        public bool IsCompleted { get; set; }
+        public List<Vector3> Path { get; set; }
+        public double Randomization { get; set; }
+        public object Target { get; set; }
+        public bool OverrideNeedToRun { get; set; }
+        public string Name { get; set; }
+        public object Order { get; set; }
 
-        protected Step(string stepName = "Unnamed")
-        {
-            Name = stepName;
-        }
-
-        public string Name { get; }
-        public string Order { get; set; }
-
-        public virtual bool Pulse() => throw new NotImplementedException();
     }
 }

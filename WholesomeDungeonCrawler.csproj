@@ -94,8 +94,7 @@
     <Compile Include="Data\Target\IWoWLocalPlayer.cs" />
     <Compile Include="Data\Target\IWoWPlayer.cs" />
     <Compile Include="Data\Target\IWoWUnit.cs" />
-    <Compile Include="Dungeonlogic\ILogicRunner.cs" />
-    <Compile Include="Dungeonlogic\LogicRunner.cs" />
+    <Compile Include="Dungeonlogic\IProfile.cs" />
     <Compile Include="Dungeonlogic\Profile.cs" />
     <Compile Include="Dungeonlogic\Step.cs" />
     <Compile Include="GUI\ProductSettingsControl.xaml.cs">
@@ -133,6 +132,12 @@
     <Compile Include="States\IState.cs" />
     <Compile Include="States\Loot.cs" />
     <Compile Include="States\OpenSatchel.cs" />
+    <Compile Include="States\ProfileStates\SExecute.cs" />
+    <Compile Include="States\ProfileStates\SGoTo.cs" />
+    <Compile Include="States\ProfileStates\SInteractWith.cs" />
+    <Compile Include="States\ProfileStates\SMoveAlongPath.cs" />
+    <Compile Include="States\ProfileStates\SMoveToUnit.cs" />
+    <Compile Include="States\ProfileStates\SPickupObject.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\Group\" />
