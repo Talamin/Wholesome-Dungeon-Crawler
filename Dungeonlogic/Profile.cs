@@ -56,6 +56,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
                 var actualstep = totalSteps - IncompleteSteps;
                 CurrentStep = Steps[actualstep];
                 CurrentStep.IsCompleted = false;
+                CurrentStepType = CurrentStep.Type;
                 return;
             }
             Logger.Log("Profile is Done");
