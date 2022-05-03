@@ -24,12 +24,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
 
         private readonly IProfileManager _profileManager;
 
-        public Profile(ProfileManager profileManager)
-        {
-            _profileManager = profileManager;
-        }
-
-        public void Load()
+        public Profile()
         {
             MapId = _profileManager.dungeonProfile.MapId;
             DungeonId = _profileManager.dungeonProfile.DungeonId;
@@ -42,7 +37,6 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
 
         public void ExecuteSteps()
         {
-            Load();
             for (int i = 0; i <Steps.Count(); i++)
             {
                 var actualStep = Steps[i];

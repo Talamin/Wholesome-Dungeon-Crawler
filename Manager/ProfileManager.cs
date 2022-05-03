@@ -56,7 +56,7 @@ namespace WholesomeDungeonCrawler.Manager
                     var files = profilePath.GetFiles();
                     var chosenFile = files[new Random().Next(0, files.Length)];
                     var profile = chosenFile.FullName;
-
+                    dungeonProfile = new Profile();
                     dungeonProfile = JsonConvert.DeserializeObject<Profile>(File.ReadAllText(profile), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
 
                     Logger.Log($"Dungeon Profile loaded: {dungeonProfile.Name}.{Environment.NewLine} with the DungeonID { dungeonProfile.Dungeon.DungeonId}.{ Environment.NewLine} with at Total Steps { dungeonProfile.Steps.Count()}.{ Environment.NewLine}");
