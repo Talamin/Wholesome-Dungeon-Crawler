@@ -20,12 +20,14 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
 
         public string CurrentStepType { get; private set; }
         public Step CurrentStep { get; private set; }
+        public Profile CurrentProfile { get; private set; }
 
 
         private readonly IProfileManager _profileManager;
 
         public Profile()
         {
+            CurrentProfile = _profileManager.dungeonProfile;
             MapId = _profileManager.dungeonProfile.MapId;
             DungeonId = _profileManager.dungeonProfile.DungeonId;
             Start = _profileManager.dungeonProfile.Start;

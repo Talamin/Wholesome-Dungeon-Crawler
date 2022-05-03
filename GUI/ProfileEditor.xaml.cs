@@ -17,7 +17,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Dungeonlogic;
-using WholesomeDungeonCrawler.Profiles.Base;
 using robotManager.Helpful;
 using System.Diagnostics;
 using System.Collections.ObjectModel;
@@ -41,7 +40,7 @@ namespace WholesomeDungeonCrawler.GUI
         public ObservableCollection<Vector3> drCollection { get; set; }
         private JsonSerializerSettings jsonSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
 
-        public Profile currentProfile
+        public Profile CurrentProfile
         {
             get { return _currentProfile; }
             set
@@ -56,7 +55,7 @@ namespace WholesomeDungeonCrawler.GUI
             InitializeComponent();
 
             this.DataContext = this;
-            currentProfile = new Profile(new LogicRunner());
+            currentProfile = new Profile();
             currentProfile.Steps = new Step[0];
 
             Setup();

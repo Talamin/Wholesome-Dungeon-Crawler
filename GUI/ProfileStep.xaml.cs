@@ -19,7 +19,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WholesomeDungeonCrawler.Dungeonlogic;
-using WholesomeDungeonCrawler.Profiles.Base;
 using wManager.Wow.ObjectManager;
 using Timer = System.Timers.Timer;
 
