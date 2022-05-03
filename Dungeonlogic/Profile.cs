@@ -40,7 +40,11 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
             for (int i = 0; i <Steps.Count(); i++)
             {
                 var actualStep = Steps[i];
-                if(!actualStep.IsCompleted)
+                if (CurrentStep.IsCompleted)
+                {
+                    Steps[i].IsCompleted = true;
+                }
+                if (!actualStep.IsCompleted)
                 {
                     CurrentStepType = actualStep.Type;
                     CurrentStep = actualStep;
