@@ -40,7 +40,7 @@ namespace WholesomeDungeonCrawler.GUI
         public ObservableCollection<Vector3> drCollection { get; set; }
         private JsonSerializerSettings jsonSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
 
-        public Profile CurrentProfile
+        private Profile currentProfile
         {
             get { return _currentProfile; }
             set
@@ -56,7 +56,7 @@ namespace WholesomeDungeonCrawler.GUI
 
             this.DataContext = this;
             currentProfile = new Profile();
-            currentProfile.Steps = new Step[0];
+            currentProfile.Steps = new List<Step>();
 
             Setup();
         }
@@ -124,7 +124,7 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
                 //System.Windows.MessageBox.Show(x);
                 sCollection.Add(new MoveAlongPath(new List<Vector3>(), x));
-                currentProfile.Steps = sCollection.ToArray();
+                currentProfile.Steps = sCollection.ToList();
                 //System.Windows.MessageBox.Show(currentProfile.Steps.Length.ToString());
             }
             catch (Exception Ex)
@@ -135,8 +135,8 @@ namespace WholesomeDungeonCrawler.GUI
 
         private void btnNewProfile_Click(object sender, RoutedEventArgs e)
         {
-            currentProfile = new Profile(new LogicRunner());
-            currentProfile.Steps = new Step[0];
+            currentProfile = new Profile();
+            currentProfile.Steps = new List<Step>();
             Setup();
         }
 
@@ -151,7 +151,7 @@ namespace WholesomeDungeonCrawler.GUI
                     if (!string.IsNullOrWhiteSpace(currentProfile.Name))
                     {
                         var rootpath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{currentProfile.Dungeon.Name}");
-                        currentProfile.Steps = currentProfile.Steps.OrderBy(x => x.Order).ToArray();
+                        currentProfile.Steps = currentProfile.Steps.OrderBy(x => x.Order).ToList();
 
                         var output = JsonConvert.SerializeObject(currentProfile, Formatting.Indented, jsonSettings);
                         var path = $@"{rootpath.FullName}/{currentProfile.Name}.json";
