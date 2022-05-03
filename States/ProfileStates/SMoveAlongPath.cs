@@ -44,6 +44,7 @@ namespace WholesomeDungeonCrawler.States.ProfileStates
             if (_entityCache.Me.PositionWithoutType.DistanceTo(_profile.CurrentStep.Path.Last()) < 5f)
             {
                 _profile.CurrentStep.IsCompleted = true;
+                _profile.ExecuteSteps();
             }
 
             MovementManager.Go(WTPathFinder.PathFromClosestPoint(Path));
@@ -54,6 +55,7 @@ namespace WholesomeDungeonCrawler.States.ProfileStates
             }
             */
             _profile.CurrentStep.IsCompleted = false;
+            _profile.ExecuteSteps();
         }
     }
 }

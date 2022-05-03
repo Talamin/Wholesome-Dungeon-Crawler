@@ -37,14 +37,18 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
             Name = _profileManager.dungeonProfile.Name;
         }
 
+
         public void ExecuteSteps()
         {
-            for (int i = 0; i <Steps.Count(); i++)
+            var totalSteps = Steps.Count();
+
+            for (int i = 0; i < totalSteps; i++)
             {
                 var actualStep = Steps[i];
                 if (CurrentStep.IsCompleted)
                 {
                     Steps[i].IsCompleted = true;
+                    return;
                 }
                 if (!actualStep.IsCompleted)
                 {
@@ -53,6 +57,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
                     return;
                 }
             }
+            Logger.Log("Profile is Done");
         }
     }
 }
