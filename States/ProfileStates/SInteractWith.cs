@@ -14,10 +14,11 @@ namespace WholesomeDungeonCrawler.States.ProfileStates
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly IProfile _profile;
-        public SInteractWith(ICache iCache, IEntityCache iEntityCache, int priority)
+        public SInteractWith(ICache iCache, IEntityCache iEntityCache, IProfile iprofile, int priority)
         {
             _cache = iCache;
             _entityCache = iEntityCache;
+            _profile = iprofile;
             Priority = priority;
         }
         public override bool NeedToRun

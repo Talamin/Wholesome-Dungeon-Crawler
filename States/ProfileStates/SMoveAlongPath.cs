@@ -14,10 +14,11 @@ namespace WholesomeDungeonCrawler.States.ProfileStates
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly IProfile _profile;
-        public SMoveAlongPath(ICache iCache, IEntityCache iEntityCache, int priority)
+        public SMoveAlongPath(ICache iCache, IEntityCache iEntityCache, IProfile iprofile, int priority)
         {
             _cache = iCache;
             _entityCache = iEntityCache;
+            _profile = iprofile;
             Priority = priority;
         }
 
@@ -54,6 +55,7 @@ namespace WholesomeDungeonCrawler.States.ProfileStates
                 //_movehelper.StartMoveAlongThread(PathFromClosestPoint(_path));
             }
             */
+
             _profile.CurrentStep.IsCompleted = false;
             _profile.ExecuteSteps();
         }

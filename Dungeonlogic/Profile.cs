@@ -40,7 +40,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
 
         public void ExecuteSteps()
         {
-            var totalSteps = Steps.Count();
+            var TotalSteps = Steps.Count();
             var IncompleteSteps = Steps.Count(s => s.IsCompleted = false);
             var CompletedSteps = Steps.Count(s => s.IsCompleted = true);
             if (CurrentStep == null)
@@ -54,12 +54,12 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
             }
             if (CurrentStep.IsCompleted)
             {
-                if(CompletedSteps == totalSteps)
+                if(CompletedSteps == TotalSteps)
                 {
                     Logger.Log("Profile is Done");
                     return;
                 }
-                var actualstep = totalSteps - IncompleteSteps + 1;
+                var actualstep = TotalSteps - IncompleteSteps + 1;
                 CurrentStep = Steps[actualstep];
                 CurrentStep.IsCompleted = false;
                 CurrentStepType = CurrentStep.Type;
