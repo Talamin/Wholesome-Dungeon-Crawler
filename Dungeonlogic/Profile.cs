@@ -40,8 +40,13 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
         public void ExecuteSteps()
         {
             var TotalSteps = Steps.Count();
-            var IncompleteSteps = Steps.Count(s => s.IsCompleted = false);
-            var CompletedSteps = Steps.Count(s => s.IsCompleted = true);
+            if (TotalSteps <= 0)
+            {
+                Logger.Log("Profile is missing Profile Steps.");
+                return;
+            }
+            var IncompleteSteps = Steps.Count(s => s.IsCompleted == false);
+            var CompletedSteps = Steps.Count(s => s.IsCompleted == true);
             if (CurrentStep == null)
             {
                 CurrentStep = Steps[0];
