@@ -42,7 +42,6 @@ namespace WholesomeDungeonCrawler.Manager
 
         private void LoadProfile()
         {
-
             if (CheckandChooseactualDungeon() != null)
             {
                 var profilePath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{CheckandChooseactualDungeon().Name}");
@@ -58,9 +57,9 @@ namespace WholesomeDungeonCrawler.Manager
                     Logger.Log($"Dungeon Profile loaded: {dungeonProfile.Name}.{Environment.NewLine} with the DungeonID { dungeonProfile.Dungeon.DungeonId}.{ Environment.NewLine} with at Total Steps { dungeonProfile.Steps.Count()}.{ Environment.NewLine}");
                     //PathFinder.OffMeshConnections.AddRange(dungeonProfile.offMeshConnections); <-- in its current state, Profile doesn´t hold any Offmeshes
                 }
-                Logger.Log("No Profile found!");
-                return;
             }
+            Logger.Log("No Profile found!");
+            return;
         }
 
         private Dungeon CheckandChooseactualDungeon()
