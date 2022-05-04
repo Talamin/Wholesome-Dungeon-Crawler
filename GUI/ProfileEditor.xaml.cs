@@ -194,12 +194,12 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 if (Conditions.InGameAndConnected)
                 {
-                    foreach (var step in currentProfile.Steps.Where(x => x.GetType() == typeof(MoveAlongPath)))
+                    foreach (var step in currentProfile.Steps.Where(x => x.Type == "MoveAlongPath"))
                     {
                         var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(step.Name));
                         var colour = System.Drawing.Color.FromArgb(hash[0], hash[1], hash[2]);
                         var previousVector = new Vector3();
-                        foreach (var vec in ((MoveAlongPath)step).Path)
+                        foreach (var vec in step.Path)
                         {
                             if (previousVector == new Vector3())
                             {
