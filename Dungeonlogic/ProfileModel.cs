@@ -7,32 +7,20 @@ using WholesomeDungeonCrawler.Manager;
 
 namespace WholesomeDungeonCrawler.Dungeonlogic
 {
-    class ProfileModel : IProfile
+    class ProfileModel
     {
-        public int MapId { get; private set; }
-        public int DungeonId { get; private set; }
-        public object Start { get; private set; }
-        public Vector3 EntranceLoc { get; private set; }
-        public List<Step> Steps { get; set; }
-        public Dungeon Dungeon { get; private set; }
-        public string Name { get; private set; }
-        public string CurrentState { get; private set; }
-        public bool OverrideNeedToRun { get; private set; }
-        public string CurrentStepType { get; private set; }
-        public Step CurrentStep { get; private set; }
-        public ProfileModel CurrentProfile { get; private set; }
+        public int MapId { get; }
+        public int DungeonId { get; }
+        public object Start { get; }
+        public Vector3 EntranceLoc { get; }
+        public List<Step> Steps { get;}
+        public Dungeon Dungeon { get; }
+        public string Name { get;  }
+        public string CurrentState { get; }
+        public bool OverrideNeedToRun { get; }
+        public string CurrentStepType { get;  }
+        public Step CurrentStep { get; }
+        public ProfileModel CurrentProfile { get;  }
 
-
-        public ProfileModel()
-        {
-        }
-
-        public void Initialize()
-        {
-        }
-
-        public void Dispose()
-        {
-        }
     }
 }
