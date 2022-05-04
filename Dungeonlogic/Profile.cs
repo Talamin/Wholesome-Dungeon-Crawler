@@ -27,7 +27,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
         {
         }
 
-        public void Initialize(ProfileModel profileModel)
+        public void Initialize(Profile profile)
         {
 
         }

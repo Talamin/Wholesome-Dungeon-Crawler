@@ -12,6 +12,6 @@ namespace WholesomeDungeonCrawler.Manager
     interface IProfileManager : ICycleable
     {
 
-        public ProfileModel dungeonProfile { get; }
+        public Profile dungeonProfile { get; }
     }
 }
