@@ -23,12 +23,16 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
         public Step CurrentStep { get; private set; }
         public ProfileModel CurrentProfile { get; private set; }
 
+        private DungeonModel _dungeonmodel;
+        private StepModel _stepmodel;
+        private ProfileModel _profilemodel;
 
-        public Profile()
+
+        public Profile(DungeonModel dungeonmodel, StepModel stepmodel, ProfileModel profilemodel)
         {
-            DungeonModel dungeonmodel = new DungeonModel();
-            ProfileModel profileModel = new ProfileModel();
-            StepModel stepModel = new StepModel();
+            _dungeonmodel = dungeonmodel;
+            _stepmodel = stepmodel;
+            _profilemodel = profilemodel;
         }
 
         public void Initialize(Profile profile)
