@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Manager;
 
@@ -25,11 +26,14 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
 
         public Profile()
         {
+            DungeonModel dungeonmodel = new DungeonModel();
+            ProfileModel profileModel = new ProfileModel();
+            StepModel stepModel = new StepModel();
         }
 
         public void Initialize(Profile profile)
         {
-
+        
         }
 
         public void Dispose()
