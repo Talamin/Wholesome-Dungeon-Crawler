@@ -42,12 +42,10 @@ namespace WholesomeDungeonCrawler.Manager
 
         private void LoadProfile()
         {
-            CheckactualDungeonProfileInList();
-            CheckandChooseactualDungeon();
 
-            if (CheckactualDungeonProfileInList() && actualDungeon != null)
+            if (CheckandChooseactualDungeon() != null)
             {
-                var profilePath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{actualDungeon.Name}");
+                var profilePath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{CheckandChooseactualDungeon().Name}");
                 var profilecount = profilePath.GetFiles().Count();
                 if (profilecount > 0)
                 {
@@ -65,19 +63,20 @@ namespace WholesomeDungeonCrawler.Manager
             }
         }
 
-        private void CheckandChooseactualDungeon()
+        private Dungeon CheckandChooseactualDungeon()
         {
             if(CheckactualDungeonProfileInList())
             {
                 if(Lists.AllDungeons.Count(d => d.MapId == Usefuls.ContinentId) > 1)
                 {
-                    actualDungeon = Lists.AllDungeons.Where(d => d.MapId == Usefuls.ContinentId).OrderBy(o => o.Start.DistanceTo(_entityCache.Me.PositionWithoutType)).FirstOrDefault();
+                    return Lists.AllDungeons.Where(d => d.MapId == Usefuls.ContinentId).OrderBy(o => o.Start.DistanceTo(_entityCache.Me.PositionWithoutType)).FirstOrDefault();
                 }
                 if (Lists.AllDungeons.Count(d => d.MapId == Usefuls.ContinentId) == 1)
                 {
-                    actualDungeon = Lists.AllDungeons.Where(d => d.MapId == Usefuls.ContinentId).FirstOrDefault();
+                    return Lists.AllDungeons.Where(d => d.MapId == Usefuls.ContinentId).FirstOrDefault();
                 }
             }
+            return null;
         }
         private bool CheckactualDungeonProfileInList()
         {
