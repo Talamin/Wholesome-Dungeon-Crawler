@@ -16,7 +16,6 @@ namespace WholesomeDungeonCrawler.Manager
     class ProfileManager : IProfileManager
     {
         private object profileLock = new object();
-        public Dungeon actualDungeon { get; private set; }
 
         public Profile dungeonProfile { get; private set; }
 
@@ -37,11 +36,11 @@ namespace WholesomeDungeonCrawler.Manager
         {
             lock (profileLock)
             {
-                CheckForDungeonProfile();
+                LoadProfile();
             }
         }
 
-        private void CheckForDungeonProfile()
+        private void LoadProfile()
         {
             CheckactualDungeonProfileInList();
             CheckandChooseactualDungeon();
@@ -59,7 +58,6 @@ namespace WholesomeDungeonCrawler.Manager
                     dungeonProfile = JsonConvert.DeserializeObject<Profile>(File.ReadAllText(profile), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
 
                     Logger.Log($"Dungeon Profile loaded: {dungeonProfile.Name}.{Environment.NewLine} with the DungeonID { dungeonProfile.Dungeon.DungeonId}.{ Environment.NewLine} with at Total Steps { dungeonProfile.Steps.Count()}.{ Environment.NewLine}");
-                    dungeonProfile.ExecuteSteps();
                     //PathFinder.OffMeshConnections.AddRange(dungeonProfile.offMeshConnections); <-- in its current state, Profile doesn´t hold any Offmeshes
                 }
                 Logger.Log("No Profile found!");
