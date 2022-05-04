@@ -29,7 +29,7 @@ namespace WholesomeDungeonCrawler.Bot
                 _entityCache.Initialize();
                 _profileManager = new ProfileManager(_entityCache);
                 _profileManager.Initialize();
-                _profile = new Profile();
+                _profile = new ProfileModel();
                 //Update Spellbook after Initialization
                 SpellManager.UpdateSpellBook();
 

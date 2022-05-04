@@ -34,13 +34,13 @@ namespace WholesomeDungeonCrawler.GUI
     public partial class ProfileEditor : INotifyPropertyChanged
     {
         public OpenFileDialog openFileDialog1;
-        private static Profile _currentProfile;
+        private static ProfileModel _currentProfile;
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<Step> sCollection { get; set; }
         public ObservableCollection<Vector3> drCollection { get; set; }
         private JsonSerializerSettings jsonSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
 
-        private Profile currentProfile
+        private ProfileModel currentProfile
         {
             get { return _currentProfile; }
             set
@@ -55,7 +55,7 @@ namespace WholesomeDungeonCrawler.GUI
             InitializeComponent();
 
             this.DataContext = this;
-            currentProfile = new Profile();
+            currentProfile = new ProfileModel();
             currentProfile.Steps = new List<Step>();
 
             Setup();
@@ -135,7 +135,7 @@ namespace WholesomeDungeonCrawler.GUI
 
         private void btnNewProfile_Click(object sender, RoutedEventArgs e)
         {
-            currentProfile = new Profile();
+            currentProfile = new ProfileModel();
             currentProfile.Steps = new List<Step>();
             Setup();
         }

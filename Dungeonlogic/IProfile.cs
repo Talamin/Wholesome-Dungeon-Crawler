@@ -22,8 +22,11 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
 
         public string CurrentStepType { get; }
         public Step CurrentStep { get; }
-        public Profile CurrentProfile { get; }
+        public ProfileModel CurrentProfile { get; }
 
         public void ExecuteSteps();
+
+        public void Initialize(ProfileModel profileModel);
+        public void Dispose();
     }
 }

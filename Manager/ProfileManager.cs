@@ -17,7 +17,7 @@ namespace WholesomeDungeonCrawler.Manager
     {
         private object profileLock = new object();
 
-        public Profile dungeonProfile { get; private set; }
+        public ProfileModel dungeonProfile { get; private set; }
 
         private readonly IEntityCache _entityCache;
 
@@ -52,9 +52,9 @@ namespace WholesomeDungeonCrawler.Manager
                     var files = profilePath.GetFiles();
                     var chosenFile = files[new Random().Next(0, files.Length)];
                     var profile = chosenFile.FullName;                 
-                    dungeonProfile = new Profile(dungeon);
-                    dungeonProfile = JsonConvert.DeserializeObject<Profile>(File.ReadAllText(profile), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
-
+                    dungeonProfile = new ProfileModel();
+                    dungeonProfile = JsonConvert.DeserializeObject<ProfileModel>(File.ReadAllText(profile), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+                    Profile.Initialize(dungeonProfile);
                     Logger.Log($"Dungeon Profile loaded: {dungeonProfile.Name}.{Environment.NewLine} with the DungeonID { dungeonProfile.Dungeon.DungeonId}.{ Environment.NewLine} with at Total Steps { dungeonProfile.Steps.Count()}.{ Environment.NewLine}");
                     //PathFinder.OffMeshConnections.AddRange(dungeonProfile.offMeshConnections); <-- in its current state, Profile doesn´t hold any Offmeshes
                 }

@@ -7,7 +7,7 @@ using WholesomeDungeonCrawler.Manager;
 
 namespace WholesomeDungeonCrawler.Dungeonlogic
 {
-    class Profile : IProfile, ICycleable
+    class Profile : IProfile
     {
         public int MapId { get; private set; }
         public int DungeonId { get; private set; }
@@ -20,25 +20,16 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
         public bool OverrideNeedToRun { get; private set; }
         public string CurrentStepType { get; private set; }
         public Step CurrentStep { get; private set; }
-        public Profile CurrentProfile { get; private set; }
+        public ProfileModel CurrentProfile { get; private set; }
 
 
-        private readonly IProfileManager _profileManager;
-
-        public Profile(Dungeon dungeon)
+        public Profile()
         {
-            CurrentProfile = _profileManager.dungeonProfile;
-            MapId = _profileManager.dungeonProfile.MapId;
-            DungeonId = _profileManager.dungeonProfile.DungeonId;
-            Start = _profileManager.dungeonProfile.Start;
-            EntranceLoc = _profileManager.dungeonProfile.EntranceLoc;
-            Steps = _profileManager.dungeonProfile.Steps;
-            Dungeon = dungeon;
-            Name = _profileManager.dungeonProfile.Name;
         }
 
-        public void Initialize()
+        public void Initialize(ProfileModel profileModel)
         {
+
         }
 
         public void Dispose()
@@ -59,14 +50,14 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
             {
                 CurrentStep = Steps[0];
             }
-            if(!CurrentStep.IsCompleted)
+            if (!CurrentStep.IsCompleted)
             {
                 CurrentStepType = CurrentStep.Type;
                 return;
             }
             if (CurrentStep.IsCompleted)
             {
-                if(CompletedSteps == TotalSteps)
+                if (CompletedSteps == TotalSteps)
                 {
                     Logger.Log("Profile is Done");
                     return;
