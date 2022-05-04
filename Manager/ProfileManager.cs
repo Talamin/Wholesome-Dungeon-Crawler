@@ -62,7 +62,7 @@ namespace WholesomeDungeonCrawler.Manager
             return;
         }
 
-        private Dungeon CheckandChooseactualDungeon()
+        public Dungeon CheckandChooseactualDungeon()
         {
             if(CheckactualDungeonProfileInList())
             {

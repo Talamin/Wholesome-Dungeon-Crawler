@@ -13,5 +13,6 @@ namespace WholesomeDungeonCrawler.Manager
     {
 
         public Profile dungeonProfile { get; }
+        public Dungeon CheckandChooseactualDungeon();
     }
 }
