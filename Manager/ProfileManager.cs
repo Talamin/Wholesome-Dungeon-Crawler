@@ -42,16 +42,17 @@ namespace WholesomeDungeonCrawler.Manager
 
         private void LoadProfile()
         {
-            dungeonProfile = new Profile(CheckandChooseactualDungeon());
-            if (dungeonProfile != null)
+            Dungeon dungeon = CheckandChooseactualDungeon();
+            if (dungeon != null)
             {
-                var profilePath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{CheckandChooseactualDungeon().Name}");
+                var profilePath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");
                 var profilecount = profilePath.GetFiles().Count();
                 if (profilecount > 0)
                 {
                     var files = profilePath.GetFiles();
                     var chosenFile = files[new Random().Next(0, files.Length)];
-                    var profile = chosenFile.FullName;
+                    var profile = chosenFile.FullName;                 
+                    dungeonProfile = new Profile(dungeon);
                     dungeonProfile = JsonConvert.DeserializeObject<Profile>(File.ReadAllText(profile), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
 
                     Logger.Log($"Dungeon Profile loaded: {dungeonProfile.Name}.{Environment.NewLine} with the DungeonID { dungeonProfile.Dungeon.DungeonId}.{ Environment.NewLine} with at Total Steps { dungeonProfile.Steps.Count()}.{ Environment.NewLine}");
