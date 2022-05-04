@@ -82,6 +82,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\Cache.cs" />
+    <Compile Include="Data\Model\DungeonModel.cs" />
+    <Compile Include="Data\Model\ProfileModel.cs" />
+    <Compile Include="Data\Model\StepModel.cs" />
     <Compile Include="Data\Target\CachedAura.cs" />
     <Compile Include="Data\Target\CachedWoWLocalPlayer.cs" />
     <Compile Include="Data\Target\CachedWoWPlayer.cs" />
