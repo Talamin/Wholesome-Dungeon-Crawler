@@ -91,6 +91,7 @@ namespace WholesomeDungeonCrawler.Bot
                 _fsm.StopEngine();
                 _cache.Dispose();
                 _entityCache.Dispose();
+                _profileManager.Dispose();
                 Fight.StopFight();
             }
             catch (Exception e)

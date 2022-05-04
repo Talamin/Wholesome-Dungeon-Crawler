@@ -25,7 +25,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
 
         private readonly IProfileManager _profileManager;
 
-        public Profile()
+        public Profile(Dungeon dungeon)
         {
             CurrentProfile = _profileManager.dungeonProfile;
             MapId = _profileManager.dungeonProfile.MapId;
@@ -33,7 +33,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
             Start = _profileManager.dungeonProfile.Start;
             EntranceLoc = _profileManager.dungeonProfile.EntranceLoc;
             Steps = _profileManager.dungeonProfile.Steps;
-            Dungeon = _profileManager.dungeonProfile.Dungeon;
+            Dungeon = dungeon;
             Name = _profileManager.dungeonProfile.Name;
         }
 
