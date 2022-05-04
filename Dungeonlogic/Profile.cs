@@ -17,7 +17,6 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
         public string Name { get; private set; }
         public string CurrentState { get; private set; }
         public bool OverrideNeedToRun { get; private set; }
-
         public string CurrentStepType { get; private set; }
         public Step CurrentStep { get; private set; }
         public Profile CurrentProfile { get; private set; }
