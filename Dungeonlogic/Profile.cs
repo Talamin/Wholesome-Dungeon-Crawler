@@ -1,12 +1,13 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
+using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Manager;
 
 namespace WholesomeDungeonCrawler.Dungeonlogic
 {
-    class Profile : IProfile
+    class Profile : IProfile, ICycleable
     {
         public int MapId { get; private set; }
         public int DungeonId { get; private set; }
@@ -70,6 +71,14 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
                 return;
             }
 
+        }
+
+        public void Initialize()
+        {
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

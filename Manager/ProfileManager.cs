@@ -16,7 +16,6 @@ namespace WholesomeDungeonCrawler.Manager
     class ProfileManager : IProfileManager
     {
         private object profileLock = new object();
-        public bool actualDungeonProfileInList { get; private set; }
         public Dungeon actualDungeon { get; private set; }
 
         public Profile dungeonProfile { get; private set; }
@@ -47,7 +46,7 @@ namespace WholesomeDungeonCrawler.Manager
             CheckactualDungeonProfileInList();
             CheckandChooseactualDungeon();
 
-            if (actualDungeonProfileInList && actualDungeon != null)
+            if (CheckactualDungeonProfileInList() && actualDungeon != null)
             {
                 var profilePath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{actualDungeon.Name}");
                 var profilecount = profilePath.GetFiles().Count();
@@ -70,7 +69,7 @@ namespace WholesomeDungeonCrawler.Manager
 
         private void CheckandChooseactualDungeon()
         {
-            if(actualDungeonProfileInList)
+            if(CheckactualDungeonProfileInList())
             {
                 if(Lists.AllDungeons.Count(d => d.MapId == Usefuls.ContinentId) > 1)
                 {
@@ -82,9 +81,9 @@ namespace WholesomeDungeonCrawler.Manager
                 }
             }
         }
-        private void CheckactualDungeonProfileInList()
+        private bool CheckactualDungeonProfileInList()
         {
-            actualDungeonProfileInList = Lists.AllDungeons.Any(d => d.MapId == Usefuls.ContinentId);
+            return Lists.AllDungeons.Any(d => d.MapId == Usefuls.ContinentId);
         }
 
         public void Dispose()
