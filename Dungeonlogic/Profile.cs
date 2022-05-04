@@ -37,6 +37,13 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
             Name = _profileManager.dungeonProfile.Name;
         }
 
+        public void Initialize()
+        {
+        }
+
+        public void Dispose()
+        {
+        }
 
         public void ExecuteSteps()
         {
@@ -70,15 +77,6 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
                 CurrentStepType = CurrentStep.Type;
                 return;
             }
-
-        }
-
-        public void Initialize()
-        {
-        }
-
-        public void Dispose()
-        {
         }
     }
 }
