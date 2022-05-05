@@ -17,7 +17,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
         public int DungeonId { get; private set; }
         public object Start { get; private set; }
         public Vector3 EntranceLoc { get; private set; }
-        public List<Step> Steps { get; set; }
+        public List<StepModel> Steps { get; set; }
         public Dungeon Dungeon { get; private set; }
         public string Name { get; private set; }
         public string CurrentState { get; private set; }

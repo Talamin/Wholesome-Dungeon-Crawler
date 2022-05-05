@@ -18,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Dungeonlogic;
 using wManager.Wow.ObjectManager;
 using Timer = System.Timers.Timer;
@@ -29,9 +30,9 @@ namespace WholesomeDungeonCrawler.GUI
     /// </summary>
     public partial class ProfileStep : UserControl, INotifyPropertyChanged
     {
-        private Step selectedItem;
+        private StepModel selectedItem;
         private static Timer addVectorTimer;
-        public Step SelectedItem
+        public StepModel SelectedItem
         {
             get { return selectedItem; }
             set

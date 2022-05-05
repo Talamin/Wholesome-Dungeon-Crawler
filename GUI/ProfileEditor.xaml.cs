@@ -25,7 +25,7 @@ using wManager.Wow.Helpers;
 using System.Security.Cryptography;
 using Newtonsoft.Json;
 using System.IO;
-using WholesomeDungeonCrawler.Data.Model.Stepmodel;
+using WholesomeDungeonCrawler.Data.Model;
 
 namespace WholesomeDungeonCrawler.GUI
 {
@@ -37,8 +37,8 @@ namespace WholesomeDungeonCrawler.GUI
         public OpenFileDialog openFileDialog1;
         private static Profile _currentProfile;
         public event PropertyChangedEventHandler PropertyChanged;
-        public ObservableCollection<Step> sCollection { get; set; }
-        public ObservableCollection<Vector3> drCollection { get; set; }
+        public ObservableCollection<StepModel> StepCollection { get; set; }
+        public ObservableCollection<Vector3> DeathRunCollection { get; set; }
         private JsonSerializerSettings jsonSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
 
         private Profile currentProfile
@@ -57,7 +57,7 @@ namespace WholesomeDungeonCrawler.GUI
 
             this.DataContext = this;
             currentProfile = new Profile();
-            currentProfile.Steps = new List<Step>();
+            currentProfile.Steps = new List<StepModel>();
 
             Setup();
         }
@@ -67,8 +67,8 @@ namespace WholesomeDungeonCrawler.GUI
             //Debugger.Launch();
 
 
-            sCollection = new ObservableCollection<Step>(currentProfile.Steps);
-            dgProfileSteps.ItemsSource = sCollection;
+            StepCollection = new ObservableCollection<StepModel>(currentProfile.Steps);
+            dgProfileSteps.ItemsSource = StepCollection;
 
 
             Lists.AllDungeons.Sort((a, b) => a.Name.CompareTo(b.Name));
@@ -124,8 +124,8 @@ namespace WholesomeDungeonCrawler.GUI
                 };
                 var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
                 //System.Windows.MessageBox.Show(x);
-                sCollection.Add(new MoveAlongPath(new List<Vector3>(), x));
-                currentProfile.Steps = sCollection.ToList();
+                StepCollection.Add(new MoveAlongPath());
+                currentProfile.Steps = StepCollection.ToList();
                 //System.Windows.MessageBox.Show(currentProfile.Steps.Length.ToString());
             }
             catch (Exception Ex)
@@ -137,7 +137,7 @@ namespace WholesomeDungeonCrawler.GUI
         private void btnNewProfile_Click(object sender, RoutedEventArgs e)
         {
             currentProfile = new Profile();
-            currentProfile.Steps = new List<Step>();
+            currentProfile.Steps = new List<StepModel>();
             Setup();
         }
 
@@ -200,7 +200,7 @@ namespace WholesomeDungeonCrawler.GUI
                         var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(step.Name));
                         var colour = System.Drawing.Color.FromArgb(hash[0], hash[1], hash[2]);
                         var previousVector = new Vector3();
-                        foreach (var vec in step.Path)
+                        foreach (var vec in ((MoveAlongPath)step).Path)
                         {
                             if (previousVector == new Vector3())
                             {

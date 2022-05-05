@@ -8,12 +8,17 @@ using System.Threading.Tasks;
 
 namespace WholesomeDungeonCrawler.Data.Model
 {
-    class StepModel
+    public class StepModel
     {
         [JsonProperty("$type")]
         public string Type { get;}
         public bool IsCompleted { get; set; }
-        public string Name { get;}
-        public object Order { get; }
+        public string Name { get; set; }
+        public object Order { get; set; }
+    }
+
+    class MoveAlongPath : StepModel
+    {
+        public List<Vector3> Path { get; set; }
     }
 }

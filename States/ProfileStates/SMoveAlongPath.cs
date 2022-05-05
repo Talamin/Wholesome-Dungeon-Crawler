@@ -40,24 +40,24 @@ namespace WholesomeDungeonCrawler.States.ProfileStates
         public override void Run()
         {
 
-            List<Vector3> Path = _profile.CurrentStep.Path;
+            //List<Vector3> Path = _profile.CurrentState .CurrentStep.Path;
 
-            if (_entityCache.Me.PositionWithoutType.DistanceTo(_profile.CurrentStep.Path.Last()) < 5f)
-            {
-                _profile.CurrentStep.IsCompleted = true;
-                _profile.ExecuteSteps();
-            }
+            //if (_entityCache.Me.PositionWithoutType.DistanceTo(_profile.CurrentStep.Path.Last()) < 5f)
+            //{
+            //    _profile.CurrentStep.IsCompleted = true;
+            //    _profile.ExecuteSteps();
+            //}
 
-            MovementManager.Go(WTPathFinder.PathFromClosestPoint(Path));
-            /*
-            if (!_movehelper.IsMovementThreadRunning || _movehelper.CurrentTarget.DistanceTo(_target) > 2)
-            {
-                //_movehelper.StartMoveAlongThread(PathFromClosestPoint(_path));
-            }
-            */
+            //MovementManager.Go(WTPathFinder.PathFromClosestPoint(Path));
+            ///*
+            //if (!_movehelper.IsMovementThreadRunning || _movehelper.CurrentTarget.DistanceTo(_target) > 2)
+            //{
+            //    //_movehelper.StartMoveAlongThread(PathFromClosestPoint(_path));
+            //}
+            //*/
 
-            _profile.CurrentStep.IsCompleted = false;
-            _profile.ExecuteSteps();
+            //_profile.CurrentStep.IsCompleted = false;
+            //_profile.ExecuteSteps();
         }
     }
 }
