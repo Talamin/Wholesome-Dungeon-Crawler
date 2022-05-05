@@ -17,8 +17,4 @@ namespace WholesomeDungeonCrawler.Data.Model
         public object Order { get; set; }
     }
 
-    class MoveAlongPath : StepModel
-    {
-        public List<Vector3> Path { get; set; }
-    }
 }

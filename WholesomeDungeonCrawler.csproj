@@ -85,6 +85,12 @@
     <Compile Include="Data\Model\DungeonModel.cs" />
     <Compile Include="Data\Model\ProfileModel.cs" />
     <Compile Include="Data\Model\StepModel.cs" />
+    <Compile Include="Data\Model\Stepmodel\ModelExecute.cs" />
+    <Compile Include="Data\Model\Stepmodel\ModelGoTo.cs" />
+    <Compile Include="Data\Model\Stepmodel\ModelInteractWith.cs" />
+    <Compile Include="Data\Model\Stepmodel\ModelMoveAlongPath.cs" />
+    <Compile Include="Data\Model\Stepmodel\ModelMoveToUnit.cs" />
+    <Compile Include="Data\Model\Stepmodel\ModelPickupObject.cs" />
     <Compile Include="Data\Target\CachedAura.cs" />
     <Compile Include="Data\Target\CachedWoWLocalPlayer.cs" />
     <Compile Include="Data\Target\CachedWoWPlayer.cs" />

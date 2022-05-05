@@ -6,7 +6,7 @@ using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Manager;
 
-namespace WholesomeDungeonCrawler.Dungeonlogic
+namespace WholesomeDungeonCrawler.Data.Model
 {
     class ProfileModel
     {

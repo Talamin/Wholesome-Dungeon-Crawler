@@ -26,6 +26,7 @@ using System.Security.Cryptography;
 using Newtonsoft.Json;
 using System.IO;
 using WholesomeDungeonCrawler.Data.Model;
+using WholesomeDungeonCrawler.Data.Model.Stepmodel;
 
 namespace WholesomeDungeonCrawler.GUI
 {
@@ -124,7 +125,7 @@ namespace WholesomeDungeonCrawler.GUI
                 };
                 var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
                 //System.Windows.MessageBox.Show(x);
-                StepCollection.Add(new MoveAlongPath());
+                StepCollection.Add(new ModelMoveAlongPath());
                 currentProfile.Steps = StepCollection.ToList();
                 //System.Windows.MessageBox.Show(currentProfile.Steps.Length.ToString());
             }
@@ -200,7 +201,7 @@ namespace WholesomeDungeonCrawler.GUI
                         var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(step.Name));
                         var colour = System.Drawing.Color.FromArgb(hash[0], hash[1], hash[2]);
                         var previousVector = new Vector3();
-                        foreach (var vec in ((MoveAlongPath)step).Path)
+                        foreach (var vec in ((ModelMoveAlongPath)step).Path)
                         {
                             if (previousVector == new Vector3())
                             {
