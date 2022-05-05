@@ -18,6 +18,7 @@ namespace WholesomeDungeonCrawler.Data
         double RagePercent { get; }
         double FocusPercent { get; }
         bool InCombatFlagOnly { get; }
+        Reaction Reaction { get; }
         UnitFlags UnitFlags { get; }
         bool IsAttackingGroup { get; }
         bool IsPartyMember { get; }

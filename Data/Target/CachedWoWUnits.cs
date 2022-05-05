@@ -19,6 +19,7 @@ namespace WholesomeDungeonCrawler.Data
         public double RagePercent { get; }
         public double FocusPercent { get; }
         public bool InCombatFlagOnly { get; }
+        public  Reaction Reaction { get; }
         public UnitFlags UnitFlags { get; }
         public IReadOnlyDictionary<uint, IAura> Auras { get; }
         public bool IsLootable { get; }
@@ -41,11 +42,13 @@ namespace WholesomeDungeonCrawler.Data
             RagePercent = unit.RagePercentage;
             FocusPercent = unit.FocusPercentage;
             InCombatFlagOnly = unit.InCombatFlagOnly;
+            Reaction = unit.Reaction;
             UnitFlags = unit.UnitFlags;
             IsLootable = unit.IsLootable;
             IsAttackingGroup = unit.IsTargetingPartyMember;
             IsPartyMember = unit.IsPartyMember;
             WoWClass = unit.WowClass;
+
             GetBaseAdress = unit.GetBaseAddress;
 
 

@@ -26,6 +26,7 @@ namespace WholesomeDungeonCrawler.Data
         public IWoWUnit[] EnemyUnitsTargetingPlayer { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsTargetingGroup { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsLootable { get; private set; } = new IWoWUnit[0];
+        public IWoWUnit[] HostileUnits { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] ListGroupMember { get; private set; } = new IWoWUnit[0];
         public IWoWUnit Me { get; private set; }
 
@@ -83,6 +84,7 @@ namespace WholesomeDungeonCrawler.Data
             var enemyUnitsTargetingPlayer = new List<IWoWUnit>(units.Count);
             var enemyUnitsLootable = new List<IWoWUnit>(units.Count);
             var enemyAttackingGroup = new List<IWoWUnit>(units.Count);
+            var hostileUnits = new List<IWoWUnit>(units.Count);
             var listGroupMember = new List<IWoWUnit>();
 
             var targetPosition = cachedTarget.PositionWithoutType;
@@ -130,6 +132,11 @@ namespace WholesomeDungeonCrawler.Data
                     enemyUnitsNearTarget.Add(cachedUnit);
                 }
 
+                if(unit.Reaction <= Reaction.Neutral && unit.PositionWithoutType.DistanceTo(playerPosition) <= 100)
+                {
+                    hostileUnits.Add(cachedUnit);
+                }
+
                 if (unit.IsTargetingPartyMember && Reachable(playerPosition, unitPosition, ref cachedReachable))
                 {
                     enemyAttackingGroup.Add(cachedUnit);
@@ -157,6 +164,7 @@ namespace WholesomeDungeonCrawler.Data
             EnemyUnitsTargetingPlayer = enemyUnitsTargetingPlayer.ToArray();
             EnemyUnitsLootable = enemyUnitsLootable.ToArray();
             EnemyAttackingGroup = enemyAttackingGroup.ToArray();
+            HostileUnits = hostileUnits.ToArray();
             ListGroupMember = listGroupMember.ToArray();
         }
 

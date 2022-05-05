@@ -50,7 +50,7 @@ namespace WholesomeDungeonCrawler.Bot
                 //_fsm.AddState(new SExecute(_cache, _entityCache, 20));
                 //_fsm.AddState(new SGoTo(_cache, _entityCache, 20));
                 //_fsm.AddState(new SInteractWith(_cache, _entityCache, _profile, 20));
-                _fsm.AddState(new SMoveAlongPath(_cache, _entityCache, _profile, 20));
+                //_fsm.AddState(new SMoveAlongPath(_cache, _entityCache, _profile, 20));
                 //_fsm.AddState(new SMoveToUnit(_cache, _entityCache, 20));
                 //_fsm.AddState(new SPickupObject(_cache, _entityCache, 20));
 
