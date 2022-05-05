@@ -13,10 +13,6 @@ namespace WholesomeDungeonCrawler.Data.Model
         [JsonProperty("$type")]
         public string Type { get;}
         public bool IsCompleted { get; }
-        public List<Vector3> Path { get; }
-        public double Randomization { get; }
-        public object Target { get; }
-        public bool OverrideNeedToRun { get;}
         public string Name { get;}
         public object Order { get; }
     }
