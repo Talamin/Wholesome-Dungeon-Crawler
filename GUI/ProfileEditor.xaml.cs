@@ -25,6 +25,7 @@ using wManager.Wow.Helpers;
 using System.Security.Cryptography;
 using Newtonsoft.Json;
 using System.IO;
+using WholesomeDungeonCrawler.Data.Model.Stepmodel;
 
 namespace WholesomeDungeonCrawler.GUI
 {
