@@ -36,13 +36,13 @@ namespace WholesomeDungeonCrawler.GUI
     public partial class ProfileEditor : INotifyPropertyChanged
     {
         public OpenFileDialog openFileDialog1;
-        private static Profile _currentProfile;
+        private static ProfileModel _currentProfile;
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<StepModel> StepCollection { get; set; }
         public ObservableCollection<Vector3> DeathRunCollection { get; set; }
         private JsonSerializerSettings jsonSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
 
-        private Profile currentProfile
+        private ProfileModel currentProfile
         {
             get { return _currentProfile; }
             set
@@ -57,18 +57,18 @@ namespace WholesomeDungeonCrawler.GUI
             InitializeComponent();
 
             this.DataContext = this;
-            currentProfile = new Profile();
-            currentProfile.Steps = new List<StepModel>();
+            currentProfile = new ProfileModel();
+            currentProfile.StepModels = new List<StepModel>();
 
             Setup();
         }
 
         private void Setup()
         {
-            //Debugger.Launch();
+            Debugger.Launch();
 
 
-            StepCollection = new ObservableCollection<StepModel>(currentProfile.Steps);
+            StepCollection = new ObservableCollection<StepModel>(currentProfile.StepModels);
             dgProfileSteps.ItemsSource = StepCollection;
 
 
@@ -125,8 +125,8 @@ namespace WholesomeDungeonCrawler.GUI
                 };
                 var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
                 //System.Windows.MessageBox.Show(x);
-                StepCollection.Add(new ModelMoveAlongPath());
-                currentProfile.Steps = StepCollection.ToList();
+                StepCollection.Add(new ModelMoveAlongPath() { Name = x, Order = StepCollection.Count, Type = "ModelMoveAlongPath", Path = new List<Vector3>() });
+                currentProfile.StepModels = StepCollection.ToList();
                 //System.Windows.MessageBox.Show(currentProfile.Steps.Length.ToString());
             }
             catch (Exception Ex)
@@ -137,8 +137,8 @@ namespace WholesomeDungeonCrawler.GUI
 
         private void btnNewProfile_Click(object sender, RoutedEventArgs e)
         {
-            currentProfile = new Profile();
-            currentProfile.Steps = new List<StepModel>();
+            currentProfile = new ProfileModel();
+            currentProfile.StepModels = new List<StepModel>();
             Setup();
         }
 
@@ -146,14 +146,14 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                Debugger.Launch();
-                if (currentProfile.Dungeon != null)
+                Debugger.Break();
+                if (currentProfile.DungeonModel != null)
                 {
-                    System.Windows.MessageBox.Show(currentProfile.Dungeon.Name);
+                    System.Windows.MessageBox.Show(currentProfile.DungeonModel.Name);
                     if (!string.IsNullOrWhiteSpace(currentProfile.Name))
                     {
-                        var rootpath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{currentProfile.Dungeon.Name}");
-                        currentProfile.Steps = currentProfile.Steps.OrderBy(x => x.Order).ToList();
+                        var rootpath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{currentProfile.DungeonModel.Name}");
+                        currentProfile.StepModels = currentProfile.StepModels.OrderBy(x => x.Order).ToList();
 
                         var output = JsonConvert.SerializeObject(currentProfile, Formatting.Indented, jsonSettings);
                         var path = $@"{rootpath.FullName}/{currentProfile.Name}.json";
@@ -196,7 +196,7 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 if (Conditions.InGameAndConnected)
                 {
-                    foreach (var step in currentProfile.Steps.Where(x => x.Type == "MoveAlongPath"))
+                    foreach (var step in currentProfile.StepModels.Where(x => x.Type == "MoveAlongPath"))
                     {
                         var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(step.Name));
                         var colour = System.Drawing.Color.FromArgb(hash[0], hash[1], hash[2]);

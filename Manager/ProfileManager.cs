@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Dungeonlogic;
 using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.Helpers;
@@ -42,7 +43,7 @@ namespace WholesomeDungeonCrawler.Manager
 
         private void LoadProfile()
         {
-            Dungeon dungeon = CheckandChooseactualDungeon();
+            DungeonModel dungeon = CheckandChooseactualDungeon();
             if (dungeon != null)
             {
                 var profilePath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");
@@ -63,7 +64,7 @@ namespace WholesomeDungeonCrawler.Manager
             return;
         }
 
-        private Dungeon CheckandChooseactualDungeon()
+        private DungeonModel CheckandChooseactualDungeon()
         {
             if(CheckactualDungeonProfileInList())
             {

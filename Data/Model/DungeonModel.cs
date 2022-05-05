@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace WholesomeDungeonCrawler.Data.Model
 {
-    class DungeonModel
+    public class DungeonModel
     {
-        public string Name { get; }
-        public int MapId { get; }
-        public int DungeonId { get; }
-        public Vector3 Start { get; }
-        public Vector3 EntranceLoc  { get; }
-}
+        public string Name { get; set; }
+        public int MapId { get; set; }
+        public int DungeonId { get; set; }
+        public Vector3 Start { get; set; }
+        public Vector3 EntranceLoc { get; set; }
+    }
 }

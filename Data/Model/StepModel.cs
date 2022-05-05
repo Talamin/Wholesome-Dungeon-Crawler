@@ -11,10 +11,12 @@ namespace WholesomeDungeonCrawler.Data.Model
     public class StepModel
     {
         [JsonProperty("$type")]
-        public string Type { get;}
+        public string Type { get; set; }
         public bool IsCompleted { get; set; }
         public string Name { get; set; }
-        public object Order { get; set; }
+        public int Order { get; set; }
     }
+
+
 
 }

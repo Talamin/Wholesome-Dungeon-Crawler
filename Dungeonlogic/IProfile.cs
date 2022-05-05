@@ -16,7 +16,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
         public object Start { get; }
         public Vector3 EntranceLoc { get; }
         public List<StepModel> Steps { get; }
-        public Dungeon Dungeon { get; }
+        public DungeonModel Dungeon { get; }
         public string Name { get; }
         public string CurrentState { get; }
         public bool OverrideNeedToRun { get; }

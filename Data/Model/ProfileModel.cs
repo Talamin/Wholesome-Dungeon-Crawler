@@ -8,11 +8,11 @@ using WholesomeDungeonCrawler.Manager;
 
 namespace WholesomeDungeonCrawler.Data.Model
 {
-    class ProfileModel
+    public class ProfileModel
     {
-        public List<StepModel> StepModels { get;}
-        public DungeonModel DungeonModel { get; }
-        public string Name { get;  }
+        public List<StepModel> StepModels { get; set; }
+        public DungeonModel DungeonModel { get; set; }
+        public string Name { get; set; }
         public string CurrentState { get; }
         public bool OverrideNeedToRun { get; }
     }
