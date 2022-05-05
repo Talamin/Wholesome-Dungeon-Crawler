@@ -10,6 +10,9 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
 {
     class Profile : IProfile
     {
+
+        private ProfileModel profile { get; }
+
         public int MapId { get; private set; }
         public int DungeonId { get; private set; }
         public object Start { get; private set; }
@@ -20,7 +23,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
         public string CurrentState { get; private set; }
         public bool OverrideNeedToRun { get; private set; }
         public string CurrentStepType { get; private set; }
-        public Step CurrentStep { get; private set; }
+        public StepModel CurrentStep { get; private set; }
         public ProfileModel CurrentProfile { get; private set; }
 
         private DungeonModel _dungeonmodel;
@@ -46,17 +49,17 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
 
         public void ExecuteSteps()
         {
-            var TotalSteps = Steps.Count();
+            var TotalSteps = profile.StepModels.Count();
             if (TotalSteps <= 0)
             {
                 Logger.Log("Profile is missing Profile Steps.");
                 return;
             }
-            var IncompleteSteps = Steps.Count(s => s.IsCompleted == false);
-            var CompletedSteps = Steps.Count(s => s.IsCompleted == true);
+            var IncompleteSteps = profile.StepModels.Count(s => s.IsCompleted == false);
+            var CompletedSteps = profile.StepModels.Count(s => s.IsCompleted == true);
             if (CurrentStep == null)
             {
-                CurrentStep = Steps[0];
+                CurrentStep = profile.StepModels[0];
             }
             if (!CurrentStep.IsCompleted)
             {
@@ -71,7 +74,7 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
                     return;
                 }
                 var actualstep = TotalSteps - IncompleteSteps + 1;
-                CurrentStep = Steps[actualstep];
+                CurrentStep = profile.StepModels[actualstep];
                 CurrentStep.IsCompleted = false;
                 CurrentStepType = CurrentStep.Type;
                 return;

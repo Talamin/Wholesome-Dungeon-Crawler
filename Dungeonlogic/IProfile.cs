@@ -21,7 +21,6 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
         public bool OverrideNeedToRun { get; }
 
         public string CurrentStepType { get; }
-        public Step CurrentStep { get; }
         public ProfileModel CurrentProfile { get; }
 
         public void ExecuteSteps();

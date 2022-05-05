@@ -12,7 +12,7 @@ namespace WholesomeDungeonCrawler.Data.Model
     {
         [JsonProperty("$type")]
         public string Type { get;}
-        public bool IsCompleted { get; }
+        public bool IsCompleted { get; set; }
         public string Name { get;}
         public object Order { get; }
     }
