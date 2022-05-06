@@ -147,6 +147,7 @@
     <Compile Include="States\ProfileStates\SMoveAlongPath.cs" />
     <Compile Include="States\ProfileStates\SMoveToUnit.cs" />
     <Compile Include="States\ProfileStates\SPickupObject.cs" />
+    <Compile Include="States\SlaveLogic.cs" />
     <Compile Include="States\Targeting.cs" />
   </ItemGroup>
   <ItemGroup>
