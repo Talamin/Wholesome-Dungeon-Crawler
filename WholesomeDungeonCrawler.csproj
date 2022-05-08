@@ -148,6 +148,26 @@
     <Compile Include="States\ProfileStates\SPickupObject.cs" />
     <Compile Include="States\SlaveLogic.cs" />
     <Compile Include="States\Targeting.cs" />
+    <Compile Include="Wholesome-Toolbox\WTCombat.cs" />
+    <Compile Include="Wholesome-Toolbox\WTEffects.cs" />
+    <Compile Include="Wholesome-Toolbox\WTFile.cs" />
+    <Compile Include="Wholesome-Toolbox\WTGear.cs" />
+    <Compile Include="Wholesome-Toolbox\WTGossip.cs" />
+    <Compile Include="Wholesome-Toolbox\WTItem.cs" />
+    <Compile Include="Wholesome-Toolbox\WTLocation.cs" />
+    <Compile Include="Wholesome-Toolbox\WTLogger.cs" />
+    <Compile Include="Wholesome-Toolbox\WTLua.cs" />
+    <Compile Include="Wholesome-Toolbox\WTPathFinder.cs" />
+    <Compile Include="Wholesome-Toolbox\WTPet.cs" />
+    <Compile Include="Wholesome-Toolbox\WTPlayer.cs" />
+    <Compile Include="Wholesome-Toolbox\WTQuestLog.cs" />
+    <Compile Include="Wholesome-Toolbox\WTSettings.cs" />
+    <Compile Include="Wholesome-Toolbox\WTSpace.cs" />
+    <Compile Include="Wholesome-Toolbox\WTState.cs" />
+    <Compile Include="Wholesome-Toolbox\WTTalent.cs" />
+    <Compile Include="Wholesome-Toolbox\WTTaxi.cs" />
+    <Compile Include="Wholesome-Toolbox\WTTransport.cs" />
+    <Compile Include="Wholesome-Toolbox\WTTravel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\Group\" />
@@ -155,6 +175,9 @@
   <ItemGroup>
     <Content Include="Dependencies\robotManager.dll" />
     <Content Include="Dependencies\wManager.dll" />
+    <Content Include="Wholesome-Toolbox\.gitignore" />
+    <Content Include="Wholesome-Toolbox\Wholesome_Toolbox.shproj.user" />
+    <Content Include="Wholesome-Toolbox\Wholesome_Toolbox.sln" />
     <Page Include="GUI\ProfileStep.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -174,7 +197,10 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <Import Project="Wholesome-Toolbox\Wholesome_Toolbox.projitems" Label="Shared" />
+  <ItemGroup>
+    <None Include="Wholesome-Toolbox\Wholesome_Toolbox.projitems" />
+    <None Include="Wholesome-Toolbox\Wholesome_Toolbox.shproj" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy /Y "$(TargetDir)$(ProjectName).dll" "D:\Programs\WRobot Wotlk\Products\$(ProjectName).dll"</PostBuildEvent>

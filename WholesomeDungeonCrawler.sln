@@ -1,17 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30523.141
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WholesomeDungeonCrawler", "WholesomeDungeonCrawler.csproj", "{007E1DBC-1FBE-43AA-A97E-D4F3B442C466}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Wholesome_Toolbox", "Wholesome-Toolbox\Wholesome_Toolbox.shproj", "{A9DE1156-9128-4F74-952C-0B2EEE692AE4}"
-EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Wholesome-Toolbox\Wholesome_Toolbox.projitems*{007e1dbc-1fbe-43aa-a97e-d4f3b442c466}*SharedItemsImports = 4
-		Wholesome-Toolbox\Wholesome_Toolbox.projitems*{a9de1156-9128-4f74-952c-0b2eee692ae4}*SharedItemsImports = 13
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
