@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using WholesomeDungeonCrawler.Data.Model;
-using WholesomeDungeonCrawler.Data.Model.Stepmodel;
 using wManager.Wow.ObjectManager;
 using Timer = System.Timers.Timer;
 
@@ -76,7 +75,7 @@ namespace WholesomeDungeonCrawler.GUI
             {
 
                 fpsCollection.Add(ObjectManager.Me.Position);
-                ((ModelMoveAlongPath)SelectedItem).Path = fpsCollection.ToList();
+                ((MoveAlongPath)SelectedItem.StepType).Path = fpsCollection.ToList();
             }
             catch (Exception ex)
             {
@@ -90,7 +89,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (dgFPS.SelectedItem != null)
             {
                 fpsCollection.Remove((Vector3)dgFPS.SelectedItem);
-                ((ModelMoveAlongPath)SelectedItem).Path = fpsCollection.ToList();
+                ((MoveAlongPath)SelectedItem.StepType).Path = fpsCollection.ToList();
             }
         }
 

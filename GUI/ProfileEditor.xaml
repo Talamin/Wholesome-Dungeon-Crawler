@@ -40,7 +40,7 @@
     <mah:MetroWindow.RightWindowCommands>
         <mah:WindowCommands>
             <Button x:Name="btnNewProfile" Content="New" Click="btnNewProfile_Click" />
-            <Button Content="Load" />
+            <Button x:Name="btnLoadProfile" Content="Load" Click="btnLoadProfile_Click" />
             <Button x:Name="btnSaveProfile" Content="Save" Click="btnSaveProfile_Click" />
             <Button x:Name="btnToggleOverlay" Content="Toggle Overlay" Click="btnToggleOverlay_Click" />
         </mah:WindowCommands>
@@ -52,7 +52,7 @@
         <StackPanel Margin="5">
             <StackPanel Orientation="Horizontal">
                 <StackPanel Margin="5" >
-                    <GroupBox Header="Profile Step Order" BorderBrush="{x:Null}">
+                    <GroupBox Header="Profile Details" BorderBrush="{x:Null}">
                         <GroupBox.Background>
                             <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
                                 <GradientStop Color="#FF34e89e" Offset="0"/>
@@ -68,7 +68,7 @@
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Order" Binding="{Binding Path=Order}" />
                                     <DataGridTextColumn Header="Step Name" Binding="{Binding Path=Name}" />
-                                    <DataGridTextColumn Header="Step Type" Binding="{Binding Path=StepType}" />
+                                    <DataGridTextColumn Header="Step Type" Binding="{Binding Path=StepType.StepTypeName}" />
                                 </DataGrid.Columns>
                             </DataGrid>
                             <StackPanel Orientation="Horizontal"  Margin="5">

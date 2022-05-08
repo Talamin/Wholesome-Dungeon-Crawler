@@ -26,7 +26,6 @@ using System.Security.Cryptography;
 using Newtonsoft.Json;
 using System.IO;
 using WholesomeDungeonCrawler.Data.Model;
-using WholesomeDungeonCrawler.Data.Model.Stepmodel;
 
 namespace WholesomeDungeonCrawler.GUI
 {
@@ -75,7 +74,7 @@ namespace WholesomeDungeonCrawler.GUI
 
             Lists.AllDungeons.Sort((a, b) => a.Name.CompareTo(b.Name));
             cbDungeon.ItemsSource = Lists.AllDungeons;
-            cbDungeon.SelectedValuePath = "DungeonId";
+            cbDungeon.SelectedValuePath = "MapId";
             cbDungeon.DisplayMemberPath = "Name";
 
             openFileDialog1 = new OpenFileDialog()
@@ -115,7 +114,8 @@ namespace WholesomeDungeonCrawler.GUI
                 };
                 var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
                 //System.Windows.MessageBox.Show(x);
-                StepCollection.Add(new ModelMoveAlongPath() { Name = x, Order = StepCollection.Count, StepType = "ModelMoveAlongPath", Path = new List<Vector3>() });
+                var pathStep = new StepModel() { Name = x, Order = StepCollection.Count, StepType = new MoveAlongPath() { Path = new List<Vector3>() } };
+                StepCollection.Add(pathStep);
                 currentProfile.StepModels = StepCollection.ToList();
                 //System.Windows.MessageBox.Show(currentProfile.Steps.Length.ToString());
             }
@@ -142,7 +142,7 @@ namespace WholesomeDungeonCrawler.GUI
                     //System.Windows.MessageBox.Show(currentProfile.DungeonModel.Name);
                     if (!string.IsNullOrWhiteSpace(currentProfile.Name))
                     {
-                        var dungeon = Lists.AllDungeons.FirstOrDefault(x=>x.DungeonId == currentProfile.MapId);
+                        var dungeon = Lists.AllDungeons.FirstOrDefault(x=>x.MapId == currentProfile.MapId);
                         if (dungeon != null)
                         {
                             var rootpath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");
@@ -190,12 +190,12 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 if (Conditions.InGameAndConnected)
                 {
-                    foreach (var step in currentProfile.StepModels.Where(x => x.StepType == "MoveAlongPath"))
+                    foreach (var step in currentProfile.StepModels.Where(x => x.StepType.GetType() == typeof(MoveAlongPath)))
                     {
                         var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(step.Name));
                         var colour = System.Drawing.Color.FromArgb(hash[0], hash[1], hash[2]);
                         var previousVector = new Vector3();
-                        foreach (var vec in ((ModelMoveAlongPath)step).Path)
+                        foreach (var vec in ((MoveAlongPath)step.StepType).Path)
                         {
                             if (previousVector == new Vector3())
                             {
@@ -249,6 +249,25 @@ namespace WholesomeDungeonCrawler.GUI
         {
             //System.Windows.MessageBox.Show($"{((Dungeon)cbDungeon.SelectedItem).DungeonId} {((Dungeon)cbDungeon.SelectedItem).Name}");
 
+        }
+
+        private void btnLoadProfile_Click(object sender, RoutedEventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    //Debugger.Launch();
+                    var filePath = openFileDialog1.FileName;
+                    currentProfile = JsonConvert.DeserializeObject<ProfileModel>(File.ReadAllText(filePath), jsonSettings);
+                    Setup();
+                }
+                catch (Exception ex)
+                {
+                    System.Windows.MessageBox.Show($"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}");
+                }
+            }
         }
     }
     public class VisibilityConverter : IValueConverter

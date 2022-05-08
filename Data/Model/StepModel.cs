@@ -10,10 +10,56 @@ namespace WholesomeDungeonCrawler.Data.Model
 {
     public class StepModel
     {       
-        public string StepType { get; set; }
+        public StepType StepType { get; set; }
         public bool IsCompleted { get; set; }
         public string Name { get; set; }
         public int Order { get; set; }
     }
+    public class StepType
+    {
+        public string StepTypeName => this.GetType().Name;
+    }
 
+    class Execute : StepType
+    {
+        public Action action { get; set; }
+        public bool CheckCompletion { get; set; }
+    }
+
+    class GoTo : StepType
+    {
+        public float _precision { get; set; }
+        public Vector3 _targetPosition { get; set; }
+    }
+
+    class MoveAlongPath : StepType
+    {
+        public List<Vector3> Path { get; set; }
+    }
+
+    class MoveToUnit : StepType
+    {
+        public Vector3 ExpectedPosition { get; set; }
+        public bool FindClosest { get; set; }
+        public bool SkipIfNotFound { get; set; }
+        public int UnitId { get; set; }
+        public bool Interactwithunit { get; set; }
+        public int Gossip { get; set; }
+    }
+
+    class PickupObject : StepType
+    {
+        public int ObjectId { get; set; }
+        public uint ItemId { get; set; }
+        public Vector3 ExpectedPosition { get; set; }
+        public bool FindClosest { get; set; }
+        public bool StrictPosition { get; set; }
+        public float InteractDistance { get; set; }
+    }
+
+    class InteractWith : StepType
+    {
+        public int ObjectId { get; set; }
+        public int ItemId { get; set; }
+    }
 }

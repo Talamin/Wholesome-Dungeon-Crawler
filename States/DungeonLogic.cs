@@ -44,7 +44,7 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-
+            //_profileManager.CurrentDungeonProfile.ExecuteSteps();
         }
     }
 }
