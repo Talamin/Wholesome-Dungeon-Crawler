@@ -18,7 +18,7 @@ namespace WholesomeDungeonCrawler.Manager
     {
         private object profileLock = new object();
 
-        public Profile dungeonProfile { get; private set; }
+        public Profile CurrentDungeonProfile { get; private set; }
 
         private readonly IEntityCache _entityCache;
 
@@ -52,12 +52,16 @@ namespace WholesomeDungeonCrawler.Manager
                 {
                     var files = profilePath.GetFiles();
                     var chosenFile = files[new Random().Next(0, files.Length)];
-                    var profile = chosenFile.FullName;                 
-                    dungeonProfile = new Profile();
-                    dungeonProfile = JsonConvert.DeserializeObject<Profile>(File.ReadAllText(profile), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
-                    //Profile.Initialize(dungeonProfile);
-                    Logger.Log($"Dungeon Profile loaded: {dungeonProfile.Name}.{Environment.NewLine} with the DungeonID { dungeonProfile.Dungeon.DungeonId}.{ Environment.NewLine} with at Total Steps { dungeonProfile.Steps.Count()}.{ Environment.NewLine}");
-                    //PathFinder.OffMeshConnections.AddRange(dungeonProfile.offMeshConnections); <-- in its current state, Profile doesn´t hold any Offmeshes
+                    Logger.Log($"Randomly selected {chosenFile.Name} from the {dungeon.Name} folder.");
+                    var profile = chosenFile.FullName;
+                    var deserializedProfile = JsonConvert.DeserializeObject<ProfileModel>(File.ReadAllText(profile), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+                    if (deserializedProfile.MapId == dungeon.MapId)
+                    {
+                        CurrentDungeonProfile = new Profile(deserializedProfile);
+                        Logger.Log($"Dungeon Profile loaded: {CurrentDungeonProfile.ProfileModel.Name}.{Environment.NewLine} with the MapID { CurrentDungeonProfile.ProfileModel.MapId}.{ Environment.NewLine} with at Total Steps { CurrentDungeonProfile.ProfileModel.StepModels.Count()}.{ Environment.NewLine}");
+                        //PathFinder.OffMeshConnections.AddRange(dungeonProfile.offMeshConnections); <-- in its current state, Profile doesn´t hold any Offmeshes
+                    } else
+                        Logger.Log($"Dungeon Profile not loaded: {deserializedProfile.Name}.{Environment.NewLine} with the DungeonID { deserializedProfile.MapId} did not match the dungeon id of your current dungeon {dungeon.Name}: {dungeon.MapId}.");
                 }
             }
             Logger.Log("No Profile found!");
@@ -66,9 +70,9 @@ namespace WholesomeDungeonCrawler.Manager
 
         private DungeonModel CheckandChooseactualDungeon()
         {
-            if(CheckactualDungeonProfileInList())
+            if (CheckactualDungeonProfileInList())
             {
-                if(Lists.AllDungeons.Count(d => d.MapId == Usefuls.ContinentId) > 1)
+                if (Lists.AllDungeons.Count(d => d.MapId == Usefuls.ContinentId) > 1)
                 {
                     return Lists.AllDungeons.Where(d => d.MapId == Usefuls.ContinentId).OrderBy(o => o.Start.DistanceTo(_entityCache.Me.PositionWithoutType)).FirstOrDefault();
                 }

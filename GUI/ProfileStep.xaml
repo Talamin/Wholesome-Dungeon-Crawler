@@ -31,7 +31,7 @@
                 </GroupBox.Background>
                 <StackPanel>
                     <TextBox x:Name="txtStepName" Controls:TextBoxHelper.Watermark="Step Name" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" 
-                             Text="{Binding SelectedItem.StepName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                             Text="{Binding SelectedItem.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
             </GroupBox>
             <StackPanel>
@@ -40,7 +40,7 @@
                         <Style TargetType="StackPanel">
                             <Setter Property="Visibility" Value="Collapsed"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem.StepType.StepTypeName}" Value="FollowPathStep">
+                                <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem.StepType}" Value="FollowPathStep">
                                     <Setter Property="Visibility" Value="Visible"/>
                                 </DataTrigger>
                             </Style.Triggers>
@@ -49,8 +49,8 @@
                     <GroupBox Header="Follow Path Step" BorderBrush="{x:Null}">
                         <GroupBox.Background>
                             <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
-                                <GradientStop Color="#FFFF7C00" Offset="0"/>
-                                <GradientStop Color="#FFFF0054" Offset="1"/>
+                                <GradientStop Color="#FF34e89e" Offset="0"/>
+                                <GradientStop Color="#FF0f3443" Offset="1"/>
                             </LinearGradientBrush>
                         </GroupBox.Background>
 
@@ -64,108 +64,7 @@
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
-                <StackPanel>
-                    <StackPanel.Style>
-                        <Style TargetType="StackPanel">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem.StepType.StepTypeName}" Value="InteractStep">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </StackPanel.Style>
-                    <GroupBox Header="Interact Step" BorderBrush="{x:Null}">
-                        <GroupBox.Background>
-                            <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
-                                <GradientStop Color="#FFFF7C00" Offset="0"/>
-                                <GradientStop Color="#FFFF0054" Offset="1"/>
-                            </LinearGradientBrush>
-                        </GroupBox.Background>
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal"  Margin="5">
-                                <Controls:NumericUpDown x:Name="txtInteractGO" Controls:TextBoxHelper.Watermark="GameObjectId" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.StepType.GameObjectId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                <Button x:Name="btnGetNearestGO" Content="Get Closest GameObject ID" Margin="5" />
-                            </StackPanel>
-                        </StackPanel>
-                    </GroupBox>
-                </StackPanel>
-                <StackPanel>
-                    <StackPanel.Style>
-                        <Style TargetType="StackPanel">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem.StepType.StepTypeName}" Value="RunCodeStep">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </StackPanel.Style>
-                    <GroupBox Header="RunCode Step" BorderBrush="{x:Null}">
-                        <GroupBox.Background>
-                            <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
-                                <GradientStop Color="#FFFF7C00" Offset="0"/>
-                                <GradientStop Color="#FFFF0054" Offset="1"/>
-                            </LinearGradientBrush>
-                        </GroupBox.Background>
-                        <StackPanel>
-                            <TextBox FontFamily="Consolas" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="C# Code" Text="{Binding SelectedItem.StepType.Code, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" AcceptsReturn="True" TextWrapping="Wrap" AcceptsTab="True" />
-                        </StackPanel>
-                    </GroupBox>
-                </StackPanel>
-                <StackPanel>
-                    <StackPanel.Style>
-                        <Style TargetType="StackPanel">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem.StepType.StepTypeName}" Value="GossipNpcStep">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </StackPanel.Style>
-                    <GroupBox Header="Gossip NPC Step" BorderBrush="{x:Null}">
-                        <GroupBox.Background>
-                            <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
-                                <GradientStop Color="#FFFF7C00" Offset="0"/>
-                                <GradientStop Color="#FFFF0054" Offset="1"/>
-                            </LinearGradientBrush>
-                        </GroupBox.Background>
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal"  Margin="5">
-                                <Controls:NumericUpDown x:Name="txtNpcEntry" Controls:TextBoxHelper.Watermark="NPC ID" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.StepType.NpcId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                <Button x:Name="btnGetTargetEntry" Content="Get Target NPC Id" Margin="5" />
-                            </StackPanel>
-                            <Controls:NumericUpDown Controls:TextBoxHelper.Watermark="Gossip Index" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.StepType.GossipIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        </StackPanel>
-                    </GroupBox>
-                </StackPanel>
-                <StackPanel>
-                    <StackPanel.Style>
-                        <Style TargetType="StackPanel">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem.StepType.StepTypeName}" Value="FollowNPCStep">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </StackPanel.Style>
-                    <GroupBox Header="Follow NPC Step" BorderBrush="{x:Null}">
-                        <GroupBox.Background>
-                            <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
-                                <GradientStop Color="#FFFF7C00" Offset="0"/>
-                                <GradientStop Color="#FFFF0054" Offset="1"/>
-                            </LinearGradientBrush>
-                        </GroupBox.Background>
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal"  Margin="5">
-                                <Controls:NumericUpDown x:Name="txtFollowTargetEntry"  Controls:TextBoxHelper.Watermark="NPC ID" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.StepType.NpcId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                <Button x:Name="btnGetFollowTargetEntry" Content="Get Target NPC Id" Margin="5" />
-                            </StackPanel>
-                        </StackPanel>
-                    </GroupBox>
-                </StackPanel>
+                
             </StackPanel>
         </StackPanel>
     </Grid>

@@ -5,7 +5,6 @@ using WholesomeDungeonCrawler.Dungeonlogic;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Manager;
 using WholesomeDungeonCrawler.States;
-using WholesomeDungeonCrawler.States.ProfileStates;
 using wManager.Wow.Bot.States;
 using wManager.Wow.Helpers;
 

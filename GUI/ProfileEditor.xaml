@@ -61,14 +61,14 @@
                         </GroupBox.Background>
                         <StackPanel>
                             <TextBox x:Name="txtProfileName" mah:TextBoxHelper.Watermark="Profile Name" mah:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding currentProfile.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <ComboBox x:Name="cbDungeon" Margin="5" mah:TextBoxHelper.UseFloatingWatermark="True" SelectedValue="{Binding currentProfile.DungeonModel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectionChanged="cbDungeon_SelectionChanged"
+                            <ComboBox x:Name="cbDungeon" Margin="5" mah:TextBoxHelper.UseFloatingWatermark="True" SelectedValue="{Binding currentProfile.MapId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectionChanged="cbDungeon_SelectionChanged"
                                       mah:TextBoxHelper.Watermark="Dungeon" />
 
                             <DataGrid x:Name="dgProfileSteps" Margin="5" AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="300">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Order" Binding="{Binding Path=Order}" />
                                     <DataGridTextColumn Header="Step Name" Binding="{Binding Path=Name}" />
-                                    <DataGridTextColumn Header="Step Type" Binding="{Binding Path=Type}" />
+                                    <DataGridTextColumn Header="Step Type" Binding="{Binding Path=StepType}" />
                                 </DataGrid.Columns>
                             </DataGrid>
                             <StackPanel Orientation="Horizontal"  Margin="5">

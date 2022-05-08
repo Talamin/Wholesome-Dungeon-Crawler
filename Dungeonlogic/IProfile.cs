@@ -11,22 +11,9 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
 {
     interface IProfile
     {
-        public int MapId { get; }
-        public int DungeonId { get; }
-        public object Start { get; }
-        public Vector3 EntranceLoc { get; }
-        public List<StepModel> Steps { get; }
-        public DungeonModel Dungeon { get; }
-        public string Name { get; }
-        public string CurrentState { get; }
-        public bool OverrideNeedToRun { get; }
+        ProfileModel ProfileModel { get; }
+        StepModel CurrentStep { get; }
+        void ExecuteSteps();
 
-        public string CurrentStepType { get; }
-        public ProfileModel CurrentProfile { get; }
-
-        public void ExecuteSteps();
-
-        public void Initialize(Profile profile);
-        public void Dispose();
     }
 }

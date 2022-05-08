@@ -11,31 +11,14 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
     class Profile : IProfile
     {
 
-        private ProfileModel profile { get; }
-
-        public int MapId { get; private set; }
-        public int DungeonId { get; private set; }
-        public object Start { get; private set; }
-        public Vector3 EntranceLoc { get; private set; }
-        public List<StepModel> Steps { get; set; }
-        public DungeonModel Dungeon { get; private set; }
-        public string Name { get; private set; }
-        public string CurrentState { get; private set; }
-        public bool OverrideNeedToRun { get; private set; }
-        public string CurrentStepType { get; private set; }
+        public ProfileModel ProfileModel { get; private set; }
         public StepModel CurrentStep { get; private set; }
-        public ProfileModel CurrentProfile { get; private set; }
 
 
 
-        public Profile()
+        public Profile(ProfileModel profileModel)
         {
-
-        }
-
-        public void Initialize(Profile profile)
-        {
-        
+            ProfileModel = profileModel;
         }
 
         public void Dispose()
@@ -44,23 +27,23 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
 
         public void ExecuteSteps()
         {
-            var TotalSteps = profile.StepModels.Count();
+            var TotalSteps = ProfileModel.StepModels.Count();
             if (TotalSteps <= 0)
             {
                 Logger.Log("Profile is missing Profile Steps.");
                 return;
             }
-            var IncompleteSteps = profile.StepModels.Count(s => s.IsCompleted == false);
-            var CompletedSteps = profile.StepModels.Count(s => s.IsCompleted == true);
+            var IncompleteSteps = ProfileModel.StepModels.Count(s => s.IsCompleted == false);
+            var CompletedSteps = ProfileModel.StepModels.Count(s => s.IsCompleted == true);
             if (CurrentStep == null)
             {
-                CurrentStep = profile.StepModels[0];
+                CurrentStep = ProfileModel.StepModels[0];
             }
-            if (!CurrentStep.IsCompleted)
-            {
-                CurrentStepType = CurrentStep.Type;
-                return;
-            }
+            //if (!CurrentStep.IsCompleted)
+            //{
+            //    CurrentStepType = CurrentStep.StepType;
+            //    return;
+            //}
             if (CurrentStep.IsCompleted)
             {
                 if (CompletedSteps == TotalSteps)
@@ -69,9 +52,9 @@ namespace WholesomeDungeonCrawler.Dungeonlogic
                     return;
                 }
                 var actualstep = TotalSteps - IncompleteSteps + 1;
-                CurrentStep = profile.StepModels[actualstep];
+                CurrentStep = ProfileModel.StepModels[actualstep];
                 CurrentStep.IsCompleted = false;
-                CurrentStepType = CurrentStep.Type;
+                //CurrentStepType = CurrentStep.StepType;
                 return;
             }
         }

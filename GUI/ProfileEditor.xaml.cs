@@ -42,7 +42,7 @@ namespace WholesomeDungeonCrawler.GUI
         public ObservableCollection<Vector3> DeathRunCollection { get; set; }
         private JsonSerializerSettings jsonSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
 
-        private ProfileModel currentProfile
+        public ProfileModel currentProfile
         {
             get { return _currentProfile; }
             set
@@ -54,18 +54,19 @@ namespace WholesomeDungeonCrawler.GUI
 
         public ProfileEditor()
         {
-            InitializeComponent();
+            
 
             this.DataContext = this;
             currentProfile = new ProfileModel();
             currentProfile.StepModels = new List<StepModel>();
-
+            InitializeComponent();
             Setup();
+            
         }
 
         private void Setup()
         {
-            Debugger.Launch();
+            //Debugger.Launch();
 
 
             StepCollection = new ObservableCollection<StepModel>(currentProfile.StepModels);
@@ -74,7 +75,7 @@ namespace WholesomeDungeonCrawler.GUI
 
             Lists.AllDungeons.Sort((a, b) => a.Name.CompareTo(b.Name));
             cbDungeon.ItemsSource = Lists.AllDungeons;
-            //cbDungeon.SelectedValuePath = "Name";
+            cbDungeon.SelectedValuePath = "DungeonId";
             cbDungeon.DisplayMemberPath = "Name";
 
             openFileDialog1 = new OpenFileDialog()
@@ -98,17 +99,6 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 addButton.ContextMenu.IsOpen = true;
             }
-            //Debugger.Launch();
-            //var metroDialogSettings = new MetroDialogSettings()
-            //{
-            //    AffirmativeButtonText = "Add",
-            //    NegativeButtonText = "Cancel",
-            //    AnimateHide = true,
-            //    AnimateShow = true,
-            //    ColorScheme = MetroDialogColorScheme.Theme
-            //};
-            //var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
-            //_currentProfile.Steps.Add(new MoveAlongPath(new List<Vector3>(),x));
         }
 
         private async void miMoveAlongPathStep_Click(object sender, RoutedEventArgs e)
@@ -125,7 +115,7 @@ namespace WholesomeDungeonCrawler.GUI
                 };
                 var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
                 //System.Windows.MessageBox.Show(x);
-                StepCollection.Add(new ModelMoveAlongPath() { Name = x, Order = StepCollection.Count, Type = "ModelMoveAlongPath", Path = new List<Vector3>() });
+                StepCollection.Add(new ModelMoveAlongPath() { Name = x, Order = StepCollection.Count, StepType = "ModelMoveAlongPath", Path = new List<Vector3>() });
                 currentProfile.StepModels = StepCollection.ToList();
                 //System.Windows.MessageBox.Show(currentProfile.Steps.Length.ToString());
             }
@@ -147,19 +137,23 @@ namespace WholesomeDungeonCrawler.GUI
             try
             {
                 Debugger.Break();
-                if (currentProfile.DungeonModel != null)
+                if (currentProfile.MapId >0)
                 {
-                    System.Windows.MessageBox.Show(currentProfile.DungeonModel.Name);
+                    //System.Windows.MessageBox.Show(currentProfile.DungeonModel.Name);
                     if (!string.IsNullOrWhiteSpace(currentProfile.Name))
                     {
-                        var rootpath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{currentProfile.DungeonModel.Name}");
-                        currentProfile.StepModels = currentProfile.StepModels.OrderBy(x => x.Order).ToList();
+                        var dungeon = Lists.AllDungeons.FirstOrDefault(x=>x.DungeonId == currentProfile.MapId);
+                        if (dungeon != null)
+                        {
+                            var rootpath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");
+                            currentProfile.StepModels = currentProfile.StepModels.OrderBy(x => x.Order).ToList();
 
-                        var output = JsonConvert.SerializeObject(currentProfile, Formatting.Indented, jsonSettings);
-                        var path = $@"{rootpath.FullName}/{currentProfile.Name}.json";
-                        File.WriteAllText(path, output);
-                        Setup();
-                        System.Windows.MessageBox.Show("Saved to " + path);
+                            var output = JsonConvert.SerializeObject(currentProfile, Formatting.Indented, jsonSettings);
+                            var path = $@"{rootpath.FullName}/{currentProfile.Name}.json";
+                            File.WriteAllText(path, output);
+                            Setup();
+                            System.Windows.MessageBox.Show("Saved to " + path);
+                        }
                     }
                 }
                 else System.Windows.MessageBox.Show("Dungeon is null");
@@ -196,7 +190,7 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 if (Conditions.InGameAndConnected)
                 {
-                    foreach (var step in currentProfile.StepModels.Where(x => x.Type == "MoveAlongPath"))
+                    foreach (var step in currentProfile.StepModels.Where(x => x.StepType == "MoveAlongPath"))
                     {
                         var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(step.Name));
                         var colour = System.Drawing.Color.FromArgb(hash[0], hash[1], hash[2]);
