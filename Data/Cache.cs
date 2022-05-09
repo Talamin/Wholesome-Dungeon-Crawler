@@ -14,7 +14,6 @@ namespace WholesomeDungeonCrawler.Data
 
         private object cacheLock = new object();
 
-
         public bool IsInInstance { get; private set; }
         public bool IsPartyInviteRequest { get; private set; }
         public bool HaveSatchel { get; private set; }
