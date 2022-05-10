@@ -1,25 +1,26 @@
-﻿//using System;
-//using WholesomeDungeonCrawler.Dungeonlogic;
+﻿using robotManager.Helpful;
+using System.Linq;
+using WholesomeDungeonCrawler.Data.Model;
+using WholesomeToolbox;
+using wManager.Wow.Bot.Tasks;
+using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
 
-//namespace WholesomeDungeonCrawler.Profiles.Steps
-//{
-//    // add an common interface for all Steps (they all have a Pulse() method)
-//    internal class ExecuteStep : Step
-//    {
-//        private readonly Action _action;
-//        private readonly Func<bool> _checkCompletion;
+namespace WholesomeDungeonCrawler.Profiles.Steps
+{
+    public class ExecuteStep : Step
+    {
+        private ExecuteModel _executeModel;
 
-//        public Execute(Action action, Func<bool> checkCompletion = null, string stepName = "Execute") : base(stepName)
-//        {
-//            _action = action;
-//            _checkCompletion = checkCompletion;
-//        }
+        public ExecuteStep(ExecuteModel executeModel)
+        {
+            _executeModel = executeModel;
+        }
 
-//        public override bool Pulse()
-//        {
-//            _action();
-//            IsCompleted = _checkCompletion?.Invoke() ?? true;
-//            return IsCompleted;
-//        }
-//    }
-//}
+        public override void Run()
+        {
+
+            
+        }
+    }
+}

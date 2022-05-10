@@ -1,5 +1,7 @@
 ﻿using robotManager.Helpful;
+using System;
 using System.Collections.Generic;
+using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Data.Model
 {
@@ -52,5 +54,10 @@ namespace WholesomeDungeonCrawler.Data.Model
     {
         public int ObjectId { get; set; }
         public Vector3 ExpectedPosition { get; set; }
+
+        public bool StrictPosition { get; set; }
+        public bool FindClosest { get; set; }
+
+        public Func<WoWGameObject, bool> isCompleted { get; set; }
     }
 }

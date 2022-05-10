@@ -20,10 +20,11 @@ namespace WholesomeDungeonCrawler.Profiles
                 {
                     _profileSteps.Add(new MoveAlongPathStep((MoveAlongPathModel)model));
                 }
-                //else if (model is InteractWithStep)
-                //{
-                //    // ...
-                //}
+                else if (model is GoToModel)
+                {
+                    _profileSteps.Add(new GoToStep((GoToModel)model));
+                }
+                //elseif...
             }
         }
 

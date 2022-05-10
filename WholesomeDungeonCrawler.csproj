@@ -145,7 +145,7 @@
     <Compile Include="Profiles\Steps\InteractWithStep.cs" />
     <Compile Include="Profiles\Steps\MoveAlongPathStep.cs" />
     <Compile Include="Profiles\Steps\MoveToUnitStep.cs" />
-    <Compile Include="Profiles\Steps\PickupObject.cs" />
+    <Compile Include="Profiles\Steps\PickupObjectStep.cs" />
     <Compile Include="Settings\Settings.cs" />
     <Compile Include="Bot\WholesomeDungeonCrawler.cs" />
     <Compile Include="Helpers\Logger.cs" />

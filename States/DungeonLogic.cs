@@ -24,7 +24,9 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (!Conditions.InGameAndConnected
                     || !_entityCache.Me.Valid
-                    || Fight.InFight)
+                    || Fight.InFight
+                    || _profileManager.CurrentDungeonProfile.CurrentStep == null
+                    || _profileManager.CurrentDungeonProfile.CurrentStep.IsCompleted)
                 {
                     return false;
                 }
@@ -35,12 +37,7 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            //switch (_profileManager.CurrentDungeonProfile.CurrentStep.StepType)
-            //{
-            //    case MoveAlongPath:
-            //        RunMove();
-            //        break;
-            //}
+            _profileManager.CurrentDungeonProfile.CurrentStep.Run();
         }
     }
 }
