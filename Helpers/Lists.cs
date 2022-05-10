@@ -1,7 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
 using WholesomeDungeonCrawler.Data.Model;
-using WholesomeDungeonCrawler.Dungeonlogic;
 
 namespace WholesomeDungeonCrawler.Helpers
 {

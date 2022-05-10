@@ -1,7 +1,6 @@
 ﻿using robotManager.FiniteStateMachine;
 using System;
 using WholesomeDungeonCrawler.Data;
-using WholesomeDungeonCrawler.Dungeonlogic;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Manager;
 using WholesomeDungeonCrawler.Profiles;

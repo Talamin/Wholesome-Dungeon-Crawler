@@ -46,6 +46,7 @@
     <Grid>
         <Grid.Resources>
             <local:VisibilityConverter x:Key="VisibilityConverter"/>
+            <local:TypeConverter x:Key="TypeConverter"/>
         </Grid.Resources>
         <StackPanel Margin="5">
             <StackPanel Orientation="Horizontal">
@@ -67,7 +68,7 @@
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Order" Binding="{Binding Order}" />
                                     <DataGridTextColumn Header="Step Name" Binding="{Binding Name}" />
-                                    <DataGridTextColumn Header="Step Type" Binding="{Binding StepType.StepTypeName}" />
+                                    <DataGridTextColumn Header="Step Type" Binding="{Binding Converter={StaticResource TypeConverter}}" />
                                 </DataGrid.Columns>
                             </DataGrid>
                             <StackPanel Orientation="Horizontal"  Margin="5">

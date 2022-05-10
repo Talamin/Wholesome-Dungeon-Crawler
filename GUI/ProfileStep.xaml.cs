@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using WholesomeDungeonCrawler.Data.Model;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
@@ -38,7 +39,6 @@ namespace WholesomeDungeonCrawler.GUI
         public ProfileStep()
         {
             InitializeComponent();
-            SelectedItem = new StepModel();
             this.DataContext = this;
             addVectorTimer = new Timer(200);
             addVectorTimer.Elapsed += AddVectorTimer_Elapsed;
@@ -58,7 +58,7 @@ namespace WholesomeDungeonCrawler.GUI
                         if (this.IsVisible && (bool)chkRecordPath.IsChecked && (fpsCollection.Count == 0 || fpsCollection.LastOrDefault().DistanceTo(ObjectManager.Me.Position) > 8))
                         {
                             fpsCollection.Add(ObjectManager.Me.Position);
-                            ((MoveAlongPathModel)SelectedItem.StepType).Path = fpsCollection.ToList();
+                            ((MoveAlongPathModel)SelectedItem).Path = fpsCollection.ToList();
                         }
                     });
                 }
@@ -78,7 +78,7 @@ namespace WholesomeDungeonCrawler.GUI
             {
 
                 fpsCollection.Add(ObjectManager.Me.Position);
-                ((MoveAlongPathModel)SelectedItem.StepType).Path = fpsCollection.ToList();
+                ((MoveAlongPathModel)SelectedItem).Path = fpsCollection.ToList();
             }
             catch (Exception ex)
             {
@@ -92,7 +92,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (dgFPS.SelectedItem != null)
             {
                 fpsCollection.Remove((Vector3)dgFPS.SelectedItem);
-                ((MoveAlongPathModel)SelectedItem.StepType).Path = fpsCollection.ToList();
+                ((MoveAlongPathModel)SelectedItem).Path = fpsCollection.ToList();
             }
         }
 
@@ -123,5 +123,5 @@ namespace WholesomeDungeonCrawler.GUI
             }
         }
         
-    }
+    }    
 }

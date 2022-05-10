@@ -13,7 +13,5 @@ namespace WholesomeDungeonCrawler.Data.Model
         public List<StepModel> StepModels { get; set; }
         public int MapId { get; set; }
         public string Name { get; set; }
-        public string CurrentState { get; }
-        public bool OverrideNeedToRun { get; }
     }
 }

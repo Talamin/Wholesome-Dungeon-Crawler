@@ -58,7 +58,7 @@ namespace WholesomeDungeonCrawler.Manager
                     if (deserializedProfile.MapId == dungeon.MapId)
                     {
                         CurrentDungeonProfile = new Profile(deserializedProfile);
-                        Logger.Log($"Dungeon Profile loaded: {CurrentDungeonProfile.ProfileModel.Name}.{Environment.NewLine} with the MapID { CurrentDungeonProfile.ProfileModel.MapId}.{ Environment.NewLine} with at Total Steps { CurrentDungeonProfile.ProfileModel.StepModels.Count()}.{ Environment.NewLine}");
+                        Logger.Log($"Dungeon Profile loaded: {deserializedProfile.Name}.{Environment.NewLine} with the MapID { deserializedProfile.MapId}.{ Environment.NewLine} with at Total Steps { deserializedProfile.StepModels.Count()}.{ Environment.NewLine}");
                         //PathFinder.OffMeshConnections.AddRange(dungeonProfile.offMeshConnections); <-- in its current state, Profile doesn´t hold any Offmeshes
                     } else
                         Logger.Log($"Dungeon Profile not loaded: {deserializedProfile.Name}.{Environment.NewLine} with the DungeonID { deserializedProfile.MapId} did not match the dungeon id of your current dungeon {dungeon.Name}: {dungeon.MapId}.");

@@ -16,7 +16,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using WholesomeDungeonCrawler.Helpers;
-using WholesomeDungeonCrawler.Dungeonlogic;
 using robotManager.Helpful;
 using System.Diagnostics;
 using System.Collections.ObjectModel;
@@ -155,9 +154,9 @@ namespace WholesomeDungeonCrawler.GUI
                     //    ((StepModel)dgProfileSteps.SelectedItem).Condition = new DungeonStepCondition();
                     psControl.SelectedItem = (StepModel)dgProfileSteps.SelectedItem;
 
-                    if (psControl.SelectedItem.StepType is MoveAlongPathModel)
+                    if (psControl.SelectedItem is MoveAlongPathModel)
                     {
-                        psControl.fpsCollection = new ObservableCollection<Vector3>(((MoveAlongPathModel)psControl.SelectedItem.StepType).Path);
+                        psControl.fpsCollection = new ObservableCollection<Vector3>(((MoveAlongPathModel)psControl.SelectedItem).Path);
                         psControl.dgFPS.ItemsSource = psControl.fpsCollection;
                     }
                 }
@@ -193,12 +192,12 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 if (Conditions.InGameAndConnected)
                 {
-                    foreach (var step in currentProfile.StepModels.Where(x => x.StepType is MoveAlongPathModel))
+                    foreach (var step in currentProfile.StepModels.Where(x => x is MoveAlongPathModel))
                     {
                         var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(step.Name));
                         var colour = System.Drawing.Color.FromArgb(hash[0], hash[1], hash[2]);
                         var previousVector = new Vector3();
-                        foreach (var vec in ((MoveAlongPathModel)step.StepType).Path)
+                        foreach (var vec in ((MoveAlongPathModel)step).Path)
                         {
                             if (previousVector == new Vector3())
                             {
@@ -289,7 +288,7 @@ namespace WholesomeDungeonCrawler.GUI
                 };
                 var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
                 //System.Windows.MessageBox.Show(x);
-                var pathStep = new StepModel() { Name = x, Order = StepCollection.Count, StepType = new MoveAlongPathModel() { Path = new List<Vector3>() } };
+                var pathStep = new MoveAlongPathModel() { Name = x, Order = StepCollection.Count, Path = new List<Vector3>() };
                 StepCollection.Add(pathStep);
                 currentProfile.StepModels = StepCollection.ToList();
                 //System.Windows.MessageBox.Show(currentProfile.Steps.Length.ToString());
@@ -313,7 +312,7 @@ namespace WholesomeDungeonCrawler.GUI
                     ColorScheme = MetroDialogColorScheme.Theme
                 };
                 var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
-                var Step = new StepModel() { Name = x, Order = StepCollection.Count, StepType = new InteractWithModel() { ExpectedPosition=new Vector3() } };
+                var Step = new InteractWithModel() { Name = x, Order = StepCollection.Count, ExpectedPosition=new Vector3()  };
                 StepCollection.Add(Step);
                 currentProfile.StepModels = StepCollection.ToList();
             }
@@ -336,7 +335,7 @@ namespace WholesomeDungeonCrawler.GUI
                     ColorScheme = MetroDialogColorScheme.Theme
                 };
                 var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
-                var Step = new StepModel() { Name = x, Order = StepCollection.Count, StepType = new GoToModel() { TargetPosition = new Vector3()  } };
+                var Step = new GoToModel() { Name = x, Order = StepCollection.Count,  TargetPosition = new Vector3()  };
                 StepCollection.Add(Step);
                 currentProfile.StepModels = StepCollection.ToList();
             }
@@ -359,7 +358,7 @@ namespace WholesomeDungeonCrawler.GUI
                     ColorScheme = MetroDialogColorScheme.Theme
                 };
                 var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
-                var Step = new StepModel() { Name = x, Order = StepCollection.Count, StepType = new ExecuteModel() };
+                var Step = new ExecuteModel() { Name = x, Order = StepCollection.Count };
                 StepCollection.Add(Step);
                 currentProfile.StepModels = StepCollection.ToList();
             }
@@ -382,7 +381,7 @@ namespace WholesomeDungeonCrawler.GUI
                     ColorScheme = MetroDialogColorScheme.Theme
                 };
                 var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
-                var Step = new StepModel() { Name = x, Order = StepCollection.Count, StepType = new MoveToUnitModel() { ExpectedPosition= new Vector3() } };
+                var Step = new MoveToUnitModel() { Name = x, Order = StepCollection.Count,  ExpectedPosition= new Vector3() };
                 StepCollection.Add(Step);
                 currentProfile.StepModels = StepCollection.ToList();
             }
@@ -405,7 +404,7 @@ namespace WholesomeDungeonCrawler.GUI
                     ColorScheme = MetroDialogColorScheme.Theme
                 };
                 var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
-                var Step = new StepModel() { Name = x, Order = StepCollection.Count, StepType = new PickupObjectModel() { ExpectedPosition = new Vector3()} };
+                var Step = new PickupObjectModel() { Name = x, Order = StepCollection.Count, ExpectedPosition = new Vector3() };
                 StepCollection.Add(Step);
                 currentProfile.StepModels = StepCollection.ToList();
             }
@@ -424,6 +423,22 @@ namespace WholesomeDungeonCrawler.GUI
                 return System.Windows.Visibility.Collapsed;
 
             return System.Windows.Visibility.Visible;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+
+    }
+    public class TypeConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value != null)
+                return value.GetType().Name;
+
+            return value;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
