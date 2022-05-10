@@ -8,7 +8,7 @@
 //using wManager.Wow.Helpers;
 //using wManager.Wow.ObjectManager;
 
-//namespace WholesomeDungeonCrawler.Profiles.Base
+//namespace WholesomeDungeonCrawler.Profiles.Steps
 //{
 //    internal class PickupObject : Step
 //    {

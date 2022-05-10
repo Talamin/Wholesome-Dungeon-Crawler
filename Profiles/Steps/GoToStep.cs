@@ -3,9 +3,9 @@
 //using wManager.Wow.Bot.Tasks;
 //using wManager.Wow.ObjectManager;
 
-//namespace WholesomeDungeonCrawler.Profiles.Base
+//namespace WholesomeDungeonCrawler.Profiles.Steps
 //{
-//    internal class GoTo : Step
+//    internal class GoToStep : Step
 //    {
 //        private readonly float _precision;
 //        private readonly float _randomizeEnd;

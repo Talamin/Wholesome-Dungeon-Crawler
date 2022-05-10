@@ -1,16 +1,5 @@
-﻿using Newtonsoft.Json;
-using robotManager.FiniteStateMachine;
-using robotManager.Helpful;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using robotManager.FiniteStateMachine;
 using WholesomeDungeonCrawler.Data;
-using WholesomeDungeonCrawler.Data.Model;
-using WholesomeDungeonCrawler.Dungeonlogic;
-using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Manager;
 using wManager.Wow.Helpers;
 
@@ -21,6 +10,7 @@ namespace WholesomeDungeonCrawler.States
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
+
         public DungeonLogic(ICache iCache, IEntityCache iEntityCache, IProfileManager profilemanager, int priority)
         {
             _cache = iCache;

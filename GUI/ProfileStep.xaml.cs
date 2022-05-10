@@ -58,7 +58,7 @@ namespace WholesomeDungeonCrawler.GUI
                         if (this.IsVisible && (bool)chkRecordPath.IsChecked && (fpsCollection.Count == 0 || fpsCollection.LastOrDefault().DistanceTo(ObjectManager.Me.Position) > 8))
                         {
                             fpsCollection.Add(ObjectManager.Me.Position);
-                            ((MoveAlongPath)SelectedItem.StepType).Path = fpsCollection.ToList();
+                            ((MoveAlongPathModel)SelectedItem.StepType).Path = fpsCollection.ToList();
                         }
                     });
                 }
@@ -78,7 +78,7 @@ namespace WholesomeDungeonCrawler.GUI
             {
 
                 fpsCollection.Add(ObjectManager.Me.Position);
-                ((MoveAlongPath)SelectedItem.StepType).Path = fpsCollection.ToList();
+                ((MoveAlongPathModel)SelectedItem.StepType).Path = fpsCollection.ToList();
             }
             catch (Exception ex)
             {
@@ -92,7 +92,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (dgFPS.SelectedItem != null)
             {
                 fpsCollection.Remove((Vector3)dgFPS.SelectedItem);
-                ((MoveAlongPath)SelectedItem.StepType).Path = fpsCollection.ToList();
+                ((MoveAlongPathModel)SelectedItem.StepType).Path = fpsCollection.ToList();
             }
         }
 

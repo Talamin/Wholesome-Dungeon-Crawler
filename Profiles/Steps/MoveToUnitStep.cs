@@ -9,9 +9,9 @@
 //using wManager.Wow.Helpers;
 //using wManager.Wow.ObjectManager;
 
-//namespace WholesomeDungeonCrawler.Profiles.Base
+//namespace WholesomeDungeonCrawler.Profiles.Steps
 //{
-//    internal class MoveToUnit : Step
+//    internal class MoveToUnitStep : Step
 //    {
 //        private readonly Vector3 _expectedPosition;
 //        private readonly bool _findClosest;

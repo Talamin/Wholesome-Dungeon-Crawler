@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Data;
-using WholesomeDungeonCrawler.Dungeonlogic;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Profiles;
 
 namespace WholesomeDungeonCrawler.Manager
 {

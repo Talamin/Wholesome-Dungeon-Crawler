@@ -122,8 +122,10 @@
     <Compile Include="Data\Target\IWoWLocalPlayer.cs" />
     <Compile Include="Data\Target\IWoWPlayer.cs" />
     <Compile Include="Data\Target\IWoWUnit.cs" />
-    <Compile Include="Dungeonlogic\IProfile.cs" />
-    <Compile Include="Dungeonlogic\Profile.cs" />
+    <Compile Include="Profiles\IProfile.cs" />
+    <Compile Include="Profiles\Steps\IStep.cs" />
+    <Compile Include="Profiles\Profile.cs" />
+    <Compile Include="Profiles\Steps\Step.cs" />
     <Compile Include="GUI\ProductSettingsControl.xaml.cs">
       <DependentUpon>ProductSettingsControl.xaml</DependentUpon>
     </Compile>
@@ -138,12 +140,12 @@
     <Compile Include="Helpers\MoveHelper.cs" />
     <Compile Include="Manager\IProfileManager.cs" />
     <Compile Include="Manager\ProfileManager.cs" />
-    <Compile Include="Profiles\Base\Execute.cs" />
-    <Compile Include="Profiles\Base\GoTo.cs" />
-    <Compile Include="Profiles\Base\InteractWith.cs" />
-    <Compile Include="Profiles\Base\MoveAlongPath.cs" />
-    <Compile Include="Profiles\Base\MoveToUnit.cs" />
-    <Compile Include="Profiles\Base\PickupObject.cs" />
+    <Compile Include="Profiles\Steps\ExecuteStep.cs" />
+    <Compile Include="Profiles\Steps\GoToStep.cs" />
+    <Compile Include="Profiles\Steps\InteractWithStep.cs" />
+    <Compile Include="Profiles\Steps\MoveAlongPathStep.cs" />
+    <Compile Include="Profiles\Steps\MoveToUnitStep.cs" />
+    <Compile Include="Profiles\Steps\PickupObject.cs" />
     <Compile Include="Settings\Settings.cs" />
     <Compile Include="Bot\WholesomeDungeonCrawler.cs" />
     <Compile Include="Helpers\Logger.cs" />
@@ -159,12 +161,6 @@
     <Compile Include="States\IState.cs" />
     <Compile Include="States\Loot.cs" />
     <Compile Include="States\OpenSatchel.cs" />
-    <Compile Include="States\ProfileStates\SExecute.cs" />
-    <Compile Include="States\ProfileStates\SGoTo.cs" />
-    <Compile Include="States\ProfileStates\SInteractWith.cs" />
-    <Compile Include="States\ProfileStates\SMoveAlongPath.cs" />
-    <Compile Include="States\ProfileStates\SMoveToUnit.cs" />
-    <Compile Include="States\ProfileStates\SPickupObject.cs" />
     <Compile Include="States\SlaveLogic.cs" />
     <Compile Include="States\Targeting.cs" />
     <Compile Include="Wholesome-Toolbox\WTCombat.cs" />
@@ -189,7 +185,7 @@
     <Compile Include="Wholesome-Toolbox\WTTravel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Data\Group\" />
+    <Folder Include="Dungeonlogic\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Dependencies\robotManager.dll" />

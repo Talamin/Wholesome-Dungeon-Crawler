@@ -1,10 +1,10 @@
 ﻿//using System;
 //using WholesomeDungeonCrawler.Dungeonlogic;
 
-//namespace WholesomeDungeonCrawler.Profiles.Base
+//namespace WholesomeDungeonCrawler.Profiles.Steps
 //{
 //    // add an common interface for all Steps (they all have a Pulse() method)
-//    internal class Execute : Step
+//    internal class ExecuteStep : Step
 //    {
 //        private readonly Action _action;
 //        private readonly Func<bool> _checkCompletion;

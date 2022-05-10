@@ -8,8 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Data.Model;
-using WholesomeDungeonCrawler.Dungeonlogic;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Profiles;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.Manager
