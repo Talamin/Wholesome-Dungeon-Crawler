@@ -53,14 +53,14 @@ namespace WholesomeDungeonCrawler.GUI
 
         public ProfileEditor()
         {
-            
+
 
             this.DataContext = this;
             currentProfile = new ProfileModel();
             currentProfile.StepModels = new List<StepModel>();
             InitializeComponent();
             Setup();
-            
+
         }
 
         private void Setup()
@@ -100,30 +100,7 @@ namespace WholesomeDungeonCrawler.GUI
             }
         }
 
-        private async void miMoveAlongPathStep_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var metroDialogSettings = new MetroDialogSettings()
-                {
-                    AffirmativeButtonText = "Add",
-                    NegativeButtonText = "Cancel",
-                    AnimateHide = true,
-                    AnimateShow = true,
-                    ColorScheme = MetroDialogColorScheme.Theme
-                };
-                var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
-                //System.Windows.MessageBox.Show(x);
-                var pathStep = new StepModel() { Name = x, Order = StepCollection.Count, StepType = new MoveAlongPath() { Path = new List<Vector3>() } };
-                StepCollection.Add(pathStep);
-                currentProfile.StepModels = StepCollection.ToList();
-                //System.Windows.MessageBox.Show(currentProfile.Steps.Length.ToString());
-            }
-            catch (Exception Ex)
-            {
-                System.Windows.MessageBox.Show(Ex.Message);
-            }
-        }
+        
 
         private void btnNewProfile_Click(object sender, RoutedEventArgs e)
         {
@@ -137,12 +114,12 @@ namespace WholesomeDungeonCrawler.GUI
             try
             {
                 Debugger.Break();
-                if (currentProfile.MapId >0)
+                if (currentProfile.MapId > 0)
                 {
                     //System.Windows.MessageBox.Show(currentProfile.DungeonModel.Name);
                     if (!string.IsNullOrWhiteSpace(currentProfile.Name))
                     {
-                        var dungeon = Lists.AllDungeons.FirstOrDefault(x=>x.MapId == currentProfile.MapId);
+                        var dungeon = Lists.AllDungeons.FirstOrDefault(x => x.MapId == currentProfile.MapId);
                         if (dungeon != null)
                         {
                             var rootpath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");
@@ -164,6 +141,32 @@ namespace WholesomeDungeonCrawler.GUI
                 System.Windows.MessageBox.Show($"Error message: {ex.Message}\n\n" +
                 $"Details:\n\n{ex.StackTrace}");
             }
+        }
+
+        private void dgProfileSteps_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (dgProfileSteps.SelectedItem != null)
+                {
+                    //psControl = new ProfileStep();
+                    //Debugger.Launch();
+                    //if (((StepModel)dgProfileSteps.SelectedItem).Condition == null)
+                    //    ((StepModel)dgProfileSteps.SelectedItem).Condition = new DungeonStepCondition();
+                    psControl.SelectedItem = (StepModel)dgProfileSteps.SelectedItem;
+
+                    if (psControl.SelectedItem.StepType is MoveAlongPath)
+                    {
+                        psControl.fpsCollection = new ObservableCollection<Vector3>(((MoveAlongPath)psControl.SelectedItem.StepType).Path);
+                        psControl.dgFPS.ItemsSource = psControl.fpsCollection;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message);
+            }
+
         }
 
         private MD5 md5;
@@ -190,7 +193,7 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 if (Conditions.InGameAndConnected)
                 {
-                    foreach (var step in currentProfile.StepModels.Where(x => x.StepType.GetType() == typeof(MoveAlongPath)))
+                    foreach (var step in currentProfile.StepModels.Where(x => x.StepType is MoveAlongPath))
                     {
                         var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(step.Name));
                         var colour = System.Drawing.Color.FromArgb(hash[0], hash[1], hash[2]);
@@ -207,6 +210,7 @@ namespace WholesomeDungeonCrawler.GUI
                         }
                     }
 
+                    
 
                     //var deadcolour = System.Drawing.Color.Red;
                     //var deadpreviousVector = new Vector3();
@@ -269,6 +273,148 @@ namespace WholesomeDungeonCrawler.GUI
                 }
             }
         }
+
+        #region Add Steps
+        private async void miMoveAlongPathStep_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var metroDialogSettings = new MetroDialogSettings()
+                {
+                    AffirmativeButtonText = "Add",
+                    NegativeButtonText = "Cancel",
+                    AnimateHide = true,
+                    AnimateShow = true,
+                    ColorScheme = MetroDialogColorScheme.Theme
+                };
+                var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
+                //System.Windows.MessageBox.Show(x);
+                var pathStep = new StepModel() { Name = x, Order = StepCollection.Count, StepType = new MoveAlongPath() { Path = new List<Vector3>() } };
+                StepCollection.Add(pathStep);
+                currentProfile.StepModels = StepCollection.ToList();
+                //System.Windows.MessageBox.Show(currentProfile.Steps.Length.ToString());
+            }
+            catch (Exception Ex)
+            {
+                System.Windows.MessageBox.Show(Ex.Message);
+            }
+        }
+
+        private async void miInteractWithStep_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var metroDialogSettings = new MetroDialogSettings()
+                {
+                    AffirmativeButtonText = "Add",
+                    NegativeButtonText = "Cancel",
+                    AnimateHide = true,
+                    AnimateShow = true,
+                    ColorScheme = MetroDialogColorScheme.Theme
+                };
+                var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
+                var Step = new StepModel() { Name = x, Order = StepCollection.Count, StepType = new InteractWith() { ExpectedPosition=new Vector3() } };
+                StepCollection.Add(Step);
+                currentProfile.StepModels = StepCollection.ToList();
+            }
+            catch (Exception Ex)
+            {
+                System.Windows.MessageBox.Show(Ex.Message);
+            }
+        }
+
+        private async void miGoToStep_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var metroDialogSettings = new MetroDialogSettings()
+                {
+                    AffirmativeButtonText = "Add",
+                    NegativeButtonText = "Cancel",
+                    AnimateHide = true,
+                    AnimateShow = true,
+                    ColorScheme = MetroDialogColorScheme.Theme
+                };
+                var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
+                var Step = new StepModel() { Name = x, Order = StepCollection.Count, StepType = new GoTo() { TargetPosition = new Vector3()  } };
+                StepCollection.Add(Step);
+                currentProfile.StepModels = StepCollection.ToList();
+            }
+            catch (Exception Ex)
+            {
+                System.Windows.MessageBox.Show(Ex.Message);
+            }
+        }
+
+        private async void miExecuteStep_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var metroDialogSettings = new MetroDialogSettings()
+                {
+                    AffirmativeButtonText = "Add",
+                    NegativeButtonText = "Cancel",
+                    AnimateHide = true,
+                    AnimateShow = true,
+                    ColorScheme = MetroDialogColorScheme.Theme
+                };
+                var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
+                var Step = new StepModel() { Name = x, Order = StepCollection.Count, StepType = new Execute() };
+                StepCollection.Add(Step);
+                currentProfile.StepModels = StepCollection.ToList();
+            }
+            catch (Exception Ex)
+            {
+                System.Windows.MessageBox.Show(Ex.Message);
+            }
+        }
+
+        private async void miMoveToUnitStep_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var metroDialogSettings = new MetroDialogSettings()
+                {
+                    AffirmativeButtonText = "Add",
+                    NegativeButtonText = "Cancel",
+                    AnimateHide = true,
+                    AnimateShow = true,
+                    ColorScheme = MetroDialogColorScheme.Theme
+                };
+                var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
+                var Step = new StepModel() { Name = x, Order = StepCollection.Count, StepType = new MoveToUnit() { ExpectedPosition= new Vector3() } };
+                StepCollection.Add(Step);
+                currentProfile.StepModels = StepCollection.ToList();
+            }
+            catch (Exception Ex)
+            {
+                System.Windows.MessageBox.Show(Ex.Message);
+            }
+        }
+
+        private async void miPickupObjectStep_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var metroDialogSettings = new MetroDialogSettings()
+                {
+                    AffirmativeButtonText = "Add",
+                    NegativeButtonText = "Cancel",
+                    AnimateHide = true,
+                    AnimateShow = true,
+                    ColorScheme = MetroDialogColorScheme.Theme
+                };
+                var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
+                var Step = new StepModel() { Name = x, Order = StepCollection.Count, StepType = new PickupObject() { ExpectedPosition = new Vector3()} };
+                StepCollection.Add(Step);
+                currentProfile.StepModels = StepCollection.ToList();
+            }
+            catch (Exception Ex)
+            {
+                System.Windows.MessageBox.Show(Ex.Message);
+            }
+        }
+        #endregion
     }
     public class VisibilityConverter : IValueConverter
     {

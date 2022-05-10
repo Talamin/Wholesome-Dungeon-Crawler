@@ -40,13 +40,13 @@
                         <Style TargetType="StackPanel">
                             <Setter Property="Visibility" Value="Collapsed"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem.StepType}" Value="FollowPathStep">
+                                <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem.StepType.StepTypeName}" Value="MoveAlongPath">
                                     <Setter Property="Visibility" Value="Visible"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </StackPanel.Style>
-                    <GroupBox Header="Follow Path Step" BorderBrush="{x:Null}">
+                    <GroupBox Header="MoveAlongPath Step" BorderBrush="{x:Null}">
                         <GroupBox.Background>
                             <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
                                 <GradientStop Color="#FF34e89e" Offset="0"/>
@@ -55,16 +55,77 @@
                         </GroupBox.Background>
 
                         <StackPanel>
-                            <DataGrid x:Name="dgFPS" Margin="5" CanUserAddRows="False" IsReadOnly="True" MaxHeight="300"/>
+                            <DataGrid x:Name="dgFPS" Margin="5" CanUserAddRows="False" IsReadOnly="True" MaxHeight="150"/>
                             <StackPanel Orientation="Horizontal"  Margin="5">
                                 <Button x:Name="btnAddVector" Content="Add" Margin="0 5 5 5" Click="btnAddVector_Click"/>
                                 <Button x:Name="btnDeleteVector" Content="Delete" Margin="0 5 5 5" Click="btnDeleteVector_Click"/>
-                                <Controls:ToggleSwitch x:Name="chkRecordPath" OnLabel="Record Path" OffLabel="Record Path" IsChecked="False"/>
+                                <Controls:ToggleSwitch x:Name="chkRecordPath" OnLabel="Record Path" OffLabel="Record Path" IsChecked="False" />
                             </StackPanel>
                         </StackPanel>
+                        
                     </GroupBox>
                 </StackPanel>
-                
+
+            </StackPanel>
+            <StackPanel>
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem.StepType.StepTypeName}" Value="InteractWith">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <GroupBox Header="InteractWith Step" BorderBrush="{x:Null}">
+                    <GroupBox.Background>
+                        <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                            <GradientStop Color="#FF34e89e" Offset="0"/>
+                            <GradientStop Color="#FF0f3443" Offset="1"/>
+                        </LinearGradientBrush>
+                    </GroupBox.Background>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal"  Margin="5">
+                            <Controls:NumericUpDown x:Name="txtInteractO" Controls:TextBoxHelper.Watermark="ObjectId" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.StepType.ObjectId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button x:Name="btnGetNearestGO" Content="Nearest Object ID" Margin="5" Click="btnGetNearestGO_Click"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal"  Margin="5">
+                            <TextBox x:Name="txtInteractPos" Controls:TextBoxHelper.Watermark="Object Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.StepType.ExpectedPosition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>
+                            <Button x:Name="btnGetNearestGOPos" Content="Nearest Object Position" Margin="5" Click="btnGetNearestGOPos_Click"/>
+                        </StackPanel> 
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+            <StackPanel>
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem.StepType.StepTypeName}" Value="GoTo">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <GroupBox Header="GoTo Step" BorderBrush="{x:Null}">
+                    <GroupBox.Background>
+                        <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                            <GradientStop Color="#FF34e89e" Offset="0"/>
+                            <GradientStop Color="#FF0f3443" Offset="1"/>
+                        </LinearGradientBrush>
+                    </GroupBox.Background>
+                    <StackPanel>
+                        
+                        <StackPanel Orientation="Horizontal"  Margin="5">
+                            <TextBox x:Name="txtGoToTargetPos" Controls:TextBoxHelper.Watermark="GoTo Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.StepType.TargetPosition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>
+                            <Button x:Name="btnGotoGetCurrentPos" Content="Get Current Position" Margin="5" Click="btnGotoGetCurrentPos_Click" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal"  Margin="5">
+                            <Controls:NumericUpDown x:Name="txtGoToPrecision" Controls:TextBoxHelper.Watermark="Precision" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.StepType.Precision, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
             </StackPanel>
         </StackPanel>
     </Grid>

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Dungeonlogic;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Manager;
@@ -44,7 +45,12 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            //_profileManager.CurrentDungeonProfile.ExecuteSteps();
+            //switch (_profileManager.CurrentDungeonProfile.CurrentStep.StepType)
+            //{
+            //    case MoveAlongPath:
+            //        RunMove();
+            //        break;
+            //}
         }
     }
 }

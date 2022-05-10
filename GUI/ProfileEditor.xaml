@@ -1,15 +1,13 @@
-﻿<mah:MetroWindow x:Class="WholesomeDungeonCrawler.GUI.ProfileEditor"
+﻿<Controls:MetroWindow x:Class="WholesomeDungeonCrawler.GUI.ProfileEditor"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:WholesomeDungeonCrawler.GUI"
-             xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+             xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              mc:Ignorable="d" 
-             MaxWidth="500" MaxHeight="600"
-                 Background="#FF252525"
-                 MinWidth="250"
-                 MinHeight="100"
+             MaxWidth="500" 
+                 Background="#FF252525"                 
                  GlowBrush="Black"
                  BorderThickness="0" 
                  ResizeMode="NoResize"
@@ -18,10 +16,10 @@
                  TitleCaps="False"
                  FontFamily="Trebuchet MS"
              Title="Profile Editor" SizeToContent="WidthAndHeight">
-    <mah:MetroWindow.Resources>
+    <Controls:MetroWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <!-- MahApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
+                <!-- ControlsApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
@@ -30,21 +28,21 @@
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-    </mah:MetroWindow.Resources>
-    <mah:MetroWindow.WindowTitleBrush>
+    </Controls:MetroWindow.Resources>
+    <Controls:MetroWindow.WindowTitleBrush>
         <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
             <GradientStop Color="#FF34e89e" Offset="0"/>
             <GradientStop Color="#FF0f3443" Offset="1"/>
         </LinearGradientBrush>
-    </mah:MetroWindow.WindowTitleBrush>
-    <mah:MetroWindow.RightWindowCommands>
-        <mah:WindowCommands>
+    </Controls:MetroWindow.WindowTitleBrush>
+    <Controls:MetroWindow.RightWindowCommands>
+        <Controls:WindowCommands>
             <Button x:Name="btnNewProfile" Content="New" Click="btnNewProfile_Click" />
             <Button x:Name="btnLoadProfile" Content="Load" Click="btnLoadProfile_Click" />
             <Button x:Name="btnSaveProfile" Content="Save" Click="btnSaveProfile_Click" />
             <Button x:Name="btnToggleOverlay" Content="Toggle Overlay" Click="btnToggleOverlay_Click" />
-        </mah:WindowCommands>
-    </mah:MetroWindow.RightWindowCommands>
+        </Controls:WindowCommands>
+    </Controls:MetroWindow.RightWindowCommands>
     <Grid>
         <Grid.Resources>
             <local:VisibilityConverter x:Key="VisibilityConverter"/>
@@ -52,6 +50,7 @@
         <StackPanel Margin="5">
             <StackPanel Orientation="Horizontal">
                 <StackPanel Margin="5" >
+
                     <GroupBox Header="Profile Details" BorderBrush="{x:Null}">
                         <GroupBox.Background>
                             <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
@@ -60,15 +59,15 @@
                             </LinearGradientBrush>
                         </GroupBox.Background>
                         <StackPanel>
-                            <TextBox x:Name="txtProfileName" mah:TextBoxHelper.Watermark="Profile Name" mah:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding currentProfile.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <ComboBox x:Name="cbDungeon" Margin="5" mah:TextBoxHelper.UseFloatingWatermark="True" SelectedValue="{Binding currentProfile.MapId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectionChanged="cbDungeon_SelectionChanged"
-                                      mah:TextBoxHelper.Watermark="Dungeon" />
+                            <TextBox x:Name="txtProfileName" Controls:TextBoxHelper.Watermark="Profile Name" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding currentProfile.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <ComboBox x:Name="cbDungeon" Margin="5" Controls:TextBoxHelper.UseFloatingWatermark="True" SelectedValue="{Binding currentProfile.MapId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectionChanged="cbDungeon_SelectionChanged"
+                                      Controls:TextBoxHelper.Watermark="Dungeon" />
 
-                            <DataGrid x:Name="dgProfileSteps" Margin="5" AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="300">
+                            <DataGrid x:Name="dgProfileSteps" Margin="5" AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="150" SelectionChanged="dgProfileSteps_SelectionChanged">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Order" Binding="{Binding Path=Order}" />
-                                    <DataGridTextColumn Header="Step Name" Binding="{Binding Path=Name}" />
-                                    <DataGridTextColumn Header="Step Type" Binding="{Binding Path=StepType.StepTypeName}" />
+                                    <DataGridTextColumn Header="Order" Binding="{Binding Order}" />
+                                    <DataGridTextColumn Header="Step Name" Binding="{Binding Name}" />
+                                    <DataGridTextColumn Header="Step Type" Binding="{Binding StepType.StepTypeName}" />
                                 </DataGrid.Columns>
                             </DataGrid>
                             <StackPanel Orientation="Horizontal"  Margin="5">
@@ -76,11 +75,11 @@
                                     <Button.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem x:Name="miMoveAlongPathStep" Header="MoveAlongPathStep" Click="miMoveAlongPathStep_Click" />
-                                            <MenuItem x:Name="miInteractWithStep" Header="InteractWithStep" />
-                                            <MenuItem x:Name="miGoToStep" Header="GoToStep" />
-                                            <MenuItem x:Name="miExecuteStep" Header="ExecuteStep" />
-                                            <MenuItem x:Name="miMoveToUnitStep" Header="MoveToUnitStep" />
-                                            <MenuItem x:Name="miPickupObjectStep" Header="PickupObjectStep" />
+                                            <MenuItem x:Name="miInteractWithStep" Header="InteractWithStep" Click="miInteractWithStep_Click" />
+                                            <MenuItem x:Name="miGoToStep" Header="GoToStep" Click="miGoToStep_Click" />
+                                            <MenuItem x:Name="miExecuteStep" Header="ExecuteStep" Click="miExecuteStep_Click" />
+                                            <MenuItem x:Name="miMoveToUnitStep" Header="MoveToUnitStep" Click="miMoveToUnitStep_Click" />
+                                            <MenuItem x:Name="miPickupObjectStep" Header="PickupObjectStep" Click="miPickupObjectStep_Click" />
                                         </ContextMenu>
                                     </Button.ContextMenu>
                                 </Button>
@@ -88,17 +87,17 @@
                                 <Button x:Name="btnMoveStepUp" Content="Move Up" Margin="0 0 5 0"  />
                                 <Button x:Name="btnMoveStepDown" Content="Move Down" Margin="0 0 5 0" />
                             </StackPanel>
-                            
+
                         </StackPanel>
                     </GroupBox>
                     <StackPanel Margin="5">
-                        <local:ProfileStep x:Name="psControl" Visibility="{Binding ElementName=dgProfileSteps, Path=SelectedItem, Converter={StaticResource VisibilityConverter}}"></local:ProfileStep>
+                        <local:ProfileStep x:Name="psControl" Visibility="{Binding SelectedItem, Converter={StaticResource VisibilityConverter}, ElementName=dgProfileSteps}"/>
                     </StackPanel>
                 </StackPanel>
-                
+
             </StackPanel>
-            
+
 
         </StackPanel>
     </Grid>
-</mah:MetroWindow>
+</Controls:MetroWindow>

@@ -11,7 +11,6 @@ namespace WholesomeDungeonCrawler.Data.Model
     public class StepModel
     {       
         public StepType StepType { get; set; }
-        public bool IsCompleted { get; set; }
         public string Name { get; set; }
         public int Order { get; set; }
     }
@@ -22,14 +21,14 @@ namespace WholesomeDungeonCrawler.Data.Model
 
     class Execute : StepType
     {
-        public Action action { get; set; }
+        public string Action { get; set; }
         public bool CheckCompletion { get; set; }
     }
 
     class GoTo : StepType
     {
-        public float _precision { get; set; }
-        public Vector3 _targetPosition { get; set; }
+        public float Precision { get; set; }
+        public Vector3 TargetPosition { get; set; }
     }
 
     class MoveAlongPath : StepType
@@ -60,6 +59,8 @@ namespace WholesomeDungeonCrawler.Data.Model
     class InteractWith : StepType
     {
         public int ObjectId { get; set; }
-        public int ItemId { get; set; }
+        public Vector3 ExpectedPosition { get; set; }
     }
+
+
 }

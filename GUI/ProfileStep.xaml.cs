@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using WholesomeDungeonCrawler.Data.Model;
+using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 using Timer = System.Timers.Timer;
 
@@ -37,35 +38,37 @@ namespace WholesomeDungeonCrawler.GUI
         public ProfileStep()
         {
             InitializeComponent();
-
+            SelectedItem = new StepModel();
             this.DataContext = this;
-
             addVectorTimer = new Timer(200);
-            //addVectorTimer.Elapsed += AddVectorTimer_Elapsed;
+            addVectorTimer.Elapsed += AddVectorTimer_Elapsed;
             addVectorTimer.AutoReset = true;
             addVectorTimer.Enabled = true;
 
         }
 
-        //private void AddVectorTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        //{
-        //    try
-        //    {
-        //        this.Dispatcher.Invoke(() =>
-        //        {
-        //            if (this.IsVisible && (bool)chkRecordPath.IsChecked && (fpsCollection.Count == 0 || fpsCollection.LastOrDefault().DistanceTo(ObjectManager.Me.Position) > 8))
-        //            {
-        //                fpsCollection.Add(ObjectManager.Me.Position);
-        //                ((FollowPathStep)SelectedItem.StepType).Path = fpsCollection.ToList();
-        //            }
-        //        });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show($"Error message: {ex.Message}\n\n" +
-        //            $"Details:\n\n{ex.StackTrace}");
-        //    }
-        //}
+        private void AddVectorTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if(Conditions.InGameAndConnected)
+            {
+                try
+                {
+                    this.Dispatcher.Invoke(() =>
+                    {
+                        if (this.IsVisible && (bool)chkRecordPath.IsChecked && (fpsCollection.Count == 0 || fpsCollection.LastOrDefault().DistanceTo(ObjectManager.Me.Position) > 8))
+                        {
+                            fpsCollection.Add(ObjectManager.Me.Position);
+                            ((MoveAlongPath)SelectedItem.StepType).Path = fpsCollection.ToList();
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error message: {ex.Message}\n\n" +
+                        $"Details:\n\n{ex.StackTrace}");
+                }
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -93,5 +96,32 @@ namespace WholesomeDungeonCrawler.GUI
             }
         }
 
+        private void btnGetNearestGO_Click(object sender, RoutedEventArgs e)
+        {
+            var nearestGO = ObjectManager.GetNearestWoWGameObject(ObjectManager.GetObjectWoWGameObject());
+            if (nearestGO != null)
+            {
+                txtInteractO.Value = nearestGO.Entry;
+            }
+        }
+
+        private void btnGetNearestGOPos_Click(object sender, RoutedEventArgs e)
+        {
+            var nearestGO = ObjectManager.GetNearestWoWGameObject(ObjectManager.GetObjectWoWGameObject());
+            if (nearestGO != null)
+            {
+                txtInteractPos.Text = $"{nearestGO.Position.X},{nearestGO.Position.Y},{nearestGO.Position.Z}";
+            }
+        }
+
+        private void btnGotoGetCurrentPos_Click(object sender, RoutedEventArgs e)
+        {
+            var currentsPos = ObjectManager.Me;
+            if (currentsPos != null)
+            {
+                txtGoToTargetPos.Text = $"{currentsPos.Position.X},{currentsPos.Position.Y},{currentsPos.Position.Z}";
+            }
+        }
+        
     }
 }
