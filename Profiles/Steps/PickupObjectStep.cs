@@ -10,7 +10,7 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {
-    internal class PickupObjectStep : Step
+    public class PickupObjectStep : Step
     {
         private PickupObjectModel _pickupObjectModel;
 

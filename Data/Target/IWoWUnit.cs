@@ -4,7 +4,7 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Data
 {
-    interface IWoWUnit
+    public interface IWoWUnit
     {
         string Name { get; }
         ulong Guid { get; }

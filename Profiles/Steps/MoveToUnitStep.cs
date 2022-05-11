@@ -11,11 +11,11 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {
-    public class MoveToUnitModelStep : Step
+    public class MoveToUnitStep : Step
     {
             private MoveToUnitModel _moveToUnitModel;
 
-            public MoveToUnitModelStep(MoveToUnitModel moveToUnitModel)
+            public MoveToUnitStep(MoveToUnitModel moveToUnitModel)
             {
                 _moveToUnitModel = moveToUnitModel;
             }

@@ -9,9 +9,9 @@ using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.Bot.Tasks;
 
-namespace WholesomeDungeons.Profiles.Base
+namespace WholesomeDungeonCrawler.Profiles.Steps
 {
-    internal class InteractWithStep : Step
+    public class InteractWithStep : Step
     {
         private InteractWithModel _interactWithModel;
 

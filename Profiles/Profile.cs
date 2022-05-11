@@ -24,6 +24,22 @@ namespace WholesomeDungeonCrawler.Profiles
                 {
                     _profileSteps.Add(new GoToStep((GoToModel)model));
                 }
+                else if(model is ExecuteModel)
+                {
+                    _profileSteps.Add(new ExecuteStep((ExecuteModel)model));
+                }
+                else if(model is InteractWithModel)
+                {
+                    _profileSteps.Add(new InteractWithStep((InteractWithModel)model));
+                }
+                else if(model is MoveToUnitModel)
+                {
+                    _profileSteps.Add(new MoveToUnitStep((MoveToUnitModel)model));
+                }
+                else if(model is PickupObjectModel)
+                {
+                    _profileSteps.Add(new PickupObjectStep((PickupObjectModel)model));
+                }
                 //elseif...
             }
         }

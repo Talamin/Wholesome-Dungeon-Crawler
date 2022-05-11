@@ -1,6 +1,6 @@
 ﻿namespace WholesomeDungeonCrawler.Data
 {
-    internal interface IEntityCache : ICycleable
+    public interface IEntityCache : ICycleable
     {
         IWoWUnit Target { get; }
         IWoWUnit Pet { get; }

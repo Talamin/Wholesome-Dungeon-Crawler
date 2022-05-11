@@ -123,6 +123,8 @@
     <Compile Include="Data\Target\IWoWPlayer.cs" />
     <Compile Include="Data\Target\IWoWUnit.cs" />
     <Compile Include="Profiles\IProfile.cs" />
+    <Compile Include="Profiles\Steps\DefendSpotStep.cs" />
+    <Compile Include="Profiles\Steps\FollowUnitStep.cs" />
     <Compile Include="Profiles\Steps\IStep.cs" />
     <Compile Include="Profiles\Profile.cs" />
     <Compile Include="Profiles\Steps\Step.cs" />

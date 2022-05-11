@@ -1,6 +1,6 @@
 ﻿namespace WholesomeDungeonCrawler.Data
 {
-    interface ICycleable
+    public interface ICycleable
     {
         void Initialize();
         void Dispose();

@@ -60,4 +60,20 @@ namespace WholesomeDungeonCrawler.Data.Model
 
         public Func<WoWGameObject, bool> isCompleted { get; set; }
     }
+
+    public class DefendSpotModel : StepModel
+    {
+        public Vector3 DefendPosition { get; set; }
+        public int Timer { get; set; }
+        public float Precision { get; set; }
+    }
+
+    public class FollowUnitModel : StepModel
+    {
+        public Vector3 ExpectedStartPosition { get; set; }
+        public Vector3 ExpectedEndPosition { get; set; }
+        public bool FindClosest { get; set; }
+        public bool SkipIfNotFound { get; set; }
+        public int UnitId { get; set; }
+    }
 }
