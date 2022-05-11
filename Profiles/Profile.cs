@@ -17,37 +17,32 @@ namespace WholesomeDungeonCrawler.Profiles
         {
             foreach (StepModel model in profileModel.StepModels)
             {
-                if (model is MoveAlongPathModel)
+                switch (model)
                 {
-                    _profileSteps.Add(new MoveAlongPathStep((MoveAlongPathModel)model, entityCache));
-                }
-                else if (model is GoToModel)
-                {
-                    _profileSteps.Add(new GoToStep((GoToModel)model, entityCache));
-                }
-                else if(model is ExecuteModel)
-                {
-                    _profileSteps.Add(new ExecuteStep((ExecuteModel)model, entityCache));
-                }
-                else if(model is InteractWithModel)
-                {
-                    _profileSteps.Add(new InteractWithStep((InteractWithModel)model, entityCache));
-                }
-                else if(model is MoveToUnitModel)
-                {
-                    _profileSteps.Add(new MoveToUnitStep((MoveToUnitModel)model, entityCache));
-                }
-                else if(model is PickupObjectModel)
-                {
-                    _profileSteps.Add(new PickupObjectStep((PickupObjectModel)model, entityCache));
-                }
-                else if(model is FollowUnitModel)
-                {
-                    _profileSteps.Add(new FollowUnitStep((FollowUnitModel)model, entityCache));
-                }
-                else if(model is DefendSpotModel)
-                {
-                    _profileSteps.Add(new DefendSpotStep((DefendSpotModel)model, entityCache));
+                    case MoveAlongPathModel _:
+                        _profileSteps.Add(new MoveAlongPathStep((MoveAlongPathModel)model, entityCache));
+                        break;
+                    case GoToModel _:
+                        _profileSteps.Add(new GoToStep((GoToModel)model, entityCache));
+                        break;
+                    case ExecuteModel _:
+                        _profileSteps.Add(new ExecuteStep((ExecuteModel)model, entityCache));
+                        break;
+                    case InteractWithModel _:
+                        _profileSteps.Add(new InteractWithStep((InteractWithModel)model, entityCache));
+                        break;
+                    case MoveToUnitModel _:
+                        _profileSteps.Add(new MoveToUnitStep((MoveToUnitModel)model, entityCache));
+                        break;
+                    case PickupObjectModel _:
+                        _profileSteps.Add(new PickupObjectStep((PickupObjectModel)model, entityCache));
+                        break;
+                    case FollowUnitModel _:
+                        _profileSteps.Add(new FollowUnitStep((FollowUnitModel)model, entityCache));
+                        break;
+                    case DefendSpotModel _:
+                        _profileSteps.Add(new DefendSpotStep((DefendSpotModel)model, entityCache));
+                        break;
                 }
                 //elseif...
             }

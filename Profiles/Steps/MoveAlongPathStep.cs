@@ -27,7 +27,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 IsCompleted = true;
                 return;
             }
-
+            if(!MovementManager.InMovement)
             MovementManager.Go(WTPathFinder.PathFromClosestPoint(_moveAlongPathModel.Path)); //maybe spamming
             /*
             if (!_movehelper.IsMovementThreadRunning || _movehelper.CurrentTarget.DistanceTo(_target) > 2)
