@@ -119,6 +119,7 @@ namespace WholesomeDungeonCrawler.GUI
             var currentsPos = ObjectManager.Me;
             if (currentsPos != null)
             {
+                ((GoToModel)this.SelectedItem).TargetPosition = currentsPos.Position;
                 txtGoToTargetPos.Text = $"{currentsPos.Position.X},{currentsPos.Position.Y},{currentsPos.Position.Z}";
             }
         }

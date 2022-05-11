@@ -16,7 +16,11 @@ namespace WholesomeDungeonCrawler.Data
 
         public void Dispose() => ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
 
-        public void Initialize() => ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
+        public void Initialize()
+        {
+            OnObjectManagerPulse();
+            ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
+        }
 
         public IWoWUnit Target { get; private set; }
         public IWoWUnit Pet { get; private set; }

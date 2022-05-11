@@ -15,7 +15,7 @@
                  ShowIconOnTitleBar="True"
                  TitleCaps="False"
                  FontFamily="Trebuchet MS"
-             Title="Profile Editor" SizeToContent="WidthAndHeight">
+             Title="Profile Editor" SizeToContent="WidthAndHeight" Closing="MetroWindow_Closing">
     <Controls:MetroWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -84,7 +84,7 @@
                                         </ContextMenu>
                                     </Button.ContextMenu>
                                 </Button>
-                                <Button x:Name="btnDeleteStep" Content="Delete" Margin="0 0 5 0" />
+                                <Button x:Name="btnDeleteStep" Content="Delete" Margin="0 0 5 0" Click="btnDeleteStep_Click" />
                                 <Button x:Name="btnMoveStepUp" Content="Move Up" Margin="0 0 5 0"  />
                                 <Button x:Name="btnMoveStepDown" Content="Move Down" Margin="0 0 5 0" />
                             </StackPanel>

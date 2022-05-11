@@ -75,7 +75,7 @@
                     <Style TargetType="StackPanel">
                         <Setter Property="Visibility" Value="Collapsed"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem.StepType.StepTypeName}" Value="InteractWith">
+                            <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem, Converter={StaticResource TypeConverter}}" Value="InteractWithModel">
                                 <Setter Property="Visibility" Value="Visible"/>
                             </DataTrigger>
                         </Style.Triggers>
@@ -105,7 +105,7 @@
                     <Style TargetType="StackPanel">
                         <Setter Property="Visibility" Value="Collapsed"/>
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem}" Value="GoTo">
+                            <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem, Converter={StaticResource TypeConverter}}" Value="GoToModel">
                                 <Setter Property="Visibility" Value="Visible"/>
                             </DataTrigger>
                         </Style.Triggers>
@@ -121,7 +121,7 @@
                     <StackPanel>
                         
                         <StackPanel Orientation="Horizontal"  Margin="5">
-                            <TextBox x:Name="txtGoToTargetPos" Controls:TextBoxHelper.Watermark="GoTo Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.TargetPosition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>
+                            <TextBox x:Name="txtGoToTargetPos" Controls:TextBoxHelper.Watermark="GoTo Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.TargetPosition, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>
                             <Button x:Name="btnGotoGetCurrentPos" Content="Get Current Position" Margin="5" Click="btnGotoGetCurrentPos_Click" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal"  Margin="5">

@@ -40,6 +40,9 @@ namespace WholesomeDungeonCrawler.GUI
         public ObservableCollection<Vector3> DeathRunCollection { get; set; }
         private JsonSerializerSettings jsonSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
 
+        private MetroDialogSettings basicDialogSettings;
+        private MetroDialogSettings addDialogSettings;
+
         public ProfileModel currentProfile
         {
             get { return _currentProfile; }
@@ -66,7 +69,20 @@ namespace WholesomeDungeonCrawler.GUI
         {
             //Debugger.Launch();
 
-
+            basicDialogSettings = new MetroDialogSettings()
+            {
+                AnimateHide = true,
+                AnimateShow = true,
+                ColorScheme = MetroDialogColorScheme.Theme
+            };
+            addDialogSettings = new MetroDialogSettings()
+            {
+                AffirmativeButtonText = "Add",
+                NegativeButtonText = "Cancel",
+                AnimateHide = true,
+                AnimateShow = true,
+                ColorScheme = MetroDialogColorScheme.Theme
+            };
             StepCollection = new ObservableCollection<StepModel>(currentProfile.StepModels);
             dgProfileSteps.ItemsSource = StepCollection;
 
@@ -90,15 +106,7 @@ namespace WholesomeDungeonCrawler.GUI
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        private void btnAddStep_Click(object sender, RoutedEventArgs e)
-        {
-            var addButton = sender as FrameworkElement;
-            if (addButton != null)
-            {
-                addButton.ContextMenu.IsOpen = true;
-            }
-        }
-
+        
         
 
         private void btnNewProfile_Click(object sender, RoutedEventArgs e)
@@ -108,14 +116,13 @@ namespace WholesomeDungeonCrawler.GUI
             Setup();
         }
 
-        private void btnSaveProfile_Click(object sender, RoutedEventArgs e)
+        private async void btnSaveProfile_Click(object sender, RoutedEventArgs e)
         {
             try
             {
                 Debugger.Break();
                 if (currentProfile.MapId > 0)
                 {
-                    //System.Windows.MessageBox.Show(currentProfile.DungeonModel.Name);
                     if (!string.IsNullOrWhiteSpace(currentProfile.Name))
                     {
                         var dungeon = Lists.AllDungeons.FirstOrDefault(x => x.MapId == currentProfile.MapId);
@@ -125,24 +132,33 @@ namespace WholesomeDungeonCrawler.GUI
                             currentProfile.StepModels = currentProfile.StepModels.OrderBy(x => x.Order).ToList();
 
                             var output = JsonConvert.SerializeObject(currentProfile, Formatting.Indented, jsonSettings);
-                            var path = $@"{rootpath.FullName}/{currentProfile.Name}.json";
+                            var path = $@"{rootpath.FullName}\{currentProfile.Name}.json";
                             File.WriteAllText(path, output);
                             Setup();
-                            System.Windows.MessageBox.Show("Saved to " + path);
+
+                            
+                            await this.ShowMessageAsync("Profile Saved!", "Saved to " + path, MessageDialogStyle.Affirmative, basicDialogSettings);
                         }
                     }
+                    else 
+                    {
+                        await this.ShowMessageAsync("Save Failed.", "Profile Name has not been set.", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    }
                 }
-                else System.Windows.MessageBox.Show("Dungeon is null");
+                else
+                {
+                    await this.ShowMessageAsync("Save Failed.", "Dungeon has not been set.", MessageDialogStyle.Affirmative, basicDialogSettings);
+                }
 
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"Error message: {ex.Message}\n\n" +
-                $"Details:\n\n{ex.StackTrace}");
+                await this.ShowMessageAsync("Save Failed.", $"Error message: {ex.Message}\n\n" +
+                $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);                
             }
         }
 
-        private void dgProfileSteps_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void dgProfileSteps_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
             {
@@ -163,7 +179,8 @@ namespace WholesomeDungeonCrawler.GUI
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show(ex.Message);
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
             }
 
         }
@@ -254,7 +271,7 @@ namespace WholesomeDungeonCrawler.GUI
 
         }
 
-        private void btnLoadProfile_Click(object sender, RoutedEventArgs e)
+        private async void btnLoadProfile_Click(object sender, RoutedEventArgs e)
         {
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -267,35 +284,54 @@ namespace WholesomeDungeonCrawler.GUI
                 }
                 catch (Exception ex)
                 {
-                    System.Windows.MessageBox.Show($"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}");
+                    await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                        $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
                 }
             }
         }
 
         #region Add Steps
+
+        private void btnAddStep_Click(object sender, RoutedEventArgs e)
+        {
+            var addButton = sender as FrameworkElement;
+            if (addButton != null)
+            {
+                addButton.ContextMenu.IsOpen = true;
+            }
+        }
+        private void btnDeleteStep_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgProfileSteps.SelectedItem != null)
+            {
+                //Debugger.Launch();
+
+                //foreach (var step in dgProfileSteps.SelectedItems)
+                //{
+                //    StepCollection.Remove((StepModel)step);
+                //    currentProfile.StepModels = StepCollection.ToList();
+                //}
+                StepCollection.Remove((StepModel)dgProfileSteps.SelectedItem);
+                currentProfile.StepModels = StepCollection.ToList();
+            }
+        }
+
         private async void miMoveAlongPathStep_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var metroDialogSettings = new MetroDialogSettings()
+                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                if(x != null)
                 {
-                    AffirmativeButtonText = "Add",
-                    NegativeButtonText = "Cancel",
-                    AnimateHide = true,
-                    AnimateShow = true,
-                    ColorScheme = MetroDialogColorScheme.Theme
-                };
-                var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
-                //System.Windows.MessageBox.Show(x);
-                var pathStep = new MoveAlongPathModel() { Name = x, Order = StepCollection.Count, Path = new List<Vector3>() };
-                StepCollection.Add(pathStep);
-                currentProfile.StepModels = StepCollection.ToList();
-                //System.Windows.MessageBox.Show(currentProfile.Steps.Length.ToString());
+                    var pathStep = new MoveAlongPathModel() { Name = x, Order = StepCollection.Count, Path = new List<Vector3>() };
+                    StepCollection.Add(pathStep);
+                    currentProfile.StepModels = StepCollection.ToList();
+                }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                System.Windows.MessageBox.Show(Ex.Message);
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
             }
         }
 
@@ -303,22 +339,18 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                var metroDialogSettings = new MetroDialogSettings()
+                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                if (x != null)
                 {
-                    AffirmativeButtonText = "Add",
-                    NegativeButtonText = "Cancel",
-                    AnimateHide = true,
-                    AnimateShow = true,
-                    ColorScheme = MetroDialogColorScheme.Theme
-                };
-                var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
-                var Step = new InteractWithModel() { Name = x, Order = StepCollection.Count, ExpectedPosition=new Vector3()  };
-                StepCollection.Add(Step);
-                currentProfile.StepModels = StepCollection.ToList();
+                    var Step = new InteractWithModel() { Name = x, Order = StepCollection.Count, ExpectedPosition = new Vector3() };
+                    StepCollection.Add(Step);
+                    currentProfile.StepModels = StepCollection.ToList();
+                }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                System.Windows.MessageBox.Show(Ex.Message);
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
             }
         }
 
@@ -326,22 +358,18 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                var metroDialogSettings = new MetroDialogSettings()
+                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                if (x != null)
                 {
-                    AffirmativeButtonText = "Add",
-                    NegativeButtonText = "Cancel",
-                    AnimateHide = true,
-                    AnimateShow = true,
-                    ColorScheme = MetroDialogColorScheme.Theme
-                };
-                var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
-                var Step = new GoToModel() { Name = x, Order = StepCollection.Count,  TargetPosition = new Vector3()  };
-                StepCollection.Add(Step);
-                currentProfile.StepModels = StepCollection.ToList();
+                    var Step = new GoToModel() { Name = x, Order = StepCollection.Count, TargetPosition = new Vector3() };
+                    StepCollection.Add(Step);
+                    currentProfile.StepModels = StepCollection.ToList();
+                }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                System.Windows.MessageBox.Show(Ex.Message);
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
             }
         }
 
@@ -349,22 +377,18 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                var metroDialogSettings = new MetroDialogSettings()
+                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                if (x != null)
                 {
-                    AffirmativeButtonText = "Add",
-                    NegativeButtonText = "Cancel",
-                    AnimateHide = true,
-                    AnimateShow = true,
-                    ColorScheme = MetroDialogColorScheme.Theme
-                };
-                var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
-                var Step = new ExecuteModel() { Name = x, Order = StepCollection.Count };
-                StepCollection.Add(Step);
-                currentProfile.StepModels = StepCollection.ToList();
+                    var Step = new ExecuteModel() { Name = x, Order = StepCollection.Count };
+                    StepCollection.Add(Step);
+                    currentProfile.StepModels = StepCollection.ToList();
+                }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                System.Windows.MessageBox.Show(Ex.Message);
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
             }
         }
 
@@ -372,22 +396,18 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                var metroDialogSettings = new MetroDialogSettings()
+                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                if (x != null)
                 {
-                    AffirmativeButtonText = "Add",
-                    NegativeButtonText = "Cancel",
-                    AnimateHide = true,
-                    AnimateShow = true,
-                    ColorScheme = MetroDialogColorScheme.Theme
-                };
-                var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
-                var Step = new MoveToUnitModel() { Name = x, Order = StepCollection.Count,  ExpectedPosition= new Vector3() };
-                StepCollection.Add(Step);
-                currentProfile.StepModels = StepCollection.ToList();
+                    var Step = new MoveToUnitModel() { Name = x, Order = StepCollection.Count, ExpectedPosition = new Vector3() };
+                    StepCollection.Add(Step);
+                    currentProfile.StepModels = StepCollection.ToList();
+                }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                System.Windows.MessageBox.Show(Ex.Message);
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
             }
         }
 
@@ -395,26 +415,32 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                var metroDialogSettings = new MetroDialogSettings()
+                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                if (x != null)
                 {
-                    AffirmativeButtonText = "Add",
-                    NegativeButtonText = "Cancel",
-                    AnimateHide = true,
-                    AnimateShow = true,
-                    ColorScheme = MetroDialogColorScheme.Theme
-                };
-                var x = await this.ShowInputAsync("Add", "Step", metroDialogSettings);
-                var Step = new PickupObjectModel() { Name = x, Order = StepCollection.Count, ExpectedPosition = new Vector3() };
-                StepCollection.Add(Step);
-                currentProfile.StepModels = StepCollection.ToList();
+                    var Step = new PickupObjectModel() { Name = x, Order = StepCollection.Count, ExpectedPosition = new Vector3() };
+                    StepCollection.Add(Step);
+                    currentProfile.StepModels = StepCollection.ToList();
+                }
             }
-            catch (Exception Ex)
+            catch (Exception ex)
             {
-                System.Windows.MessageBox.Show(Ex.Message);
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
             }
         }
+
         #endregion
+
+        private async void MetroWindow_Closing(object sender, CancelEventArgs e)
+        {
+            var x = await this.ShowMessageAsync("", "Are you sure you want to close?", MessageDialogStyle.AffirmativeAndNegative, basicDialogSettings);
+            if (x == null)
+                e.Cancel = true;
+        }
     }
+
+    #region ValueConverters
     public class VisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -447,4 +473,5 @@ namespace WholesomeDungeonCrawler.GUI
         }
 
     }
+    #endregion
 }
