@@ -1,5 +1,6 @@
 ﻿using robotManager.FiniteStateMachine;
 using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Manager;
 using wManager.Wow.Helpers;
 
@@ -25,18 +26,22 @@ namespace WholesomeDungeonCrawler.States
                 if (!Conditions.InGameAndConnected
                     || !_entityCache.Me.Valid
                     || Fight.InFight
-                    || _profileManager.CurrentDungeonProfile.CurrentStep == null
-                    || _profileManager.CurrentDungeonProfile.CurrentStep.IsCompleted)
+                    || _profileManager.CurrentDungeonProfile == null
+                    || _profileManager.CurrentDungeonProfile.CurrentStep == null)
                 {
                     return false;
                 }
 
-                return false;
+                return true;
             }
         }
 
         public override void Run()
         {
+            if(_profileManager.CurrentDungeonProfile.CurrentStep.IsCompleted)
+            {
+                _profileManager.CurrentDungeonProfile.SetCurrentStep();
+            }
             _profileManager.CurrentDungeonProfile.CurrentStep.Run();
         }
     }

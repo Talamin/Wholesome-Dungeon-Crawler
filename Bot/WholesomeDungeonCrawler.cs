@@ -45,13 +45,8 @@ namespace WholesomeDungeonCrawler.Bot
                 //_fsm.AddState(new GroupQueueAccept(_cache, 27));
 
                 //_fsm.AddState(new GroupRevive(_cache, _entityCache, 26));
-                //_fsm.AddState(new SExecute(_cache, _entityCache, 20));
-                //_fsm.AddState(new SGoTo(_cache, _entityCache, 20));
-                //_fsm.AddState(new SInteractWith(_cache, _entityCache, _profile, 20));
-                //_fsm.AddState(new SMoveAlongPath(_cache, _entityCache, _profile, 20));
-                //_fsm.AddState(new SMoveToUnit(_cache, _entityCache, 20));
-                //_fsm.AddState(new SPickupObject(_cache, _entityCache, 20));
 
+                _fsm.AddState(new DungeonLogic(_cache, _entityCache, _profileManager, 20));
 
                 //_fsm.AddState(new OpenSatchel(_cache, 17));
                 //_fsm.AddState(new Loot(_cache, _entityCache, 16));

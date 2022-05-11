@@ -57,7 +57,7 @@ namespace WholesomeDungeonCrawler.Profiles
         {
         }
 
-        public void ExecuteSteps()
+        public void SetCurrentStep()
         {
             var totalSteps = _profileSteps.Count();
             if (totalSteps <= 0)

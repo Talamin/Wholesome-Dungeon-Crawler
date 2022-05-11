@@ -6,6 +6,6 @@ namespace WholesomeDungeonCrawler.Profiles
     public interface IProfile
     {
         IStep CurrentStep { get; }
-        void ExecuteSteps();
+        void SetCurrentStep();
     }
 }
