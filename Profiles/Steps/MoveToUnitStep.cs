@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeToolbox;
@@ -13,11 +14,13 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 {
     public class MoveToUnitStep : Step
     {
-            private MoveToUnitModel _moveToUnitModel;
+        private MoveToUnitModel _moveToUnitModel;
+        private readonly IEntityCache _entityCache;
 
-            public MoveToUnitStep(MoveToUnitModel moveToUnitModel)
+        public MoveToUnitStep(MoveToUnitModel moveToUnitModel, IEntityCache entityCache)
             {
                 _moveToUnitModel = moveToUnitModel;
+                _entityCache = entityCache;
             }
 
             public override void Run()
@@ -26,7 +29,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 ? FindClosestUnit(unit => unit.Entry == _moveToUnitModel.UnitId)
                 : ObjectManager.GetObjectWoWUnit().FirstOrDefault(unit => unit.Entry == _moveToUnitModel.UnitId);
 
-            Vector3 myPosition = ObjectManager.Me.PositionWithoutType;
+            Vector3 myPosition = _entityCache.Me.PositionWithoutType;
 
             if (foundUnit == null)
             {

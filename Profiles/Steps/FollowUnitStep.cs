@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeToolbox;
@@ -16,10 +17,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
     public class FollowUnitStep : Step
     {
         private FollowUnitModel _followUnitModel;
+        private readonly IEntityCache _entityCache;
 
-        public FollowUnitStep(FollowUnitModel followUnitModel)
+        public FollowUnitStep(FollowUnitModel followUnitModel, IEntityCache entityCache)
         {
             _followUnitModel = followUnitModel;
+            _entityCache = entityCache;
         }
 
         public override void Run()
@@ -29,7 +32,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     ? FindClosestUnit(unit => unit.Entry == _followUnitModel.UnitId)
                     : ObjectManager.GetObjectWoWUnit().FirstOrDefault(unit => unit.Entry == _followUnitModel.UnitId);
 
-                Vector3 myPosition = ObjectManager.Me.PositionWithoutType;
+                Vector3 myPosition = _entityCache.Me.PositionWithoutType;
 
                 if (foundUnit == null)
                 {
@@ -74,7 +77,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             WoWUnit foundUnit = null;
             var distanceToUnit = float.MaxValue;
             //checks for a given reference position, if not there then use our position
-            Vector3 position = referencePosition != null ? referencePosition : ObjectManager.Me.Position;
+            Vector3 position = referencePosition != null ? referencePosition : _entityCache.Me.PositionWithoutType;
             //build a List of each Unit and their Distance
             foreach (WoWUnit unit in ObjectManager.GetObjectWoWUnit())
             {

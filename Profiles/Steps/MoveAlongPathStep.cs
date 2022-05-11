@@ -1,5 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Linq;
+using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Data.Model;
 using WholesomeToolbox;
 using wManager.Wow.Helpers;
@@ -10,16 +11,18 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
     public class MoveAlongPathStep : Step
     {
         private MoveAlongPathModel _moveAlongPathModel;
+        private readonly IEntityCache _entityCache;
 
-        public MoveAlongPathStep(MoveAlongPathModel stepModel)
+        public MoveAlongPathStep(MoveAlongPathModel stepModel, IEntityCache entityCache)
         {
             _moveAlongPathModel = stepModel;
+            _entityCache = entityCache;
         }
 
         public override void Run()
         {
             Vector3 lastPointOfPath = _moveAlongPathModel.Path.Last();
-            if (ObjectManager.Me.PositionWithoutType.DistanceTo(lastPointOfPath) < 5f)
+            if (_entityCache.Me.PositionWithoutType.DistanceTo(lastPointOfPath) < 5f)
             {
                 IsCompleted = true;
                 return;

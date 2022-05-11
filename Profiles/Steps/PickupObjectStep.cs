@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Threading;
+using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.Bot.Tasks;
@@ -13,10 +14,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
     public class PickupObjectStep : Step
     {
         private PickupObjectModel _pickupObjectModel;
+        private readonly IEntityCache _entityCache;
 
-        public PickupObjectStep(PickupObjectModel pickupObjectModel)
+        public PickupObjectStep(PickupObjectModel pickupObjectModel, IEntityCache entityCache)
         {
             _pickupObjectModel = pickupObjectModel;
+            _entityCache = entityCache;
         }
         public override void Run()
         {
@@ -28,7 +31,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 : ObjectManager.GetObjectWoWGameObject().FirstOrDefault(o => o.Entry == _pickupObjectModel.ObjectId);
 
             // Move close to expected object position
-            if (ObjectManager.Me.PositionWithoutType.DistanceTo(_pickupObjectModel.ExpectedPosition) > 10)
+            if (_entityCache.Me.PositionWithoutType.DistanceTo(_pickupObjectModel.ExpectedPosition) > 10)
             {
                 Logger.Log($"Moving to object {_pickupObjectModel.ObjectId} at {_pickupObjectModel.ExpectedPosition}");
                 GoToTask.ToPosition(_pickupObjectModel.ExpectedPosition);
@@ -54,7 +57,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             }
 
             // Move to real object position
-            if ((ObjectManager.Me.PositionWithoutType.DistanceTo(foundObject.Position) > _pickupObjectModel.InteractDistance))
+            if (_entityCache.Me.PositionWithoutType.DistanceTo(foundObject.Position) > _pickupObjectModel.InteractDistance)
             {
                 Logger.Log($"Interactive object found. Approaching {_pickupObjectModel.ObjectId} at {foundObject.Position}");
                 GoToTask.ToPosition(foundObject.Position);

@@ -1,5 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Linq;
+using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Data.Model;
 using WholesomeToolbox;
 using wManager.Wow.Bot.Tasks;
@@ -11,16 +12,18 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
     public class GoToStep : Step
     {
         private GoToModel _gotoModel;
+        private readonly IEntityCache _entityCache;
 
-        public GoToStep(GoToModel goToModel)
+        public GoToStep(GoToModel goToModel, IEntityCache entityCache)
         {
             _gotoModel = goToModel;
+            _entityCache = entityCache;
         }
 
         public override void Run()
         {
 
-            if (ObjectManager.Me.PositionWithoutType.DistanceTo(_gotoModel.TargetPosition) < _gotoModel.Precision)
+            if (_entityCache.Me.PositionWithoutType.DistanceTo(_gotoModel.TargetPosition) < _gotoModel.Precision)
             {
                 IsCompleted = true;
                 return;

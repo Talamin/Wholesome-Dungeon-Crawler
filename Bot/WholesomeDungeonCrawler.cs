@@ -16,7 +16,6 @@ namespace WholesomeDungeonCrawler.Bot
         private ICache _cache;
         private IEntityCache _entityCache;
         private IProfileManager _profileManager;
-        private IProfile _profile;
 
         internal bool InitialSetup()
         {

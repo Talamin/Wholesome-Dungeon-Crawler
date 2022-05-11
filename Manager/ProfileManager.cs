@@ -57,7 +57,7 @@ namespace WholesomeDungeonCrawler.Manager
                     var deserializedProfile = JsonConvert.DeserializeObject<ProfileModel>(File.ReadAllText(profile), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
                     if (deserializedProfile.MapId == dungeon.MapId)
                     {
-                        CurrentDungeonProfile = new Profile(deserializedProfile);
+                        CurrentDungeonProfile = new Profile(deserializedProfile, _entityCache);
                         Logger.Log($"Dungeon Profile loaded: {deserializedProfile.Name}.{Environment.NewLine} with the MapID { deserializedProfile.MapId}.{ Environment.NewLine} with at Total Steps { deserializedProfile.StepModels.Count()}.{ Environment.NewLine}");
                         //PathFinder.OffMeshConnections.AddRange(dungeonProfile.offMeshConnections); <-- in its current state, Profile doesn´t hold any Offmeshes
                     } else

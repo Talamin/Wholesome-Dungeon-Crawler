@@ -8,21 +8,24 @@ using WholesomeDungeonCrawler.Profiles.Steps;
 using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.Bot.Tasks;
+using WholesomeDungeonCrawler.Data;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {
     public class InteractWithStep : Step
     {
         private InteractWithModel _interactWithModel;
+        private readonly IEntityCache _entityCache;
 
-        public InteractWithStep(InteractWithModel interactWithModel)
+        public InteractWithStep(InteractWithModel interactWithModel, IEntityCache entityCache)
         {
             _interactWithModel = interactWithModel;
+            _entityCache = entityCache;
         }
         public override void Run()
         {
             // Closest object from me or from its supposed position?
-            Vector3 referencePosition = _interactWithModel.StrictPosition ? _interactWithModel.ExpectedPosition : ObjectManager.Me.Position;
+            Vector3 referencePosition = _interactWithModel.StrictPosition ? _interactWithModel.ExpectedPosition : _entityCache.Me.PositionWithoutType;
 
             WoWGameObject foundObject = _interactWithModel.FindClosest || _interactWithModel.StrictPosition
                 ? FindClosestObject(gameObject => gameObject.Entry == _interactWithModel.ObjectId, referencePosition)
