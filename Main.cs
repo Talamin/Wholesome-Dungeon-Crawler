@@ -32,11 +32,12 @@ public class Main : IProduct
     {
         try
         {
+            /*
             if (AutoUpdater.CheckUpdate(_productVersion, _fileName))
             {
                 return;
             }
-
+            */
             if (_crawler.InitialSetup())
             {
                 Logger.Log("Started");

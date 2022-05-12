@@ -59,8 +59,9 @@ namespace WholesomeDungeonCrawler.Helpers
                 WholesomeDungeonCrawlerSettings.CurrentSetting.LastUpdateDate = elapsedTicks;
                 WholesomeDungeonCrawlerSettings.CurrentSetting.Save();
                 Logger.Log("Starting updater");
-                string onlineFile = "https://github.com/Wholesome-wRobot/Wholesome-Auto-Quester/raw/master/Wholesome_Auto_Quester/Compiled/Wholesome_Auto_Quester.dll";
-                string onlineVersion = "https://raw.githubusercontent.com/Wholesome-wRobot/Wholesome-Auto-Quester/master/Wholesome_Auto_Quester/Compiled/Version.txt";
+
+                string onlineFile = "https://github.com/Talamin/Wholesome-Dungeon-Crawler/raw/master/Compiled/WholesomeDungeonCrawler.dll";
+                string onlineVersion = "https://raw.githubusercontent.com/Talamin/Wholesome-Dungeon-Crawler/master/Compiled/Version.txt";
 
                 _onlineVersion = new System.Net.WebClient { Encoding = Encoding.UTF8 }.DownloadString(onlineVersion);
 
@@ -98,7 +99,7 @@ namespace WholesomeDungeonCrawler.Helpers
 
         private static void ShowReloadMessage()
         {
-            Logger.LogError($"A new version of this product has been downloaded, please restart WRobot.".ToUpper() +
+            Logger.LogError($"A new version of the Wholesome Dungeon Crawler has been downloaded, please restart WRobot.".ToUpper() +
                 $"\r{_currentVersion} => {_onlineVersion}".ToUpper());
             Products.DisposeProduct();
         }
