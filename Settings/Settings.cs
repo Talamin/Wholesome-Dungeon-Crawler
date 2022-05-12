@@ -1,5 +1,6 @@
 ﻿using robotManager.Helpful;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.Helpers;
@@ -12,10 +13,27 @@ namespace WholesomeDungeonCrawler.CrawlerSettings
     {
 
         public string ProductName { get; set; }
-
+        public string TankName { get; set; }
+        public List<string> GroupMembers { get; set; }
+        public bool SetAsTank { get; set; }
+        public bool SetAsHeal { get; set; }
+        public bool SetAsRDPS { get; set; }
+        public bool SetAsMDPS { get; set; }
+        public int FollowRangeRDPS { get; set; }
+        public int FollowRangeMDPS { get; set; }
+        public int FollowRangeHeal { get; set; }
         public WholesomeDungeonCrawlerSettings()
         {
             ProductName = "Wholesome Dungeon Crawler";
+            TankName = "";
+            GroupMembers = new List<string>();
+            SetAsTank = false;
+            SetAsHeal = false;
+            SetAsMDPS = false;
+            SetAsRDPS = false;
+            FollowRangeHeal = 30;
+            FollowRangeMDPS = 15;
+            FollowRangeRDPS = 25;
         }
 
         public static WholesomeDungeonCrawlerSettings CurrentSetting { get; set; }
