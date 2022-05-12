@@ -165,7 +165,7 @@
     <Compile Include="States\LeaveDungeon.cs" />
     <Compile Include="States\Loot.cs" />
     <Compile Include="States\OpenSatchel.cs" />
-    <Compile Include="States\SlaveLogic.cs" />
+    <Compile Include="States\MovementSlave.cs" />
     <Compile Include="States\TargetingCombat.cs" />
     <Compile Include="Wholesome-Toolbox\WTCombat.cs" />
     <Compile Include="Wholesome-Toolbox\WTEffects.cs" />

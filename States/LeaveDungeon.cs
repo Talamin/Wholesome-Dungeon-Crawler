@@ -43,15 +43,18 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
+                if(_cache.LootRollShow)
+                {
+                    return false;
+                }
+
                 return _profileManager.CurrentDungeonProfile._profileSteps.All(p=> p.IsCompleted);
             }
         }
 
 
         public override void Run()
-        {
-            Logger.Log($"All Steps completed, leaving  Dungeon, waiting some seconds for finishing Reward Roll");
-            Thread.Sleep(5000);
+        {           
             Lua.LuaDoString("LFGTeleport(true);");
         }
 

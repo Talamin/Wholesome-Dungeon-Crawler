@@ -10,6 +10,7 @@ using WholesomeDungeonCrawler.Helpers;
 using WholesomeToolbox;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
@@ -40,6 +41,11 @@ namespace WholesomeDungeonCrawler.States
                     || _entityCache.Me.Name != tankname)
                 {
                     return false;
+                }
+
+                if(_entityCache.Target.Dead)
+                {
+                    Interact.ClearTarget();
                 }
 
                 if(AttackingGroupMember()!=null)

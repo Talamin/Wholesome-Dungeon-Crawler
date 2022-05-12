@@ -12,7 +12,7 @@ using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class SlaveLogic : State
+    class MovementSlave : State
     {
         //The Idea: Having a State which checks permanently if the Tank is infront of us and near our path.
         //If he´s not, the State will be true, and we perform some action.
@@ -23,7 +23,7 @@ namespace WholesomeDungeonCrawler.States
         private readonly IEntityCache _entityCache;
         private string tankname = "Tank";
 
-        public SlaveLogic(ICache iCache, IEntityCache EntityCache, int priority)
+        public MovementSlave(ICache iCache, IEntityCache EntityCache, int priority)
         {
             _cache = iCache;
             _entityCache = EntityCache;

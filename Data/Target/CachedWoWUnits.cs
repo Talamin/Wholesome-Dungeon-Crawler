@@ -27,14 +27,12 @@ namespace WholesomeDungeonCrawler.Data
         public bool IsAttackingMe { get; }
         public bool IsPartyMember { get; }
         public WoWClass WoWClass { get; }
-
         public uint GetBaseAdress { get; }
 
         public CachedWoWUnit(WoWUnit unit)
         {
             Name = unit.Name;
             Guid = unit.Guid;
-            TargetGuid = unit.Target;
             Valid = unit.IsValid;
             Dead = unit.IsDead;
             PositionWithoutType = unit.PositionWithoutType;
@@ -49,6 +47,7 @@ namespace WholesomeDungeonCrawler.Data
             IsAttackingMe = unit.IsTargetingMe;
             IsAttackingGroup = unit.IsTargetingPartyMember;
             IsPartyMember = unit.IsPartyMember;
+            TargetGuid = unit.Target;
             WoWClass = unit.WowClass;
 
             GetBaseAdress = unit.GetBaseAddress;

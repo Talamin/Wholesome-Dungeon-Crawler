@@ -13,5 +13,6 @@ namespace WholesomeDungeonCrawler.Data
         string GetPlayerSpec { get; }
         bool LFGProposalShown { get; }
         bool LFGRoleCheckShown { get; }
+        bool LootRollShow { get;}
     }
 }

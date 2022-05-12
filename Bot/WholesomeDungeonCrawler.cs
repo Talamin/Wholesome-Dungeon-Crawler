@@ -45,7 +45,7 @@ namespace WholesomeDungeonCrawler.Bot
                 //_fsm.AddState(new GroupQueueAccept(_cache, 27));
 
                 //_fsm.AddState(new GroupRevive(_cache, _entityCache, 26));
-
+                _fsm.AddState(new LeaveDungeon(_cache, _entityCache, _profileManager, 27));
                 _fsm.AddState(new DungeonLogic(_cache, _entityCache, _profileManager, 20));
 
                 //_fsm.AddState(new OpenSatchel(_cache, 17));

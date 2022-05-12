@@ -23,6 +23,7 @@ namespace WholesomeDungeonCrawler.Data
         public string GetPlayerSpec { get; private set; }
         public bool LFGProposalShown { get; private set; }
         public bool LFGRoleCheckShown { get; private set; }
+        public bool LootRollShow { get; private set; }
 
         //general
 
@@ -57,6 +58,7 @@ namespace WholesomeDungeonCrawler.Data
             EventsLua.AttachEventLua("LFG_ROLE_CHECK_HIDE", m => CacheRoleCheckShow());
             EventsLua.AttachEventLua("LFG_ROLE_CHECK_ROLE_CHOSEN", m => CacheRoleCheckShow());
             EventsLua.AttachEventLua("LFG_ROLE_CHECK_UPDATE", m => CacheRoleCheckShow());
+            EventsLua.AttachEventLua("START_LOOT_ROLL", m => CacheLootRollShow());
             //EventsLua.AttachEventLua(LuaEventsId.PLAYER_LEVEL_UP  <-- depreciated, only for lookup
         }
 
@@ -163,6 +165,11 @@ namespace WholesomeDungeonCrawler.Data
         private void CacheRoleCheckShow()
         {
             LFGRoleCheckShown = Lua.LuaDoString<bool>("return LFDRoleCheckPopupAcceptButton:IsVisible()");
+        }
+
+        private void CacheLootRollShow()
+        {
+            LootRollShow = Lua.LuaDoString<bool>("for i = 1, 4 do local b = ['GroupLootFrame'..i] if b and b:IsVisible() then return true end end return false");
         }
     }
 }
