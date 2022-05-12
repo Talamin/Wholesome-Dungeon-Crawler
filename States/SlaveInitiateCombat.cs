@@ -15,7 +15,7 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class SlaveCombat : State
+    class SlaveInitiateCombat : State
     {
         public override string DisplayName => "InFight";
 
@@ -25,7 +25,7 @@ namespace WholesomeDungeonCrawler.States
         private IWoWUnit Target;
         private IWoWUnit Tank;
 
-        public SlaveCombat(ICache iCache, IEntityCache EntityCache, int priority)
+        public SlaveInitiateCombat(ICache iCache, IEntityCache EntityCache, int priority)
         {
             _cache = iCache;
             _entityCache = EntityCache;

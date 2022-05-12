@@ -54,7 +54,7 @@ namespace WholesomeDungeonCrawler.States
 
                 if (FleeingUnit() != null && _entityCache.Me.TargetGuid == 0)
                 {
-                    Target = AssistTank();
+                    Target = FleeingUnit();
                     Logger.Log($"Attacking: {Target.Name} is attacking Tank, switching");
                     return true;
                 }
