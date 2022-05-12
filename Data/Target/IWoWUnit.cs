@@ -23,8 +23,8 @@ namespace WholesomeDungeonCrawler.Data
         bool IsAttackingGroup { get; }
         bool IsAttackingMe { get; }
         bool IsPartyMember { get; }
-        public WoWClass WoWClass { get; }
-
+        public WoWClass WoWClass { get; }     
         public uint GetBaseAdress { get; }
+        public bool Fleeing { get; }
     }
 }

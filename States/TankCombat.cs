@@ -14,7 +14,7 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class DefendCombat: State
+    class TankCombat: State
     {
         public override string DisplayName => "InFight";
 
@@ -23,7 +23,7 @@ namespace WholesomeDungeonCrawler.States
         private string tankname = "Tank";
         private IWoWUnit Target;
 
-        public DefendCombat(ICache iCache, IEntityCache EntityCache, int priority)
+        public TankCombat(ICache iCache, IEntityCache EntityCache, int priority)
         {
             _cache = iCache;
             _entityCache = EntityCache;
@@ -36,7 +36,6 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (!Conditions.InGameAndConnected
                     || !_entityCache.Me.Valid
-                    || Fight.InFight
                     || !_cache.IsInInstance
                     || _entityCache.Me.Name != tankname)
                 {

@@ -28,6 +28,7 @@ namespace WholesomeDungeonCrawler.Data
         public bool IsPartyMember { get; }
         public WoWClass WoWClass { get; }
         public uint GetBaseAdress { get; }
+        public bool Fleeing { get; }
 
         public CachedWoWUnit(WoWUnit unit)
         {
@@ -49,6 +50,7 @@ namespace WholesomeDungeonCrawler.Data
             IsPartyMember = unit.IsPartyMember;
             TargetGuid = unit.Target;
             WoWClass = unit.WowClass;
+            Fleeing = unit.Fleeing;
 
             GetBaseAdress = unit.GetBaseAddress;
 
