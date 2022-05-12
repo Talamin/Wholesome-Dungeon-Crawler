@@ -49,7 +49,7 @@ namespace WholesomeDungeonCrawler.States
         // should use cache instead of this method
         private List<WoWUnit> GetListLootableUnits()
         {
-            Vector3 myPosition = ObjectManager.Me.Position;
+            Vector3 myPosition = _entitycache.Me.PositionWithoutType;
             return ObjectManager.GetWoWUnitLootable()
                 .FindAll(u => u.Position.DistanceTo(myPosition) <= LootRange)
                 .ToList();
