@@ -20,6 +20,8 @@ namespace WholesomeDungeonCrawler.CrawlerSettings
         public int FollowRangeRDPS { get; set; }
         public int FollowRangeMDPS { get; set; }
         public int FollowRangeHeal { get; set; }
+        public double LastUpdateDate { get; set; }
+
         public WholesomeDungeonCrawlerSettings()
         {
             ProductName = "Wholesome Dungeon Crawler";
@@ -31,6 +33,7 @@ namespace WholesomeDungeonCrawler.CrawlerSettings
         }
 
         public static WholesomeDungeonCrawlerSettings CurrentSetting { get; set; }
+
         public bool Save()
         {
             try

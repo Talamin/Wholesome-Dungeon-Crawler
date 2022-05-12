@@ -117,6 +117,7 @@
     <Compile Include="Data\Target\IWoWLocalPlayer.cs" />
     <Compile Include="Data\Target\IWoWPlayer.cs" />
     <Compile Include="Data\Target\IWoWUnit.cs" />
+    <Compile Include="Helpers\AutoUpdater.cs" />
     <Compile Include="Profiles\IProfile.cs" />
     <Compile Include="Profiles\Steps\DefendSpotStep.cs" />
     <Compile Include="Profiles\Steps\FollowUnitStep.cs" />
@@ -188,11 +189,15 @@
     <Folder Include="Dungeonlogic\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Compiled\WholesomeDungeonCrawler.dll" />
     <Content Include="Dependencies\robotManager.dll" />
     <Content Include="Dependencies\wManager.dll" />
     <Content Include="Wholesome-Toolbox\.gitignore" />
     <Content Include="Wholesome-Toolbox\Wholesome_Toolbox.shproj.user" />
     <Content Include="Wholesome-Toolbox\Wholesome_Toolbox.sln" />
+    <Content Include="Compiled\Version.txt">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </Content>
     <Page Include="GUI\ProfileStep.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -218,7 +223,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>xcopy /Y/F "$(TargetDir)\WholesomeDungeonCrawler.dll" "$(ProjectDir)\Compiled"</PostBuildEvent>
   </PropertyGroup>
 </Project>

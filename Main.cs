@@ -10,6 +10,9 @@ public class Main : IProduct
 {
     private readonly CrawlerBot _crawler = new CrawlerBot();
     private ProductSettingsControl _settingsUserControl;
+    private readonly string _productVersion = "0.0.01";
+    private readonly string _productName = "Wholesome Dungeon Crawler";
+    private readonly string _fileName = "WholesomeDungeonCrawler";
     public bool IsStarted { get; private set; }
 
     public void Initialize()
@@ -17,6 +20,7 @@ public class Main : IProduct
         try
         {
             WholesomeDungeonCrawlerSettings.Load();
+            Logger.Log($"{_productName} version {_productVersion} loaded");
         }
         catch (Exception e)
         {
@@ -28,10 +32,15 @@ public class Main : IProduct
     {
         try
         {
-            IsStarted = true;
+            if (AutoUpdater.CheckUpdate(_productVersion, _fileName))
+            {
+                return;
+            }
+
             if (_crawler.InitialSetup())
             {
                 Logger.Log("Started");
+                IsStarted = true;
             }
         }
         catch (Exception e)

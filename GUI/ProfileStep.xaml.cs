@@ -6,7 +6,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Data.Model;
 using wManager.Wow.Helpers;
@@ -51,7 +50,7 @@ namespace WholesomeDungeonCrawler.GUI
 
         private void AddVectorTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if(Conditions.InGameAndConnected)
+            if (Conditions.InGameAndConnected)
             {
                 try
                 {
@@ -172,5 +171,5 @@ namespace WholesomeDungeonCrawler.GUI
                 nudGameObject.Value = nearestGO.Entry;
             }
         }
-    }    
+    }
 }
