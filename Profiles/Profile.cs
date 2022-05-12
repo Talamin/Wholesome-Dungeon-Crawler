@@ -9,7 +9,7 @@ namespace WholesomeDungeonCrawler.Profiles
 {
     public class Profile : IProfile
     {
-        private List<IStep> _profileSteps = new List<IStep>();
+        public List<IStep> _profileSteps = new List<IStep>();
 
         public IStep CurrentStep { get; private set; }
 

@@ -162,6 +162,7 @@
     <Compile Include="States\GroupQueueAccept.cs" />
     <Compile Include="States\GroupRevive.cs" />
     <Compile Include="States\IState.cs" />
+    <Compile Include="States\LeaveDungeon.cs" />
     <Compile Include="States\Loot.cs" />
     <Compile Include="States\OpenSatchel.cs" />
     <Compile Include="States\SlaveLogic.cs" />
