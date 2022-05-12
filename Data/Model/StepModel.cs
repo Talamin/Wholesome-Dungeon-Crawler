@@ -7,11 +7,23 @@ namespace WholesomeDungeonCrawler.Data.Model
 {
     public abstract class StepModel
     {
-        //public string StepTypeName => this.GetType().Name;
         public string Name { get; set; }
-        public int Order { get; set; }
+        public int Order { get; set; }        
+        public StepCompleteCondition CompleteCondition { get; set; }
+    }
+
+    public class StepCompleteCondition
+    {
         public bool HasCompleteCondition { get; set; }
-        public CompleteConditionType CompleteCondition { get; set; }
+        public CompleteConditionType ConditionType { get; set; }
+        public int GameObjectId { get; set; }
+        public int InitialFlags { get; set; }
+        public int ItemId { get; set; }
+        public string CSharpCondition { get; set; }
+        public int DeadMobId { get; set; }
+        public int MobPositionId { get; set; }
+        public Vector3 MobPositionVector { get; set; }
+        public Vector3 LOSPositionVector { get; set; }
     }
 
 

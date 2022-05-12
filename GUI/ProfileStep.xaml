@@ -130,6 +130,79 @@
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
+            <Controls:ToggleSwitch x:Name="chkHasCondition" IsChecked="{Binding SelectedItem.CompleteCondition.HasCompleteCondition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Has Complete Condition" OffLabel="Has Complete Condition" Margin="5"/>
+            <StackPanel x:Name="spHasCond" Visibility="{Binding ElementName=chkHasCondition, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <ComboBox Name="cbConditionType" SelectedValue="{Binding SelectedItem.CompleteCondition.ConditionType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Condition Type" />
+                <StackPanel Name="spFlagsChanged">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=cbConditionType, Path=SelectedValue}" Value="FlagsChanged">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <StackPanel x:Name="spConditionGameObjectFlags" Orientation="Horizontal"  Margin="5">
+                        <Controls:NumericUpDown Name="nudInitialFlags" Value="{Binding SelectedItem.CompleteCondition.InitialFlags, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="InitalFlags" Margin="5" Width="157" />
+                        <Button x:Name="btnGetNearestGOFlags" Content="Get Closest GameObject Flags" Margin="5" Click="btnGetNearestGOFlags_Click"/>
+                    </StackPanel>
+                    <StackPanel x:Name="spConditionGameObjectId" Orientation="Horizontal"  Margin="5">
+                        <Controls:NumericUpDown Name="nudGameObject" Value="{Binding SelectedItem.CompleteCondition.GameObjectId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="GameObject Entry" Margin="5"/>
+                        <Button x:Name="btnGetNearestGOId" Content="Get Closest GameObject Id" Margin="5" Click="btnGetNearestGOId_Click"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=cbConditionType, Path=SelectedValue}" Value="MobPosition">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <StackPanel x:Name="spConditionMobPosId" Orientation="Horizontal"  Margin="5">
+                        <Controls:NumericUpDown Name="nudMobPosId" Value="{Binding SelectedItem.CompleteCondition.MobPositionId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Mob Id" Margin="5"/>
+                        <Button x:Name="btnGetTargetMobPosEntry" Content="Get Target Mob Id" Margin="5" Click="btnGetTargetMobPosEntry_Click" />
+                    </StackPanel>
+                    <StackPanel x:Name="spConditionMobPosVector" Orientation="Horizontal"  Margin="5">
+                        <TextBox Name="nudMobPosVector" Text="{Binding SelectedItem.CompleteCondition.MobPositionVector, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Mob Position" Margin="5"/>
+                        <Button x:Name="btnGetTargetMobPosVector" Content="Get Target Mob Position" Margin="5" Click="btnGetTargetMobPosVector_Click" />
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel x:Name="spConditionMobDead" Orientation="Horizontal"  Margin="5">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=cbConditionType, Path=SelectedValue}" Value="MobDead">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <Controls:NumericUpDown Name="nudMobDeadId" Value="{Binding SelectedItem.CompleteCondition.DeadMobId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Mob Id" Margin="5"/>
+                    <Button x:Name="btnGetTargetMobDeadEntry" Content="Get Target Mob Id" Margin="5" Click="btnGetTargetMobDeadEntry_Click" />
+                </StackPanel>
+                <StackPanel Margin="5">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=cbConditionType, Path=SelectedValue}" Value="HaveItem">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <Controls:NumericUpDown Name="nudItemId" Value="{Binding SelectedItem.CompleteCondition.ItemId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Item Entry" Margin="5"/>
+                </StackPanel>
+
+            </StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>

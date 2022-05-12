@@ -166,8 +166,8 @@ namespace WholesomeDungeonCrawler.GUI
                 {
                     //psControl = new ProfileStep();
                     //Debugger.Launch();
-                    //if (((StepModel)dgProfileSteps.SelectedItem).Condition == null)
-                    //    ((StepModel)dgProfileSteps.SelectedItem).Condition = new DungeonStepCondition();
+                    if (((StepModel)dgProfileSteps.SelectedItem).CompleteCondition == null)
+                        ((StepModel)dgProfileSteps.SelectedItem).CompleteCondition = new StepCompleteCondition();
                     psControl.SelectedItem = (StepModel)dgProfileSteps.SelectedItem;
 
                     if (psControl.SelectedItem is MoveAlongPathModel)

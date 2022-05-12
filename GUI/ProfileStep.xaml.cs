@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Data.Model;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
@@ -44,6 +45,7 @@ namespace WholesomeDungeonCrawler.GUI
             addVectorTimer.Elapsed += AddVectorTimer_Elapsed;
             addVectorTimer.AutoReset = true;
             addVectorTimer.Enabled = true;
+            cbConditionType.ItemsSource = Enum.GetValues(typeof(CompleteConditionType));
 
         }
 
@@ -124,6 +126,51 @@ namespace WholesomeDungeonCrawler.GUI
                 txtGoToTargetPos.Text = $"{currentPos.X},{currentPos.Y},{currentPos.Z}";
             }
         }
-        
+
+        private void btnGetNearestGOFlags_Click(object sender, RoutedEventArgs e)
+        {
+            var nearestGO = ObjectManager.GetNearestWoWGameObject(ObjectManager.GetObjectWoWGameObject());
+            if (nearestGO != null)
+            {
+                nudInitialFlags.Value = nearestGO.FlagsInt;
+            }
+        }
+
+        private void btnGetTargetMobPosEntry_Click(object sender, RoutedEventArgs e)
+        {
+            var target = ObjectManager.Target;
+            if (target != null)
+            {
+                nudMobPosId.Value = target.Entry;
+            }
+        }
+
+        private void btnGetTargetMobPosVector_Click(object sender, RoutedEventArgs e)
+        {
+            var target = ObjectManager.Target;
+            if (target != null)
+            {
+                this.SelectedItem.CompleteCondition.MobPositionVector = target.Position;
+                nudMobPosVector.Text = $"{target.Position.X},{target.Position.Y},{target.Position.Z}";
+            }
+        }
+
+        private void btnGetTargetMobDeadEntry_Click(object sender, RoutedEventArgs e)
+        {
+            var target = ObjectManager.Target;
+            if (target != null)
+            {
+                nudMobDeadId.Value = target.Entry;
+            }
+        }
+
+        private void btnGetNearestGOId_Click(object sender, RoutedEventArgs e)
+        {
+            var nearestGO = ObjectManager.GetNearestWoWGameObject(ObjectManager.GetObjectWoWGameObject());
+            if (nearestGO != null)
+            {
+                nudGameObject.Value = nearestGO.Entry;
+            }
+        }
     }    
 }
