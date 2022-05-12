@@ -42,6 +42,7 @@ namespace WholesomeDungeonCrawler.States
             {
                 _profileManager.CurrentDungeonProfile.SetCurrentStep();
             }
+            else
             _profileManager.CurrentDungeonProfile.CurrentStep.Run();
         }
     }

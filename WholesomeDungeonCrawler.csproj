@@ -153,6 +153,7 @@
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="States\DefendCombat.cs" />
     <Compile Include="States\DungeonLogic.cs" />
     <Compile Include="States\GroupInviteAccept.cs" />
     <Compile Include="States\GroupInvite.cs" />
@@ -164,7 +165,7 @@
     <Compile Include="States\Loot.cs" />
     <Compile Include="States\OpenSatchel.cs" />
     <Compile Include="States\SlaveLogic.cs" />
-    <Compile Include="States\Targeting.cs" />
+    <Compile Include="States\TargetingCombat.cs" />
     <Compile Include="Wholesome-Toolbox\WTCombat.cs" />
     <Compile Include="Wholesome-Toolbox\WTEffects.cs" />
     <Compile Include="Wholesome-Toolbox\WTFile.cs" />

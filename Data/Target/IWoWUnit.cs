@@ -21,6 +21,7 @@ namespace WholesomeDungeonCrawler.Data
         Reaction Reaction { get; }
         UnitFlags UnitFlags { get; }
         bool IsAttackingGroup { get; }
+        bool IsAttackingMe { get; }
         bool IsPartyMember { get; }
         public WoWClass WoWClass { get; }
 

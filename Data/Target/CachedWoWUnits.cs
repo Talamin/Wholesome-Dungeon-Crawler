@@ -24,6 +24,7 @@ namespace WholesomeDungeonCrawler.Data
         public IReadOnlyDictionary<uint, IAura> Auras { get; }
         public bool IsLootable { get; }
         public bool IsAttackingGroup { get; }
+        public bool IsAttackingMe { get; }
         public bool IsPartyMember { get; }
         public WoWClass WoWClass { get; }
 
@@ -45,6 +46,7 @@ namespace WholesomeDungeonCrawler.Data
             Reaction = unit.Reaction;
             UnitFlags = unit.UnitFlags;
             IsLootable = unit.IsLootable;
+            IsAttackingMe = unit.IsTargetingMe;
             IsAttackingGroup = unit.IsTargetingPartyMember;
             IsPartyMember = unit.IsPartyMember;
             WoWClass = unit.WowClass;

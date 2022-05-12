@@ -13,7 +13,7 @@ using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class Targeting : State
+    class TargetingCombat : State
     {
         public override string DisplayName => "Targeting";
 
@@ -21,7 +21,7 @@ namespace WholesomeDungeonCrawler.States
         private readonly IEntityCache _entityCache;
         private string tankname = "Tank";
 
-        public Targeting(ICache iCache, IEntityCache EntityCache, int priority)
+        public TargetingCombat(ICache iCache, IEntityCache EntityCache, int priority)
         {
             _cache = iCache;
             _entityCache = EntityCache;
