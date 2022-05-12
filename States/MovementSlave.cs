@@ -53,15 +53,15 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
                     
-                if(WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == WholesomeDungeonCrawlerSettings.LFGRoles.RDPS)
+                if(WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.RDPS)
                 {
                     FollowRange = WholesomeDungeonCrawlerSettings.CurrentSetting.FollowRangeRDPS;
                 }
-                if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == WholesomeDungeonCrawlerSettings.LFGRoles.MDPS)
+                if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.MDPS)
                 {
                     FollowRange = WholesomeDungeonCrawlerSettings.CurrentSetting.FollowRangeMDPS;
                 }
-                if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == WholesomeDungeonCrawlerSettings.LFGRoles.Heal)
+                if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Heal)
                 {
                     FollowRange = WholesomeDungeonCrawlerSettings.CurrentSetting.FollowRangeHeal;
                 }
