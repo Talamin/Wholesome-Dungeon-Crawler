@@ -15,10 +15,14 @@ namespace WholesomeDungeonCrawler.CrawlerSettings
         public string ProductName { get; set; }
         public string TankName { get; set; }
         public List<string> GroupMembers { get; set; }
-        public bool SetAsTank { get; set; }
-        public bool SetAsHeal { get; set; }
-        public bool SetAsRDPS { get; set; }
-        public bool SetAsMDPS { get; set; }
+        public enum LFGRoles
+        {
+            Tank = 1,
+            MDPS = 2,
+            RDPS = 3,
+            Heal = 4
+        }
+        public LFGRoles LFGRole { get; set; }
         public int FollowRangeRDPS { get; set; }
         public int FollowRangeMDPS { get; set; }
         public int FollowRangeHeal { get; set; }
@@ -27,10 +31,6 @@ namespace WholesomeDungeonCrawler.CrawlerSettings
             ProductName = "Wholesome Dungeon Crawler";
             TankName = "";
             GroupMembers = new List<string>();
-            SetAsTank = false;
-            SetAsHeal = false;
-            SetAsMDPS = false;
-            SetAsRDPS = false;
             FollowRangeHeal = 30;
             FollowRangeMDPS = 15;
             FollowRangeRDPS = 25;
