@@ -9,10 +9,10 @@ namespace WholesomeDungeonCrawler.Data.Model
     {
         public string Name { get; set; }
         public int Order { get; set; }        
-        public StepCompleteCondition CompleteCondition { get; set; }
+        public StepCompleteConditionModel CompleteCondition { get; set; }
     }
 
-    public class StepCompleteCondition
+    public class StepCompleteConditionModel
     {
         public bool HasCompleteCondition { get; set; }
         public CompleteConditionType ConditionType { get; set; }

@@ -91,6 +91,7 @@ namespace WholesomeDungeonCrawler.GUI
             cbDungeon.ItemsSource = Lists.AllDungeons;
             cbDungeon.SelectedValuePath = "MapId";
             cbDungeon.DisplayMemberPath = "Name";
+            cbDungeon.SelectedValue = Usefuls.ContinentId;
 
             openFileDialog1 = new OpenFileDialog()
             {
@@ -167,7 +168,7 @@ namespace WholesomeDungeonCrawler.GUI
                     //psControl = new ProfileStep();
                     //Debugger.Launch();
                     if (((StepModel)dgProfileSteps.SelectedItem).CompleteCondition == null)
-                        ((StepModel)dgProfileSteps.SelectedItem).CompleteCondition = new StepCompleteCondition();
+                        ((StepModel)dgProfileSteps.SelectedItem).CompleteCondition = new StepCompleteConditionModel();
                     psControl.SelectedItem = (StepModel)dgProfileSteps.SelectedItem;
 
                     if (psControl.SelectedItem is MoveAlongPathModel)

@@ -24,16 +24,16 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             Vector3 lastPointOfPath = _moveAlongPathModel.Path.Last();
             if (_entityCache.Me.PositionWithoutType.DistanceTo(lastPointOfPath) < 5f)
             {
-                //if (!_moveAlongPathModel.CompleteCondition.HasCompleteCondition)
-                //{
+                if (!_moveAlongPathModel.CompleteCondition.HasCompleteCondition)
+                {
                     IsCompleted = true;
                     return;
-                //}
-                //else if (EvaluateCompleteCondition(_moveAlongPathModel.CompleteCondition))
-                //{
-                //    IsCompleted = true;
-                //    return;
-                //}
+                }
+                else if (EvaluateCompleteCondition(_moveAlongPathModel.CompleteCondition))
+                {
+                    IsCompleted = true;
+                    return;
+                }
             }
             if (!MovementManager.InMovement)
                 MovementManager.Go(WTPathFinder.PathFromClosestPoint(_moveAlongPathModel.Path)); //maybe spamming
