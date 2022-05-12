@@ -186,6 +186,8 @@ namespace WholesomeDungeonCrawler.GUI
         }
 
         private MD5 md5;
+        private bool closeMe;
+
         private void btnToggleOverlay_Click(object sender, RoutedEventArgs e)
         {
 
@@ -432,11 +434,15 @@ namespace WholesomeDungeonCrawler.GUI
 
         #endregion
 
-        private async void MetroWindow_Closing(object sender, CancelEventArgs e)
+        protected override async void OnClosing(CancelEventArgs e)
         {
-            var x = await this.ShowMessageAsync("", "Are you sure you want to close?", MessageDialogStyle.AffirmativeAndNegative, basicDialogSettings);
-            if (x == null)
-                e.Cancel = true;
+            if (e.Cancel) return;
+            e.Cancel = !this.closeMe;
+            if (this.closeMe) return;
+            var result = await this.ShowMessageAsync("", "Are you sure you want to close?", MessageDialogStyle.AffirmativeAndNegative, basicDialogSettings);
+            this.closeMe = result == MessageDialogResult.Affirmative;
+
+            if (this.closeMe) this.Close();
         }
     }
 

@@ -10,6 +10,8 @@ namespace WholesomeDungeonCrawler.Data.Model
         //public string StepTypeName => this.GetType().Name;
         public string Name { get; set; }
         public int Order { get; set; }
+        public bool HasCompleteCondition { get; set; }
+        public CompleteConditionType CompleteCondition { get; set; }
     }
 
 
