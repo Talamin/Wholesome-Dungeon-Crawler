@@ -43,7 +43,7 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                return _profileManager.CurrentDungeonProfile._profileSteps.Count(p=> p.IsCompleted) >= _profileManager.CurrentDungeonProfile._profileSteps.Count();
+                return _profileManager.CurrentDungeonProfile._profileSteps.All(p=> p.IsCompleted);
             }
         }
 
