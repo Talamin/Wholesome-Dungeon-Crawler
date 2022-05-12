@@ -1,4 +1,5 @@
 ﻿using robotManager.FiniteStateMachine;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.Helpers;
@@ -38,7 +39,7 @@ namespace WholesomeDungeonCrawler.States
         public override void Run()
         {
             string StaticPopupText = Lua.LuaDoString<string>("return StaticPopup1Text:GetText()");
-            if (StaticPopupText.Contains("Tank"))
+            if (StaticPopupText.Contains(WholesomeDungeonCrawlerSettings.CurrentSetting.TankName))
             {
                 Logger.Log($"Accepting Invite from Tank");
                 Lua.LuaDoString("StaticPopup1Button1:Click()");

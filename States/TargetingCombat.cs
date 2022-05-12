@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeToolbox;
@@ -19,7 +20,6 @@ namespace WholesomeDungeonCrawler.States
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
-        private string tankname = "Tank";
 
         public TargetingCombat(ICache iCache, IEntityCache EntityCache, int priority)
         {
@@ -46,7 +46,7 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                if(_entityCache.Me.Name != tankname)
+                if(_entityCache.Me.Name != WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
                 {
                     return false;
                 }

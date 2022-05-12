@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.Helpers;
@@ -15,8 +16,6 @@ namespace WholesomeDungeonCrawler.States
         public override string DisplayName => "Group Invite";
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
-        private List<string> groupmembers = new List<string> { "Tzuki", "DPStwo", "DPSthree", "Heal" };
-        private string tankname = "Tank";
         private Timer timer = new Timer(1000);
 
         public GroupInvite(ICache iCache, IEntityCache EntityCache, int priority)
@@ -35,7 +34,7 @@ namespace WholesomeDungeonCrawler.States
                     || !ObjectManager.Me.IsValid 
                     || Fight.InFight
                     || _cache.IsInInstance
-                    || _entityCache.Me.Name != tankname)
+                    || _entityCache.Me.Name != WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
                 {
                     return false;
                 }
@@ -48,7 +47,7 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            foreach (var player in groupmembers)
+            foreach (var player in WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers)
             {
                 if (!_cache.ListPartyMember.Contains(player))
                 {

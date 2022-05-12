@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Data;
 using WholesomeToolbox;
 using wManager.Wow.Enums;
@@ -21,7 +22,6 @@ namespace WholesomeDungeonCrawler.States
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
-        private string tankname = "Tank";
 
         public MovementSlave(ICache iCache, IEntityCache EntityCache, int priority)
         {
@@ -30,7 +30,7 @@ namespace WholesomeDungeonCrawler.States
             Priority = priority;
         }
 
-        private IWoWUnit _tankUnit = null;
+        //private IWoWUnit _tankUnit = null;
         public List<(Vector3 a, Vector3 b)> LinesToCheck = new List<(Vector3 a, Vector3 b)>(); // For Radar 3D
 
         public override bool NeedToRun
@@ -49,7 +49,7 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                if(_entityCache.Me.Name == tankname)
+                if(_entityCache.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
                 {
                     return false;
                 }
@@ -99,7 +99,7 @@ namespace WholesomeDungeonCrawler.States
                 }
                 LinesToCheck = linesToCheck;
                 //Now we check if the Tank is along the lines ahead of us
-                IWoWUnit Tankunit = _entityCache.ListGroupMember.Where(unit => unit.Name == tankname).FirstOrDefault();
+                IWoWUnit Tankunit = _entityCache.ListGroupMember.Where(unit => unit.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName).FirstOrDefault();
                 foreach ((Vector3 a, Vector3 b) line in linesToCheck)
                 {
                     if(!IHaveLineOfSightOn(Tankunit) && WTPathFinder.PointDistanceToLine(line.a, line.b, Tankunit.PositionWithoutType) < 20)
