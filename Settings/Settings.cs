@@ -5,6 +5,7 @@ using System.IO;
 using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
+using WholesomeDungeonCrawler.Data;
 
 namespace WholesomeDungeonCrawler.CrawlerSettings
 {
@@ -14,14 +15,7 @@ namespace WholesomeDungeonCrawler.CrawlerSettings
 
         public string ProductName { get; set; }
         public string TankName { get; set; }
-        public List<string> GroupMembers { get; set; }
-        public enum LFGRoles
-        {
-            Tank = 1,
-            MDPS = 2,
-            RDPS = 3,
-            Heal = 4
-        }
+        public List<string> GroupMembers { get; set; }        
         public LFGRoles LFGRole { get; set; }
         public int FollowRangeRDPS { get; set; }
         public int FollowRangeMDPS { get; set; }

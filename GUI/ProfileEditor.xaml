@@ -15,7 +15,7 @@
                  ShowIconOnTitleBar="True"
                  TitleCaps="False"
                  FontFamily="Trebuchet MS"
-             Title="Profile Editor" SizeToContent="WidthAndHeight" Closing="MetroWindow_Closing">
+             Title="Profile Editor" SizeToContent="WidthAndHeight">
     <Controls:MetroWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

@@ -101,6 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\Cache.cs" />
+    <Compile Include="Data\LFGEnums.cs" />
     <Compile Include="Data\Model\DungeonModel.cs" />
     <Compile Include="Data\Model\ProfileModel.cs" />
     <Compile Include="Data\Model\StepModel.cs" />

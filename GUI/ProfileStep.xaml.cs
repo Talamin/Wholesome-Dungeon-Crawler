@@ -110,17 +110,18 @@ namespace WholesomeDungeonCrawler.GUI
             var nearestGO = ObjectManager.GetNearestWoWGameObject(ObjectManager.GetObjectWoWGameObject());
             if (nearestGO != null)
             {
+                ((InteractWithModel)this.SelectedItem).ExpectedPosition = nearestGO.Position;
                 txtInteractPos.Text = $"{nearestGO.Position.X},{nearestGO.Position.Y},{nearestGO.Position.Z}";
             }
         }
 
         private void btnGotoGetCurrentPos_Click(object sender, RoutedEventArgs e)
         {
-            var currentsPos = ObjectManager.Me;
-            if (currentsPos != null)
+            var currentPos = ObjectManager.Me.Position;
+            if (currentPos != null)
             {
-                ((GoToModel)this.SelectedItem).TargetPosition = currentsPos.Position;
-                txtGoToTargetPos.Text = $"{currentsPos.Position.X},{currentsPos.Position.Y},{currentsPos.Position.Z}";
+                ((GoToModel)this.SelectedItem).TargetPosition = currentPos;
+                txtGoToTargetPos.Text = $"{currentPos.X},{currentPos.Y},{currentPos.Z}";
             }
         }
         
