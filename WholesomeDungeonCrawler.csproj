@@ -195,9 +195,7 @@
     <Content Include="Wholesome-Toolbox\.gitignore" />
     <Content Include="Wholesome-Toolbox\Wholesome_Toolbox.shproj.user" />
     <Content Include="Wholesome-Toolbox\Wholesome_Toolbox.sln" />
-    <Content Include="Compiled\Version.txt">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </Content>
+    <Content Include="Compiled\Version.txt" />
     <Page Include="GUI\ProfileStep.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
