@@ -5,6 +5,7 @@ using WholesomeDungeonCrawler.Bot;
 using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.GUI;
 using WholesomeDungeonCrawler.Helpers;
+using wManager.Plugin;
 
 public class Main : IProduct
 {
@@ -41,6 +42,7 @@ public class Main : IProduct
             if (_crawler.InitialSetup())
             {
                 Logger.Log("Started");
+                PluginsManager.LoadAllPlugins();
                 IsStarted = true;
             }
         }
@@ -56,6 +58,7 @@ public class Main : IProduct
         try
         {
             IsStarted = false;
+            PluginsManager.DisposeAllPlugins();
             _crawler.Dispose();
         }
         catch (Exception e)
