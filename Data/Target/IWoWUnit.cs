@@ -1,4 +1,5 @@
 ﻿using robotManager.Helpful;
+using System.Collections.Generic;
 using wManager.Wow.Enums;
 using wManager.Wow.ObjectManager;
 
@@ -23,8 +24,9 @@ namespace WholesomeDungeonCrawler.Data
         bool IsAttackingGroup { get; }
         bool IsAttackingMe { get; }
         bool IsPartyMember { get; }
-        public WoWClass WoWClass { get; }     
-        public uint GetBaseAdress { get; }
-        public bool Fleeing { get; }
+        WoWClass WoWClass { get; }     
+        uint GetBaseAdress { get; }
+        bool Fleeing { get; }
+        IReadOnlyDictionary<uint, IAura> Auras { get; }
     }
 }

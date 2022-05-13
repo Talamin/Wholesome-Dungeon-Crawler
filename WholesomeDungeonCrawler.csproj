@@ -166,6 +166,7 @@
     <Compile Include="States\OpenSatchel.cs" />
     <Compile Include="States\MovementSlaveBETA.cs" />
     <Compile Include="States\TargetingCombat.cs" />
+    <Compile Include="States\WaitRest.cs" />
     <Compile Include="Wholesome-Toolbox\WTCombat.cs" />
     <Compile Include="Wholesome-Toolbox\WTEffects.cs" />
     <Compile Include="Wholesome-Toolbox\WTFile.cs" />
