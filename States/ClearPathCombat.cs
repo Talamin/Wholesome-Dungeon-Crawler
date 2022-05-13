@@ -14,14 +14,14 @@ using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class TargetingCombat : State
+    class ClearPathCombat : State
     {
         public override string DisplayName => "Targeting";
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
 
-        public TargetingCombat(ICache iCache, IEntityCache EntityCache, int priority)
+        public ClearPathCombat(ICache iCache, IEntityCache EntityCache, int priority)
         {
             _cache = iCache;
             _entityCache = EntityCache;

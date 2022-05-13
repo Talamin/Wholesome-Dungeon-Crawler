@@ -47,7 +47,8 @@ namespace WholesomeDungeonCrawler.States
                     Interact.ClearTarget();
                 }
 
-                if(AttackingGroupMember()!=null)
+                if(AttackingGroupMember()!=null 
+                    && AttackingGroupMember().TargetGuid != _entityCache.Me.Guid)
                 {
                     Target = AttackingGroupMember();
                     Logger.Log($"Attacking: {Target.Name} is attacking Groupmember, switching");
