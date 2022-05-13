@@ -21,7 +21,6 @@ namespace WholesomeDungeonCrawler.States
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
-        private string tankname = "Tank";
         private IWoWUnit Target;
         private IWoWUnit Tank;
 
@@ -40,7 +39,7 @@ namespace WholesomeDungeonCrawler.States
                     || !_entityCache.Me.Valid
                     || Fight.InFight
                     || !_cache.IsInInstance
-                    || _entityCache.Me.Name == tankname)
+                    || _entityCache.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
                 {
                     return false;
                 }

@@ -48,6 +48,7 @@ namespace WholesomeDungeonCrawler.Bot
 
                 _fsm.AddState(new GroupInviteAccept(_cache, 18));
                 _fsm.AddState(new GroupInvite(_cache, _entityCache, 17));
+                _fsm.AddState(new GroupProposal(_cache, 16));
                 _fsm.AddState(new GroupQueueAccept(_cache, 16));
                 _fsm.AddState(new GroupQueue(_cache, _entityCache, 15));
 
