@@ -33,7 +33,6 @@ namespace WholesomeDungeonCrawler.States
                     || !Conditions.InGameAndConnected
                     || !ObjectManager.Me.IsValid
                     || Fight.InFight
-                    || !_cache.IsInInstance
                     || _cache.ListPartyMember.Count() < 4) //changed from 5
                 {
                     return false;

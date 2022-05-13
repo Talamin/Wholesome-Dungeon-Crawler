@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeToolbox;
@@ -37,7 +38,7 @@ namespace WholesomeDungeonCrawler.Data
             CacheIsInInstance();
             CacheLFGCompletionReward();
             CachePartyInviteRequest();
-            CachePlayerSpec();
+            //CachePlayerSpec();
             CacheRoleCheckShow();
             if(ObjectManager.Me.IsInGroup)
             {
@@ -45,26 +46,64 @@ namespace WholesomeDungeonCrawler.Data
             }
             //Beginning of Event Subscriptions
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
-            EventsLua.AttachEventLua("WORLD_MAP_UPDATE", m => CacheIsInInstance());
-            EventsLua.AttachEventLua("PARTY_INVITE_REQUEST", m => CachePartyInviteRequest());
-            EventsLua.AttachEventLua("LFG_COMPLETION_REWARD", m => CacheLFGCompletionReward());
-            EventsLua.AttachEventLua("PARTY_MEMBERS_CHANGED", m => CachePartyMemberChanged());
-            EventsLua.AttachEventLua("PLAYER_LEVEL_UP", m => CachePlayerSpec());
-            EventsLua.AttachEventLua("LFG_QUEUE_STATUS_UPDATE", m => GetLFGModes());
-            EventsLua.AttachEventLua("LFG_PROPOSAL_SHOW", m => CacheLFGProposalShow());
-            EventsLua.AttachEventLua("LFG_PROPOSAL_FAILED", m => CacheLFGProposalFailed());
-            EventsLua.AttachEventLua("LFG_PROPOSAL_SUCCEEDED", m => CacheLFGProposalSucceeded());
-            EventsLua.AttachEventLua("LFG_ROLE_CHECK_SHOW", m => CacheRoleCheckShow());
-            EventsLua.AttachEventLua("LFG_ROLE_CHECK_HIDE", m => CacheRoleCheckShow());
-            EventsLua.AttachEventLua("LFG_ROLE_CHECK_ROLE_CHOSEN", m => CacheRoleCheckShow());
-            EventsLua.AttachEventLua("LFG_ROLE_CHECK_UPDATE", m => CacheRoleCheckShow());
-            EventsLua.AttachEventLua("START_LOOT_ROLL", m => CacheLootRollShow());
+        
+            //EventsLua.AttachEventLua("PLAYER_LEVEL_UP", m => CachePlayerSpec());
+
+            EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaWithArgs;
             //EventsLua.AttachEventLua(LuaEventsId.PLAYER_LEVEL_UP  <-- depreciated, only for lookup
+        }
+
+        private void EventsLuaWithArgs_OnEventsLuaWithArgs(string id, List<string> args)
+        {
+            switch(id)
+            {
+                case "WORLD_MAP_UPDATE":
+                    CacheIsInInstance();
+                    break;
+                case "PARTY_INVITE_REQUEST":
+                    CachePartyInviteRequest();
+                    break;
+                case "LFG_COMPLETION_REWARD":
+                    CacheLFGCompletionReward();
+                    break;
+                case "PARTY_MEMBERS_CHANGED":
+                    CachePartyMemberChanged();
+                    break;
+                case "LFG_QUEUE_STATUS_UPDATE":
+                    GetLFGModes();
+                    break;
+                case "LFG_PROPOSAL_SHOW":
+                    CacheLFGProposalShow();
+                    break;
+                case "LFG_PROPOSAL_FAILED":
+                    CacheLFGProposalFailed();
+                    break;
+                case "LFG_PROPOSAL_SUCCEEDED":
+                    CacheLFGProposalSucceeded();
+                    break;
+                case "LFG_ROLE_CHECK_SHOW":
+                    CacheRoleCheckShow();
+                    break;
+                case "LFG_ROLE_CHECK_HIDE":
+                    CacheRoleCheckShow();
+                    break;
+                case "LFG_ROLE_CHECK_ROLE_CHOSEN":
+                    CacheRoleCheckShow();
+                    break;
+                case "LFG_ROLE_CHECK_UPDATE":
+                    CacheRoleCheckShow();
+                    break;
+                case "START_LOOT_ROLL":
+                    CacheLootRollShow();
+                    break;
+
+            }
         }
 
         public void Dispose()
         {
             ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
+            EventsLuaWithArgs.OnEventsLuaStringWithArgs -= EventsLuaWithArgs_OnEventsLuaWithArgs;
         }
 
         private void OnObjectManagerPulse()
@@ -110,6 +149,7 @@ namespace WholesomeDungeonCrawler.Data
 
         private void CachePartyMemberChanged()
         {
+            Debugger.Break();
             CachePartyInviteRequest();
             ClearCachedLists();
             GetLFGModes();
@@ -133,22 +173,22 @@ namespace WholesomeDungeonCrawler.Data
             MiniMapLFGFrameIcon = Lua.LuaDoString<bool>("return MiniMapLFGFrameIcon: IsVisible()");
         }
 
-        private void CachePlayerSpec()
-        {
-            lock(cacheLock)
-            {
-                var Talents = new Dictionary<string, int>();
-                for (int i = 1; i <= 3; i++)
-                {
-                    Talents.Add(
-                        Lua.LuaDoString<string>($"local name, iconTexture, pointsSpent = GetTalentTabInfo({i}); return name"),
-                        Lua.LuaDoString<int>($"local name, iconTexture, pointsSpent = GetTalentTabInfo({i}); return pointsSpent")
-                    );
-                }
-                var highestTalents = Talents.Max(x => x.Value);
-                GetPlayerSpec = Talents.FirstOrDefault(t => t.Value == highestTalents).Key.Replace(" ", "");
-            }
-        }
+        //private void CachePlayerSpec()
+        //{
+        //    lock(cacheLock)
+        //    {
+        //        var Talents = new Dictionary<string, int>();
+        //        for (int i = 1; i <= 3; i++)
+        //        {
+        //            Talents.Add(
+        //                Lua.LuaDoString<string>($"local name, iconTexture, pointsSpent = GetTalentTabInfo({i}); return name"),
+        //                Lua.LuaDoString<int>($"local name, iconTexture, pointsSpent = GetTalentTabInfo({i}); return pointsSpent")
+        //            );
+        //        }
+        //        var highestTalents = Talents.Max(x => x.Value);
+        //        GetPlayerSpec = Talents.FirstOrDefault(t => t.Value == highestTalents).Key.Replace(" ", "");
+        //    }
+        //}
 
         private void CacheLFGProposalShow()
         {

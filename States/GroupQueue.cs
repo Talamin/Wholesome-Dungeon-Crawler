@@ -11,8 +11,7 @@ namespace WholesomeDungeonCrawler.States
     {
         public override string DisplayName => "GroupQueue";
         private readonly ICache _cache;
-        private readonly IEntityCache _entityCache;
-        private string tankname = "Tank";
+        private readonly IEntityCache _entityCache;        
 
         public GroupQueue(ICache iCache, IEntityCache EntityCache, int priority)
         {
@@ -31,7 +30,7 @@ namespace WholesomeDungeonCrawler.States
                     || ObjectManager.Me.HaveBuff("Dungeon Deserter")
                     || _cache.IsInInstance
                     || _cache.ListPartyMember.Count() < 4 //changed from 4 for testing
-                    || _entityCache.Me.Name != tankname)
+                    || _entityCache.Me.Name != CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
                 {
                     return false;
                 }
