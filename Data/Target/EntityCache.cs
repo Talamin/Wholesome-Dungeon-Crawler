@@ -1,5 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
+using WholesomeDungeonCrawler.Helpers;
 using wManager.Events;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
@@ -89,12 +90,22 @@ namespace WholesomeDungeonCrawler.Data
             var enemyUnitsLootable = new List<IWoWUnit>(units.Count);
             var enemyAttackingGroup = new List<IWoWUnit>(units.Count);
             var hostileUnits = new List<IWoWUnit>(units.Count);
-            var listGroupMember = new List<IWoWUnit>();
+            var listGroupMember = new List<IWoWUnit>(units.Count);
 
             var targetPosition = cachedTarget.PositionWithoutType;
             var targetGuid = cachedTarget.Guid;
             var playerPosition = cachedPlayer.PositionWithoutType;
             var playerGuid = cachedPlayer.Guid;
+
+            foreach (var play in playerUnits)
+            {
+                IWoWUnit cachedplayer = Cache(play);
+                if(play.IsPartyMember)
+                {
+                    listGroupMember.Add(cachedplayer);
+                }
+                ListGroupMember = listGroupMember.ToArray();
+            }
 
             foreach (var unit in units)
             {
@@ -169,7 +180,6 @@ namespace WholesomeDungeonCrawler.Data
             EnemyUnitsLootable = enemyUnitsLootable.ToArray();
             EnemyAttackingGroup = enemyAttackingGroup.ToArray();
             HostileUnits = hostileUnits.ToArray();
-            ListGroupMember = listGroupMember.ToArray();
         }
 
     }
