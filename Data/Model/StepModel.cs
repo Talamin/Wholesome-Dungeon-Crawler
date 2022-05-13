@@ -24,6 +24,7 @@ namespace WholesomeDungeonCrawler.Data.Model
         public int MobPositionId { get; set; }
         public Vector3 MobPositionVector { get; set; }
         public Vector3 LOSPositionVector { get; set; }
+        public int WaitTime { get; set; }
     }
 
 

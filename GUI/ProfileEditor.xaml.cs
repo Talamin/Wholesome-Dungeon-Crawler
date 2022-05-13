@@ -55,12 +55,16 @@ namespace WholesomeDungeonCrawler.GUI
 
         public ProfileEditor()
         {
-
-
             this.DataContext = this;
             currentProfile = new ProfileModel();
             currentProfile.StepModels = new List<StepModel>();
             InitializeComponent();
+            Lists.AllDungeons.Sort((a, b) => a.Name.CompareTo(b.Name));
+            cbDungeon.ItemsSource = Lists.AllDungeons;
+            cbDungeon.SelectedValuePath = "MapId";
+            cbDungeon.DisplayMemberPath = "Name";
+            cbDungeon.SelectedValue = Usefuls.ContinentId;
+
             Setup();
 
         }
@@ -85,13 +89,6 @@ namespace WholesomeDungeonCrawler.GUI
             };
             StepCollection = new ObservableCollection<StepModel>(currentProfile.StepModels);
             dgProfileSteps.ItemsSource = StepCollection;
-
-
-            Lists.AllDungeons.Sort((a, b) => a.Name.CompareTo(b.Name));
-            cbDungeon.ItemsSource = Lists.AllDungeons;
-            cbDungeon.SelectedValuePath = "MapId";
-            cbDungeon.DisplayMemberPath = "Name";
-            cbDungeon.SelectedValue = Usefuls.ContinentId;
 
             openFileDialog1 = new OpenFileDialog()
             {
@@ -228,7 +225,7 @@ namespace WholesomeDungeonCrawler.GUI
                             previousVector = vec;
                         }
                     }
-
+                    
                     
 
                     //var deadcolour = System.Drawing.Color.Red;

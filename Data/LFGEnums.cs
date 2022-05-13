@@ -30,6 +30,7 @@ namespace WholesomeDungeonCrawler.Data
         HaveItem,
         MobDead,
         MobPosition,
-        LOSCheck
+        LOSCheck,
+        WaitUntil
     }
 }

@@ -3,10 +3,48 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              xmlns:local="clr-namespace:WholesomeDungeonCrawler.GUI"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             mc:Ignorable="d" >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- ControlsApps.Metro resource dictionaries. Make sure that all file names are Case Sensitive! -->
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
+                <!-- Accent and AppTheme setting -->
+                <ResourceDictionary Source="pack://application:,,,/WholesomeDungeonCrawler;component/GUI/Theme.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseDark.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
-        <Button Height="20px" Width="80px" Content="Profile Editor" Name="btnProfileEditor" Click="btnProfileEditor_Click"></Button>
+        <StackPanel>
+            <Image Height="100" VerticalAlignment="Top" Width="100" Source="/WholesomeDungeonCrawler;component/GUI/WholesomeDCrawlerIcon.png" />
+            <Label Content="Wholesome Dungeon Crawler" FontFamily="Segoe WP Semibold" FontSize="16" HorizontalContentAlignment="Center" Foreground="Gainsboro"  />
+            <GroupBox Width="100" Header="Role" BorderBrush="{x:Null}">
+                <GroupBox.Background>
+                    <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                        <GradientStop Color="#FF34e89e" Offset="0"/>
+                        <GradientStop Color="#FF0f3443" Offset="1"/>
+                    </LinearGradientBrush>
+                </GroupBox.Background>
+                <ComboBox x:Name="cbLFGRole" SelectionChanged="cbLFGRole_SelectionChanged" SelectedValue="{Binding LFGRole, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" BorderBrush="{x:Null}" Height="30"></ComboBox>
+            </GroupBox>
+            <GroupBox Width="150" Header="options" BorderBrush="{x:Null}">
+                <GroupBox.Background>
+                    <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                        <GradientStop Color="#FF34e89e" Offset="0"/>
+                        <GradientStop Color="#FF0f3443" Offset="1"/>
+                    </LinearGradientBrush>
+                </GroupBox.Background>
+                <StackPanel>
+                    <Button x:Name="btnSettings" Content="Settings" Margin="5" Click="btnSettings_Click"/>
+                    <Button x:Name="btnProfileEditor" Content="Profile Editor" Click="btnProfileEditor_Click" Margin="5"/>
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
+        <!--<Button Height="20px" Width="80px" Content="Profile Editor" Name="btnProfileEditor" Click="btnProfileEditor_Click"></Button>-->
     </Grid>
 </UserControl>

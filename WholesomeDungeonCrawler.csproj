@@ -117,6 +117,9 @@
     <Compile Include="Data\Target\IWoWLocalPlayer.cs" />
     <Compile Include="Data\Target\IWoWPlayer.cs" />
     <Compile Include="Data\Target\IWoWUnit.cs" />
+    <Compile Include="GUI\AdvancedSettings.xaml.cs">
+      <DependentUpon>AdvancedSettings.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\AutoUpdater.cs" />
     <Compile Include="Profiles\IProfile.cs" />
     <Compile Include="Profiles\Steps\DefendSpotStep.cs" />
@@ -195,10 +198,15 @@
     <Content Include="Compiled\WholesomeDungeonCrawler.dll" />
     <Content Include="Dependencies\robotManager.dll" />
     <Content Include="Dependencies\wManager.dll" />
+    <Resource Include="GUI\WholesomeDCrawlerIcon.png" />
     <Content Include="Wholesome-Toolbox\.gitignore" />
     <Content Include="Wholesome-Toolbox\Wholesome_Toolbox.shproj.user" />
     <Content Include="Wholesome-Toolbox\Wholesome_Toolbox.sln" />
-    <Content Include="Compiled\Version.txt" />
+    <Content Include="Compiled\Version.txt" />    
+    <Page Include="GUI\AdvancedSettings.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="GUI\ProfileStep.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
