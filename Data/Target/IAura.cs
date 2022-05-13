@@ -1,6 +1,6 @@
 ﻿namespace WholesomeDungeonCrawler.Data
 {
-    internal interface IAura
+    public interface IAura
     {
         int Stacks { get; }
         int TimeLeft { get; }

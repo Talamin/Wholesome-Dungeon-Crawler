@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Data;
 using wManager.Wow.Helpers;
@@ -34,12 +35,12 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                return true;
+                return _entityCache.ListGroupMember.Any(y => y.Auras.ContainsKey(433) || y.Auras.ContainsKey(430));
             }
         }
         public override void Run()
         {
-            throw new NotImplementedException();
+            Thread.Sleep(500);
         }
     }
 }
