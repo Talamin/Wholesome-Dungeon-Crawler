@@ -22,7 +22,6 @@ namespace WholesomeDungeonCrawler.States
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private IWoWUnit Target;
-        private IWoWUnit Tank;
 
         public SlaveInitiateCombat(ICache iCache, IEntityCache EntityCache, int priority)
         {
@@ -50,9 +49,9 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 IWoWUnit Tank = _entityCache.ListGroupMember.Where(t => t.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName).FirstOrDefault();
-                if (AttackingTank() != null)
+                if (AttackingTank(Tank) != null)
                 {
-                    Target = AttackingTank();
+                    Target = AttackingTank(Tank);
                     Logger.Log($"Attacking: {Target.Name} is attacking Tank, switching");
                     return true;
                 }
@@ -69,12 +68,12 @@ namespace WholesomeDungeonCrawler.States
             Fight.StartFight(Target.Guid, false);
         }
 
-        private IWoWUnit AttackingTank()
+        private IWoWUnit AttackingTank(IWoWUnit tank)
         {
             IWoWUnit Unit = FindClosestUnit(unit =>
             unit.IsAttackingGroup
-            && unit.TargetGuid == Tank.Guid
-            && !unit.Dead, Tank.PositionWithoutType);
+            && unit.TargetGuid == tank.Guid
+            && !unit.Dead, tank.PositionWithoutType);
             return Unit;
         }
 
