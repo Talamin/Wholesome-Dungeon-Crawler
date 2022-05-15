@@ -48,8 +48,8 @@ namespace WholesomeDungeonCrawler.States
                 {
                     Interact.ClearTarget();
                 }
-                IWoWUnit Tank = _entityCache.ListGroupMember.Where(t => t.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName).FirstOrDefault();
 
+                IWoWUnit Tank = _entityCache.ListGroupMember.Where(t => t.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName).FirstOrDefault();
                 if (AttackingTank() != null)
                 {
                     Target = AttackingTank();
@@ -74,8 +74,6 @@ namespace WholesomeDungeonCrawler.States
             IWoWUnit Unit = FindClosestUnit(unit =>
             unit.IsAttackingGroup
             && unit.TargetGuid == Tank.Guid
-            && unit.Reaction <= Reaction.Neutral
-            && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
             && !unit.Dead, Tank.PositionWithoutType);
             return Unit;
         }
