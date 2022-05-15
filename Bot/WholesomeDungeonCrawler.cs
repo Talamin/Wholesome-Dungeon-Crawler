@@ -59,6 +59,7 @@ namespace WholesomeDungeonCrawler.Bot
                 _fsm.AddState(new WaitRest(_cache, _entityCache, 12));
                 _fsm.AddState(new MovementSlave(_cache, _entityCache, 11));
 
+                
                 _fsm.AddState(new SlaveSwitchInCombat(_cache, _entityCache, 10));
                 _fsm.AddState(new SlaveInitiateCombat(_cache, _entityCache, 9));
                 _fsm.AddState(new TankCombat(_cache, _entityCache, 8));

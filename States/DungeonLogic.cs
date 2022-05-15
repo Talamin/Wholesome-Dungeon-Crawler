@@ -1,4 +1,5 @@
 ﻿using robotManager.FiniteStateMachine;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Manager;
@@ -28,6 +29,11 @@ namespace WholesomeDungeonCrawler.States
                     || Fight.InFight
                     || _profileManager.CurrentDungeonProfile == null
                     || _profileManager.CurrentDungeonProfile.CurrentStep == null)
+                {
+                    return false;
+                }
+
+                if (_entityCache.Me.Name != WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
                 {
                     return false;
                 }
