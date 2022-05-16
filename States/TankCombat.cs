@@ -21,7 +21,6 @@ namespace WholesomeDungeonCrawler.States
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
-        private IWoWUnit Target;
 
         public TankCombat(ICache iCache, IEntityCache EntityCache, int priority)
         {
@@ -29,6 +28,8 @@ namespace WholesomeDungeonCrawler.States
             _entityCache = EntityCache;
             Priority = priority;
         }
+
+        private IWoWUnit foundtarget;
 
         public override bool NeedToRun
         {
@@ -47,12 +48,34 @@ namespace WholesomeDungeonCrawler.States
                     Interact.ClearTarget();
                 }
 
-                if(AttackingGroupMember()!=null 
-                    && AttackingGroupMember().TargetGuid != _entityCache.Me.Guid)
+                if(Fight.InFight)
+                {              
+                    IWoWUnit attackerGroupMember = AttackingGroupMember();
+                    if (attackerGroupMember != null && attackerGroupMember.TargetGuid != _entityCache.Me.Guid)
+                    {
+                        foundtarget = attackerGroupMember;
+                        Logger.Log($"Attacking: {foundtarget.Name} is attacking Groupmember, switching");
+                        return true;
+                    }
+
+                }
+                if(!Fight.InFight)
                 {
-                    Target = AttackingGroupMember();
-                    Logger.Log($"Attacking: {Target.Name} is attacking Groupmember, switching");
-                    return true;
+                    IWoWUnit attackerGroupMember = AttackingGroupMember();
+                    if (attackerGroupMember != null && attackerGroupMember.TargetGuid != _entityCache.Me.Guid)
+                    {
+                        foundtarget = attackerGroupMember;
+                        Logger.Log($"Attacking: {foundtarget.Name} is attacking Groupmember, switching");
+                        return true;
+                    }
+
+                    IWoWUnit attackerMe = AttackingMe();
+                    if (attackerMe != null && attackerMe.TargetGuid == _entityCache.Me.Guid)
+                    {
+                        foundtarget = attackerMe;
+                        Logger.Log($"Attacking: {foundtarget.Name} is attacking Me, switching");
+                        return true;
+                    }
                 }
 
                 return false;
@@ -64,7 +87,7 @@ namespace WholesomeDungeonCrawler.States
         {
             MovementManager.StopMove();
             Fight.StopFight();
-            Fight.StartFight(Target.Guid, false);
+            Fight.StartFight(foundtarget.Guid, false);
         }
 
         private IWoWUnit AttackingGroupMember()
@@ -72,9 +95,17 @@ namespace WholesomeDungeonCrawler.States
             IWoWUnit Unit = FindClosestUnit(unit =>
             unit.IsAttackingGroup
             && !unit.IsAttackingMe
-            && unit.Reaction <= Reaction.Neutral
             && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
             && !unit.Dead, PointInMidOfGroup());
+            return Unit;
+        }
+
+        private IWoWUnit AttackingMe()
+        {
+            IWoWUnit Unit = FindClosestUnit(unit =>
+            unit.IsAttackingMe
+            && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
+            && !unit.Dead, _entityCache.Me.PositionWithoutType);
             return Unit;
         }
 
