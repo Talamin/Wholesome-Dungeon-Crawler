@@ -97,7 +97,7 @@ namespace WholesomeDungeonCrawler.States
                 LinesToCheck = linesToCheck;
 
                 // Check if enemies along the lines
-                IWoWUnit[] hostileUnits = _entityCache.HostileUnits;
+                IWoWUnit[] hostileUnits = _entityCache.EnemyUnitsList;
                 // Check for hostiles along the lines
                 List<IWoWUnit> unitsAlongLine = new List<IWoWUnit>();
                 foreach ((Vector3 a, Vector3 b) line in linesToCheck)

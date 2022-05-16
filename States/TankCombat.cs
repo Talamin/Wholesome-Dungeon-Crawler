@@ -104,7 +104,7 @@ namespace WholesomeDungeonCrawler.States
 
             Vector3 position = referencePosition != null ? referencePosition : _entityCache.Me.PositionWithoutType;
 
-            foreach (IWoWUnit unit in _entityCache.HostileUnits)
+            foreach (IWoWUnit unit in _entityCache.EnemyUnitsList)
             {
                 if (!predicate(unit)) continue;
 
