@@ -50,13 +50,15 @@ namespace WholesomeDungeonCrawler.States
 
                 IWoWUnit Tank = _entityCache.ListGroupMember.Where(t => t.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName).FirstOrDefault();
 
-                if (FleeingUnit(Tank) != null && _entityCache.Me.TargetGuid == 0)
+                //Check for fleeing Units
+                IWoWUnit fleeUnit = FleeingUnit(Tank);
+                if (fleeUnit != null && _entityCache.Me.TargetGuid != fleeUnit.Guid)
                 {
                     Target = FleeingUnit(Tank);
-                    Logger.Log($"Attacking: {Target.Name} is attacking Tank, switching");
+                    Logger.Log($"Attacking: {Target.Name} is attacking Fleeing, switching");
                     return true;
                 }
-
+                //Check to AssistTank
                 if (AssistTank(Tank) != null && _entityCache.Me.TargetGuid == 0)
                 {
                     Target = AssistTank(Tank);
@@ -64,6 +66,13 @@ namespace WholesomeDungeonCrawler.States
                     return true;
                 }
 
+                //check to Assist any  Groupmember if Tank don´t get the aggro
+                if (AssistGroup(Tank) != null && _entityCache.Me.TargetGuid == 0)
+                {
+                    Target = AssistTank(Tank);
+                    Logger.Log($"Attacking: {Target.Name} is attacking Groupmember, switching");
+                    return true;
+                }
                 return false;
 
             }
@@ -81,7 +90,6 @@ namespace WholesomeDungeonCrawler.States
             IWoWUnit Unit = FindClosestUnit(unit =>
             unit.IsAttackingGroup
             && unit.Fleeing
-            && unit.Reaction <= Reaction.Neutral
             && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
             && !unit.Dead, Tank.PositionWithoutType);
             return Unit;
@@ -92,7 +100,16 @@ namespace WholesomeDungeonCrawler.States
             IWoWUnit Unit = FindClosestUnit(unit =>
             unit.IsAttackingGroup
             && unit.TargetGuid == Tank.Guid
-            && unit.Reaction <= Reaction.Neutral
+            && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
+            && !unit.Dead, Tank.PositionWithoutType);
+            return Unit;
+        }
+
+        private IWoWUnit AssistGroup(IWoWUnit Tank)
+        {
+            IWoWUnit Unit = FindClosestUnit(unit =>
+            unit.IsAttackingGroup
+            && unit.TargetGuid != Tank.Guid
             && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
             && !unit.Dead, Tank.PositionWithoutType);
             return Unit;
