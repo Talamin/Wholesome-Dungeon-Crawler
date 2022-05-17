@@ -59,6 +59,7 @@ namespace WholesomeDungeonCrawler.Manager
                     {
                         CurrentDungeonProfile = new Profile(deserializedProfile, _entityCache);
                         Logger.Log($"Dungeon Profile loaded: {deserializedProfile.Name}.{Environment.NewLine} with the MapID { deserializedProfile.MapId}.{ Environment.NewLine} with at Total Steps { deserializedProfile.StepModels.Count()}.{ Environment.NewLine}");
+                        if(CurrentDungeonProfile.)
                         CurrentDungeonProfile.SetCurrentStep();
                         return;
                         //PathFinder.OffMeshConnections.AddRange(dungeonProfile.offMeshConnections); <-- in its current state, Profile doesn´t hold any Offmeshes

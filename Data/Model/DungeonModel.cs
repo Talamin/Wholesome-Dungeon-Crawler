@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.Data.Model
 {
@@ -14,5 +15,6 @@ namespace WholesomeDungeonCrawler.Data.Model
         public int DungeonId { get; set; }
         public Vector3 Start { get; set; }
         public Vector3 EntranceLoc { get; set; }
+
     }
 }
