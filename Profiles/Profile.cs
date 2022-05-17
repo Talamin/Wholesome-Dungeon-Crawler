@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using robotManager.Helpful;
+using System.Collections.Generic;
 using System.Linq;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Profiles.Steps;
+using wManager.Wow.Helpers;
 //using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Profiles
@@ -13,6 +15,9 @@ namespace WholesomeDungeonCrawler.Profiles
         public List<IStep> _profileSteps = new List<IStep>();
 
         public IStep CurrentStep { get; private set; }
+
+        public List<Vector3> DeathRunPathList = new List<Vector3>();
+        public List<PathFinder.OffMeshConnection> OffMeshConnectionsList = new List<PathFinder.OffMeshConnection>();
 
         public Profile(ProfileModel profileModel, IEntityCache entityCache)
         {
@@ -47,6 +52,12 @@ namespace WholesomeDungeonCrawler.Profiles
                 }
                 //elseif...
             }
+            foreach(Vector3 point in profileModel.DeathRunPath)
+            {
+                DeathRunPathList.Add(point);
+            }
+
+            PathFinder.OffMeshConnections.AddRange(profileModel.OffMeshConnections);
         }
 
         public void Dispose()
