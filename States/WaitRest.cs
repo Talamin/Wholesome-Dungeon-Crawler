@@ -35,7 +35,7 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                return _entityCache.ListGroupMember.Any(y => y.Auras.ContainsKey(433) || y.Auras.ContainsKey(430));
+                return _entityCache.ListGroupMember.Any(y => y.Auras.ContainsKey(433) || y.Auras.ContainsKey(430) || y.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40);
             }
         }
         public override void Run()

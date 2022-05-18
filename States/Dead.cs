@@ -1,0 +1,85 @@
+﻿using robotManager.FiniteStateMachine;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.Data.Model;
+using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Manager;
+using wManager.Wow.Enums;
+using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
+
+namespace WholesomeDungeonCrawler.States
+{
+    class Dead : State, IState
+    {
+        private readonly ICache _cache;
+        private readonly IEntityCache _entityCache;
+        private readonly IProfileManager _profileManager;
+
+        public Dead(ICache iCache, IEntityCache iEntityCache, IProfileManager profilemanager, int priority)
+        {
+            _cache = iCache;
+            _entityCache = iEntityCache;
+            _profileManager = profilemanager;
+            Priority = priority;
+        }
+
+        private List<WoWClass> _rezzClasses = new List<WoWClass> { WoWClass.Druid, WoWClass.Paladin, WoWClass.Priest, WoWClass.Shaman };
+        public override bool NeedToRun
+        {
+            get
+            {
+                if (!Conditions.InGameAndConnected
+                    || !_entityCache.Me.Valid)
+                    //|| _profileManager.CurrentDungeonProfile == null
+                    //|| _profileManager.CurrentDungeonProfile.CurrentStep == null)
+                {
+                    return false;
+                }
+
+                return _entityCache.Me.Dead;
+            }
+        }
+
+        public override void Run()
+        {
+        //Notes: 
+        //First: Check if we can  Selfrezz
+        //Second: Check if a Character is around which can rezz and is alive
+        //Third: Release for  Deathrun
+        //Find out in which Dungeon we died.
+
+
+        if(_cache.IsInInstance)
+            {
+                if(_entityCache.Me.Auras.ContainsKey(20762))//Soulstonebuff
+                {
+                    Lua.LuaDoString("StaticPopup1Button1:Click()");
+                    Logger.Log("SelfRezz progressed");
+                }
+                if(!_entityCache.ListGroupMember.Any(y=> _rezzClasses.Contains(y.WoWClass) && !y.Dead && _entityCache.Me.PositionWithoutType.DistanceTo(y.PositionWithoutType) < 50))
+                {
+                    Logger.Log("No one to Rezz around, we have to use our Feet and walk back");
+                    Lua.LuaDoString("RepopMe();");
+                }
+            }
+            //set DungeonDeathRun before we Leave the Dungeon
+            var findDungeonDeathrun = _profileManager.CurrentDungeonProfile.DeathRunPathList;
+
+        if(!_cache.IsInInstance)
+            {
+                if(findDungeonDeathrun.Count()<= 0 || _profileManager.CurrentDungeonProfile == null)
+                {
+                    var SortedDungeon = Lists.AllDungeons.OrderBy(x => x.EntranceLoc.DistanceTo(ObjectManager.Me.PositionCorpse)).FirstOrDefault();
+                    Logger.Log($"We died at: {SortedDungeon.Name} ");
+                    //Todo: Find a way to load the correct Deathrun
+                }
+                MovementManager.Go(findDungeonDeathrun);
+            }
+        }
+    }
+}

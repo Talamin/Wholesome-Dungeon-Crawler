@@ -6,6 +6,7 @@ namespace WholesomeDungeonCrawler.Data
     {
         public CachedWoWPlayer(WoWPlayer player) : base(player)
         {
+
         }
     }
 }

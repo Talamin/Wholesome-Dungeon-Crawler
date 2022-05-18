@@ -152,6 +152,7 @@
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="States\Dead.cs" />
     <Compile Include="States\SlaveInitiateCombat.cs" />
     <Compile Include="States\SlaveSwitchInCombat.cs" />
     <Compile Include="States\TankCombat.cs" />
@@ -202,7 +203,7 @@
     <Content Include="Wholesome-Toolbox\.gitignore" />
     <Content Include="Wholesome-Toolbox\Wholesome_Toolbox.shproj.user" />
     <Content Include="Wholesome-Toolbox\Wholesome_Toolbox.sln" />
-    <Content Include="Compiled\Version.txt" />    
+    <Content Include="Compiled\Version.txt" />
     <Page Include="GUI\AdvancedSettings.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
