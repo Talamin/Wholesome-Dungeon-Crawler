@@ -15,6 +15,6 @@
         IWoWUnit[] EnemyUnitsLootable { get; }
         IWoWUnit[] EnemyAttackingGroup { get; }
         IWoWUnit[] EnemyUnitsList { get; }
-        IWoWUnit[] ListGroupMember { get; }
+        IWoWPlayer[] ListGroupMember { get; }
     }
 }

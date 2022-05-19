@@ -52,7 +52,7 @@ namespace WholesomeDungeonCrawler.Data
         public IWoWUnit[] EnemyUnitsTargetingGroup { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsLootable { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsList { get; private set; } = new IWoWUnit[0];
-        public IWoWUnit[] ListGroupMember { get; private set; } = new IWoWUnit[0];
+        public IWoWPlayer[] ListGroupMember { get; private set; } = new IWoWPlayer[0];
 
         public IWoWPlayer TankUnit { get; private set; }
 
@@ -117,7 +117,7 @@ namespace WholesomeDungeonCrawler.Data
             var enemyUnitsLootable = new List<IWoWUnit>(units.Count);
             var enemyAttackingGroup = new List<IWoWUnit>(units.Count);
             var enemyUnits = new List<IWoWUnit>(units.Count);
-            var listGroupMember = new List<IWoWUnit>(units.Count);
+            var listGroupMember = new List<IWoWPlayer>(units.Count);
 
             var targetPosition = cachedTarget.PositionWithoutType;
             var targetGuid = cachedTarget.Guid;
