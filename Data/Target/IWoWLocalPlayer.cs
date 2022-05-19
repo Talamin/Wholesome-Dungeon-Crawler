@@ -1,6 +1,6 @@
 ﻿namespace WholesomeDungeonCrawler.Data
 {
-    internal interface IWoWLocalPlayer : IWoWPlayer
+    public interface IWoWLocalPlayer : IWoWPlayer
     {
     }
 }

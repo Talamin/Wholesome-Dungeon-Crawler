@@ -4,8 +4,8 @@
     {
         IWoWUnit Target { get; }
         IWoWUnit Pet { get; }
-        IWoWUnit Me { get; }
-        IWoWUnit TankUnit { get; }
+        IWoWLocalPlayer Me { get; }
+        IWoWPlayer TankUnit { get; }
 
         IWoWUnit[] EnemyUnitsNearTarget { get; }
         IWoWUnit[] EnemyUnitsNearPlayer { get; }

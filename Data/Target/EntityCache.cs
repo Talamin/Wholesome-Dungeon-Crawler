@@ -42,8 +42,9 @@ namespace WholesomeDungeonCrawler.Data
             }
         }
 
-        public IWoWUnit Target { get; private set; }
-        public IWoWUnit Pet { get; private set; }
+        public IWoWUnit Target { get; private set; } = Cache(new WoWUnit(0));
+        public IWoWUnit Pet { get; private set; } = Cache(new WoWUnit(0));
+        public IWoWLocalPlayer Me { get; private set; } = Cache(new WoWLocalPlayer(0));
         public IWoWUnit[] EnemyUnitsNearTarget { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsNearPlayer { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] InterruptibleEnemyUnits { get; private set; } = new IWoWUnit[0];
@@ -52,8 +53,8 @@ namespace WholesomeDungeonCrawler.Data
         public IWoWUnit[] EnemyUnitsLootable { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsList { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] ListGroupMember { get; private set; } = new IWoWUnit[0];
-        public IWoWUnit Me { get; private set; }
-        public IWoWUnit TankUnit { get; private set; }
+
+        public IWoWPlayer TankUnit { get; private set; }
 
         private List<ulong> ListPartyMemberGuid { get; set; } = new List<ulong>();
         private ulong TankGuid { get; set; }
@@ -66,6 +67,7 @@ namespace WholesomeDungeonCrawler.Data
         private float EnemiesNearMeRange;
         private float InterruptibleEnemiesRange;
 
+        private static IWoWLocalPlayer Cache(WoWLocalPlayer player) => new CachedWoWLocalPlayer(player);
         private static IWoWUnit Cache(WoWUnit unit) => new CachedWoWUnit(unit);
         private static bool Reachable(Vector3 a, Vector3 b) => !TraceLine.TraceLineGo(a, b, CGWorldFrameHitFlags.HitTestSpellLoS);
         private static bool Reachable(Vector3 a, Vector3 b, ref bool? cachedReachable)
@@ -82,7 +84,8 @@ namespace WholesomeDungeonCrawler.Data
         private void OnObjectManagerPulse()
         {
             WoWLocalPlayer player;
-            IWoWUnit cachedTarget, cachedPet, cachedPlayer;
+            IWoWLocalPlayer cachedPlayer;
+            IWoWUnit cachedTarget, cachedPet;
             List<WoWUnit> units;
             List<WoWPlayer> playerUnits;
             //IWoWLocalPlayer cachedPlayer;
@@ -123,7 +126,7 @@ namespace WholesomeDungeonCrawler.Data
 
             foreach (var play in playerUnits)
             {
-                IWoWUnit cachedplayer = Cache(play);
+                IWoWPlayer cachedplayer = (IWoWPlayer)Cache(play);
                 if (ListPartyMemberGuid.Contains(cachedplayer.Guid))
                 {
                     listGroupMember.Add(cachedplayer);
