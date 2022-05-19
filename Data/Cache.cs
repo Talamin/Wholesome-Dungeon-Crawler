@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeToolbox;
 using wManager.Events;
@@ -25,6 +26,9 @@ namespace WholesomeDungeonCrawler.Data
         public bool LFGProposalShown { get; private set; }
         public bool LFGRoleCheckShown { get; private set; }
         public bool LootRollShow { get; private set; }
+        public List<ulong> ListPartyMemberGuid { get; private set; } = new List<ulong>();
+        //public List<IWoWUnit> PartyMember { get; private set; } = new List<IWoWUnit>();
+        public ulong TankGuid { get; private set; }
 
         //general
 
@@ -59,6 +63,7 @@ namespace WholesomeDungeonCrawler.Data
             {
                 case "WORLD_MAP_UPDATE":
                     CacheIsInInstance();
+                    CacheListPartyMemberGuid();
                     break;
                 case "PARTY_INVITE_REQUEST":
                     CachePartyInviteRequest();
@@ -68,6 +73,7 @@ namespace WholesomeDungeonCrawler.Data
                     break;
                 case "PARTY_MEMBERS_CHANGED":
                     CachePartyMemberChanged();
+                    CacheListPartyMemberGuid();
                     break;
                 case "LFG_QUEUE_STATUS_UPDATE":
                     GetLFGModes();
@@ -211,5 +217,21 @@ namespace WholesomeDungeonCrawler.Data
         {
             LootRollShow = Lua.LuaDoString<bool>("for i = 1, 4 do local b = ['GroupLootFrame'..i] if b and b:IsVisible() then return true end end return false");
         }
+
+        private void CacheListPartyMemberGuid()
+        {
+            List<ulong> partyMembers = new List<ulong>();
+            foreach(WoWPlayer p in Party.GetParty())
+            {
+                partyMembers.Add(p.Guid);
+                if(p.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+                {
+                    TankGuid = p.Guid;
+                }
+            }
+            partyMembers.Add(ObjectManager.Me.Guid);
+            ListPartyMemberGuid = partyMembers;
+        }
+
     }
 }

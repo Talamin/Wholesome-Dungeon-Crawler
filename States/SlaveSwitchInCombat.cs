@@ -48,7 +48,7 @@ namespace WholesomeDungeonCrawler.States
                     Interact.ClearTarget();
                 }
 
-                IWoWUnit Tank = _entityCache.ListGroupMember.Where(t => t.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName).FirstOrDefault();
+                IWoWUnit Tank = _entityCache.TankUnit;
 
                 //Check for fleeing Units
                 IWoWUnit fleeUnit = FleeingUnit(Tank);

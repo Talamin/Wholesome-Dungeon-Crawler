@@ -5,6 +5,7 @@
         IWoWUnit Target { get; }
         IWoWUnit Pet { get; }
         IWoWUnit Me { get; }
+        IWoWUnit TankUnit { get; }
 
         IWoWUnit[] EnemyUnitsNearTarget { get; }
         IWoWUnit[] EnemyUnitsNearPlayer { get; }
@@ -15,6 +16,5 @@
         IWoWUnit[] EnemyAttackingGroup { get; }
         IWoWUnit[] EnemyUnitsList { get; }
         IWoWUnit[] ListGroupMember { get; }
-
     }
 }

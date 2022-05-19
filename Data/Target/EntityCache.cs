@@ -11,8 +11,10 @@ namespace WholesomeDungeonCrawler.Data
     internal class EntityCache : IEntityCache
     {
         private object cacheLock = new object();
-        public EntityCache()
+        private ICache _cache;
+        public EntityCache(ICache cache)
         {
+            _cache = cache;
         }
 
         public void Dispose() => ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
@@ -34,6 +36,8 @@ namespace WholesomeDungeonCrawler.Data
         public IWoWUnit[] EnemyUnitsList { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] ListGroupMember { get; private set; } = new IWoWUnit[0];
         public IWoWUnit Me { get; private set; }
+
+        public IWoWUnit TankUnit { get; private set; }
 
         //Groupplay  Section
         public IWoWUnit[] EnemyAttackingGroup { get; private set; } = new IWoWUnit[0];
@@ -100,9 +104,13 @@ namespace WholesomeDungeonCrawler.Data
             foreach (var play in playerUnits)
             {
                 IWoWUnit cachedplayer = Cache(play);
-                if(play.IsPartyMember)
+                if (_cache.ListPartyMemberGuid.Contains(cachedplayer.Guid))
                 {
                     listGroupMember.Add(cachedplayer);
+                    if(cachedplayer.Guid == _cache.TankGuid)
+                    {
+                        TankUnit = cachedplayer;
+                    }
                 }
                 ListGroupMember = listGroupMember.ToArray();
             }
@@ -121,10 +129,6 @@ namespace WholesomeDungeonCrawler.Data
                 if (unit.Reaction <= Reaction.Neutral && unit.PositionWithoutType.DistanceTo(playerPosition) <= 100)
                 {
                     enemyUnits.Add(cachedUnit);
-                }
-                if (unit.IsPartyMember)
-                {
-                    listGroupMember.Add(cachedUnit);
                 }
                 if (!unit.IsAlive)
                 {

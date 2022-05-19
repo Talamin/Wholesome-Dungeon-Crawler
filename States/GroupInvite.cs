@@ -41,7 +41,7 @@ namespace WholesomeDungeonCrawler.States
 
                 timer = new Timer(5000);
 
-                return _cache.ListPartyMember.Count() < 4; //changed from 5 for testing
+                return _cache.ListPartyMember.Count() < 5; //changed from 5 for testing
             }
         }
 

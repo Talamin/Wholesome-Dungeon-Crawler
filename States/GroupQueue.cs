@@ -29,7 +29,7 @@ namespace WholesomeDungeonCrawler.States
                     || Fight.InFight
                     || ObjectManager.Me.HaveBuff("Dungeon Deserter")
                     || _cache.IsInInstance
-                    || _cache.ListPartyMember.Count() < 4 //changed from 4 for testing
+                    || _cache.ListPartyMember.Count() < 5 //changed from 4 for testing
                     || _entityCache.Me.Name != CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
                 {
                     return false;

@@ -47,7 +47,7 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                IWoWUnit Tank = _entityCache.ListGroupMember.Where(t => t.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName).FirstOrDefault();
+                IWoWUnit Tank = _entityCache.TankUnit;
                 if(Tank == null)
                 {
                     return false;
