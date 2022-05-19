@@ -33,7 +33,7 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!Conditions.InGameAndConnected
-                    || !ObjectManager.Me.IsValid
+                    || !_entitycache.Me.Valid
                     || Fight.InFight
                     || !_cache.IsInInstance)
                 {

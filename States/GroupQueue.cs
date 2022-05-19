@@ -25,9 +25,10 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!Conditions.InGameAndConnected 
-                    || !ObjectManager.Me.IsValid 
+                    || !_entityCache.Me.Valid 
                     || Fight.InFight
-                    || ObjectManager.Me.HaveBuff("Dungeon Deserter")
+                    || _entityCache.Me.Auras.Any(y => y.Key == 71041)
+                    //|| ObjectManager.Me.HaveBuff("Dungeon Deserter") //71041
                     || _cache.IsInInstance
                     || _cache.ListPartyMember.Count() < 5 //changed from 4 for testing
                     || _entityCache.Me.Name != CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)

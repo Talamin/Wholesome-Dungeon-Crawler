@@ -17,10 +17,12 @@ namespace WholesomeDungeonCrawler.States
     {
         public override string DisplayName => "GroupQueue Accept";
         private readonly ICache _cache;
+        private readonly IEntityCache _entityCache;
 
-        public GroupQueueAccept(ICache iCache, int priority)
+        public GroupQueueAccept(ICache iCache, IEntityCache cache, int priority)
         {
             _cache = iCache;
+            _entityCache = cache;
             Priority = priority;
         }
 
@@ -33,7 +35,7 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (!timer.IsReady
                     || !Conditions.InGameAndConnected
-                    || !ObjectManager.Me.IsValid
+                    || !_entityCache.Me.Valid
                     || Fight.InFight
                     || _cache.IsInInstance
                     || _cache.ListPartyMember.Count() < 5) //changed from 4
