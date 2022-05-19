@@ -74,7 +74,7 @@ namespace WholesomeDungeonCrawler.States
             {
                 if(findDungeonDeathrun.Count()<= 0 || _profileManager.CurrentDungeonProfile == null)
                 {
-                    var SortedDungeon = Lists.AllDungeons.OrderBy(x => x.EntranceLoc.DistanceTo(ObjectManager.Me.PositionCorpse)).FirstOrDefault();
+                    var SortedDungeon = Lists.AllDungeons.OrderBy(x => x.EntranceLoc.DistanceTo(_entityCache.Me.PositionCorpse)).FirstOrDefault();
                     Logger.Log($"We died at: {SortedDungeon.Name} ");
                     //Todo: Find a way to load the correct Deathrun
                 }
