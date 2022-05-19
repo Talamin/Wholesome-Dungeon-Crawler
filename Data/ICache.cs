@@ -14,9 +14,5 @@ namespace WholesomeDungeonCrawler.Data
         bool LFGProposalShown { get; }
         bool LFGRoleCheckShown { get; }
         bool LootRollShow { get;}
-        List<ulong> ListPartyMemberGuid { get; }
-
-        //List<IWoWUnit> PartyMember { get; }
-        ulong TankGuid { get; }
     }
 }

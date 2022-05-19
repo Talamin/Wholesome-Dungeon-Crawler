@@ -1,5 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
 using wManager.Events;
 using wManager.Wow.Enums;
@@ -11,18 +12,34 @@ namespace WholesomeDungeonCrawler.Data
     internal class EntityCache : IEntityCache
     {
         private object cacheLock = new object();
-        private ICache _cache;
-        public EntityCache(ICache cache)
+        public EntityCache()
         {
-            _cache = cache;
         }
 
-        public void Dispose() => ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
-
+        public void Dispose()
+        {
+            EventsLuaWithArgs.OnEventsLuaStringWithArgs -= EventsLuaWithArgs_OnEventsLuaStringWithArgs;
+            ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
+        }
         public void Initialize()
         {
+            CacheListPartyMemberGuid();
+            EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaStringWithArgs;
             OnObjectManagerPulse();
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
+        }
+
+        private void EventsLuaWithArgs_OnEventsLuaStringWithArgs(string id, List<string> args)
+        {
+            switch (id)
+            {
+                case "WORLD_MAP_UPDATE":
+                    CacheListPartyMemberGuid();
+                    break;
+                case "PARTY_MEMBERS_CHANGED":
+                    CacheListPartyMemberGuid();
+                    break;
+            }
         }
 
         public IWoWUnit Target { get; private set; }
@@ -36,8 +53,11 @@ namespace WholesomeDungeonCrawler.Data
         public IWoWUnit[] EnemyUnitsList { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] ListGroupMember { get; private set; } = new IWoWUnit[0];
         public IWoWUnit Me { get; private set; }
-
         public IWoWUnit TankUnit { get; private set; }
+
+        private List<ulong> ListPartyMemberGuid { get; set; } = new List<ulong>();
+        private ulong TankGuid { get; set; }
+
 
         //Groupplay  Section
         public IWoWUnit[] EnemyAttackingGroup { get; private set; } = new IWoWUnit[0];
@@ -70,7 +90,7 @@ namespace WholesomeDungeonCrawler.Data
             lock (cacheLock)
             {
                 player = ObjectManager.Me;
-                cachedPlayer = Cache(player); 
+                cachedPlayer = Cache(player);
 
                 cachedTarget = Cache(new WoWUnit(0));
                 var targetObjectBaseAddress = ObjectManager.GetObjectByGuid(player.Target).GetBaseAddress;
@@ -104,10 +124,10 @@ namespace WholesomeDungeonCrawler.Data
             foreach (var play in playerUnits)
             {
                 IWoWUnit cachedplayer = Cache(play);
-                if (_cache.ListPartyMemberGuid.Contains(cachedplayer.Guid))
+                if (ListPartyMemberGuid.Contains(cachedplayer.Guid))
                 {
                     listGroupMember.Add(cachedplayer);
-                    if(cachedplayer.Guid == _cache.TankGuid)
+                    if (cachedplayer.Guid == TankGuid)
                     {
                         TankUnit = cachedplayer;
                     }
@@ -184,6 +204,21 @@ namespace WholesomeDungeonCrawler.Data
             EnemyAttackingGroup = enemyAttackingGroup.ToArray();
             EnemyUnitsList = enemyUnits.ToArray();
         }
-
+        private void CacheListPartyMemberGuid()
+        {
+            List<ulong> partyMembers = new List<ulong>();
+            foreach (WoWPlayer p in Party.GetParty())
+            {
+                partyMembers.Add(p.Guid);
+                Logger.Log($"Updated Party, added Groupmember: {p.Name} ");
+                if (p.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+                {
+                    TankGuid = p.Guid;
+                    Logger.Log($"Updated Party, added Tank: {p.Name} ");
+                }
+            }
+            partyMembers.Add(Me.Guid);
+            ListPartyMemberGuid = partyMembers;
+        }
     }
 }
