@@ -20,11 +20,13 @@ namespace WholesomeDungeonCrawler.Manager
 
         public Profile CurrentDungeonProfile { get; private set; }
 
+        private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
 
-        public ProfileManager(IEntityCache entityCache)
+        public ProfileManager(IEntityCache entityCache, ICache cache)
         {
             _entityCache = entityCache;
+            _cache = cache;
         }
         public void Initialize()
         {
@@ -46,7 +48,7 @@ namespace WholesomeDungeonCrawler.Manager
             DungeonModel dungeon = CheckandChooseactualDungeon();
             if (dungeon != null)
             {
-                var profilePath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");
+                var profilePath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");
                 var profilecount = profilePath.GetFiles().Count();
                 if (profilecount > 0)
                 {
@@ -75,6 +77,10 @@ namespace WholesomeDungeonCrawler.Manager
 
         private DungeonModel CheckandChooseactualDungeon()
         {
+            if(_entityCache.Me.Dead && !_cache.IsInInstance)
+            {
+                return Lists.AllDungeons.OrderBy(x => x.EntranceLoc.DistanceTo(_entityCache.Me.PositionCorpse) < 50).FirstOrDefault();
+            }
             if (CheckactualDungeonProfileInList())
             {
                 if (Lists.AllDungeons.Count(d => d.MapId == Usefuls.ContinentId) > 1)

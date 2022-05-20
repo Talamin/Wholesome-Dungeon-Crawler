@@ -1,4 +1,5 @@
 ﻿using robotManager.FiniteStateMachine;
+using robotManager.Helpful;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,8 @@ namespace WholesomeDungeonCrawler.States
             }
         }
 
+        private List<Vector3> Deathrun = new List<Vector3>();
+
         public override void Run()
         {
         //Notes: 
@@ -56,7 +59,7 @@ namespace WholesomeDungeonCrawler.States
 
         if(_cache.IsInInstance)
             {
-                if(_entityCache.Me.Auras.ContainsKey(20762))//Soulstonebuff
+                if (_entityCache.Me.Auras.ContainsKey(20762))//Soulstonebuff
                 {
                     Lua.LuaDoString("StaticPopup1Button1:Click()");
                     Logger.Log("SelfRezz progressed");
@@ -67,18 +70,12 @@ namespace WholesomeDungeonCrawler.States
                     Lua.LuaDoString("RepopMe();");
                 }
             }
-            //set DungeonDeathRun before we Leave the Dungeon
-            var findDungeonDeathrun = _profileManager.CurrentDungeonProfile.DeathRunPathList;
+
 
         if(!_cache.IsInInstance)
             {
-                if(findDungeonDeathrun.Count()<= 0 || _profileManager.CurrentDungeonProfile == null)
-                {
-                    var SortedDungeon = Lists.AllDungeons.OrderBy(x => x.EntranceLoc.DistanceTo(_entityCache.Me.PositionCorpse)).FirstOrDefault();
-                    Logger.Log($"We died at: {SortedDungeon.Name} ");
-                    //Todo: Find a way to load the correct Deathrun
-                }
-                MovementManager.Go(findDungeonDeathrun);
+                Deathrun = _profileManager.CurrentDungeonProfile.DeathRunPathList;
+                MovementManager.Go(Deathrun);
             }
         }
     }
