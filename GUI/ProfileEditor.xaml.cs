@@ -25,6 +25,7 @@ using System.Security.Cryptography;
 using Newtonsoft.Json;
 using System.IO;
 using WholesomeDungeonCrawler.Data.Model;
+using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.GUI
 {
@@ -37,9 +38,10 @@ namespace WholesomeDungeonCrawler.GUI
         private static ProfileModel _currentProfile;
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<StepModel> StepCollection { get; set; }
-        public ObservableCollection<Vector3> DeathRunCollection { get; set; }
-
+        public ObservableCollection<Vector3> DeathrunCollection { get; set; }
+        private static System.Timers.Timer addDeathrunVectorTimer;
         public ObservableCollection<PathFinder.OffMeshConnection> OffMeshCollection { get; set; }
+        public ObservableCollection<Vector3> OffMeshPathCollection { get; set; }
 
         private JsonSerializerSettings jsonSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
 
@@ -61,8 +63,10 @@ namespace WholesomeDungeonCrawler.GUI
             this.DataContext = this;
             currentProfile = new ProfileModel();
             currentProfile.StepModels = new List<StepModel>();
+            currentProfile.DeathRunPath = new List<Vector3>();
+            currentProfile.OffMeshConnections = new List<PathFinder.OffMeshConnection>();
             InitializeComponent();
-            Lists.AllDungeons.Sort((a, b) => a.Name.CompareTo(b.Name));
+
             cbDungeon.ItemsSource = Lists.AllDungeons;
             cbDungeon.SelectedValuePath = "MapId";
             cbDungeon.DisplayMemberPath = "Name";
@@ -75,7 +79,7 @@ namespace WholesomeDungeonCrawler.GUI
         private void Setup()
         {
             //Debugger.Launch();
-
+            #region DialogSetup
             basicDialogSettings = new MetroDialogSettings()
             {
                 AnimateHide = true,
@@ -90,9 +94,6 @@ namespace WholesomeDungeonCrawler.GUI
                 AnimateShow = true,
                 ColorScheme = MetroDialogColorScheme.Theme
             };
-            StepCollection = new ObservableCollection<StepModel>(currentProfile.StepModels);
-            dgProfileSteps.ItemsSource = StepCollection;
-
             openFileDialog1 = new OpenFileDialog()
             {
                 FileName = "Select a profile",
@@ -100,11 +101,22 @@ namespace WholesomeDungeonCrawler.GUI
                 Title = "Open profile",
                 InitialDirectory = Others.GetCurrentDirectory + @"/Profiles/WholesomeDungeonCrawler"
             };
-            //OffMeshCollection = new ObservableCollection<PathFinder.OffMeshConnection>(currentProfile.OffMeshConnections);
-            //dgOffmeshList.Itemsource = OffMeshCollection;
+            #endregion
 
-            //DeathRunCollection = new ObservableCollection<Vector3>(currentProfile.DeathRunPath);
-            //dgDeathRun.Itemsource = DeathRunCollection;
+            StepCollection = new ObservableCollection<StepModel>(currentProfile.StepModels);
+            dgProfileSteps.ItemsSource = StepCollection;
+
+            DeathrunCollection = new ObservableCollection<Vector3>(currentProfile.DeathRunPath);
+            dgDeathrun.ItemsSource = DeathrunCollection;
+            addDeathrunVectorTimer = new System.Timers.Timer(200);
+            addDeathrunVectorTimer.Elapsed += AddDeathrunVectorTimer_Elapsed;
+            addDeathrunVectorTimer.AutoReset = true;
+            addDeathrunVectorTimer.Enabled = true;
+
+
+            OffMeshCollection = new ObservableCollection<PathFinder.OffMeshConnection>(currentProfile.OffMeshConnections);
+            dgOffmeshList.ItemsSource = OffMeshCollection;
+            cbOffMeshDirection.ItemsSource = Enum.GetValues(typeof(PathFinder.OffMeshConnectionType));
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)
@@ -233,38 +245,38 @@ namespace WholesomeDungeonCrawler.GUI
                             previousVector = vec;
                         }
                     }
-                    
-                    
-
-                    //var deadcolour = System.Drawing.Color.Red;
-                    //var deadpreviousVector = new Vector3();
-                    //foreach (var vec in currentProfile.)
-                    //{
-                    //    if (deadpreviousVector == new Vector3())
-                    //    {
-                    //        deadpreviousVector = vec;
-                    //    }
-                    //    Radar3D.DrawCircle(vec, 1f, deadcolour, true, 200);
-                    //    Radar3D.DrawLine(vec, deadpreviousVector, deadcolour, 200);
-                    //    deadpreviousVector = vec;
-                    //}
 
 
-                    //foreach (var offmesh in currentProfile.offMeshConnections)
-                    //{
-                    //    var offmeshcolour = System.Drawing.Color.Green;
-                    //    var offmeshcpreviousVector = new Vector3();
-                    //    foreach (var vec in offmesh.Path)
-                    //    {
-                    //        if (offmeshcpreviousVector == new Vector3())
-                    //        {
-                    //            offmeshcpreviousVector = vec;
-                    //        }
-                    //        Radar3D.DrawCircle(vec, 1f, offmeshcolour, true, 200);
-                    //        Radar3D.DrawLine(vec, offmeshcpreviousVector, offmeshcolour, 200);
-                    //        offmeshcpreviousVector = vec;
-                    //    }
-                    //}
+
+                    var deadcolour = System.Drawing.Color.Red;
+                    var deadpreviousVector = new Vector3();
+                    foreach (var vec in currentProfile.DeathRunPath)
+                    {
+                        if (deadpreviousVector == new Vector3())
+                        {
+                            deadpreviousVector = vec;
+                        }
+                        Radar3D.DrawCircle(vec, 1f, deadcolour, true, 200);
+                        Radar3D.DrawLine(vec, deadpreviousVector, deadcolour, 200);
+                        deadpreviousVector = vec;
+                    }
+
+
+                    foreach (var offmesh in currentProfile.OffMeshConnections)
+                    {
+                        var offmeshcolour = System.Drawing.Color.Green;
+                        var offmeshcpreviousVector = new Vector3();
+                        foreach (var vec in offmesh.Path)
+                        {
+                            if (offmeshcpreviousVector == new Vector3())
+                            {
+                                offmeshcpreviousVector = vec;
+                            }
+                            Radar3D.DrawCircle(vec, 1f, offmeshcolour, true, 200);
+                            Radar3D.DrawLine(vec, offmeshcpreviousVector, offmeshcolour, 200);
+                            offmeshcpreviousVector = vec;
+                        }
+                    }
                 }
             }
             catch
@@ -440,6 +452,91 @@ namespace WholesomeDungeonCrawler.GUI
 
         #endregion
 
+        #region Add Deathrun
+        private void btnAddDeathRunVector_Click(object sender, RoutedEventArgs e)
+        {
+            DeathrunCollection.Add(ObjectManager.Me.Position);
+            currentProfile.DeathRunPath = DeathrunCollection.ToList();
+        }
+
+        private void btnDeleteDeathRunVector_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgDeathrun.SelectedItem != null)
+            {
+                DeathrunCollection.Remove((Vector3)dgDeathrun.SelectedItem);
+                currentProfile.DeathRunPath = DeathrunCollection.ToList();
+            }
+        }
+
+        private async void AddDeathrunVectorTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            try
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    if (gbDeathRun.IsVisible && (bool)chkRecordDeathRunPath.IsChecked && (DeathrunCollection.Count == 0 || DeathrunCollection.LastOrDefault().DistanceTo(ObjectManager.Me.Position) > 8))
+                    {
+                        DeathrunCollection.Add(ObjectManager.Me.Position);
+                        currentProfile.DeathRunPath = DeathrunCollection.ToList();
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                        $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+            }
+        }
+        #endregion
+
+        #region Add Offmesh
+        private void btnOcAdd_Click(object sender, RoutedEventArgs e)
+        {
+            OffMeshCollection.Add(new PathFinder.OffMeshConnection() { Name = Usefuls.SubMapZoneName ?? Usefuls.MapZoneName, ContinentId = currentProfile.MapId, TryToUseEvenIfCanFindPathSuccess = true, Type = PathFinder.OffMeshConnectionType.Unidirectional });
+            currentProfile.OffMeshConnections = OffMeshCollection.ToList();
+        }
+
+        private void btnOcDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgOffmeshList.SelectedItem != null)
+            {
+                OffMeshCollection.Remove((PathFinder.OffMeshConnection)dgOffmeshList.SelectedItem);
+                currentProfile.OffMeshConnections = OffMeshCollection.ToList();
+            }
+        }
+
+        private void btnOCPAdd_Click(object sender, RoutedEventArgs e)
+        {
+            OffMeshPathCollection.Add(ObjectManager.Me.Position);
+            currentProfile.OffMeshConnections.FirstOrDefault(x => x == dgOffmeshList.SelectedItem).Path = OffMeshPathCollection.ToList();
+        }
+        private void btnOCPDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (dgOffmeshPath.SelectedItem != null)
+            {
+                OffMeshPathCollection.Remove((Vector3)dgOffmeshPath.SelectedItem);
+                currentProfile.OffMeshConnections.FirstOrDefault(x => x == dgOffmeshList.SelectedItem).Path = OffMeshPathCollection.ToList();
+            }
+        }
+
+        private async void dgOffmeshList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                if (dgOffmeshList.SelectedIndex >= 0)
+                {
+                    OffMeshPathCollection = new ObservableCollection<Vector3>(((PathFinder.OffMeshConnection)dgOffmeshList.SelectedItem).Path);
+                    dgOffmeshPath.ItemsSource = OffMeshPathCollection;
+                }
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                        $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+            }
+        }
+        #endregion
+
         protected override async void OnClosing(CancelEventArgs e)
         {
             if (e.Cancel) return;
@@ -477,6 +574,22 @@ namespace WholesomeDungeonCrawler.GUI
                 return value.GetType().Name;
 
             return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            throw new NotSupportedException();
+        }
+
+    }
+
+    public class ComboboxConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if((int)value >= 0)
+                return System.Windows.Visibility.Visible;
+            return System.Windows.Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

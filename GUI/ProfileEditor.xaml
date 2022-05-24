@@ -1,21 +1,21 @@
 ﻿<Controls:MetroWindow x:Class="WholesomeDungeonCrawler.GUI.ProfileEditor"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:WholesomeDungeonCrawler.GUI"
-             xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-             mc:Ignorable="d" 
-             MaxWidth="500" 
-                 Background="#FF252525"                 
-                 GlowBrush="Black"
-                 BorderThickness="0" 
-                 ResizeMode="NoResize"
-                 WindowStartupLocation="CenterScreen"
-                 ShowIconOnTitleBar="True"
-                 TitleCaps="False"
-                 FontFamily="Trebuchet MS"
-             Title="Profile Editor" SizeToContent="WidthAndHeight">
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+                xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+                xmlns:local="clr-namespace:WholesomeDungeonCrawler.GUI"
+                xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+                mc:Ignorable="d" 
+                MaxWidth="500" 
+                Background="#FF252525"                 
+                GlowBrush="Black"
+                BorderThickness="0" 
+                ResizeMode="NoResize"
+                WindowStartupLocation="CenterScreen"
+                ShowIconOnTitleBar="True"
+                TitleCaps="False"
+                FontFamily="Trebuchet MS"
+                Title="Profile Editor" SizeToContent="WidthAndHeight">
     <Controls:MetroWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -47,9 +47,16 @@
         <Grid.Resources>
             <local:VisibilityConverter x:Key="VisibilityConverter"/>
             <local:TypeConverter x:Key="TypeConverter"/>
+            <local:ComboboxConverter x:Key="ComboboxConverter"/>
         </Grid.Resources>
-        <StackPanel Margin="5">
-            <StackPanel Orientation="Horizontal">
+        <Controls:MetroAnimatedTabControl Controls:TabControlHelper.Underlined="SelectedTabItem">
+            <Controls:MetroAnimatedTabControl.Resources>
+                <Style TargetType="{x:Type Controls:MetroTabItem}" BasedOn="{StaticResource {x:Type Controls:MetroTabItem}}">
+                    <Setter Property="Controls:ControlsHelper.HeaderFontSize" Value="14" />
+                    <Setter Property="Controls:ControlsHelper.HeaderFontWeight" Value="Bold" />
+                </Style>
+            </Controls:MetroAnimatedTabControl.Resources>
+            <Controls:MetroTabItem Header="Steps">
                 <StackPanel Margin="5" >
 
                     <GroupBox Header="Profile Details" BorderBrush="{x:Null}">
@@ -95,10 +102,66 @@
                         <local:ProfileStep x:Name="psControl" Visibility="{Binding SelectedItem, Converter={StaticResource VisibilityConverter}, ElementName=dgProfileSteps}"/>
                     </StackPanel>
                 </StackPanel>
+            </Controls:MetroTabItem>
+            <Controls:MetroTabItem Header="Deathrun" Visibility="{Binding SelectedIndex, Converter={StaticResource ComboboxConverter}, ElementName=cbDungeon}" >
+                <StackPanel Margin="5" >
+                    <GroupBox x:Name="gbDeathRun" Header="Death run path" BorderBrush="{x:Null}">
+                        <GroupBox.Background>
+                            <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                                <GradientStop Color="#FF34e89e" Offset="0"/>
+                                <GradientStop Color="#FF0f3443" Offset="1"/>
+                            </LinearGradientBrush>
+                        </GroupBox.Background>
 
-            </StackPanel>
-
-
-        </StackPanel>
+                        <StackPanel>
+                            <DataGrid x:Name="dgDeathrun" Margin="5" CanUserAddRows="False" IsReadOnly="True" MaxHeight="300"/>
+                            <StackPanel Orientation="Horizontal"  Margin="5">
+                                <Button x:Name="btnAddDeathRunVector" Content="Add" Margin="0 5 5 5" Click="btnAddDeathRunVector_Click" />
+                                <Button x:Name="btnDeleteDeathRunVector" Content="Delete" Margin="0 5 5 5" Click="btnDeleteDeathRunVector_Click"  />
+                                <Controls:ToggleSwitch x:Name="chkRecordDeathRunPath" OnLabel="Record Path" OffLabel="Record Path" IsChecked="False"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </Controls:MetroTabItem>
+            <Controls:MetroTabItem Header="Offmesh Connections" Visibility="{Binding SelectedIndex, Converter={StaticResource ComboboxConverter}, ElementName=cbDungeon}">
+                <StackPanel Margin="5">
+                    <DataGrid x:Name="dgOffmeshList" Margin="5" CanUserAddRows="False" AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="300" SelectionChanged="dgOffmeshList_SelectionChanged">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <StackPanel Orientation="Horizontal"  Margin="5">
+                        <Button x:Name="btnOcAdd" Content="Add" Margin="0 0 5 0" Click="btnOcAdd_Click"/>
+                        <Button x:Name="btnOcDelete" Content="Delete" Margin="0 0 5 0" Click="btnOcDelete_Click"/>
+                    </StackPanel>
+                    <GroupBox x:Name="gbOffmeshConnection" Header="Offmesh Connection" BorderBrush="{x:Null}" Margin="10" Visibility="{Binding ElementName=dgOffmeshList, Path=SelectedItem, Converter={StaticResource VisibilityConverter}}">
+                        <GroupBox.Background>
+                            <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                                <GradientStop Color="#FF34e89e" Offset="0"/>
+                                <GradientStop Color="#FF0f3443" Offset="1"/>
+                            </LinearGradientBrush>
+                        </GroupBox.Background>
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBox Controls:TextBoxHelper.Watermark="Offmesh Name" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding ElementName=dgOffmeshList,Path=SelectedItem.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <ComboBox x:Name="cbOffMeshDirection" Controls:TextBoxHelper.UseFloatingWatermark="True"
+                                          Controls:TextBoxHelper.Watermark="Direction"
+                                          SelectedItem="{Binding ElementName=dgOffmeshList,Path=SelectedItem.Type, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                          Margin="5"/>
+                                <TextBox Controls:TextBoxHelper.Watermark="Continent ID" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding ElementName=dgOffmeshList,Path=SelectedItem.ContinentId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <DataGrid x:Name="dgOffmeshPath" Margin="5" IsReadOnly="True" MaxHeight="300">
+                            </DataGrid>
+                            <StackPanel Orientation="Horizontal"  Margin="5">
+                                <Button x:Name="btnOCPAdd" Content="Add" Margin="0 0 5 0" Click="btnOCPAdd_Click"/>
+                                <Button x:Name="btnOCPDelete" Content="Delete" Margin="0 0 5 0" Click="btnOCPDelete_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </Controls:MetroTabItem>
+        </Controls:MetroAnimatedTabControl>
+        
     </Grid>
 </Controls:MetroWindow>
