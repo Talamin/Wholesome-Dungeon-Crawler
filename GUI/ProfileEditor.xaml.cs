@@ -38,6 +38,9 @@ namespace WholesomeDungeonCrawler.GUI
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<StepModel> StepCollection { get; set; }
         public ObservableCollection<Vector3> DeathRunCollection { get; set; }
+
+        public ObservableCollection<PathFinder.OffMeshConnection> OffMeshCollection { get; set; }
+
         private JsonSerializerSettings jsonSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
 
         private MetroDialogSettings basicDialogSettings;
@@ -97,6 +100,11 @@ namespace WholesomeDungeonCrawler.GUI
                 Title = "Open profile",
                 InitialDirectory = Others.GetCurrentDirectory + @"/Profiles/WholesomeDungeonCrawler"
             };
+            //OffMeshCollection = new ObservableCollection<PathFinder.OffMeshConnection>(currentProfile.OffMeshConnections);
+            //dgOffmeshList.Itemsource = OffMeshCollection;
+
+            //DeathRunCollection = new ObservableCollection<Vector3>(currentProfile.DeathRunPath);
+            //dgDeathRun.Itemsource = DeathRunCollection;
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)

@@ -31,6 +31,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     var mobpos = ObjectManager.GetWoWUnitByEntry(stepCompleteCondition.MobPositionId).OrderBy(x => x.GetDistance).FirstOrDefault();
                     var mobvec = stepCompleteCondition.MobPositionVector;
                     return mobpos != null && mobvec.DistanceTo(mobpos.Position) < 5;
+                case CompleteConditionType.Gossip:
+                    var unit = ObjectManager.GetObjectWoWUnit().Where(x => x.Entry == stepCompleteCondition.MobId).FirstOrDefault();
+                    return !unit.UnitNPCFlags.HasFlag(wManager.Wow.Enums.UnitNPCFlags.Gossip);
                 default:
                     return false;
             }

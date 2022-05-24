@@ -22,6 +22,7 @@ namespace WholesomeDungeonCrawler.Data.Model
         public string CSharpCondition { get; set; }
         public int DeadMobId { get; set; }
         public int MobPositionId { get; set; }
+        public int MobId { get; set; }
         public Vector3 MobPositionVector { get; set; }
         public Vector3 LOSPositionVector { get; set; }
         public int WaitTime { get; set; }

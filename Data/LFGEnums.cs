@@ -31,6 +31,7 @@ namespace WholesomeDungeonCrawler.Data
         MobDead,
         MobPosition,
         LOSCheck,
-        WaitUntil
+        WaitUntil,
+        Gossip
     }
 }
