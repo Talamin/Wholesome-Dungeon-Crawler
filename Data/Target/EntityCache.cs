@@ -69,6 +69,7 @@ namespace WholesomeDungeonCrawler.Data
 
         private static IWoWLocalPlayer Cache(WoWLocalPlayer player) => new CachedWoWLocalPlayer(player);
         private static IWoWUnit Cache(WoWUnit unit) => new CachedWoWUnit(unit);
+        private static IWoWPlayer Cache(WoWPlayer player) => new CachedWoWPlayer(player);
         private static bool Reachable(Vector3 a, Vector3 b) => !TraceLine.TraceLineGo(a, b, CGWorldFrameHitFlags.HitTestSpellLoS);
         private static bool Reachable(Vector3 a, Vector3 b, ref bool? cachedReachable)
         {
@@ -126,7 +127,7 @@ namespace WholesomeDungeonCrawler.Data
 
             foreach (var play in playerUnits)
             {
-                IWoWPlayer cachedplayer = (IWoWPlayer)Cache(play);
+                IWoWPlayer cachedplayer = Cache(play);
                 if (ListPartyMemberGuid.Contains(cachedplayer.Guid))
                 {
                     listGroupMember.Add(cachedplayer);
