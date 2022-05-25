@@ -36,7 +36,7 @@ namespace WholesomeDungeonCrawler.States
             {
                 if(!Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause
                     || !_entityCache.Me.Valid
-                    || !_entityCache.Me.InCombatFlagOnly
+                    || _entityCache.Me.InCombatFlagOnly
                     || Fight.InFight
                     || MovementManager.CurrentPath == null
                     || MovementManager.CurrentPath.Count <= 0
