@@ -30,7 +30,7 @@ namespace WholesomeDungeonCrawler.States
                     || _entityCache.Me.Auras.Any(y => y.Key == 71041)
                     //|| ObjectManager.Me.HaveBuff("Dungeon Deserter") //71041
                     || _cache.IsInInstance
-                    || _cache.ListPartyMember.Count() < 5 //changed from 4 for testing
+                    || _cache.ListPartyMember.Count() < 4 //changed from 4 for testing
                     || _entityCache.Me.Name != CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
                 {
                     return false;

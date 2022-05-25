@@ -214,11 +214,11 @@ namespace WholesomeDungeonCrawler.Data
             foreach (WoWPlayer p in Party.GetParty())
             {
                 partyMembers.Add(p.Guid);
-                Logger.Log($"Updated Party, added Groupmember: {p.Name} ");
+                //Logger.Log($"Updated Party, added Groupmember: {p.Name} ");
                 if (p.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
                 {
                     TankGuid = p.Guid;
-                    Logger.Log($"Updated Party, added Tank: {p.Name} ");
+                    //Logger.Log($"Updated Party, added Tank: {p.Name} ");
                 }
             }
             partyMembers.Add(Me.Guid);
