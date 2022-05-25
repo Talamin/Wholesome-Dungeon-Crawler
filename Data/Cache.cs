@@ -64,12 +64,14 @@ namespace WholesomeDungeonCrawler.Data
                 case "PARTY_INVITE_REQUEST":
                     CachePartyInviteRequest();
                     break;
+                case "PLAYER_ENTERING_WORLD":
+                    Logger.Log("ENTERING WORLD EVENT OUT OF CACHE");
+                    break;
                 case "LFG_COMPLETION_REWARD":
                     CacheLFGCompletionReward();
                     break;
                 case "PARTY_MEMBERS_CHANGED":
                     CachePartyMemberChanged();
-                    Logger.Log("Party_Members_Changed_event_fired");
                     break;
                 case "LFG_QUEUE_STATUS_UPDATE":
                     GetLFGModes();

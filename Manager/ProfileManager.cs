@@ -37,6 +37,7 @@ namespace WholesomeDungeonCrawler.Manager
 
         private void CachePlayerEnteringWorld()
         {
+            Logger.Log("PLAYER ENTERING WORLD OUT OF PROFILEMANAGER");
             lock (profileLock)
             {
                 LoadProfile();
