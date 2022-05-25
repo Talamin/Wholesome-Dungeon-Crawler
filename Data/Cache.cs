@@ -64,9 +64,9 @@ namespace WholesomeDungeonCrawler.Data
                 case "PARTY_INVITE_REQUEST":
                     CachePartyInviteRequest();
                     break;
-                case "PLAYER_ENTERING_WORLD":
-                    Logger.Log("ENTERING WORLD EVENT OUT OF CACHE");
-                    break;
+                //case "PLAYER_ENTERING_WORLD":
+                //    Logger.Log("ENTERING WORLD EVENT OUT OF CACHE");
+                //    break;
                 case "LFG_COMPLETION_REWARD":
                     CacheLFGCompletionReward();
                     break;

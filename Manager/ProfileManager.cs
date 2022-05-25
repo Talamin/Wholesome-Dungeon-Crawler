@@ -32,7 +32,18 @@ namespace WholesomeDungeonCrawler.Manager
         {
             CachePlayerEnteringWorld();
             //starting with Event Substcription
-            EventsLua.AttachEventLua("PLAYER_ENTERING_WORLD", m => CachePlayerEnteringWorld());
+            //EventsLua.AttachEventLua("PLAYER_ENTERING_WORLD", m => CachePlayerEnteringWorld());
+            EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaStringWithArgs;
+        }
+
+        private void EventsLuaWithArgs_OnEventsLuaStringWithArgs(string id, List<string> args)
+        {
+            switch (id)
+            {
+                case "PLAYER_ENTERING_WORLD":
+                    CachePlayerEnteringWorld();
+                    break;
+            }
         }
 
         private void CachePlayerEnteringWorld()
@@ -102,7 +113,7 @@ namespace WholesomeDungeonCrawler.Manager
 
         public void Dispose()
         {
-
+            EventsLuaWithArgs.OnEventsLuaStringWithArgs -= EventsLuaWithArgs_OnEventsLuaStringWithArgs;
         }
     }
 }

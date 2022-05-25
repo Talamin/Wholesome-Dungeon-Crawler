@@ -138,7 +138,7 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                Debugger.Break();
+                //Debugger.Break();
                 if (currentProfile.MapId > 0)
                 {
                     if (!string.IsNullOrWhiteSpace(currentProfile.Name))
