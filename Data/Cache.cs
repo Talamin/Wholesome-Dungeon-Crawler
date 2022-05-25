@@ -69,6 +69,7 @@ namespace WholesomeDungeonCrawler.Data
                     break;
                 case "PARTY_MEMBERS_CHANGED":
                     CachePartyMemberChanged();
+                    Logger.Log("Party_Members_Changed_event_fired");
                     break;
                 case "LFG_QUEUE_STATUS_UPDATE":
                     GetLFGModes();
@@ -150,7 +151,7 @@ namespace WholesomeDungeonCrawler.Data
 
         private void CachePartyMemberChanged()
         {
-            Debugger.Break();
+            //Debugger.Break();
             CachePartyInviteRequest();
             ClearCachedLists();
             GetLFGModes();
@@ -163,8 +164,11 @@ namespace WholesomeDungeonCrawler.Data
                             plist = plist .. UnitName('party'..i) ..','
                         end
                     end", "plist");
+                if(plist != null)
+                {
+                    ListPartyMember = plist.Remove(plist.Length - 1, 1).Split(',').ToList();
+                }
 
-                ListPartyMember = plist.Remove(plist.Length - 1, 1).Split(',').ToList();
             }
         }
 
