@@ -28,5 +28,8 @@ namespace WholesomeDungeonCrawler.Data
         uint GetBaseAdress { get; }
         bool Fleeing { get; }
         IReadOnlyDictionary<uint, IAura> Auras { get; }
+
+        bool HasDrinkBuff { get; }
+        bool HasFoodBuff { get; }
     }
 }

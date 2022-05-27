@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Data;
 using wManager.Wow.Helpers;
 
@@ -30,12 +31,13 @@ namespace WholesomeDungeonCrawler.States
                 if (!Conditions.InGameAndConnected
                     || !_entityCache.Me.Valid
                     || Fight.InFight
-                    || _cache.IsInInstance)
+                    || !_cache.IsInInstance
+                    || _entityCache.Me.Name != WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
                 {
                     return false;
                 }
 
-                return _entityCache.ListGroupMember.Any(y => y.Auras.ContainsKey(433) || y.Auras.ContainsKey(430) || y.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40);
+                return _entityCache.ListGroupMember.Any(y => y.HasDrinkBuff || y.HasFoodBuff || y.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40);
             }
         }
         public override void Run()
