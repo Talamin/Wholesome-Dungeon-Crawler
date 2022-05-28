@@ -26,6 +26,7 @@ namespace WholesomeDungeonCrawler.Data
         public bool LFGProposalShown { get; private set; }
         public bool LFGRoleCheckShown { get; private set; }
         public bool LootRollShow { get; private set; }
+        public bool IAmTank { get; private set; }
 
         //general
 
@@ -45,6 +46,7 @@ namespace WholesomeDungeonCrawler.Data
             {
                 CachePartyMemberChanged();
             }
+            CacheIAmTank();
             //Beginning of Event Subscriptions
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
         
@@ -60,18 +62,20 @@ namespace WholesomeDungeonCrawler.Data
             {
                 case "WORLD_MAP_UPDATE":
                     CacheIsInInstance();
+                    CacheIAmTank();
                     break;
                 case "PARTY_INVITE_REQUEST":
                     CachePartyInviteRequest();
                     break;
-                //case "PLAYER_ENTERING_WORLD":
-                //    Logger.Log("ENTERING WORLD EVENT OUT OF CACHE");
-                //    break;
+                case "PLAYER_ENTERING_WORLD":
+                    CacheIAmTank();
+                    break;
                 case "LFG_COMPLETION_REWARD":
                     CacheLFGCompletionReward();
                     break;
                 case "PARTY_MEMBERS_CHANGED":
                     CachePartyMemberChanged();
+                    CacheIAmTank();
                     break;
                 case "LFG_QUEUE_STATUS_UPDATE":
                     GetLFGModes();
@@ -217,6 +221,11 @@ namespace WholesomeDungeonCrawler.Data
         private void CacheLootRollShow()
         {
             LootRollShow = Lua.LuaDoString<bool>("for i = 1, 4 do local b = ['GroupLootFrame'..i] if b and b:IsVisible() then return true end end return false");
+        }
+
+        private void CacheIAmTank()
+        {
+            IAmTank = ObjectManager.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName;
         }
     }
 }

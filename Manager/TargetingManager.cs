@@ -35,7 +35,7 @@ namespace WholesomeDungeonCrawler.Manager
             }
 
             //Tank Section Start
-            if(_entityCache.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+            if(_cache.IAmTank)
             {
                 IWoWUnit attackerGroupMember = AttackingGroupMember();
                 if (attackerGroupMember != null && attackerGroupMember.TargetGuid != _entityCache.Me.Guid)
@@ -48,7 +48,7 @@ namespace WholesomeDungeonCrawler.Manager
 
             //Tank Section End
             //Slave Section Start
-            if (_entityCache.Me.Name != WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+            if (!_cache.IAmTank)
             {
                 IWoWUnit fleeUnit = FleeingUnit(_entityCache.TankUnit);
                 if (fleeUnit != null && _entityCache.Me.TargetGuid != fleeUnit.Guid)
