@@ -1,7 +1,7 @@
-﻿using robotManager.FiniteStateMachine;
-using robotManager.Helpful;
+﻿using robotManager.Helpful;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,80 +9,88 @@ using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeToolbox;
-using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
-namespace WholesomeDungeonCrawler.States
+namespace WholesomeDungeonCrawler.Manager
 {
-    class SlaveSwitchInCombat : State
+    class TargetingManager : ITargetingManager
     {
-        public override string DisplayName => "InFight";
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private IWoWUnit Target;
 
-        public SlaveSwitchInCombat(ICache iCache, IEntityCache EntityCache, int priority)
+        public TargetingManager(IEntityCache entityCache, ICache cache)
         {
-            _cache = iCache;
-            _entityCache = EntityCache;
-            Priority = priority;
+            _entityCache = entityCache;
+            _cache = cache;
         }
 
-        public override bool NeedToRun
+        public void Targetswitcher(WoWUnit target, CancelEventArgs cancable)
         {
-            get
+            if (_entityCache.Target.Dead)
             {
-                if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.Valid
-                    || !Fight.InFight
-                    || !_cache.IsInInstance
-                    || _entityCache.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+                Interact.ClearTarget();
+            }
+
+            //Tank Section Start
+            if(_entityCache.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+            {
+                IWoWUnit attackerGroupMember = AttackingGroupMember();
+                if (attackerGroupMember != null && attackerGroupMember.TargetGuid != _entityCache.Me.Guid)
                 {
-                    return false;
+                    Target = attackerGroupMember;
+                    Logger.Log($"Attacking: {Target.Name} is attacking Groupmember, switching");
+                    SwitchedTargetFight(Target);
                 }
+            }
 
-                if (_entityCache.Target.Dead)
-                {
-                    Interact.ClearTarget();
-                }
-
-                IWoWUnit Tank = _entityCache.TankUnit;
-
-                //Check for fleeing Units
-                IWoWUnit fleeUnit = FleeingUnit(Tank);
+            //Tank Section End
+            //Slave Section Start
+            if (_entityCache.Me.Name != WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+            {
+                IWoWUnit fleeUnit = FleeingUnit(_entityCache.TankUnit);
                 if (fleeUnit != null && _entityCache.Me.TargetGuid != fleeUnit.Guid)
                 {
-                    Target = FleeingUnit(Tank);
+                    Target = FleeingUnit(_entityCache.TankUnit);
                     Logger.Log($"Attacking: {Target.Name} is attacking Fleeing, switching");
-                    return true;
+                    SwitchedTargetFight(Target);
                 }
                 //Check to AssistTank
-                if (AssistTank(Tank) != null && _entityCache.Me.TargetGuid == 0)
+                if (AssistTank(_entityCache.TankUnit) != null && _entityCache.Me.TargetGuid == 0)
                 {
-                    Target = AssistTank(Tank);
+                    Target = AssistTank(_entityCache.TankUnit);
                     Logger.Log($"Attacking: {Target.Name} is attacking Tank, switching");
-                    return true;
+                    SwitchedTargetFight(Target);
                 }
 
                 //check to Assist any  Groupmember if Tank don´t get the aggro
-                if (AssistGroup(Tank) != null && _entityCache.Me.TargetGuid == 0)
+                if (AssistGroup(_entityCache.TankUnit) != null && _entityCache.Me.TargetGuid == 0)
                 {
-                    Target = AssistTank(Tank);
+                    Target = AssistTank(_entityCache.TankUnit);
                     Logger.Log($"Attacking: {Target.Name} is attacking Groupmember, switching");
-                    return true;
+                    SwitchedTargetFight(Target);
                 }
-                return false;
-
             }
+            //Slave Section End
         }
 
-        public override void Run()
+        private void SwitchedTargetFight(IWoWUnit target)
         {
             MovementManager.StopMove();
             Fight.StopFight();
-            Fight.StartFight(Target.Guid, false);
+            Fight.StartFight(target.Guid, false);
+        }
+
+        private IWoWUnit AttackingGroupMember()
+        {
+            IWoWUnit Unit = FindClosestUnit(unit =>
+            unit.IsAttackingGroup
+            && !unit.IsAttackingMe
+            && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
+            && !unit.Dead, PointInMidOfGroup());
+            return Unit;
         }
 
         private IWoWUnit FleeingUnit(IWoWUnit Tank)
@@ -142,6 +150,35 @@ namespace WholesomeDungeonCrawler.States
                 }
             }
             return foundUnit;
+        }
+
+        private Vector3 PointInMidOfGroup()
+        {
+            float xvec = 0;
+            float yvec = 0;
+            float zvec = 0;
+
+            int counter = 0;
+            foreach (IWoWUnit player in _entityCache.ListGroupMember)
+            {
+                xvec = xvec + player.PositionWithoutType.X;
+                yvec = yvec + player.PositionWithoutType.Y;
+                zvec = zvec + player.PositionWithoutType.Z;
+
+                counter++;
+            }
+
+            return new Vector3(xvec / counter, yvec / counter, zvec / counter);
+        }
+
+        public void Initialize()
+        {
+            wManager.Events.FightEvents.OnFightLoop += Targetswitcher;
+        }
+
+        public void Dispose()
+        {
+            wManager.Events.FightEvents.OnFightLoop -= Targetswitcher;
         }
     }
 }

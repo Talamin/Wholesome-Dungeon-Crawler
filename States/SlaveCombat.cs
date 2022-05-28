@@ -16,7 +16,7 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class SlaveCombat : State, ICycleable
+    class SlaveCombat : State
     {
         public override string DisplayName => "InFight";
 
@@ -68,39 +68,6 @@ namespace WholesomeDungeonCrawler.States
             Fight.StartFight(Target.Guid, false);
         }
 
-        public void Targetswitcher(WoWUnit target, CancelEventArgs cancable)
-        {
-            IWoWUnit fleeUnit = FleeingUnit(_entityCache.TankUnit);
-            if (fleeUnit != null && _entityCache.Me.TargetGuid != fleeUnit.Guid)
-            {
-                Target = FleeingUnit(_entityCache.TankUnit);
-                Logger.Log($"Attacking: {Target.Name} is attacking Fleeing, switching");
-                SwitchedTargetFight(Target);
-            }
-            //Check to AssistTank
-            if (AssistTank(_entityCache.TankUnit) != null && _entityCache.Me.TargetGuid == 0)
-            {
-                Target = AssistTank(_entityCache.TankUnit);
-                Logger.Log($"Attacking: {Target.Name} is attacking Tank, switching");
-                SwitchedTargetFight(Target);
-            }
-
-            //check to Assist any  Groupmember if Tank don´t get the aggro
-            if (AssistGroup(_entityCache.TankUnit) != null && _entityCache.Me.TargetGuid == 0)
-            {
-                Target = AssistTank(_entityCache.TankUnit);
-                Logger.Log($"Attacking: {Target.Name} is attacking Groupmember, switching");
-                SwitchedTargetFight(Target);
-            }
-        }
-
-        private void SwitchedTargetFight(IWoWUnit target)
-        {
-            MovementManager.StopMove();
-            Fight.StopFight();
-            Fight.StartFight(target.Guid, false);
-        }
-
 
         private IWoWUnit AttackingTank(IWoWUnit tank)
         {
@@ -110,37 +77,6 @@ namespace WholesomeDungeonCrawler.States
             && !unit.Dead, tank.PositionWithoutType);
             return Unit;
         }
-
-        private IWoWUnit FleeingUnit(IWoWUnit Tank)
-        {
-            IWoWUnit Unit = FindClosestUnit(unit =>
-            unit.IsAttackingGroup
-            && unit.Fleeing
-            && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-            && !unit.Dead, Tank.PositionWithoutType);
-            return Unit;
-        }
-
-        private IWoWUnit AssistTank(IWoWUnit Tank)
-        {
-            IWoWUnit Unit = FindClosestUnit(unit =>
-            unit.IsAttackingGroup
-            && unit.TargetGuid == Tank.Guid
-            && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-            && !unit.Dead, Tank.PositionWithoutType);
-            return Unit;
-        }
-
-        private IWoWUnit AssistGroup(IWoWUnit Tank)
-        {
-            IWoWUnit Unit = FindClosestUnit(unit =>
-            unit.IsAttackingGroup
-            && unit.TargetGuid != Tank.Guid
-            && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-            && !unit.Dead, Tank.PositionWithoutType);
-            return Unit;
-        }
-
 
         private IWoWUnit FindClosestUnit(Func<IWoWUnit, bool> predicate, Vector3 referencePosition = null)
         {
@@ -169,16 +105,6 @@ namespace WholesomeDungeonCrawler.States
                 }
             }
             return foundUnit;
-        }
-
-        public void Initialize()
-        {
-            wManager.Events.FightEvents.OnFightLoop += Targetswitcher;
-        }
-
-        public void Dispose()
-        {
-            wManager.Events.FightEvents.OnFightLoop -= Targetswitcher;
         }
     }
 }

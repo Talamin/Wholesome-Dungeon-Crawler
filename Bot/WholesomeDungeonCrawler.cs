@@ -16,6 +16,7 @@ namespace WholesomeDungeonCrawler.Bot
         private ICache _cache;
         private IEntityCache _entityCache;
         private IProfileManager _profileManager;
+        private ITargetingManager _targetingManager;
 
         internal bool InitialSetup()
         {
@@ -27,6 +28,8 @@ namespace WholesomeDungeonCrawler.Bot
                 _entityCache.Initialize();
                 _profileManager = new ProfileManager(_entityCache, _cache);
                 _profileManager.Initialize();
+                _targetingManager = new TargetingManager(_entityCache, _cache);
+                _targetingManager.Initialize();
                 //Update Spellbook after Initialization
                 SpellManager.UpdateSpellBook();
 

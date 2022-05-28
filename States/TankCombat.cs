@@ -16,7 +16,7 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class TankCombat: State, ICycleable
+    class TankCombat: State
     {
         public override string DisplayName => "InFight";
 
@@ -71,27 +71,6 @@ namespace WholesomeDungeonCrawler.States
                 return false;
 
             }
-        }
-
-        public void Targetswitcher(WoWUnit target, CancelEventArgs cancable)
-        {
-            if (Fight.InFight)
-            {
-                IWoWUnit attackerGroupMember = AttackingGroupMember();
-                if (attackerGroupMember != null && attackerGroupMember.TargetGuid != _entityCache.Me.Guid)
-                {
-                    foundtarget = attackerGroupMember;
-                    Logger.Log($"Attacking: {foundtarget.Name} is attacking Groupmember, switching");
-                    SwitchedTargetFight(foundtarget);
-                }
-            }
-        }
-
-        private void SwitchedTargetFight(IWoWUnit target)
-        {
-            MovementManager.StopMove();
-            Fight.StopFight();
-            Fight.StartFight(target.Guid, false);
         }
 
         public override void Run()
@@ -166,16 +145,6 @@ namespace WholesomeDungeonCrawler.States
                 }
             }
             return foundUnit;
-        }
-
-        public void Initialize()
-        {
-            wManager.Events.FightEvents.OnFightLoop += Targetswitcher;
-        }
-
-        public void Dispose()
-        {
-            wManager.Events.FightEvents.OnFightLoop -= Targetswitcher;
         }
     }
 }
