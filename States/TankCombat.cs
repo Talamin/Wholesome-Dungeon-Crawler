@@ -39,7 +39,7 @@ namespace WholesomeDungeonCrawler.States
                 if (!Conditions.InGameAndConnected
                     || !_entityCache.Me.Valid
                     || !_cache.IsInInstance
-                    || _entityCache.Me.Name != WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+                    || !_cache.IAmTank)
                 {
                     return false;
                 }
