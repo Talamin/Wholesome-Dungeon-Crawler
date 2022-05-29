@@ -38,7 +38,9 @@ namespace WholesomeDungeonCrawler.Manager
             if(_cache.IAmTank)
             {
                 IWoWUnit attackerGroupMember = AttackingGroupMember();
-                if (attackerGroupMember != null && attackerGroupMember.TargetGuid != _entityCache.Me.Guid)
+                if (attackerGroupMember != null 
+                    && attackerGroupMember.TargetGuid != _entityCache.Me.Guid
+                    && attackerGroupMember.TargetGuid != _entityCache.Target.Guid)
                 {
                     Target = attackerGroupMember;
                     Logger.Log($"Attacking: {Target.Name} is attacking Groupmember, switching");
@@ -58,7 +60,9 @@ namespace WholesomeDungeonCrawler.Manager
                     SwitchedTargetFight(Target);
                 }
                 //Check to AssistTank
-                if (AssistTank(_entityCache.TankUnit) != null && _entityCache.Me.TargetGuid == 0)
+                if (AssistTank(_entityCache.TankUnit) != null 
+                    && _entityCache.Me.TargetGuid == 0 
+                    && AssistTank(_entityCache.TankUnit).Guid != _entityCache.Target.Guid)
                 {
                     Target = AssistTank(_entityCache.TankUnit);
                     Logger.Log($"Attacking: {Target.Name} is attacking Tank, switching");
@@ -66,7 +70,9 @@ namespace WholesomeDungeonCrawler.Manager
                 }
 
                 //check to Assist any  Groupmember if Tank don´t get the aggro
-                if (AssistGroup(_entityCache.TankUnit) != null && _entityCache.Me.TargetGuid == 0)
+                if (AssistGroup(_entityCache.TankUnit) != null 
+                    && _entityCache.Me.TargetGuid == 0
+                    && AssistGroup(_entityCache.TankUnit).Guid != _entityCache.Target.Guid)
                 {
                     Target = AssistTank(_entityCache.TankUnit);
                     Logger.Log($"Attacking: {Target.Name} is attacking Groupmember, switching");

@@ -38,7 +38,8 @@ namespace WholesomeDungeonCrawler.States
                 if (!Conditions.InGameAndConnected
                     || !_entityCache.Me.Valid
                     || !_cache.IsInInstance
-                    || _entityCache.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+                    || !Fight.InFight
+                    || _cache.IAmTank)
                 {
                     return false;
                 }
@@ -47,16 +48,14 @@ namespace WholesomeDungeonCrawler.States
                 {
                     Interact.ClearTarget();
                 }
-
-                if(!Fight.InFight)
+                Logger.Log("AttackingTank(_entityCache.TankUnit: " + AttackingTank(_entityCache.TankUnit).Name);
+                if (AttackingTank(_entityCache.TankUnit) != null && _entityCache.Target == null)
                 {
-                    if (AttackingTank(_entityCache.TankUnit) != null)
-                    {
-                        Target = AttackingTank(_entityCache.TankUnit);
-                        Logger.Log($"Attacking: {Target.Name} is attacking Tank, switching");
-                        return true;
-                    }
+                    Target = AttackingTank(_entityCache.TankUnit);
+                    Logger.Log($"Attacking: {Target.Name} is attacking Tank, switching for initial Combat");
+                    return true;
                 }
+
                 return false;
             }
         }
@@ -72,8 +71,7 @@ namespace WholesomeDungeonCrawler.States
         private IWoWUnit AttackingTank(IWoWUnit tank)
         {
             IWoWUnit Unit = FindClosestUnit(unit =>
-            unit.IsAttackingGroup
-            && unit.TargetGuid == tank.Guid
+            unit.TargetGuid == tank.Guid
             && !unit.Dead, tank.PositionWithoutType);
             return Unit;
         }
