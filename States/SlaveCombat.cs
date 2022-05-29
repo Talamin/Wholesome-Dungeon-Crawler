@@ -37,7 +37,7 @@ namespace WholesomeDungeonCrawler.States
                 if (!Conditions.InGameAndConnected
                     || !_entityCache.Me.Valid
                     || !_cache.IsInInstance
-                    || !Fight.InFight
+                    || Fight.InFight
                     || _cache.IAmTank)
                 {
                     return false;
@@ -47,11 +47,10 @@ namespace WholesomeDungeonCrawler.States
                 {
                     Interact.ClearTarget();
                 }
-                Logger.Log("AttackingTank(_entityCache.TankUnit: " + AttackingTank(_entityCache.TankUnit).Name);
-                if (AttackingTank(_entityCache.TankUnit) != null && _entityCache.Target == null)
-                {
-                    AttackingTank(_entityCache.TankUnit);
-                    Logger.Log($"Attacking: {AttackingTank(_entityCache.TankUnit).Name} is attacking Tank, switching for initial Combat");
+
+                IWoWUnit _attackingTank = AttackingTank(_entityCache.TankUnit);
+                if (_attackingTank != null && _entityCache.Target == null)
+                {            
                     return true;
                 }
 
