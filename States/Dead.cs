@@ -9,6 +9,7 @@ using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Manager;
+using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
@@ -36,8 +37,8 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (!Conditions.InGameAndConnected
                     || !_entityCache.Me.Valid)
-                    //|| _profileManager.CurrentDungeonProfile == null
-                    //|| _profileManager.CurrentDungeonProfile.CurrentStep == null)
+                //|| _profileManager.CurrentDungeonProfile == null
+                //|| _profileManager.CurrentDungeonProfile.CurrentStep == null)
                 {
                     return false;
                 }
@@ -50,21 +51,21 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-        //Notes: 
-        //First: Check if we can  Selfrezz
-        //Second: Check if a Character is around which can rezz and is alive
-        //Third: Release for  Deathrun
-        //Find out in which Dungeon we died.
+            //Notes: 
+            //First: Check if we can  Selfrezz
+            //Second: Check if a Character is around which can rezz and is alive
+            //Third: Release for  Deathrun
+            //Find out in which Dungeon we died.
 
 
-        if(_cache.IsInInstance)
+            if (_cache.IsInInstance)
             {
                 if (_entityCache.Me.Auras.ContainsKey(20762))//Soulstonebuff
                 {
                     Lua.LuaDoString("StaticPopup1Button1:Click()");
                     Logger.Log("SelfRezz progressed");
                 }
-                if(!_entityCache.ListGroupMember.Any(y=> _rezzClasses.Contains(y.WoWClass) && !y.Dead && _entityCache.Me.PositionWithoutType.DistanceTo(y.PositionWithoutType) < 50))
+                if (!_entityCache.ListGroupMember.Any(y => _rezzClasses.Contains(y.WoWClass) && !y.Dead && _entityCache.Me.PositionWithoutType.DistanceTo(y.PositionWithoutType) < 50))
                 {
                     Logger.Log("No one to Rezz around, we have to use our Feet and walk back");
                     Lua.LuaDoString("RepopMe();");
@@ -72,10 +73,22 @@ namespace WholesomeDungeonCrawler.States
             }
 
 
-        if(!_cache.IsInInstance)
+            if (!_cache.IsInInstance)
             {
+
                 Deathrun = _profileManager.CurrentDungeonProfile.DeathRunPathList;
-                MovementManager.Go(Deathrun);
+                if (_profileManager.CurrentDungeonProfile.DeathRunPathList != null && _profileManager.CurrentDungeonProfile.DeathRunPathList.Count > 0)
+                    MovementManager.Go(Deathrun);
+                else
+                {
+                    if (!MovementManager.InMovement)
+                    {
+                        Logger.Log("No Deathrun route found, using pathfinder.");
+                        var dungeon = Lists.AllDungeons.Where(x => x.MapId == _profileManager.CurrentDungeonProfile.MapId).FirstOrDefault();
+                        GoToTask.ToPosition(dungeon.EntranceLoc, skipIfCannotMakePath: false);
+                    }
+                    
+                }
             }
         }
     }

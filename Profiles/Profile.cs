@@ -18,6 +18,7 @@ namespace WholesomeDungeonCrawler.Profiles
 
         public List<Vector3> DeathRunPathList = new List<Vector3>();
         public List<PathFinder.OffMeshConnection> OffMeshConnectionsList = new List<PathFinder.OffMeshConnection>();
+        public int MapId { get; set; }
 
         public Profile(ProfileModel profileModel, IEntityCache entityCache)
         {
@@ -58,6 +59,8 @@ namespace WholesomeDungeonCrawler.Profiles
             }
 
             PathFinder.OffMeshConnections.AddRange(profileModel.OffMeshConnections);
+
+            MapId = profileModel.MapId;
         }
 
         public void Dispose()

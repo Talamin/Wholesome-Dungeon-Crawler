@@ -41,7 +41,7 @@ namespace WholesomeDungeonCrawler.Bot
                 _fsm.AddState(new Relogger { Priority = 200 });
                 _fsm.AddState(new Pause { Priority = 150 });
                 //Custom  State
-
+                _fsm.AddState(new Dead(_cache, _entityCache, _profileManager, 25));
                 _fsm.AddState(new OpenSatchel(_cache, 24));
                 _fsm.AddState(new MyMacro { Priority = 23 });
                 _fsm.AddState(new Regeneration { Priority = 22 });
