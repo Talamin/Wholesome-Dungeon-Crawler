@@ -15,5 +15,6 @@ namespace WholesomeDungeonCrawler.Data
         bool LFGRoleCheckShown { get; }
         bool LootRollShow { get;}
         bool IAmTank { get; }
+        public bool HaveResurrection { get;}
     }
 }

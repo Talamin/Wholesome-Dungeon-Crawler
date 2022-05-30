@@ -56,7 +56,11 @@ namespace WholesomeDungeonCrawler.States
             //Second: Check if a Character is around which can rezz and is alive
             //Third: Release for  Deathrun
             //Find out in which Dungeon we died.
-
+            if (_cache.HaveResurrection)
+            {
+                Lua.LuaDoString("StaticPopup1Button1:Click()");
+                Logger.Log("Accepted Resurrection");
+            }
 
             if (_cache.IsInInstance)
             {

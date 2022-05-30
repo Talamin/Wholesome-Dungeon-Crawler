@@ -28,6 +28,8 @@ namespace WholesomeDungeonCrawler.Data
         public bool LootRollShow { get; private set; }
         public bool IAmTank { get; private set; }
 
+        public bool HaveResurrection { get; private set; }
+
         //general
 
         public Cache()
@@ -47,6 +49,7 @@ namespace WholesomeDungeonCrawler.Data
                 CachePartyMemberChanged();
             }
             CacheIAmTank();
+            CacheHaveResurretion();
             //Beginning of Event Subscriptions
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
         
@@ -103,6 +106,9 @@ namespace WholesomeDungeonCrawler.Data
                     break;
                 case "START_LOOT_ROLL":
                     CacheLootRollShow();
+                    break;
+                case "RESURRECT_REQUEST":
+                    CacheHaveResurretion();
                     break;
 
             }
@@ -226,6 +232,11 @@ namespace WholesomeDungeonCrawler.Data
         private void CacheIAmTank()
         {
             IAmTank = ObjectManager.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName;
+        }
+
+        private void CacheHaveResurretion()
+        {
+            HaveResurrection = Lua.LuaDoString<bool>("return StaticPopup1 and StaticPopup1:IsVisible();");
         }
     }
 }
