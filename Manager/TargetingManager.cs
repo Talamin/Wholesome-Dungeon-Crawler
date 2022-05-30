@@ -64,11 +64,7 @@ namespace WholesomeDungeonCrawler.Manager
                 }
                 //Check to AssistTank
                 IWoWUnit assistTankUnit = AssistTank(_entityCache.TankUnit);
-                //Logger.Log("assistTankUnitGuid: " + assistTankUnit.Guid);
-                //Logger.Log("_entityCache.Me.TargetGuid: " + _entityCache.Me.TargetGuid);
-                //Logger.Log("assistTankUnit.Guid != _entityCache.Me.TargetGuid: " + (assistTankUnit.Guid != _entityCache.Me.TargetGuid));
                 if (assistTankUnit != null && fleeUnit == null
-                    && _entityCache.Me.TargetGuid == 0 
                     && assistTankUnit.Guid != _entityCache.Me.TargetGuid)
                 {
                     Target = assistTankUnit;
@@ -79,7 +75,6 @@ namespace WholesomeDungeonCrawler.Manager
                 //check to Assist any Groupmember if Tank don´t get the aggro
                 IWoWUnit assistGroupUnit = AssistGroup(_entityCache.TankUnit);
                 if (assistGroupUnit != null && assistTankUnit == null
-                    && _entityCache.Me.TargetGuid == 0
                     && assistGroupUnit.Guid != _entityCache.Me.TargetGuid)
                 {
                     Target = assistGroupUnit;
@@ -89,7 +84,6 @@ namespace WholesomeDungeonCrawler.Manager
 
                 IWoWUnit attackingMe = AttackingMe();
                 if (attackingMe != null && assistGroupUnit == null
-                    && _entityCache.Me.TargetGuid == 0
                     && attackingMe.Guid != _entityCache.Me.TargetGuid)
                 {
                     Target = attackingMe;
@@ -105,7 +99,7 @@ namespace WholesomeDungeonCrawler.Manager
         private void SwitchedTargetFight(IWoWUnit target)
         {
             MovementManager.StopMove();
-            //Fight.StopFight();
+            Fight.StopFight();
             Logger.Log("Start Fight with: " + target.Guid + " Targeting Manager");
             ObjectManager.Me.Target = Target.Guid;
             //Fight.CurrentTarget = target.WowUnit;
