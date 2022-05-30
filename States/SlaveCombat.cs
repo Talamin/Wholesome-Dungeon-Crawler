@@ -30,6 +30,8 @@ namespace WholesomeDungeonCrawler.States
             Priority = priority;
         }
 
+        private IWoWUnit Target;
+
         public override bool NeedToRun
         {
             get
@@ -48,9 +50,24 @@ namespace WholesomeDungeonCrawler.States
                     Interact.ClearTarget();
                 }
 
+                Target = null;
+
+                if (_entityCache.TankUnit.Dead || _entityCache.TankUnit.TargetGuid == 0)
+                {
+                    IWoWUnit _attackingPlayer = AttackingPlayer();
+                    if (_attackingPlayer != null)
+                    {
+                        Target = _attackingPlayer;
+                        Logger.Log($"Target attacking Player: {Target.Name} , start defending");
+                        return true;
+                    }
+                }
+
                 IWoWUnit _attackingTank = AttackingTank(_entityCache.TankUnit);
                 if (_attackingTank != null && _entityCache.Target == null)
-                {            
+                {
+                    Target = _attackingTank;
+                    Logger.Log($"Target attacking Tank: {Target.Name} , start defending");
                     return true;
                 }
 
@@ -62,7 +79,7 @@ namespace WholesomeDungeonCrawler.States
         {
             MovementManager.StopMove();
             Fight.StopFight();
-            Fight.StartFight(AttackingTank(_entityCache.TankUnit).Guid, false);
+            Fight.StartFight(Target.Guid, false);
         }
 
 
@@ -71,6 +88,14 @@ namespace WholesomeDungeonCrawler.States
             IWoWUnit Unit = FindClosestUnit(unit =>
             unit.TargetGuid == tank.Guid
             && !unit.Dead, tank.PositionWithoutType);
+            return Unit;
+        }
+
+        private IWoWUnit AttackingPlayer()
+        {
+            IWoWUnit Unit = FindClosestUnit(unit =>
+            (unit.IsAttackingGroup || unit.IsAttackingMe)
+            && !unit.Dead, _entityCache.Me.PositionWithoutType);
             return Unit;
         }
 
