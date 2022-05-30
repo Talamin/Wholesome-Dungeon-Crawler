@@ -143,8 +143,7 @@ namespace WholesomeDungeonCrawler.Manager
         private IWoWUnit AssistTank(IWoWUnit Tank)
         {
             IWoWUnit Unit = FindClosestUnit(unit =>
-            unit.IsAttackingGroup
-            && unit.TargetGuid == Tank.Guid
+            unit.TargetGuid == Tank.Guid
             && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
             && !unit.Dead, Tank.PositionWithoutType);
             return Unit;
