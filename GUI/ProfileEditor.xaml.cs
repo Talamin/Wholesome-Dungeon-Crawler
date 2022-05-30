@@ -450,6 +450,44 @@ namespace WholesomeDungeonCrawler.GUI
             }
         }
 
+        private async void miDefendSpotStep_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                if (x != null)
+                {
+                    var Step = new DefendSpotModel() { Name = x, Order = StepCollection.Count };
+                    StepCollection.Add(Step);
+                    currentProfile.StepModels = StepCollection.ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+            }
+        }
+
+        private async void miFollowUnitStep_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                if (x != null)
+                {
+                    var Step = new FollowUnitModel() { Name = x, Order = StepCollection.Count, ExpectedStartPosition = new Vector3(), ExpectedEndPosition = new Vector3() };
+                    StepCollection.Add(Step);
+                    currentProfile.StepModels = StepCollection.ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+            }
+        }
+
         #endregion
 
         #region Add Deathrun
@@ -547,6 +585,8 @@ namespace WholesomeDungeonCrawler.GUI
 
             if (this.closeMe) this.Close();
         }
+
+        
     }
 
     #region ValueConverters

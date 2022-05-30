@@ -53,7 +53,7 @@ namespace WholesomeDungeonCrawler.Data.Model
         public bool SkipIfNotFound { get; set; }
         public int UnitId { get; set; }
         public bool Interactwithunit { get; set; }
-        public int Gossip { get; set; }
+        public int GossipIndex { get; set; }
     }
 
     public class PickupObjectModel : StepModel

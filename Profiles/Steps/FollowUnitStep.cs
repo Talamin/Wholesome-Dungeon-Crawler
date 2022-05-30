@@ -43,18 +43,34 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     }
                     else if (_followUnitModel.SkipIfNotFound || myPosition.DistanceTo(_followUnitModel.ExpectedEndPosition) < 15)
                     {
-                        Logger.LogDebug($"[Step {_followUnitModel.Name}]: Skipping unit {_followUnitModel.UnitId} because he's not here.");
-                        IsCompleted = true;
-                        return;
+                        if (!_followUnitModel.CompleteCondition.HasCompleteCondition)
+                        {
+                            Logger.LogDebug($"[Step {_followUnitModel.Name}]: Skipping unit {_followUnitModel.UnitId} because he's not here.");
+                            IsCompleted = true;
+                            return;
+                        }
+                        else if (EvaluateCompleteCondition(_followUnitModel.CompleteCondition))
+                        {
+                            IsCompleted = true;
+                            return;
+                        }
                     }
                 }
                 else
                 {
                     if (myPosition.DistanceTo(_followUnitModel.ExpectedEndPosition) < 15)
                     {
-                        Logger.LogDebug($"[Step {_followUnitModel.Name}]: Skipping Step with {_followUnitModel.UnitId} because we reached our Enddestination.");
-                        IsCompleted = true;
-                        return;
+                        if (!_followUnitModel.CompleteCondition.HasCompleteCondition)
+                        {
+                            Logger.LogDebug($"[Step {_followUnitModel.Name}]: Skipping Step with {_followUnitModel.UnitId} because we reached our Enddestination.");
+                            IsCompleted = true;
+                            return;
+                        }
+                        else if (EvaluateCompleteCondition(_followUnitModel.CompleteCondition))
+                        {
+                            IsCompleted = true;
+                            return;
+                        };
                     }
                     Vector3 targetPosition = foundUnit.PositionWithoutType;
                     float followDistance = 15;

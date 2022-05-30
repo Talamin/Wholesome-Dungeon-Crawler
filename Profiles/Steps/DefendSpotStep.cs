@@ -29,8 +29,16 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         {
             if (_entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) < _defendSpotModel.Precision && stepTimer.IsReady)
             {
-                IsCompleted = true;
-                return;
+                if (!_defendSpotModel.CompleteCondition.HasCompleteCondition)
+                {
+                    IsCompleted = true;
+                    return;
+                }
+                else if (EvaluateCompleteCondition(_defendSpotModel.CompleteCondition))
+                {
+                    IsCompleted = true;
+                    return;
+                }
             }
 
             if (!MovementManager.InMovement || MovementManager.CurrentMoveTo.DistanceTo(_defendSpotModel.DefendPosition) > _defendSpotModel.Precision)

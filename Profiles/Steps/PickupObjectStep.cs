@@ -43,8 +43,16 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             if (ItemsManager.GetItemCountById(_pickupObjectModel.ItemId) > 0)
             {
                 Logger.Log($"Picking up item {_pickupObjectModel.ItemId} complete");
-                IsCompleted = true;
-                return;
+                if (!_pickupObjectModel.CompleteCondition.HasCompleteCondition)
+                {
+                    IsCompleted = true;
+                    return;
+                }
+                else if (EvaluateCompleteCondition(_pickupObjectModel.CompleteCondition))
+                {
+                    IsCompleted = true;
+                    return;
+                }
             }
 
             // Is it present?

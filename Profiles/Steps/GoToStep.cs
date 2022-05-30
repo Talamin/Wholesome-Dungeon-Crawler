@@ -25,8 +25,16 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
             if (_entityCache.Me.PositionWithoutType.DistanceTo(_gotoModel.TargetPosition) < _gotoModel.Precision)
             {
-                IsCompleted = true;
-                return;
+                if (!_gotoModel.CompleteCondition.HasCompleteCondition)
+                {
+                    IsCompleted = true;
+                    return;
+                }
+                else if (EvaluateCompleteCondition(_gotoModel.CompleteCondition))
+                {
+                    IsCompleted = true;
+                    return;
+                }
             }
 
             GoToTask.ToPosition(_gotoModel.TargetPosition);

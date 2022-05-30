@@ -18,13 +18,13 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private readonly IEntityCache _entityCache;
 
         public MoveToUnitStep(MoveToUnitModel moveToUnitModel, IEntityCache entityCache)
-            {
-                _moveToUnitModel = moveToUnitModel;
-                _entityCache = entityCache;
-            }
+        {
+            _moveToUnitModel = moveToUnitModel;
+            _entityCache = entityCache;
+        }
 
-            public override void Run()
-            {
+        public override void Run()
+        {
             WoWUnit foundUnit = _moveToUnitModel.FindClosest
                 ? FindClosestUnit(unit => unit.Entry == _moveToUnitModel.UnitId)
                 : ObjectManager.GetObjectWoWUnit().FirstOrDefault(unit => unit.Entry == _moveToUnitModel.UnitId);
@@ -49,19 +49,19 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             {
                 Vector3 targetPosition = foundUnit.PositionWithoutType;
                 float targetInteractDistance = foundUnit.InteractDistance;
+                GoToTask.ToPositionAndIntecractWithNpc(targetPosition, _moveToUnitModel.UnitId, _moveToUnitModel.GossipIndex);
                 if (myPosition.DistanceTo(targetPosition) < targetInteractDistance)
                 {
-                    if (_moveToUnitModel.Interactwithunit)
+                    if (!_moveToUnitModel.CompleteCondition.HasCompleteCondition)
                     {
-                        Interact.InteractGameObject(foundUnit.GetBaseAddress);
-                        Usefuls.SelectGossipOption(_moveToUnitModel.Gossip);
+                        IsCompleted = true;
+                        return;
                     }
-                    IsCompleted = true;
-                    return;
-                }
-                else
-                {
-                    GoToTask.ToPosition(targetPosition);
+                    else if (EvaluateCompleteCondition(_moveToUnitModel.CompleteCondition))
+                    {
+                        IsCompleted = true;
+                        return;
+                    }
                 }
             }
         }

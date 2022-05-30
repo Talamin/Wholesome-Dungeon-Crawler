@@ -69,8 +69,16 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             if (_interactWithModel.isCompleted(foundObject))
             {
                 Logger.Log($"Interaction with object {foundObject.Entry} is complete");
-                IsCompleted = true;
-                return;
+                if (!_interactWithModel.CompleteCondition.HasCompleteCondition)
+                {
+                    IsCompleted = true;
+                    return;
+                }
+                else if (EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
+                {
+                    IsCompleted = true;
+                    return;
+                }
             }
 
             return;

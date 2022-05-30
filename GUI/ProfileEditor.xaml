@@ -85,9 +85,11 @@
                                             <MenuItem x:Name="miMoveAlongPathStep" Header="MoveAlongPathStep" Click="miMoveAlongPathStep_Click" />
                                             <MenuItem x:Name="miInteractWithStep" Header="InteractWithStep" Click="miInteractWithStep_Click" />
                                             <MenuItem x:Name="miGoToStep" Header="GoToStep" Click="miGoToStep_Click" />
-                                            <MenuItem x:Name="miExecuteStep" Header="ExecuteStep" Click="miExecuteStep_Click" />
                                             <MenuItem x:Name="miMoveToUnitStep" Header="MoveToUnitStep" Click="miMoveToUnitStep_Click" />
                                             <MenuItem x:Name="miPickupObjectStep" Header="PickupObjectStep" Click="miPickupObjectStep_Click" />
+                                            <MenuItem x:Name="miDefendSpotStep" Header="DefendSpotStep" Click="miDefendSpotStep_Click" />
+                                            <MenuItem x:Name="miFollowUnitStep" Header="FollowUnitStep" Click="miFollowUnitStep_Click" />
+                                            <!--<MenuItem x:Name="miExecuteStep" Header="ExecuteStep" Click="miExecuteStep_Click" />-->
                                         </ContextMenu>
                                     </Button.ContextMenu>
                                 </Button>

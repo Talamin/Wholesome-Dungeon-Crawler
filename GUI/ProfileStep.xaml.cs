@@ -171,5 +171,82 @@ namespace WholesomeDungeonCrawler.GUI
                 nudGameObject.Value = nearestGO.Entry;
             }
         }
+
+        private void btnMoveToUnitGetCurrentPos_Click(object sender, RoutedEventArgs e)
+        {
+            var targetPos = ObjectManager.Target.Position;
+            if (targetPos != null)
+            {
+                ((MoveToUnitModel)this.SelectedItem).ExpectedPosition = targetPos;
+                txtMoveToUnitTargetPos.Text = $"{targetPos.X},{targetPos.Y},{targetPos.Z}";
+            }
+        }
+
+        private void btnGetTargetEntry_Click(object sender, RoutedEventArgs e)
+        {
+            var target = ObjectManager.Target;
+            if (target != null)
+            {
+                txtMoveToUnitId.Value = target.Entry;
+            }
+        }
+
+        private void btnDefendSpotGetCurrentPos_Click(object sender, RoutedEventArgs e)
+        {
+            var currentPos = ObjectManager.Me.Position;
+            if (currentPos != null)
+            {
+                ((DefendSpotModel)this.SelectedItem).DefendPosition = currentPos;
+                txtDefendSpotTargetPos.Text = $"{currentPos.X},{currentPos.Y},{currentPos.Z}";
+            }
+        }
+
+        private void btnPickupObjectGetNearestGO_Click(object sender, RoutedEventArgs e)
+        {
+            var nearestGO = ObjectManager.GetNearestWoWGameObject(ObjectManager.GetObjectWoWGameObject());
+            if (nearestGO != null)
+            {
+                txtPickupObjectObjectId.Value = nearestGO.Entry;
+            }
+        }
+
+        private void btnPickupObjectGetNearestGOPos_Click(object sender, RoutedEventArgs e)
+        {
+            var nearestGO = ObjectManager.GetNearestWoWGameObject(ObjectManager.GetObjectWoWGameObject());
+            if (nearestGO != null)
+            {
+                ((PickupObjectModel)this.SelectedItem).ExpectedPosition = nearestGO.Position;
+                txtPickupObjectPos.Text = $"{nearestGO.Position.X},{nearestGO.Position.Y},{nearestGO.Position.Z}";
+            }
+        }
+
+        private void btnGetFollowUnitId_Click(object sender, RoutedEventArgs e)
+        {
+            var target = ObjectManager.Target;
+            if (target != null)
+            {
+                txtFollowUnitId.Value = target.Entry;
+            }
+        }
+
+        private void btnFollowUnitGetCurrentPosStart_Click(object sender, RoutedEventArgs e)
+        {
+            var targetPos = ObjectManager.Target.Position;
+            if (targetPos != null)
+            {
+                ((FollowUnitModel)this.SelectedItem).ExpectedStartPosition = targetPos;
+                txtFollowUnitStartPos.Text = $"{targetPos.X},{targetPos.Y},{targetPos.Z}";
+            }
+        }
+
+        private void btnFollowUnitGetCurrentPosEnd_Click(object sender, RoutedEventArgs e)
+        {
+            var targetPos = ObjectManager.Target.Position;
+            if (targetPos != null)
+            {
+                ((FollowUnitModel)this.SelectedItem).ExpectedEndPosition = targetPos;
+                txtFollowUnitEndPos.Text = $"{targetPos.X},{targetPos.Y},{targetPos.Z}";
+            }
+        }
     }
 }
