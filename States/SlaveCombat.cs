@@ -79,6 +79,9 @@ namespace WholesomeDungeonCrawler.States
         {
             MovementManager.StopMove();
             Fight.StopFight();
+            Logger.Log("Start Fight with: " + Target.Guid + " Slave Combat State");
+            ObjectManager.Me.Target = Target.Guid;
+            //Fight.CurrentTarget = Target.WowUnit;
             Fight.StartFight(Target.Guid, false);
         }
 

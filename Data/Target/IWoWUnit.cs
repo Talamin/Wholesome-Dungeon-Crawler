@@ -31,5 +31,6 @@ namespace WholesomeDungeonCrawler.Data
 
         bool HasDrinkBuff { get; }
         bool HasFoodBuff { get; }
+        WoWUnit WowUnit { get; }
     }
 }

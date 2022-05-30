@@ -31,6 +31,7 @@ namespace WholesomeDungeonCrawler.Data
         public WoWClass WoWClass { get; }
         public uint GetBaseAdress { get; }
         public bool Fleeing { get; }
+        public WoWUnit WowUnit { get; }
 
         public CachedWoWUnit(WoWUnit unit)
         {
@@ -53,6 +54,7 @@ namespace WholesomeDungeonCrawler.Data
             TargetGuid = unit.Target;
             WoWClass = unit.WowClass;
             Fleeing = unit.Fleeing;
+            WowUnit = unit;
 
             GetBaseAdress = unit.GetBaseAddress;
 
