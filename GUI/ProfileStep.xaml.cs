@@ -248,5 +248,24 @@ namespace WholesomeDungeonCrawler.GUI
                 txtFollowUnitEndPos.Text = $"{targetPos.X},{targetPos.Y},{targetPos.Z}";
             }
         }
+
+        private void btnGetLOSCheckPosVector_Click(object sender, RoutedEventArgs e)
+        {
+            var currentPos = ObjectManager.Me.Position;
+            if (currentPos != null)
+            {
+                this.SelectedItem.CompleteCondition.LOSPositionVector = currentPos;
+                txtLOSCheckPos.Text = $"{currentPos.X},{currentPos.Y},{currentPos.Z}";
+            }
+        }
+
+        private void btnGetCanGossipEntry_Click(object sender, RoutedEventArgs e)
+        {
+            var target = ObjectManager.Target;
+            if (target != null)
+            {
+                nudCanGossipId.Value = target.Entry;
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Data.Model;
+using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
@@ -31,9 +32,11 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     var mobpos = ObjectManager.GetWoWUnitByEntry(stepCompleteCondition.MobPositionId).OrderBy(x => x.GetDistance).FirstOrDefault();
                     var mobvec = stepCompleteCondition.MobPositionVector;
                     return mobpos != null && mobvec.DistanceTo(mobpos.Position) < 5;
-                case CompleteConditionType.Gossip:
+                case CompleteConditionType.CanGossip:
                     var unit = ObjectManager.GetObjectWoWUnit().Where(x => x.Entry == stepCompleteCondition.MobId).FirstOrDefault();
                     return !unit.UnitNPCFlags.HasFlag(wManager.Wow.Enums.UnitNPCFlags.Gossip);
+                case CompleteConditionType.LOSCheck:
+                    return !TraceLine.TraceLineGo(stepCompleteCondition.LOSPositionVector);
                 default:
                     return false;
             }
