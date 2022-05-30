@@ -89,9 +89,9 @@ namespace WholesomeDungeonCrawler.Manager
 
         private DungeonModel CheckandChooseactualDungeon()
         {
-            if(_entityCache.Me.Dead && !_cache.IsInInstance)
+            if (_entityCache.Me.Dead && !_cache.IsInInstance)
             {
-                return Lists.AllDungeons.OrderBy(x => x.EntranceLoc.DistanceTo(_entityCache.Me.PositionCorpse) < 50).FirstOrDefault();
+                return Lists.AllDungeons.Where(x => x.ContinentId == Usefuls.ContinentId).OrderBy(x => _entityCache.Me.PositionCorpse.DistanceTo(x.EntranceLoc)).First();
             }
             if (CheckactualDungeonProfileInList())
             {

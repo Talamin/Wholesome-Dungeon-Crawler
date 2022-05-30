@@ -32,7 +32,7 @@ namespace WholesomeDungeonCrawler.States
                     || !_entityCache.Me.Valid
                     || Fight.InFight
                     || !_cache.IsInInstance
-                    || _entityCache.Me.Name != WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+                    || !_cache.IAmTank)
                 {
                     return false;
                 }
@@ -42,6 +42,8 @@ namespace WholesomeDungeonCrawler.States
         }
         public override void Run()
         {
+            if (MovementManager.InMovement)
+                MovementManager.StopMove();
             Thread.Sleep(500);
         }
     }

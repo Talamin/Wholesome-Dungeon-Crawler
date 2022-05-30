@@ -586,7 +586,56 @@ namespace WholesomeDungeonCrawler.GUI
             if (this.closeMe) this.Close();
         }
 
-        
+        private async void btnMoveStepUp_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (dgProfileSteps.SelectedItem != null)
+                {
+                    var currentOrder = ((StepModel)dgProfileSteps.SelectedItem).Order;
+                    var closestStep = currentProfile.StepModels.OrderByDescending(x => x.Order).FirstOrDefault(y => y.Order < currentOrder);
+                    if (closestStep != null)
+                    {
+                        var newOrder = closestStep.Order;
+                        closestStep.Order = currentOrder;
+                        ((StepModel)dgProfileSteps.SelectedItem).Order = newOrder;
+                        StepCollection = new ObservableCollection<StepModel>(currentProfile.StepModels.OrderBy(x => x.Order));
+                        dgProfileSteps.ItemsSource = StepCollection;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+            }
+        }
+
+        private async void btnMoveStepDown_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (dgProfileSteps.SelectedItem != null)
+                {
+                    var currentOrder = ((StepModel)dgProfileSteps.SelectedItem).Order;
+                    var closestStep = currentProfile.StepModels.OrderBy(x => x.Order).FirstOrDefault(y => y.Order > currentOrder);
+                    if (closestStep != null)
+                    {
+                        var newOrder = closestStep.Order;
+                        closestStep.Order = currentOrder;
+                        ((StepModel)dgProfileSteps.SelectedItem).Order = newOrder;
+                        StepCollection = new ObservableCollection<StepModel>(currentProfile.StepModels.OrderBy(x => x.Order));
+                        dgProfileSteps.ItemsSource = StepCollection;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+            }
+        }
+
     }
 
     #region ValueConverters
