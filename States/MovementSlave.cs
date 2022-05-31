@@ -106,26 +106,26 @@ namespace WholesomeDungeonCrawler.States
             //If we differ 5%, we have to consider that the real path is larger to avoid an obstacle, so we use pathfinder and navigate relatively close to him
             //Else we use direkt moveto
 
-            IWoWUnit Tank = _entityCache.ListGroupMember.Where(t => t.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName).FirstOrDefault();
+           
             //calculates real distance by using pathfinder
-            float pathcalc = WholesomeToolbox.WTPathFinder.CalculatePathTotalDistance(_entityCache.Me.PositionWithoutType, Tank.PositionWithoutType);
+            float pathcalc = WholesomeToolbox.WTPathFinder.CalculatePathTotalDistance(_entityCache.Me.PositionWithoutType, _entityCache.TankUnit.PositionWithoutType);
             //calculates distance by sightdistance
-            float sight = _entityCache.Me.PositionWithoutType.DistanceTo(Tank.PositionWithoutType);
+            float sight = _entityCache.Me.PositionWithoutType.DistanceTo(_entityCache.TankUnit.PositionWithoutType);
 
             //Logger.Log($"Following State: Distance in sight: {sight} in pathcalc {pathcalc} Difference in pathcalc/sight {pathcalc / sight * 100}");
 
             //check for line of sight, if not use pathfinder until you can see the Target
-            if (TraceLine.TraceLineGo(Tank.PositionWithoutType))
+            if (TraceLine.TraceLineGo(_entityCache.TankUnit.PositionWithoutType))
             {
                 Logger.Log("Following State: We don´t have LOS to the Tank, so we start following");
-                MovementManager.Go(PathFinder.FindPath(_entityCache.Me.PositionWithoutType, Tank.PositionWithoutType, false));
+                MovementManager.Go(PathFinder.FindPath(_entityCache.Me.PositionWithoutType, _entityCache.TankUnit.PositionWithoutType, false));
                 return;
             }
 
             //check if the difference between calculated path and on sight is more then 5%, so we use pathfinder and navigate until we are near the half way of the follow state
             if ((pathcalc / sight) * 100 > 105)
             {
-                if(_entityCache.Me.PositionWithoutType.DistanceTo(Tank.PositionWithoutType) >= (FollowRange / 2))
+                if(_entityCache.Me.PositionWithoutType.DistanceTo(_entityCache.TankUnit.PositionWithoutType) >= (FollowRange / 2))
                 {
                     Logger.Log("Following State: Leader is behind a Cliff, using Pathfinder to get along");
                     MovementManager.Go(PathFinder.FindPath(_entityCache.Me.PositionWithoutType, oldleaderpos, false));
