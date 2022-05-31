@@ -49,7 +49,7 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                if(_entityCache.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+                if(_cache.IAmTank)
                 {
                     return false;
                 }

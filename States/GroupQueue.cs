@@ -31,7 +31,7 @@ namespace WholesomeDungeonCrawler.States
                     //|| ObjectManager.Me.HaveBuff("Dungeon Deserter") //71041
                     || _cache.IsInInstance
                     || _cache.ListPartyMember.Count() < 4 //changed from 4 for testing
-                    || _entityCache.Me.Name != CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+                    || !_cache.IAmTank)
                 {
                     return false;
                 }
