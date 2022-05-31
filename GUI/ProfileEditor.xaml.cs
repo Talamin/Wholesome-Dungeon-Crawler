@@ -26,6 +26,7 @@ using Newtonsoft.Json;
 using System.IO;
 using WholesomeDungeonCrawler.Data.Model;
 using wManager.Wow.ObjectManager;
+using wManager.Wow.Class;
 
 namespace WholesomeDungeonCrawler.GUI
 {
@@ -117,6 +118,8 @@ namespace WholesomeDungeonCrawler.GUI
             OffMeshCollection = new ObservableCollection<PathFinder.OffMeshConnection>(currentProfile.OffMeshConnections);
             dgOffmeshList.ItemsSource = OffMeshCollection;
             cbOffMeshDirection.ItemsSource = Enum.GetValues(typeof(PathFinder.OffMeshConnectionType));
+
+            cbFaction.ItemsSource = Enum.GetValues(typeof(Npc.FactionType));
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)

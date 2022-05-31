@@ -70,7 +70,7 @@
                             <TextBox x:Name="txtProfileName" Controls:TextBoxHelper.Watermark="Profile Name" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding currentProfile.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <ComboBox x:Name="cbDungeon" Margin="5" Controls:TextBoxHelper.UseFloatingWatermark="True" SelectedValue="{Binding currentProfile.MapId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectionChanged="cbDungeon_SelectionChanged"
                                       Controls:TextBoxHelper.Watermark="Dungeon" />
-
+                            <ComboBox x:Name="cbFaction" Margin="5" Controls:TextBoxHelper.UseFloatingWatermark="True" SelectedValue="{Binding currentProfile.Faction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.Watermark="Faction" />
                             <DataGrid x:Name="dgProfileSteps" Margin="5" AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="150" SelectionChanged="dgProfileSteps_SelectionChanged">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Order" Binding="{Binding Order}" />
