@@ -40,9 +40,8 @@ namespace WholesomeDungeonCrawler.States
                     || Fight.InFight
                     || MovementManager.CurrentPath == null
                     || MovementManager.CurrentPath.Count <= 0
-                    || (!MovementManager.InMoveTo && !MovementManager.InMovement)
-                    ||  MovementManager.CurrentPath.Last().DistanceTo(_entityCache.Me.PositionWithoutType) > 120) 
-                { 
+                    || (!MovementManager.InMoveTo && !MovementManager.InMovement)) 
+                {
                     return false;
                 }
 

@@ -150,7 +150,7 @@ namespace WholesomeDungeonCrawler.Data
                 {
                     enemyUnitsLootable.Add(cachedUnit);
                 }
-                if (unit.Reaction <= Reaction.Neutral && unit.PositionWithoutType.DistanceTo(playerPosition) <= 100)
+                if (!unit.IsDead && unit.Level > 1 && unit.Reaction <= Reaction.Neutral && unit.PositionWithoutType.DistanceTo(playerPosition) <= 100)
                 {
                     enemyUnits.Add(cachedUnit);
                 }
