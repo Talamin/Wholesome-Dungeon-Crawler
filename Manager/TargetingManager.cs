@@ -47,6 +47,7 @@ namespace WholesomeDungeonCrawler.Manager
                 {
                     Target = attackerGroupMember;
                     Logger.Log($"Target attacking Groupmember: {Target.Name} , switching");
+                    cancable.Cancel = true;
                     SwitchedTargetFight(Target);
                 }
             }
@@ -60,6 +61,7 @@ namespace WholesomeDungeonCrawler.Manager
                 {
                     Target = FleeingUnit(_entityCache.TankUnit);
                     Logger.Log($"Target fleeing: {Target.Name} , switching");
+                    cancable.Cancel = true;
                     SwitchedTargetFight(Target);
                 }
                 //Check to AssistTank
@@ -69,6 +71,7 @@ namespace WholesomeDungeonCrawler.Manager
                 {
                     Target = assistTankUnit;
                     Logger.Log($"Target attacking Tank: {Target.Name} , switching");
+                    cancable.Cancel = true;
                     SwitchedTargetFight(Target);
                 }
 
@@ -79,6 +82,7 @@ namespace WholesomeDungeonCrawler.Manager
                 {
                     Target = assistGroupUnit;
                     Logger.Log($"Target attacking Groupmember: {Target.Name} , switching");
+                    cancable.Cancel = true;
                     SwitchedTargetFight(Target);
                 }
 
@@ -88,6 +92,7 @@ namespace WholesomeDungeonCrawler.Manager
                 {
                     Target = attackingMe;
                     Logger.Log($"Target attacking Groupmember: {Target.Name} , switching");
+                    cancable.Cancel = true;
                     SwitchedTargetFight(Target);
 
                 }
@@ -98,11 +103,10 @@ namespace WholesomeDungeonCrawler.Manager
 
         private void SwitchedTargetFight(IWoWUnit target)
         {
-            MovementManager.StopMove();
-            Fight.StopFight();
-            Logger.Log("Start Fight with: " + target.Guid + " Targeting Manager");
+            //MovementManager.StopMove();
+            //Fight.StopFight();
+            //Logger.Log("Start Fight with: " + target.Guid + " Targeting Manager");
             ObjectManager.Me.Target = Target.Guid;
-            //Fight.CurrentTarget = target.WowUnit;
             Fight.StartFight(target.Guid, false);
         }
 
