@@ -84,39 +84,12 @@ namespace WholesomeDungeonCrawler.States
         }
 
 
-        private IWoWUnit AttackingTank(IWoWUnit tank) => FindClosestUnit(unit =>
+        private IWoWUnit AttackingTank(IWoWUnit tank) => TargetingHelper.FindClosestUnit(unit =>
                 unit.TargetGuid == tank.Guid, 
-                tank.PositionWithoutType);
+                tank.PositionWithoutType, _entityCache.EnemyUnitsList);
 
-        private IWoWUnit AttackingPlayer() => FindClosestUnit(unit => unit.IsAttackingGroup || unit.IsAttackingMe);
+        private IWoWUnit AttackingPlayer() => TargetingHelper.FindClosestUnit(unit => 
+                unit.IsAttackingGroup || unit.IsAttackingMe, _entityCache.Me.PositionWithoutType, _entityCache.EnemyUnitsList);
 
-        private IWoWUnit FindClosestUnit(Func<IWoWUnit, bool> predicate, Vector3 referencePosition = null)
-        {
-            IWoWUnit foundUnit = null;
-            var distanceToUnit = float.MaxValue;
-
-            Vector3 position = referencePosition != null ? referencePosition : _entityCache.Me.PositionWithoutType;
-
-            foreach (IWoWUnit unit in _entityCache.EnemyUnitsList)
-            {
-                if (!predicate(unit)) continue;
-
-                if (foundUnit == null)
-                {
-                    distanceToUnit = WTPathFinder.CalculatePathTotalDistance(position, unit.PositionWithoutType);
-                    foundUnit = unit;
-                }
-                else
-                {
-                    float currentDistanceToUnit = WTPathFinder.CalculatePathTotalDistance(position, unit.PositionWithoutType);
-                    if (currentDistanceToUnit < distanceToUnit)
-                    {
-                        foundUnit = unit;
-                        distanceToUnit = currentDistanceToUnit;
-                    }
-                }
-            }
-            return foundUnit;
-        }
     }
 }

@@ -82,28 +82,26 @@ namespace WholesomeDungeonCrawler.States
 
         private IWoWUnit AttackingGroupMember()
         {
-            IWoWUnit Unit = FindClosestUnit(unit =>
+            IWoWUnit Unit = TargetingHelper.FindClosestUnit(unit =>
             unit.IsAttackingGroup
             && !unit.IsAttackingMe
             && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-            && !unit.Dead, PointInMidOfGroup());
+            && !unit.Dead, PointInMidOfGroup(), _entityCache.EnemyUnitsList);
             return Unit;
         }
 
         private IWoWUnit AttackingMe()
         {
-            IWoWUnit Unit = FindClosestUnit(unit =>
+            IWoWUnit Unit = TargetingHelper.FindClosestUnit(unit =>
             unit.IsAttackingMe
             && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-            && !unit.Dead, _entityCache.Me.PositionWithoutType);
+            && !unit.Dead, _entityCache.Me.PositionWithoutType, _entityCache.EnemyUnitsList);
             return Unit;
         }
 
         private Vector3 PointInMidOfGroup()
         {
-            float xvec = 0;
-            float yvec = 0;
-            float zvec = 0;
+            float xvec = 0, yvec = 0, zvec = 0;
 
             int counter = 0;
             foreach (IWoWUnit player in _entityCache.ListGroupMember)
@@ -116,35 +114,6 @@ namespace WholesomeDungeonCrawler.States
             }
 
             return new Vector3(xvec / counter, yvec / counter, zvec / counter);
-        }
-
-        private IWoWUnit FindClosestUnit(Func<IWoWUnit, bool> predicate, Vector3 referencePosition = null)
-        {
-            IWoWUnit foundUnit = null;
-            var distanceToUnit = float.MaxValue;
-
-            Vector3 position = referencePosition != null ? referencePosition : _entityCache.Me.PositionWithoutType;
-
-            foreach (IWoWUnit unit in _entityCache.EnemyUnitsList)
-            {
-                if (!predicate(unit)) continue;
-
-                if (foundUnit == null)
-                {
-                    distanceToUnit = position.DistanceTo(unit.PositionWithoutType);
-                    foundUnit = unit;
-                }
-                else
-                {
-                    float currentDistanceToUnit = WTPathFinder.CalculatePathTotalDistance(position, unit.PositionWithoutType);
-                    if (currentDistanceToUnit < distanceToUnit)
-                    {
-                        foundUnit = unit;
-                        distanceToUnit = currentDistanceToUnit;
-                    }
-                }
-            }
-            return foundUnit;
         }
     }
 }

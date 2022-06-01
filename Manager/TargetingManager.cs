@@ -112,79 +112,51 @@ namespace WholesomeDungeonCrawler.Manager
 
         private IWoWUnit AttackingGroupMember()
         {
-            IWoWUnit Unit = FindClosestUnit(unit =>
+            IWoWUnit Unit = TargetingHelper.FindClosestUnit(unit =>
             unit.IsAttackingGroup
             && !unit.IsAttackingMe
             && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-            && !unit.Dead, PointInMidOfGroup());
+            && !unit.Dead, PointInMidOfGroup(), _entityCache.EnemyUnitsList);
             return Unit;
         }
 
         private IWoWUnit FleeingUnit(IWoWUnit Tank)
         {
-            IWoWUnit Unit = FindClosestUnit(unit =>
+            IWoWUnit Unit = TargetingHelper.FindClosestUnit(unit =>
             unit.IsAttackingGroup
             && unit.Fleeing
             && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-            && !unit.Dead, Tank.PositionWithoutType);
+            && !unit.Dead, Tank.PositionWithoutType, _entityCache.EnemyUnitsList);
             return Unit;
         }
 
         private IWoWUnit AttackingMe()
         {
-            IWoWUnit Unit = FindClosestUnit(unit =>
+            IWoWUnit Unit = TargetingHelper.FindClosestUnit(unit =>
             unit.IsAttackingMe
             && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-            && !unit.Dead, PointInMidOfGroup());
+            && !unit.Dead, PointInMidOfGroup(), _entityCache.EnemyUnitsList);
             return Unit;
         }
         private IWoWUnit AssistTank(IWoWUnit Tank)
         {
-            IWoWUnit Unit = FindClosestUnit(unit =>
+            IWoWUnit Unit = TargetingHelper.FindClosestUnit(unit =>
             unit.TargetGuid == Tank.Guid
             && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-            && !unit.Dead, Tank.PositionWithoutType);
+            && !unit.Dead, Tank.PositionWithoutType, _entityCache.EnemyUnitsList);
             return Unit;
         }
 
         private IWoWUnit AssistGroup(IWoWUnit Tank)
         {
-            IWoWUnit Unit = FindClosestUnit(unit =>
+            IWoWUnit Unit = TargetingHelper.FindClosestUnit(unit =>
             unit.IsAttackingGroup
             && unit.TargetGuid != Tank.Guid
             && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-            && !unit.Dead, Tank.PositionWithoutType);
+            && !unit.Dead, Tank.PositionWithoutType, _entityCache.EnemyUnitsList);
             return Unit;
         }
 
-        private IWoWUnit FindClosestUnit(Func<IWoWUnit, bool> predicate, Vector3 referencePosition = null)
-        {
-            IWoWUnit foundUnit = null;
-            var distanceToUnit = float.MaxValue;
-
-            Vector3 position = referencePosition != null ? referencePosition : _entityCache.Me.PositionWithoutType;
-
-            foreach (IWoWUnit unit in _entityCache.EnemyUnitsList)
-            {
-                if (!predicate(unit)) continue;
-
-                if (foundUnit == null)
-                {
-                    distanceToUnit = position.DistanceTo(unit.PositionWithoutType);
-                    foundUnit = unit;
-                }
-                else
-                {
-                    float currentDistanceToUnit = WTPathFinder.CalculatePathTotalDistance(position, unit.PositionWithoutType);
-                    if (currentDistanceToUnit < distanceToUnit)
-                    {
-                        foundUnit = unit;
-                        distanceToUnit = currentDistanceToUnit;
-                    }
-                }
-            }
-            return foundUnit;
-        }
 
         private Vector3 PointInMidOfGroup()
         {

@@ -121,6 +121,7 @@
       <DependentUpon>AdvancedSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AutoUpdater.cs" />
+    <Compile Include="Helpers\TargetingHelper.cs" />
     <Compile Include="Manager\ITargetingManager.cs" />
     <Compile Include="Manager\TargetingManager.cs" />
     <Compile Include="Profiles\IProfile.cs" />
