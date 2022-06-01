@@ -41,6 +41,11 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
+                if(_entityCache.Me.Dead)
+                {
+                    return false;
+                }
+
                 return true;
             }
         }

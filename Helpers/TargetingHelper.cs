@@ -17,7 +17,7 @@ namespace WholesomeDungeonCrawler.Helpers
             foreach (IWoWUnit unit in list)
             {
                 if (!predicate(unit)) continue;
-                if (TraceLine.TraceLineGo(unit.PositionWithoutType)) continue;
+                //if (TraceLine.TraceLineGo(unit.PositionWithoutType)) continue;
 
                 if (foundUnit == null)
                 {

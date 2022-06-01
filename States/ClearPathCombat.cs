@@ -16,7 +16,7 @@ namespace WholesomeDungeonCrawler.States
 {
     class ClearPathCombat : State
     {
-        public override string DisplayName => "Targeting";
+        public override string DisplayName => "ClearPath";
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;

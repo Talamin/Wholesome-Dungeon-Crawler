@@ -18,7 +18,7 @@ namespace WholesomeDungeonCrawler.States
 {
     class TankCombat: State
     {
-        public override string DisplayName => "InFight";
+        public override string DisplayName => "TankCombat";
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
