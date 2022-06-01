@@ -27,9 +27,9 @@ namespace WholesomeDungeonCrawler.CrawlerSettings
             ProductName = "Wholesome Dungeon Crawler";
             TankName = "";
             GroupMembers = new List<string>();
-            FollowRangeHeal = 30;
+            FollowRangeHeal = 25;
             FollowRangeMDPS = 15;
-            FollowRangeRDPS = 25;
+            FollowRangeRDPS = 20;
         }
 
         public static WholesomeDungeonCrawlerSettings CurrentSetting { get; set; }

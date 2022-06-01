@@ -81,13 +81,10 @@ namespace WholesomeDungeonCrawler.Profiles
             {
                 CurrentStep = _profileSteps[0];
             }
-            //if (!CurrentStep.IsCompleted)
-            //{
-            //    CurrentStepType = CurrentStep.StepType;
-            //    return;
-            //}
+
             if (CurrentStep.IsCompleted)
             {
+                Logger.Log($"Completed Current Step: {CurrentStep}");
                 if (completedSteps == totalSteps)
                 {
                     Logger.Log("Profile is Done");
