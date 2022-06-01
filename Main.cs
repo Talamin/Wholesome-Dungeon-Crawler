@@ -11,7 +11,7 @@ public class Main : IProduct
 {
     private readonly CrawlerBot _crawler = new CrawlerBot();
     private ProductSettingsControl _settingsUserControl;
-    private readonly string _productVersion = "0.0.01";
+    private readonly string _productVersion = "0.0.02";
     private readonly string _productName = "Wholesome Dungeon Crawler";
     private readonly string _fileName = "WholesomeDungeonCrawler";
     public bool IsStarted { get; private set; }

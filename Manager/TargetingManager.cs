@@ -46,7 +46,7 @@ namespace WholesomeDungeonCrawler.Manager
                     && attackerGroupMember.TargetGuid != _entityCache.Target.Guid)
                 {
                     Target = attackerGroupMember;
-                    Logger.Log($"Target attacking Groupmember: {Target.Name} , switching");
+                    Logger.Log($"TargetingManager: Target attacking Groupmember: {Target.Name} , switching");
                     cancable.Cancel = true;
                     SwitchedTargetFight(Target);
                 }
@@ -60,7 +60,7 @@ namespace WholesomeDungeonCrawler.Manager
                 if (fleeUnit != null && _entityCache.Me.TargetGuid != fleeUnit.Guid)
                 {
                     Target = FleeingUnit(_entityCache.TankUnit);
-                    Logger.Log($"Target fleeing: {Target.Name} , switching");
+                    Logger.Log($"TargetingManager: Target fleeing: {Target.Name} , switching");
                     cancable.Cancel = true;
                     SwitchedTargetFight(Target);
                 }
@@ -70,7 +70,7 @@ namespace WholesomeDungeonCrawler.Manager
                     && assistTankUnit.Guid != _entityCache.Me.TargetGuid)
                 {
                     Target = assistTankUnit;
-                    Logger.Log($"Target attacking Tank: {Target.Name} , switching");
+                    Logger.Log($"TargetingManager: Target attacking Tank: {Target.Name} , switching");
                     cancable.Cancel = true;
                     SwitchedTargetFight(Target);
                 }
@@ -81,7 +81,7 @@ namespace WholesomeDungeonCrawler.Manager
                     && assistGroupUnit.Guid != _entityCache.Me.TargetGuid)
                 {
                     Target = assistGroupUnit;
-                    Logger.Log($"Target attacking Groupmember: {Target.Name} , switching");
+                    Logger.Log($"TargetingManager: Target attacking Groupmember: {Target.Name} , switching");
                     cancable.Cancel = true;
                     SwitchedTargetFight(Target);
                 }
@@ -91,7 +91,7 @@ namespace WholesomeDungeonCrawler.Manager
                     && attackingMe.Guid != _entityCache.Me.TargetGuid)
                 {
                     Target = attackingMe;
-                    Logger.Log($"Target attacking Groupmember: {Target.Name} , switching");
+                    Logger.Log($"TargetingManager: Target attacking Groupmember: {Target.Name} , switching");
                     cancable.Cancel = true;
                     SwitchedTargetFight(Target);
 

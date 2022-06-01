@@ -52,7 +52,7 @@ namespace WholesomeDungeonCrawler.States
                     if (_attackingPlayer != null)
                     {
                         Target = _attackingPlayer;
-                        Logger.Log($"Target attacking Player: {Target.Name} , start defending");
+                        Logger.Log($"SlaveCombat: Target attacking Player: {Target.Name} , start defending");
                         return true;
                     }
                 }
@@ -64,7 +64,7 @@ namespace WholesomeDungeonCrawler.States
                     if (_attackingTank != null && _entityCache.Me.TargetGuid == 0)
                     {
                         Target = _attackingTank;
-                        Logger.Log($"Target attacking Tank: {Target.Name} , start defending");
+                        Logger.Log($"SlaveCombat: Target attacking Tank: {Target.Name} , start defending");
                         return true;
                     }
                 }
