@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Helpers;
@@ -18,7 +16,7 @@ namespace WholesomeDungeonCrawler.Manager
     {
         private object profileLock = new object();
 
-        public Profile CurrentDungeonProfile { get; private set; }
+        public IProfile CurrentDungeonProfile { get; private set; }
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
@@ -73,10 +71,11 @@ namespace WholesomeDungeonCrawler.Manager
                     {
                         CurrentDungeonProfile = new Profile(deserializedProfile, _entityCache);
                         Logger.Log($"Dungeon Profile loaded: {deserializedProfile.Name}.{Environment.NewLine} with the MapID { deserializedProfile.MapId}.{ Environment.NewLine} with at Total Steps { deserializedProfile.StepModels.Count()}.{ Environment.NewLine} with a { deserializedProfile.DeathRunPath.Count()}.{ Environment.NewLine} Steps Deathrun and { deserializedProfile.OffMeshConnections.Count()}.{ Environment.NewLine} OffmeshConnections");
-                        CurrentDungeonProfile.SetCurrentStep();
+                        CurrentDungeonProfile.SetFirstLaunchStep();
                         return;
                         //PathFinder.OffMeshConnections.AddRange(dungeonProfile.offMeshConnections); <-- in its current state, Profile doesn´t hold any Offmeshes
-                    } else
+                    }
+                    else
                     {
                         Logger.Log($"Dungeon Profile not loaded: {deserializedProfile.Name}.{Environment.NewLine} with the DungeonID { deserializedProfile.MapId} did not match the dungeon id of your current dungeon {dungeon.Name}: {dungeon.MapId}.");
                         return;

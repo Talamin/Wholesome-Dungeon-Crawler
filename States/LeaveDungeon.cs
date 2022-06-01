@@ -47,7 +47,7 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                return _profileManager.CurrentDungeonProfile._profileSteps.All(p=> p.IsCompleted);
+                return _profileManager.CurrentDungeonProfile.ProfileIsCompleted;
             }
         }
 

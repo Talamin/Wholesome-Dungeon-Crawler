@@ -1,18 +1,13 @@
 ﻿using robotManager.FiniteStateMachine;
 using robotManager.Helpful;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Data;
-using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Manager;
 using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
-using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
@@ -21,6 +16,7 @@ namespace WholesomeDungeonCrawler.States
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
+        private List<Vector3> _deathrun = new List<Vector3>();
 
         public Dead(ICache iCache, IEntityCache iEntityCache, IProfileManager profilemanager, int priority)
         {
@@ -46,8 +42,6 @@ namespace WholesomeDungeonCrawler.States
                 return _entityCache.Me.Dead;
             }
         }
-
-        private List<Vector3> Deathrun = new List<Vector3>();
 
         public override void Run()
         {
@@ -79,10 +73,9 @@ namespace WholesomeDungeonCrawler.States
 
             if (!_cache.IsInInstance)
             {
-
-                Deathrun = _profileManager.CurrentDungeonProfile.DeathRunPathList;
+                _deathrun = _profileManager.CurrentDungeonProfile.DeathRunPathList;
                 if (_profileManager.CurrentDungeonProfile.DeathRunPathList != null && _profileManager.CurrentDungeonProfile.DeathRunPathList.Count > 0)
-                    MovementManager.Go(Deathrun);
+                    MovementManager.Go(_deathrun);
                 else
                 {
                     if (!MovementManager.InMovement)
@@ -91,7 +84,6 @@ namespace WholesomeDungeonCrawler.States
                         var dungeon = Lists.AllDungeons.Where(x => x.MapId == _profileManager.CurrentDungeonProfile.MapId).FirstOrDefault();
                         GoToTask.ToPosition(dungeon.EntranceLoc, skipIfCannotMakePath: false);
                     }
-                    
                 }
             }
         }

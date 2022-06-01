@@ -6,5 +6,6 @@
         abstract string Name { get; }
 
         void Run();
+        void MarkAsCompleted();
     }
 }

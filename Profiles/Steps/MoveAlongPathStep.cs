@@ -1,4 +1,5 @@
 ﻿using robotManager.Helpful;
+using System.Collections.Generic;
 using System.Linq;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Data.Model;
@@ -48,5 +49,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             IsCompleted = false;
             return;
         }
+
+        public List<Vector3> GetMoveAlongPath => _moveAlongPathModel.Path;
     }
 }

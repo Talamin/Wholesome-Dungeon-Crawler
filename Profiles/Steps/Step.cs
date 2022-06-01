@@ -42,5 +42,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     return false;
             }
         }
+
+        public void MarkAsCompleted() => IsCompleted = true;
     }
 }

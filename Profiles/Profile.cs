@@ -12,16 +12,18 @@ namespace WholesomeDungeonCrawler.Profiles
 {
     public class Profile : IProfile
     {
-        public List<IStep> _profileSteps = new List<IStep>();
-
-        public IStep CurrentStep { get; private set; }
-
-        public List<Vector3> DeathRunPathList = new List<Vector3>();
+        private IEntityCache _entityCache;
+        private List<IStep> _profileSteps = new List<IStep>();
         public List<PathFinder.OffMeshConnection> OffMeshConnectionsList = new List<PathFinder.OffMeshConnection>();
-        public int MapId { get; set; }
+
+        public int MapId { get; }
+        public List<Vector3> DeathRunPathList { get; private set; } = new List<Vector3>();
+        public IStep CurrentStep { get; private set; }
 
         public Profile(ProfileModel profileModel, IEntityCache entityCache)
         {
+            _entityCache = entityCache;
+
             foreach (StepModel model in profileModel.StepModels)
             {
                 switch (model)
@@ -67,6 +69,67 @@ namespace WholesomeDungeonCrawler.Profiles
         {
         }
 
+        // A method to set the closest movealong step after a restart
+        public void SetFirstLaunchStep()
+        {
+            int resultIndex = 0;
+            int totalSteps = _profileSteps.Count();
+            if (totalSteps <= 0)
+            {
+                Logger.Log("Profile is missing Profile Steps.");
+                return;
+            }
+
+            Dictionary<int, float> stepDistances = new Dictionary<int, float>(); // step index - distance
+            for (int i = 0; i < totalSteps; i++)
+            {
+                if (_profileSteps[i] is MoveAlongPathStep)
+                {
+                    // get closest node from this path
+                    MoveAlongPathStep moveAlongStep = (MoveAlongPathStep)_profileSteps[i];
+                    Vector3 closestNodeFromThisPath = moveAlongStep.GetMoveAlongPath
+                        .OrderBy(node => node.DistanceTo(_entityCache.Me.PositionWithoutType))
+                        .First();
+                    stepDistances[i] = closestNodeFromThisPath.DistanceTo(_entityCache.Me.PositionWithoutType);
+                }
+            }
+
+            // we order the dictionary by distance
+            Dictionary<int, float> orderedStepDistances = stepDistances
+                .OrderBy(entry => entry.Value)  
+                .ToDictionary(entry => entry.Key, entry => entry.Value);
+
+            KeyValuePair<int, float> firstEntry = orderedStepDistances.ElementAt(0);
+            KeyValuePair<int, float> secondEntry = orderedStepDistances.ElementAt(1);
+
+            // if the second entry is an earlier step and is withing +20% range
+            if (secondEntry.Key < firstEntry.Key && secondEntry.Value < firstEntry.Value + (firstEntry.Value / 100 * 20))
+            {
+                resultIndex = secondEntry.Key;
+            }
+            else
+            {
+                resultIndex = firstEntry.Key;
+            }
+
+            // mark previous steps as completed
+            for (int i = 0; i < totalSteps; i++)
+            {
+                if (i < resultIndex)
+                {
+                    Logger.Log($"Marked {_profileSteps[i].Name} as completed");
+                    _profileSteps[i].MarkAsCompleted();
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            Logger.Log($"Setting {_profileSteps[resultIndex].Name} as current");
+            CurrentStep = _profileSteps[resultIndex];
+        }
+
         public void SetCurrentStep()
         {
             var totalSteps = _profileSteps.Count();
@@ -94,6 +157,8 @@ namespace WholesomeDungeonCrawler.Profiles
 
                 CurrentStep = _profileSteps.Find(step => !step.IsCompleted);
             }
-        }        
+        }   
+        
+        public bool ProfileIsCompleted => _profileSteps.All(p => p.IsCompleted);
     }
 }
