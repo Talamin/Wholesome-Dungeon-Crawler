@@ -13,11 +13,13 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
     {
         private ExecuteModel _executeModel;
         private readonly IEntityCache _entityCache;
+        public override string Name { get; }
 
         public ExecuteStep(ExecuteModel executeModel, IEntityCache entityCache)
         {
             _executeModel = executeModel;
             _entityCache = entityCache;
+            Name = executeModel.Name;
         }
 
         public override void Run()

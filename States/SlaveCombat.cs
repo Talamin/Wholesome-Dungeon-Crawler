@@ -1,9 +1,6 @@
 ﻿using robotManager.FiniteStateMachine;
-using robotManager.Helpful;
-using System;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
-using WholesomeToolbox;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -85,10 +82,10 @@ namespace WholesomeDungeonCrawler.States
 
 
         private IWoWUnit AttackingTank(IWoWUnit tank) => TargetingHelper.FindClosestUnit(unit =>
-                unit.TargetGuid == tank.Guid, 
+                unit.TargetGuid == tank.Guid,
                 tank.PositionWithoutType, _entityCache.EnemyUnitsList);
 
-        private IWoWUnit AttackingPlayer() => TargetingHelper.FindClosestUnit(unit => 
+        private IWoWUnit AttackingPlayer() => TargetingHelper.FindClosestUnit(unit =>
                 unit.IsAttackingGroup || unit.IsAttackingMe, _entityCache.Me.PositionWithoutType, _entityCache.EnemyUnitsList);
 
     }

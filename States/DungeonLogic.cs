@@ -1,7 +1,5 @@
 ﻿using robotManager.FiniteStateMachine;
-using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Data;
-using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Manager;
 using wManager.Wow.Helpers;
 
@@ -24,6 +22,11 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
+                if (_profileManager.CurrentDungeonProfile?.CurrentStep == null)
+                {
+                    DisplayName = $"DungeonLogic: None";
+                }
+
                 if (!Conditions.InGameAndConnected
                     || !_entityCache.Me.Valid
                     || Fight.InFight
@@ -44,12 +47,15 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            if(_profileManager.CurrentDungeonProfile.CurrentStep.IsCompleted)
+            if (_profileManager.CurrentDungeonProfile.CurrentStep.IsCompleted)
             {
                 _profileManager.CurrentDungeonProfile.SetCurrentStep();
             }
             else
-            _profileManager.CurrentDungeonProfile.CurrentStep.Run();
+            {
+                DisplayName = $"DungeonLogic: {_profileManager.CurrentDungeonProfile.CurrentStep.Name}";
+                _profileManager.CurrentDungeonProfile.CurrentStep.Run();
+            }
         }
     }
 }

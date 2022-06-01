@@ -12,11 +12,13 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
     {
         private MoveAlongPathModel _moveAlongPathModel;
         private readonly IEntityCache _entityCache;
+        public override string Name { get; }
 
         public MoveAlongPathStep(MoveAlongPathModel stepModel, IEntityCache entityCache)
         {
             _moveAlongPathModel = stepModel;
             _entityCache = entityCache;
+            Name = stepModel.Name;
         }
 
         public override void Run()
