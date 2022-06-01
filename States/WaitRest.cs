@@ -37,7 +37,7 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                return _entityCache.ListGroupMember.Any(y => y.HasDrinkBuff || y.HasFoodBuff || y.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40);
+                return _entityCache.ListGroupMember.Any(y => y.HasDrinkBuff || y.HasFoodBuff || y.Auras.ContainsKey(8326) /*Ghost*/ || y.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40);
             }
         }
         public override void Run()
