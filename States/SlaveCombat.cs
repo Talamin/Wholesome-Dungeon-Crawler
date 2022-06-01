@@ -1,16 +1,9 @@
 ﻿using robotManager.FiniteStateMachine;
 using robotManager.Helpful;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeToolbox;
-using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -52,7 +45,8 @@ namespace WholesomeDungeonCrawler.States
 
                 Target = null;
 
-                if (_entityCache.TankUnit.Dead || _entityCache.TankUnit.TargetGuid == 0)
+                // Defend players when the tank is dead, out of OM, or has no target
+                if (_entityCache.TankUnit == null || _entityCache.TankUnit.Dead || _entityCache.TankUnit.TargetGuid == 0)
                 {
                     IWoWUnit _attackingPlayer = AttackingPlayer();
                     if (_attackingPlayer != null)
@@ -63,12 +57,16 @@ namespace WholesomeDungeonCrawler.States
                     }
                 }
 
-                IWoWUnit _attackingTank = AttackingTank(_entityCache.TankUnit);
-                if (_attackingTank != null && _entityCache.Target == null)
+                // Defend tank
+                if (_entityCache.TankUnit != null)
                 {
-                    Target = _attackingTank;
-                    Logger.Log($"Target attacking Tank: {Target.Name} , start defending");
-                    return true;
+                    IWoWUnit _attackingTank = AttackingTank(_entityCache.TankUnit);
+                    if (_attackingTank != null && _entityCache.Me.TargetGuid == 0)
+                    {
+                        Target = _attackingTank;
+                        Logger.Log($"Target attacking Tank: {Target.Name} , start defending");
+                        return true;
+                    }
                 }
 
                 return false;
@@ -86,21 +84,11 @@ namespace WholesomeDungeonCrawler.States
         }
 
 
-        private IWoWUnit AttackingTank(IWoWUnit tank)
-        {
-            IWoWUnit Unit = FindClosestUnit(unit =>
-            unit.TargetGuid == tank.Guid
-            && !unit.Dead, tank.PositionWithoutType);
-            return Unit;
-        }
+        private IWoWUnit AttackingTank(IWoWUnit tank) => FindClosestUnit(unit =>
+                unit.TargetGuid == tank.Guid, 
+                tank.PositionWithoutType);
 
-        private IWoWUnit AttackingPlayer()
-        {
-            IWoWUnit Unit = FindClosestUnit(unit =>
-            (unit.IsAttackingGroup || unit.IsAttackingMe)
-            && !unit.Dead, _entityCache.Me.PositionWithoutType);
-            return Unit;
-        }
+        private IWoWUnit AttackingPlayer() => FindClosestUnit(unit => unit.IsAttackingGroup || unit.IsAttackingMe);
 
         private IWoWUnit FindClosestUnit(Func<IWoWUnit, bool> predicate, Vector3 referencePosition = null)
         {
@@ -108,14 +96,14 @@ namespace WholesomeDungeonCrawler.States
             var distanceToUnit = float.MaxValue;
 
             Vector3 position = referencePosition != null ? referencePosition : _entityCache.Me.PositionWithoutType;
-           
+
             foreach (IWoWUnit unit in _entityCache.EnemyUnitsList)
             {
                 if (!predicate(unit)) continue;
 
                 if (foundUnit == null)
                 {
-                    distanceToUnit = position.DistanceTo(unit.PositionWithoutType);
+                    distanceToUnit = WTPathFinder.CalculatePathTotalDistance(position, unit.PositionWithoutType);
                     foundUnit = unit;
                 }
                 else
