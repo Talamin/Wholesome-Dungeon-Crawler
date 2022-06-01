@@ -99,17 +99,14 @@ namespace WholesomeDungeonCrawler.Profiles
                 .OrderBy(entry => entry.Value)  
                 .ToDictionary(entry => entry.Key, entry => entry.Value);
 
-            KeyValuePair<int, float> firstEntry = orderedStepDistances.ElementAt(0);
-            KeyValuePair<int, float> secondEntry = orderedStepDistances.ElementAt(1);
-
-            // if the second entry is an earlier step and is withing +20% range
-            if (secondEntry.Key < firstEntry.Key && secondEntry.Value < firstEntry.Value + (firstEntry.Value / 100 * 20))
+            resultIndex = orderedStepDistances.ElementAt(0).Key;
+            float radiusToCheck = orderedStepDistances.ElementAt(0).Value + 20;
+            foreach (KeyValuePair<int, float> pair in orderedStepDistances)
             {
-                resultIndex = secondEntry.Key;
-            }
-            else
-            {
-                resultIndex = firstEntry.Key;
+                if (pair.Key < resultIndex && pair.Value < radiusToCheck)
+                {
+                    resultIndex = pair.Key;
+                }
             }
 
             // mark previous steps as completed
