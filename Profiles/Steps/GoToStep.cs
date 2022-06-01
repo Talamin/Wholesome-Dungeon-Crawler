@@ -1,11 +1,6 @@
-﻿using robotManager.Helpful;
-using System.Linq;
-using WholesomeDungeonCrawler.Data;
+﻿using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Data.Model;
-using WholesomeToolbox;
 using wManager.Wow.Bot.Tasks;
-using wManager.Wow.Helpers;
-using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {
@@ -24,8 +19,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
-
-            if (_entityCache.Me.PositionWithoutType.DistanceTo(_gotoModel.TargetPosition) < _gotoModel.Precision)
+            float precision = _gotoModel.Precision <= 0 ? 5 : _gotoModel.Precision;
+            if (_entityCache.Me.PositionWithoutType.DistanceTo(_gotoModel.TargetPosition) < precision)
             {
                 if (!_gotoModel.CompleteCondition.HasCompleteCondition)
                 {

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Data.Model;
+using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -15,7 +16,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public bool EvaluateCompleteCondition(StepCompleteConditionModel stepCompleteCondition)
         {
-
             switch (stepCompleteCondition.ConditionType)
             {
                 case CompleteConditionType.Csharp:
