@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Helpers;
@@ -55,6 +56,9 @@ namespace WholesomeDungeonCrawler.Manager
 
         private void LoadProfile()
         {
+            //sleep to have time while porting
+            Logger.Log("We sleep for 5 seconds while Port");
+            Thread.Sleep(5000);
             DungeonModel dungeon = CheckandChooseactualDungeon();
             if (dungeon != null)
             {
@@ -83,6 +87,7 @@ namespace WholesomeDungeonCrawler.Manager
                 }
             }
             Logger.Log("No Profile found!");
+            CurrentDungeonProfile = null;
             return;
         }
 

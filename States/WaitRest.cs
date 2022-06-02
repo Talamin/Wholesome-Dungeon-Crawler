@@ -31,13 +31,14 @@ namespace WholesomeDungeonCrawler.States
                 if (!Conditions.InGameAndConnected
                     || !_entityCache.Me.Valid
                     || Fight.InFight
+                    || _entityCache.Me.InCombatFlagOnly
                     || !_cache.IsInInstance
                     || !_cache.IAmTank)
                 {
                     return false;
-                }
+                }        
 
-                return _entityCache.ListGroupMember.Any(y => y.HasDrinkBuff || y.HasFoodBuff || y.Auras.ContainsKey(8326) /*Ghost*/ || y.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40);
+                return _entityCache.ListGroupMember.Any(y => y.WowUnit.IsDead || y.HasDrinkBuff || y.HasFoodBuff || y.Auras.ContainsKey(8326) /*Ghost*/ || y.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40);
             }
         }
         public override void Run()
