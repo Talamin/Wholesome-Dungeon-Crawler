@@ -2,5 +2,6 @@
 {
     public interface IWoWPlayer : IWoWUnit
     {
+
     }
 }
