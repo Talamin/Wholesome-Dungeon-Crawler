@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
@@ -38,13 +39,42 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }        
 
-                return _entityCache.ListGroupMember.Any(y => y.Dead || y.HasDrinkBuff || y.HasFoodBuff || y.Auras.ContainsKey(8326) /*Ghost*/ || y.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40);
+                foreach(IWoWPlayer player in _entityCache.ListGroupMember)
+                {
+                    if(player.Dead)
+                    {
+                        DisplayName = ($"We wait because of: {player.Name} because of being dead");
+                        return true;
+                    }
+                    if(player.HasDrinkBuff)
+                    {
+                        DisplayName = ($"We wait because of: {player.Name} because of being thirsty");
+                        return true;
+                    }
+                    if(player.HasFoodBuff)
+                    {
+                        DisplayName = ($"We wait because of: {player.Name} because of being hungry");
+                        return true;
+                    }
+                    if(player.Auras.ContainsKey(8326))
+                    {
+                        DisplayName = ($"We wait because of: {player.Name} because of being spooky");
+                        return true;
+                    }
+                    if(player.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40)
+                    {
+                        DisplayName = ($"We wait because of: {player.Name} because of being lazy");
+                        return true;
+                    }
+                }
+                return false;
             }
         }
         public override void Run()
         {
             if (MovementManager.InMovement)
                 MovementManager.StopMove();
+
             Thread.Sleep(500);
         }
     }
