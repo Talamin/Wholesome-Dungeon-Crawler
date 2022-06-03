@@ -49,24 +49,14 @@ namespace WholesomeDungeonCrawler.States
                         DisplayName = $"We wait because Member {player.Name} is not logged into game";
                         return true;
                     }
-                    if(player.Dead)
+                    if(player.Dead || player.Auras.ContainsKey(8326))
                     {
-                        DisplayName = $"We wait because Member {player.Name} is being dead";
+                        DisplayName = $"We wait because Member {player.Name} is being dead/spooky";
                         return true;
                     }
-                    if(player.HasDrinkBuff)
+                    if(player.HasDrinkBuff || player.HasFoodBuff)
                     {
-                        DisplayName = $"We wait because Member {player.Name} is being thirsty";
-                        return true;
-                    }
-                    if(player.HasFoodBuff)
-                    {
-                        DisplayName = $"We wait because Member {player.Name} is being hungry";
-                        return true;
-                    }
-                    if(player.Auras.ContainsKey(8326))
-                    {
-                        DisplayName = $"We wait because Member {player.Name} is being spooky";
+                        DisplayName = $"We wait because Member {player.Name} is being thirsty or  Hungry";
                         return true;
                     }
                     if(player.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40)
