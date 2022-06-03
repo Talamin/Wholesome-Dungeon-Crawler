@@ -2,6 +2,6 @@
 {
     public interface IWoWPlayer : IWoWUnit
     {
-
+        public bool IsConnected { get; }
     }
 }

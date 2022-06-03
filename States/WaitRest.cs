@@ -14,7 +14,7 @@ namespace WholesomeDungeonCrawler.States
 {
     class WaitRest : State
     {
-        public override string DisplayName => "Wait - Rest";
+        public override string DisplayName => Name;
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
 
@@ -24,6 +24,8 @@ namespace WholesomeDungeonCrawler.States
             _entityCache = EntityCache;
             Priority = priority;
         }
+
+        private string Name = "Wait - Rest";
 
         public override bool NeedToRun
         {
@@ -37,33 +39,47 @@ namespace WholesomeDungeonCrawler.States
                     || !_cache.IAmTank)
                 {
                     return false;
-                }        
+                }
 
-                foreach(IWoWPlayer player in _entityCache.ListGroupMember)
+                foreach(var playername in _cache.ListPartyMember)
                 {
-                    if(player.Dead)
+                    if(!_entityCache.ListGroupMember.Any(y=> y.Name == playername))
                     {
-                        DisplayName = ($"We wait because of: {player.Name} because of being dead");
+                        Name = ($"We wait because Member {playername} is not in  ObjectManager");
                         return true;
                     }
-                    if(player.HasDrinkBuff)
+                }
+
+                foreach(var player in _entityCache.ListGroupMember)
+                {                  
+                    if(!player.IsConnected)
                     {
-                        DisplayName = ($"We wait because of: {player.Name} because of being thirsty");
+                        DisplayName = ($"We wait because Member {player.Name} is not logged into game");
                         return true;
                     }
-                    if(player.HasFoodBuff)
+                    if(player.Dead && player.Guid != _entityCache.TankUnit.Guid)
                     {
-                        DisplayName = ($"We wait because of: {player.Name} because of being hungry");
+                        DisplayName = ($"We wait because Member {player.Name} is being dead");
                         return true;
                     }
-                    if(player.Auras.ContainsKey(8326))
+                    if(player.HasDrinkBuff && player.Guid != _entityCache.TankUnit.Guid)
                     {
-                        DisplayName = ($"We wait because of: {player.Name} because of being spooky");
+                        DisplayName = ($"We wait because Member {player.Name} is being thirsty");
                         return true;
                     }
-                    if(player.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40)
+                    if(player.HasFoodBuff && player.Guid != _entityCache.TankUnit.Guid)
                     {
-                        DisplayName = ($"We wait because of: {player.Name} because of being lazy");
+                        DisplayName = ($"We wait because Member {player.Name} is being hungry");
+                        return true;
+                    }
+                    if(player.Auras.ContainsKey(8326) && player.Guid != _entityCache.TankUnit.Guid)
+                    {
+                        DisplayName = ($"We wait because Member {player.Name} is being spooky");
+                        return true;
+                    }
+                    if(player.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40 && player.Guid != _entityCache.TankUnit.Guid)
+                    {
+                        DisplayName = ($"We wait because Member {player.Name} is being lazy");
                         return true;
                     }
                 }

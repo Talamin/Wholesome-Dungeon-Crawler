@@ -71,7 +71,7 @@ namespace WholesomeDungeonCrawler.Manager
                     if (deserializedProfile.MapId == dungeon.MapId)
                     {
                         //sleep to have time while porting
-                        Logger.Log("We sleep for 5 seconds while Port");
+                        Logger.Log("Savety Sleep for 5 Seconds");
                         Thread.Sleep(5000);
                         CurrentDungeonProfile = new Profile(deserializedProfile, _entityCache);
                         Logger.Log($"Dungeon Profile loaded: {deserializedProfile.Name}.{Environment.NewLine} with the MapID { deserializedProfile.MapId}.{ Environment.NewLine} with at Total Steps { deserializedProfile.StepModels.Count()}.{ Environment.NewLine} with a { deserializedProfile.DeathRunPath.Count()}.{ Environment.NewLine} Steps Deathrun and { deserializedProfile.OffMeshConnections.Count()}.{ Environment.NewLine} OffmeshConnections");
