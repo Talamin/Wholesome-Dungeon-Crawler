@@ -19,7 +19,7 @@ namespace WholesomeDungeonCrawler.Data
         public bool IsInInstance { get; private set; }
         public bool IsPartyInviteRequest { get; private set; }
         public bool HaveSatchel { get; private set; }
-        public List<string> ListPartyMember { get; private set; } = new List<string>();
+        public List<string> ListPartyMemberNames { get; private set; } = new List<string>();
         public string GetLFGMode { get; private set; }
         public bool MiniMapLFGFrameIcon { get; private set; }
         public string GetPlayerSpec { get; private set; }
@@ -158,7 +158,7 @@ namespace WholesomeDungeonCrawler.Data
 
         private void ClearCachedLists()
         {
-            ListPartyMember.Clear();
+            ListPartyMemberNames.Clear();
         }
 
         private void CachePartyMemberChanged()
@@ -178,7 +178,7 @@ namespace WholesomeDungeonCrawler.Data
                     end", "plist");
                 if(plist != null)
                 {
-                    ListPartyMember = plist.Remove(plist.Length - 1, 1).Split(',').ToList();
+                    ListPartyMemberNames = plist.Remove(plist.Length - 1, 1).Split(',').ToList();
                 }
 
             }

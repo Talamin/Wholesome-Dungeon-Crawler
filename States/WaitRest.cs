@@ -1,20 +1,14 @@
 ﻿using robotManager.FiniteStateMachine;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Data;
-using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
 {
     class WaitRest : State
     {
-        public override string DisplayName => Name;
+        public override string DisplayName { get; set; } = "Wait - Rest";
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
 
@@ -24,8 +18,6 @@ namespace WholesomeDungeonCrawler.States
             _entityCache = EntityCache;
             Priority = priority;
         }
-
-        private string Name = "Wait - Rest";
 
         public override bool NeedToRun
         {
@@ -41,45 +33,45 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                foreach(var playername in _cache.ListPartyMember)
+                foreach(string playername in _cache.ListPartyMemberNames)
                 {
                     if(!_entityCache.ListGroupMember.Any(y=> y.Name == playername))
                     {
-                        Name = ($"We wait because Member {playername} is not in  ObjectManager");
+                        DisplayName = $"We wait because Member {playername} is not in  ObjectManager";
                         return true;
                     }
                 }
 
-                foreach(var player in _entityCache.ListGroupMember)
+                foreach(IWoWPlayer player in _entityCache.ListGroupMember)
                 {                  
                     if(!player.IsConnected)
                     {
-                        DisplayName = ($"We wait because Member {player.Name} is not logged into game");
+                        DisplayName = $"We wait because Member {player.Name} is not logged into game";
                         return true;
                     }
-                    if(player.Dead && player.Guid != _entityCache.TankUnit.Guid)
+                    if(player.Dead)
                     {
-                        DisplayName = ($"We wait because Member {player.Name} is being dead");
+                        DisplayName = $"We wait because Member {player.Name} is being dead";
                         return true;
                     }
-                    if(player.HasDrinkBuff && player.Guid != _entityCache.TankUnit.Guid)
+                    if(player.HasDrinkBuff)
                     {
-                        DisplayName = ($"We wait because Member {player.Name} is being thirsty");
+                        DisplayName = $"We wait because Member {player.Name} is being thirsty";
                         return true;
                     }
-                    if(player.HasFoodBuff && player.Guid != _entityCache.TankUnit.Guid)
+                    if(player.HasFoodBuff)
                     {
-                        DisplayName = ($"We wait because Member {player.Name} is being hungry");
+                        DisplayName = $"We wait because Member {player.Name} is being hungry";
                         return true;
                     }
-                    if(player.Auras.ContainsKey(8326) && player.Guid != _entityCache.TankUnit.Guid)
+                    if(player.Auras.ContainsKey(8326))
                     {
-                        DisplayName = ($"We wait because Member {player.Name} is being spooky");
+                        DisplayName = $"We wait because Member {player.Name} is being spooky";
                         return true;
                     }
-                    if(player.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40 && player.Guid != _entityCache.TankUnit.Guid)
+                    if(player.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40)
                     {
-                        DisplayName = ($"We wait because Member {player.Name} is being lazy");
+                        DisplayName = $"We wait because Member {player.Name} is being lazy";
                         return true;
                     }
                 }

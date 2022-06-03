@@ -38,7 +38,7 @@ namespace WholesomeDungeonCrawler.States
                     || !_entityCache.Me.Valid
                     || Fight.InFight
                     || _cache.IsInInstance
-                    || _cache.ListPartyMember.Count() < 4) //changed from 4
+                    || _cache.ListPartyMemberNames.Count() < 4) //changed from 4
                 {
                     return false;
                 }

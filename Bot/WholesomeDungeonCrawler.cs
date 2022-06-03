@@ -41,34 +41,34 @@ namespace WholesomeDungeonCrawler.Bot
                 _fsm.AddState(new Relogger { Priority = 200 });
                 _fsm.AddState(new Pause { Priority = 150 });
                 //Custom  State
-                //_fsm.AddState(new Dead(_cache, _entityCache, _profileManager, 25));
-                //_fsm.AddState(new OpenSatchel(_cache, 24));
-                //_fsm.AddState(new MyMacro { Priority = 23 });
-                //_fsm.AddState(new Regeneration { Priority = 22 });
-                //_fsm.AddState(new NPCScanState { Priority = 21 });
-                //_fsm.AddState(new ToTown { Priority = 20 });
-                //_fsm.AddState(new Trainers { Priority = 19 });
+                _fsm.AddState(new Dead(_cache, _entityCache, _profileManager, 25));
+                _fsm.AddState(new OpenSatchel(_cache, 24));
+                _fsm.AddState(new MyMacro { Priority = 23 });
+                _fsm.AddState(new Regeneration { Priority = 22 });
+                _fsm.AddState(new NPCScanState { Priority = 21 });
+                _fsm.AddState(new ToTown { Priority = 20 });
+                _fsm.AddState(new Trainers { Priority = 19 });
 
-                //_fsm.AddState(new GroupInviteAccept(_cache, 18));
-                //_fsm.AddState(new GroupInvite(_cache, _entityCache, 17));
-                //_fsm.AddState(new GroupProposal(_cache, 16));
-                //_fsm.AddState(new GroupQueueAccept(_cache, _entityCache, 16));
-                //_fsm.AddState(new GroupQueue(_cache, _entityCache, 15));
+                _fsm.AddState(new GroupInviteAccept(_cache, 18));
+                _fsm.AddState(new GroupInvite(_cache, _entityCache, 17));
+                _fsm.AddState(new GroupProposal(_cache, 16));
+                _fsm.AddState(new GroupQueueAccept(_cache, _entityCache, 16));
+                _fsm.AddState(new GroupQueue(_cache, _entityCache, 15));
 
-                //_fsm.AddState(new LeaveDungeon(_cache, _entityCache, _profileManager, 14));
+                _fsm.AddState(new LeaveDungeon(_cache, _entityCache, _profileManager, 14));
 
 
-                //_fsm.AddState(new GroupRevive(_cache, _entityCache, 13));
+                _fsm.AddState(new GroupRevive(_cache, _entityCache, 13));
                 _fsm.AddState(new WaitRest(_cache, _entityCache, 12));
-                //_fsm.AddState(new MovementSlave(_cache, _entityCache, 11));
+                _fsm.AddState(new MovementSlave(_cache, _entityCache, 11));
 
 
-                //_fsm.AddState(new SlaveCombat(_cache, _entityCache, 9));
-                //_fsm.AddState(new TankCombat(_cache, _entityCache, 8));
-                //_fsm.AddState(new ClearPathCombat(_cache, _entityCache, 7));
-                //_fsm.AddState(new Looting { Priority = 6 });
+                _fsm.AddState(new SlaveCombat(_cache, _entityCache, 9));
+                _fsm.AddState(new TankCombat(_cache, _entityCache, 8));
+                _fsm.AddState(new ClearPathCombat(_cache, _entityCache, 7));
+                _fsm.AddState(new Looting { Priority = 6 });
 
-                //_fsm.AddState(new DungeonLogic(_cache, _entityCache, _profileManager, 5));
+                _fsm.AddState(new DungeonLogic(_cache, _entityCache, _profileManager, 5));
 
 
                 //Default State
