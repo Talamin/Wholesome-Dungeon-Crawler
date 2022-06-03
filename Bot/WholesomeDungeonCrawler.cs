@@ -60,6 +60,7 @@ namespace WholesomeDungeonCrawler.Bot
 
                 _fsm.AddState(new GroupRevive(_cache, _entityCache, 13));
                 _fsm.AddState(new WaitRest(_cache, _entityCache, 12));
+                //_fsm.AddState(new MovementSlaveBETA(_cache, _entityCache, 11));
                 _fsm.AddState(new MovementSlave(_cache, _entityCache, 11));
 
 

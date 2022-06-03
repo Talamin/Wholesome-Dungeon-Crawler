@@ -7,17 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.Helpers;
 using WholesomeToolbox;
-using wManager.Wow.Enums;
+using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
 {
     class MovementSlaveBETA : State
     {
-        //The Idea: Having a State which checks permanently if the Tank is infront of us and near our path.
-        //If he´s not, the State will be true, and we perform some action.
-        //If he is, the State will be false, and we perform the Profile  Logic.
         public override string DisplayName => "Slave";
 
         private readonly ICache _cache;
@@ -30,94 +28,86 @@ namespace WholesomeDungeonCrawler.States
             Priority = priority;
         }
 
-        //private IWoWUnit _tankUnit = null;
-        public List<(Vector3 a, Vector3 b)> LinesToCheck = new List<(Vector3 a, Vector3 b)>(); // For Radar 3D
 
+        //BUILDING STRICT FOLLOW PATH
+        private Vector3 strictoldleaderpos = new Vector3(0, 0, 0);
+        private List<Vector3> strictfollowpath = new List<Vector3>();
+        private List<Vector3> strictfollowpathnew = new List<Vector3>();
+        //
         public override bool NeedToRun
-        { 
-        get
+        {
+            get
             {
                 if (!Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause
                     || !_entityCache.Me.Valid
-                    || !_entityCache.Me.InCombatFlagOnly
-                    || Fight.InFight
-                    || MovementManager.CurrentPath == null
-                    || MovementManager.CurrentPath.Count <= 0
-                    || (!MovementManager.InMoveTo && !MovementManager.InMovement)
-                    || MovementManager.CurrentPath.Last().DistanceTo(_entityCache.Me.PositionWithoutType) > 120)
+                    || _entityCache.Me.InCombatFlagOnly
+                    || !_cache.IsInInstance
+                    || Fight.InFight)
                 {
                     return false;
                 }
 
-                if(_cache.IAmTank)
+                if (_cache.IAmTank)
                 {
                     return false;
                 }
 
-                List<Vector3> currentPath = MovementManager.CurrentPath;
-                Vector3 nextNode = MovementManager.CurrentMoveTo;
-                Vector3 myPosition = _entityCache.Me.PositionWithoutType;
-                List<(Vector3 a, Vector3 b)> linesToCheck = new List<(Vector3, Vector3)>();
-                bool nextNodeFound = false;
-                for (int i = 0; i < currentPath.Count; i++)
+                IWoWUnit Tank = _entityCache.TankUnit;
+                if (Tank == null)
                 {
-                    // break on last node unless it's the only node
-                    if (i >= currentPath.Count - 1 && linesToCheck.Count > 0)
-                    {
-                        break;
-                    }
-
-                    // skip nodes behind me
-                    if (!nextNodeFound)
-                    {
-                        if (currentPath[i] != nextNode)
-                        {
-                            continue;
-                        }
-                        nextNodeFound = true;
-                    }
-
-                    // Ignore if too far
-                    if (linesToCheck.Count > 2 && currentPath[i].DistanceTo(myPosition) > 50)
-                    {
-                        break;
-                    }
-
-                    // Path ahead of me
-                    if (linesToCheck.Count <= 0)
-                    {
-                        linesToCheck.Add((myPosition, currentPath[i]));
-                        if (currentPath.Count > i + 1)
-                        {
-                            linesToCheck.Add((currentPath[i], currentPath[i + 1]));
-                        }
-                    }
-                    else
-                    {
-                        linesToCheck.Add((currentPath[i], currentPath[i + 1]));
-                    }
+                    Logger.Log("No IWoWUnit Tankunit");
+                    return false;
                 }
-                LinesToCheck = linesToCheck;
-                //Now we check if the Tank is along the lines ahead of us
-                IWoWUnit Tankunit = _entityCache.ListGroupMember.Where(unit => unit.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName).FirstOrDefault();
-                foreach ((Vector3 a, Vector3 b) line in linesToCheck)
+
+
+                //Checks when not to follow
+                //If we are moving, return false
+                if (MovementManager.InMoveTo || MovementManager.InMovement)
                 {
-                    if(!IHaveLineOfSightOn(Tankunit) && WTPathFinder.PointDistanceToLine(line.a, line.b, Tankunit.PositionWithoutType) < 20)
-                    {
-                        return false;
-                    }
+                    return false;
                 }
-                return true;
+
+                //BUILDING A STRICT FOLLOWPATH
+                if(strictoldleaderpos == new Vector3(0, 0, 0))
+                {
+                    strictoldleaderpos = Tank.PositionWithoutType;
+                    Logger.Log("Set strictoldleaderpos: " + strictoldleaderpos);
+                    strictfollowpath.Add(strictoldleaderpos);
+                    Logger.Log("Added strictoldleaderpos to strictfollowpath");
+                }
+                if(Tank.PositionWithoutType.DistanceTo(strictoldleaderpos) >2)
+                {
+                    strictoldleaderpos = Tank.PositionWithoutType;
+                    strictfollowpath.Add(Tank.PositionWithoutType);
+                    Logger.Log("Added new Vector: " + Tank.PositionWithoutType);
+                }
+                if (_entityCache.Me.PositionWithoutType.DistanceTo(strictfollowpath[0]) <= 2 && strictfollowpath.Count() > 1)
+                {
+                    strictfollowpath.Remove(strictfollowpath[0]);
+                    Logger.Log("Removed old Vector: " + strictfollowpath[0]);
+                }
+
+                //If we are in Range of our Tank
+                if (_entityCache.Me.PositionWithoutType.DistanceTo(strictoldleaderpos) <= 15)
+                {
+                    return false;
+                }
+
+                if (_entityCache.Me.PositionWithoutType.DistanceTo(strictoldleaderpos) > 15
+                    || TraceLine.TraceLineGo(Tank.PositionWithoutType))
+                {
+                    return true;
+                }
+                return false;
             }
         }
+
         public override void Run()
-        { 
-            //do some logic if the Tank is not running infront of us.
-        }
-        private bool IHaveLineOfSightOn(IWoWUnit woWUnit)
         {
-            Vector3 myPos = _entityCache.Me.PositionWithoutType;
-            return !TraceLine.TraceLineGo(myPos, woWUnit.PositionWithoutType, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);
+            Vector3 point = strictfollowpath[0];
+            Logger.Log("Moveto: " + point);
+            MovementManager.MoveTo(point);
+            //GoToTask.ToPosition(point, 1f, false, context => _entityCache.Me.PositionWithoutType.DistanceTo2D(point) > 2);
         }
     }
 }
