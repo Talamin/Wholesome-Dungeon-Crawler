@@ -1,16 +1,9 @@
-﻿using robotManager.Helpful;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WholesomeDungeonCrawler.CrawlerSettings;
+﻿using System.ComponentModel;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
-using WholesomeToolbox;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
+using robotManager.Helpful;
 
 namespace WholesomeDungeonCrawler.Manager
 {
@@ -34,90 +27,96 @@ namespace WholesomeDungeonCrawler.Manager
             {
                 Interact.ClearTarget();
             }
+            Target = null;
 
-            Target = null;    
-
-            //Tank Section Start
-            if(_cache.IAmTank)
+            if (_cache.IAmTank)
             {
-                IWoWUnit attackerGroupMember = AttackingGroupMember();
-                if (attackerGroupMember != null 
-                    && attackerGroupMember.TargetGuid != _entityCache.Me.Guid
-                    && attackerGroupMember.TargetGuid != _entityCache.Target.Guid)
+                IWoWUnit currentTarget = _entityCache.Target;
+                if (currentTarget.IsAttackingMe)
                 {
-                    Target = attackerGroupMember;
-                    Logger.Log($"TargetingManager: Target attacking Groupmember: {Target.Name} , switching");
-                    cancable.Cancel = true;
-                    SwitchedTargetFight(Target);
+                    IWoWUnit newTarget = GetNearestEnemyAttackingGroupMember();
+                    if (newTarget != null)
+                    {
+                        Target = newTarget;
+                        Logger.Log($"TargetingManager: Target attacking Groupmember: {Target.Name}, switching");
+                        cancable.Cancel = true;
+                        SwitchedTargetFight(Target);
+                    }
                 }
-            }
-
-            //Tank Section End
-            //Slave Section Start
-            if (!_cache.IAmTank)
+            } else
             {
+                // Check for fleeing units
                 IWoWUnit fleeUnit = FleeingUnit(_entityCache.TankUnit);
-                if (fleeUnit != null && _entityCache.Me.TargetGuid != fleeUnit.Guid)
+                if (fleeUnit != null)                
                 {
-                    Target = FleeingUnit(_entityCache.TankUnit);
-                    Logger.Log($"TargetingManager: Target fleeing: {Target.Name} , switching");
-                    cancable.Cancel = true;
-                    SwitchedTargetFight(Target);
+                    // If we are not already targeting it, target it
+                    if (_entityCache.Me.TargetGuid != fleeUnit.Guid)
+                    {
+                        Target = FleeingUnit(_entityCache.TankUnit);
+                        Logger.Log($"TargetingManager: Target fleeing: {Target.Name} , switching");
+                        cancable.Cancel = true;
+                        SwitchedTargetFight(Target);
+                    }                    
                 }
-                //Check to AssistTank
-                IWoWUnit assistTankUnit = AssistTank(_entityCache.TankUnit);
-                if (assistTankUnit != null && fleeUnit == null
-                    && assistTankUnit.Guid != _entityCache.Me.TargetGuid)
+                else
                 {
-                    Target = assistTankUnit;
-                    Logger.Log($"TargetingManager: Target attacking Tank: {Target.Name} , switching");
-                    cancable.Cancel = true;
-                    SwitchedTargetFight(Target);
-                }
-
-                //check to Assist any Groupmember if Tank don´t get the aggro
-                IWoWUnit assistGroupUnit = AssistGroup(_entityCache.TankUnit);
-                if (assistGroupUnit != null && assistTankUnit == null
-                    && assistGroupUnit.Guid != _entityCache.Me.TargetGuid)
-                {
-                    Target = assistGroupUnit;
-                    Logger.Log($"TargetingManager: Target attacking Groupmember: {Target.Name} , switching");
-                    cancable.Cancel = true;
-                    SwitchedTargetFight(Target);
-                }
-
-                IWoWUnit attackingMe = AttackingMe();
-                if (attackingMe != null && assistGroupUnit == null
-                    && attackingMe.Guid != _entityCache.Me.TargetGuid)
-                {
-                    Target = attackingMe;
-                    Logger.Log($"TargetingManager: Target attacking Groupmember: {Target.Name} , switching");
-                    cancable.Cancel = true;
-                    SwitchedTargetFight(Target);
-
-                }
-
+                    //Assist tank
+                    IWoWUnit assistTankUnit = AssistTank(_entityCache.TankUnit);
+                    if (assistTankUnit != null)
+                    {
+                        if (assistTankUnit.Guid != _entityCache.Me.TargetGuid) 
+                        {
+                            Target = assistTankUnit;
+                            Logger.Log($"TargetingManager: Target attacking Tank: {Target.Name} , switching");
+                            cancable.Cancel = true;
+                            SwitchedTargetFight(Target);
+                        }                        
+                    }
+                    else
+                    {
+                        //Assist any Groupmember if Tank has no target
+                        IWoWUnit assistGroupUnit = AssistGroup(_entityCache.TankUnit);
+                        if (assistGroupUnit != null)
+                        {
+                            if (assistGroupUnit.Guid != _entityCache.Me.TargetGuid)
+                            {
+                                Target = assistGroupUnit;
+                                Logger.Log($"TargetingManager: Target attacking Groupmember: {Target.Name} , switching");
+                                cancable.Cancel = true;
+                                SwitchedTargetFight(Target);
+                            }                            
+                        }
+                        else
+                        {
+                            // Attack targets attacking me if no-one else has a target
+                            IWoWUnit attackingMe = AttackingMe();
+                            if (attackingMe != null)
+                            {
+                                if (attackingMe.Guid != _entityCache.Me.TargetGuid)
+                                {
+                                    Target = attackingMe;
+                                    Logger.Log($"TargetingManager: Target attacking Groupmember: {Target.Name} , switching");
+                                    cancable.Cancel = true;
+                                    SwitchedTargetFight(Target);
+                                }                                
+                            }
+                        }
+                    }
+                }                
             }
-            //Slave Section End
         }
 
         private void SwitchedTargetFight(IWoWUnit target)
-        {
-            //MovementManager.StopMove();
-            //Fight.StopFight();
-            //Logger.Log("Start Fight with: " + target.Guid + " Targeting Manager");
+        {           
             ObjectManager.Me.Target = Target.Guid;
             Fight.StartFight(target.Guid, false);
         }
 
-        private IWoWUnit AttackingGroupMember()
+        private IWoWUnit GetNearestEnemyAttackingGroupMember()
         {
-            IWoWUnit Unit = TargetingHelper.FindClosestUnit(unit =>
-            unit.IsAttackingGroup
-            && !unit.IsAttackingMe
-            && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-            && !unit.Dead, PointInMidOfGroup(), _entityCache.EnemyUnitsList);
-            return Unit;
+            return TargetingHelper.FindClosestUnit(unit =>
+                unit.IsAttackingGroup && !unit.IsAttackingMe && !unit.Dead && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60,
+                _entityCache.Me.PositionWithoutType, _entityCache.EnemyUnitsList);
         }
 
         private IWoWUnit FleeingUnit(IWoWUnit Tank)
@@ -156,7 +155,6 @@ namespace WholesomeDungeonCrawler.Manager
             && !unit.Dead, Tank.PositionWithoutType, _entityCache.EnemyUnitsList);
             return Unit;
         }
-
 
         private Vector3 PointInMidOfGroup()
         {
