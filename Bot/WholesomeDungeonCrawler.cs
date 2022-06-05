@@ -61,13 +61,14 @@ namespace WholesomeDungeonCrawler.Bot
                 _fsm.AddState(new GroupRevive(_cache, _entityCache, 13));
                 _fsm.AddState(new WaitRest(_cache, _entityCache, 12));
                 //_fsm.AddState(new MovementSlaveBETA(_cache, _entityCache, 11));
-                _fsm.AddState(new MovementSlave(_cache, _entityCache, 11));
 
 
-                _fsm.AddState(new SlaveCombat(_cache, _entityCache, 9));
-                _fsm.AddState(new TankCombat(_cache, _entityCache, 8));
-                _fsm.AddState(new ClearPathCombat(_cache, _entityCache, 7));
-                _fsm.AddState(new Looting { Priority = 6 });
+
+                _fsm.AddState(new SlaveCombat(_cache, _entityCache, 11));
+                _fsm.AddState(new TankCombat(_cache, _entityCache, 10));
+                _fsm.AddState(new ClearPathCombat(_cache, _entityCache, 9));
+                _fsm.AddState(new Looting { Priority = 8 });
+                _fsm.AddState(new MovementSlave(_cache, _entityCache, 7));
 
                 _fsm.AddState(new DungeonLogic(_cache, _entityCache, _profileManager, 5));
 

@@ -73,6 +73,7 @@ namespace WholesomeDungeonCrawler.States
 
             if (!_cache.IsInInstance)
             {
+                if(_profileManager.CurrentDungeonProfile.DeathRunPathList != null)
                 _deathrun = _profileManager.CurrentDungeonProfile.DeathRunPathList;
                 if (_profileManager.CurrentDungeonProfile.DeathRunPathList != null && _profileManager.CurrentDungeonProfile.DeathRunPathList.Count > 0)
                     MovementManager.Go(_deathrun);
