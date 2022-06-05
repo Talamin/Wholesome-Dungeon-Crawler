@@ -27,7 +27,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             Vector3 lastPointOfPath = _moveAlongPathModel.Path.Last();
             if (_entityCache.Me.PositionWithoutType.DistanceTo(lastPointOfPath) < 5f)
             {
-                if (!_moveAlongPathModel.CompleteCondition.HasCompleteCondition)
+                if (_moveAlongPathModel.CompleteCondition == null || !_moveAlongPathModel.CompleteCondition.HasCompleteCondition)
                 {
                     IsCompleted = true;
                     return;
