@@ -10,6 +10,7 @@ namespace WholesomeDungeonCrawler.Profiles
         bool ProfileIsCompleted { get; }
         int MapId { get; }
         List<Vector3> DeathRunPathList { get; }
+        Dictionary<IStep, List<Vector3>> DungeonPath { get; }
 
         void SetCurrentStep();
         void SetFirstLaunchStep();

@@ -122,7 +122,9 @@
     </Compile>
     <Compile Include="Helpers\AutoUpdater.cs" />
     <Compile Include="Helpers\TargetingHelper.cs" />
+    <Compile Include="Manager\IPartyChatManager.cs" />
     <Compile Include="Manager\ITargetingManager.cs" />
+    <Compile Include="Manager\PartyChatManager.cs" />
     <Compile Include="Manager\TargetingManager.cs" />
     <Compile Include="Profiles\IProfile.cs" />
     <Compile Include="Profiles\Steps\DefendSpotStep.cs" />
@@ -156,6 +158,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="States\Dead.cs" />
+    <Compile Include="States\MovementSlaveZero.cs" />
     <Compile Include="States\SlaveCombat.cs" />
     <Compile Include="States\TankCombat.cs" />
     <Compile Include="States\DungeonLogic.cs" />

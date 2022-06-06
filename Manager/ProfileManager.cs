@@ -29,7 +29,7 @@ namespace WholesomeDungeonCrawler.Manager
         }
         public void Initialize()
         {
-            CachePlayerEnteringWorld();
+            LoadProfile(false);
             //starting with Event Substcription
             //EventsLua.AttachEventLua("PLAYER_ENTERING_WORLD", m => CachePlayerEnteringWorld());
             EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaStringWithArgs;
@@ -40,21 +40,13 @@ namespace WholesomeDungeonCrawler.Manager
             switch (id)
             {
                 case "PLAYER_ENTERING_WORLD":
-                    CachePlayerEnteringWorld();
+                    Logger.Log("PLAYER ENTERING WORLD OUT OF PROFILEMANAGER");
+                    LoadProfile(true);
                     break;
             }
         }
 
-        private void CachePlayerEnteringWorld()
-        {
-            Logger.Log("PLAYER ENTERING WORLD OUT OF PROFILEMANAGER");
-            lock (profileLock)
-            {
-                LoadProfile();
-            }
-        }
-
-        private void LoadProfile()
+        private void LoadProfile(bool safeWait)
         {
             DungeonModel dungeon = CheckandChooseactualDungeon();
             if (dungeon != null)
@@ -70,9 +62,12 @@ namespace WholesomeDungeonCrawler.Manager
                     var deserializedProfile = JsonConvert.DeserializeObject<ProfileModel>(File.ReadAllText(profile), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
                     if (deserializedProfile.MapId == dungeon.MapId)
                     {
-                        //sleep to have time while porting
-                        Logger.Log("Savety Sleep for 5 Seconds");
-                        Thread.Sleep(5000);
+                        if (safeWait)
+                        {
+                            //sleep to have time while porting
+                            Logger.Log("Savety Sleep for 3 Seconds");
+                            Thread.Sleep(3000);
+                        }
                         CurrentDungeonProfile = new Profile(deserializedProfile, _entityCache);
                         Logger.Log($"Dungeon Profile loaded: {deserializedProfile.Name}.{Environment.NewLine} with the MapID { deserializedProfile.MapId}.{ Environment.NewLine} with at Total Steps { deserializedProfile.StepModels.Count()}.{ Environment.NewLine} with a { deserializedProfile.DeathRunPath.Count()}.{ Environment.NewLine} Steps Deathrun and { deserializedProfile.OffMeshConnections.Count()}.{ Environment.NewLine} OffmeshConnections");
                         CurrentDungeonProfile.SetFirstLaunchStep();

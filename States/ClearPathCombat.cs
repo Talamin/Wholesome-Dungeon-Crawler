@@ -1,11 +1,7 @@
 ﻿using robotManager.FiniteStateMachine;
 using robotManager.Helpful;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeToolbox;
@@ -30,22 +26,23 @@ namespace WholesomeDungeonCrawler.States
 
         private IWoWUnit _unitToClear = null;
         public List<(Vector3 a, Vector3 b)> LinesToCheck = new List<(Vector3 a, Vector3 b)>(); // For Radar 3D
-        public override bool NeedToRun 
+        public override bool NeedToRun
         {
             get
             {
-                if(!Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause
+                if (!Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause
                     || !_entityCache.Me.Valid
                     || _entityCache.Me.InCombatFlagOnly
                     || Fight.InFight
                     || MovementManager.CurrentPath == null
                     || MovementManager.CurrentPath.Count <= 0
-                    || (!MovementManager.InMoveTo && !MovementManager.InMovement)) 
+                    || (!MovementManager.InMoveTo && !MovementManager.InMovement))
                 {
                     return false;
                 }
 
-                if(!_cache.IAmTank)
+
+                if (!_cache.IAmTank)
                 {
                     return false;
                 }
@@ -105,12 +102,13 @@ namespace WholesomeDungeonCrawler.States
                     {
                         foreach (IWoWUnit unit in hostileUnits)
                         {
-                            if (!IHaveLineOfSightOn(unit))
+                            if (WTLocation.GetZDifferential(unit.PositionWithoutType) > 5
+                                || WTPathFinder.PointDistanceToLine(line.a, line.b, unit.PositionWithoutType) > 20)
                             {
                                 continue;
                             }
-                            if (WTLocation.GetZDifferential(unit.PositionWithoutType) < 5
-                                && WTPathFinder.PointDistanceToLine(line.a, line.b, unit.PositionWithoutType) < 20)
+
+                            if (TargetingHelper.IHaveLineOfSightOn(unit.WowUnit))
                             {
                                 unitsAlongLine.Add(unit);
                             }
@@ -136,15 +134,10 @@ namespace WholesomeDungeonCrawler.States
         {
             DisplayName = $"Clearing Path {_unitToClear.Name}";
             Logger.Log($"Clearing Path {_unitToClear.Name}");
+            MovementManager.StopMove();
             Fight.StartFight(_unitToClear.Guid);
             _unitToClear = null;
 
-        }
-
-        private bool IHaveLineOfSightOn(IWoWUnit woWUnit)
-        {
-            Vector3 myPos = _entityCache.Me.PositionWithoutType;
-            return !TraceLine.TraceLineGo(myPos, woWUnit.PositionWithoutType, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS); 
         }
     }
 }

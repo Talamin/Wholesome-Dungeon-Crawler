@@ -19,6 +19,7 @@ namespace WholesomeDungeonCrawler.Profiles
         public int MapId { get; }
         public List<Vector3> DeathRunPathList { get; private set; } = new List<Vector3>();
         public IStep CurrentStep { get; private set; }
+        public Dictionary<IStep, List<Vector3>> DungeonPath { get; private set; } = new Dictionary<IStep, List<Vector3>>();
 
         public Profile(ProfileModel profileModel, IEntityCache entityCache)
         {
@@ -29,7 +30,9 @@ namespace WholesomeDungeonCrawler.Profiles
                 switch (model)
                 {
                     case MoveAlongPathModel _:
-                        _profileSteps.Add(new MoveAlongPathStep((MoveAlongPathModel)model, entityCache));
+                        MoveAlongPathStep step = new MoveAlongPathStep((MoveAlongPathModel)model, entityCache);
+                        _profileSteps.Add(step);
+                        DungeonPath.Add(step, step.GetMoveAlongPath);
                         break;
                     case GoToModel _:
                         _profileSteps.Add(new GoToStep((GoToModel)model, entityCache));

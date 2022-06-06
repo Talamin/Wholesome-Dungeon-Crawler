@@ -52,7 +52,7 @@ namespace WholesomeDungeonCrawler.States
                 {
                     return false;
                 }
-                    
+                /*
                 if(WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.RDPS)
                 {
                     FollowRange = WholesomeDungeonCrawlerSettings.CurrentSetting.FollowRangeRDPS;
@@ -64,7 +64,7 @@ namespace WholesomeDungeonCrawler.States
                 if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Heal)
                 {
                     FollowRange = WholesomeDungeonCrawlerSettings.CurrentSetting.FollowRangeHeal;
-                }
+                }*/
 
                 //Checks when not to follow
                 //If we are moving, return false
