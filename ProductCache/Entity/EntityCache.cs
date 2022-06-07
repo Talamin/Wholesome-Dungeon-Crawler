@@ -1,5 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using WholesomeDungeonCrawler.CrawlerSettings;
@@ -44,32 +45,25 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                     CacheListPartyMemberGuid();
                     break;
                 case "PARTY_MEMBERS_CHANGED":
-                    Logger.LogError("PARTY_MEMBERS_CHANGED");
                     CacheListPartyMemberGuid();
                     CachePartyMemberChanged();
                     break;
                 case "PARTY_MEMBER_DISABLE":
-                    Logger.LogError("PARTY_MEMBER_DISABLE");
                     CacheListPartyMemberGuid();
                     break;
                 case "PARTY_MEMBER_ENABLE":
-                    Logger.LogError("PARTY_MEMBER_ENABLE");
                     CacheListPartyMemberGuid();
                     break;
                 case "RAID_ROSTER_UPDATE":
-                    Logger.LogError("RAID_ROSTER_UPDATE");
                     CacheListPartyMemberGuid();
                     break;
                 case "GROUP_ROSTER_CHANGED":
-                    Logger.LogError("GROUP_ROSTER_CHANGED");
                     CacheListPartyMemberGuid();
                     break;
                 case "PARTY_CONVERTED_TO_RAID":
-                    Logger.LogError("PARTY_CONVERTED_TO_RAID");
                     CacheListPartyMemberGuid();
                     break;
                 case "RAID_TARGET_UPDATE":
-                    Logger.LogError("RAID_TARGET_UPDATE");
                     CacheListPartyMemberGuid();
                     break;
             }
@@ -119,6 +113,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
         private void OnObjectManagerPulse()
         {
+            Stopwatch watch = Stopwatch.StartNew();
             WoWLocalPlayer player;
             IWoWLocalPlayer cachedPlayer;
             IWoWUnit cachedTarget, cachedPet;
@@ -250,7 +245,11 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             EnemyUnitsLootable = enemyUnitsLootable.ToArray();
             EnemyAttackingGroup = enemyAttackingGroup.ToArray();
             EnemyUnitsList = enemyUnits.ToArray();
+
+            if (watch.ElapsedMilliseconds > 50)
+                Logger.LogError($"Entity cache pulse took {watch.ElapsedMilliseconds}");
         }
+
         private void CacheListPartyMemberGuid()
         {
             Thread.Sleep(500);
@@ -278,18 +277,18 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             ClearCachedLists();
             lock (cacheLock)
             {
-                var plist = Lua.LuaDoString<string>(@"
+                string plist = Lua.LuaDoString<string>(@"
                     plist='';
                     for i=1,4 do
                         if (UnitName('party'..i)) then
                             plist = plist .. UnitName('party'..i) ..','
                         end
                     end", "plist");
-                if (plist != null)
+
+                if (plist != null && plist.Length > 0)
                 {
                     ListPartyMemberNames = plist.Remove(plist.Length - 1, 1).Split(',').ToList();
                 }
-
             }
         }
     }

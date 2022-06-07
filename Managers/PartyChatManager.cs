@@ -10,13 +10,15 @@ namespace WholesomeDungeonCrawler.Managers
     internal class PartyChatManager : IPartyChatManager
     {
         private readonly IEntityCache _entityCache;
+        private readonly IProfileManager _profileManager;
         private readonly char _separator = '$';
         private readonly string _channelName = "CHANNEL_NAME"; // Build channel name from entity cache ?
 
         public Vector3 TankPosition { get; private set; }
 
-        public PartyChatManager(IEntityCache entityCache)
+        public PartyChatManager(IEntityCache entityCache, IProfileManager profileManager)
         {
+            _profileManager = profileManager;
             _entityCache = entityCache;
         }
 
@@ -34,21 +36,43 @@ namespace WholesomeDungeonCrawler.Managers
             switch (id)
             {
                 case "CHAT_MSG_PARTY":
-                    HandleChatMessageParty(args);
+                    HandleMessageReceived(args);
                     break;
                 case "CHAT_MSG_PARTY_LEADER":
-                    HandleChatMessageParty(args);
+                    HandleMessageReceived(args);
                     break;
                 case "PARTY_MEMBER_ENABLE":
-                    float myX = _entityCache.Me.PositionWithoutType.X;
-                    float myY = _entityCache.Me.PositionWithoutType.Y;
-                    float myZ = _entityCache.Me.PositionWithoutType.Z;
-                    Broadcast(ChatMessageType.TANKPOSITION, $"{myX}${myY}${myZ}");
+                    Logger.LogError("PARTY_MEMBER_ENABLE");
+                    UpdateTankValues();
+                    break;
+                case "PARTY_MEMBER_DISABLE":
+                    Logger.LogError("PARTY_MEMBER_DISABLE");
+                    BroadCastTankStatus();
                     break;
             }
         }
 
-        private void HandleChatMessageParty(List<string> args)
+        private void UpdateTankValues()
+        {
+            if (_entityCache.TankUnit != null)
+            {
+                Logger.Log("Resetting tank values because he is in sight");
+                TankPosition = null;
+            }
+        }
+
+        private void BroadCastTankStatus()
+        {
+            if (_entityCache.IAmTank)
+            {
+                float myX = _entityCache.Me.PositionWithoutType.X;
+                float myY = _entityCache.Me.PositionWithoutType.Y;
+                float myZ = _entityCache.Me.PositionWithoutType.Z;
+                Broadcast(ChatMessageType.TANKSTATUS, $"{myX}${myY}${myZ}${Usefuls.ContinentId}");
+            }
+        }
+
+        private void HandleMessageReceived(List<string> args)
         {
             string message = args[0];
             string author = args[1];
@@ -58,18 +82,25 @@ namespace WholesomeDungeonCrawler.Managers
             {
                 switch (messageType)
                 {
-                    case ChatMessageType.TANKPOSITION:
-                        float posX = float.Parse(messageParts[2]);
-                        float posY = float.Parse(messageParts[3]);
-                        float posZ = float.Parse(messageParts[4]);
-                        TankPosition = new Vector3(posX, posY, posZ);
-                        Logger.LogError($"Tank position is {TankPosition}");
+                    case ChatMessageType.TANKSTATUS:
+                        if (!_entityCache.IAmTank && _entityCache.TankUnit == null)
+                        {
+                            float posX = float.Parse(messageParts[2]);
+                            float posY = float.Parse(messageParts[3]);
+                            float posZ = float.Parse(messageParts[4]);
+                            int tankMapId = int.Parse(messageParts[5]);
+                            if (tankMapId == Usefuls.ContinentId)
+                            {
+                                TankPosition = new Vector3(posX, posY, posZ);
+                                Logger.LogError($"Tank position is {TankPosition}, mapId {tankMapId}");
+                            }
+                        }
                         break;
                 }
             }
             else
             {
-                Logger.LogError($"Message type unknown : {messageParts[0]}");
+                Logger.LogError($"Message type unknown : {messageParts[1]}");
             }
         }
 
@@ -84,6 +115,5 @@ namespace WholesomeDungeonCrawler.Managers
 
 public enum ChatMessageType
 {
-    TANKPOSITION,
-    CURRENTSTEP
+    TANKSTATUS
 }

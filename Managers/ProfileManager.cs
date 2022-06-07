@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache;
@@ -41,7 +41,6 @@ namespace WholesomeDungeonCrawler.Managers
             switch (id)
             {
                 case "PLAYER_ENTERING_WORLD":
-                    Logger.Log("PLAYER ENTERING WORLD OUT OF PROFILEMANAGER");
                     LoadProfile(true);
                     break;
             }
@@ -49,42 +48,40 @@ namespace WholesomeDungeonCrawler.Managers
 
         private void LoadProfile(bool safeWait)
         {
-            DungeonModel dungeon = CheckandChooseactualDungeon();
-            if (dungeon != null)
+            int waitTime = safeWait ? 3000 : 0;
+
+            Task.Delay(waitTime).ContinueWith(t =>
             {
-                var profilePath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");
-                var profilecount = profilePath.GetFiles().Count();
-                if (profilecount > 0)
+                DungeonModel dungeon = CheckandChooseactualDungeon();
+                if (dungeon != null)
                 {
-                    var files = profilePath.GetFiles();
-                    var chosenFile = files[new Random().Next(0, files.Length)];
-                    Logger.Log($"Randomly selected {chosenFile.Name} from the {dungeon.Name} folder.");
-                    var profile = chosenFile.FullName;
-                    var deserializedProfile = JsonConvert.DeserializeObject<ProfileModel>(File.ReadAllText(profile), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
-                    if (deserializedProfile.MapId == dungeon.MapId)
+                    var profilePath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");
+                    var profilecount = profilePath.GetFiles().Count();
+                    if (profilecount > 0)
                     {
-                        if (safeWait)
+                        var files = profilePath.GetFiles();
+                        var chosenFile = files[new Random().Next(0, files.Length)];
+                        Logger.Log($"Randomly selected {chosenFile.Name} from the {dungeon.Name} folder.");
+                        var profile = chosenFile.FullName;
+                        var deserializedProfile = JsonConvert.DeserializeObject<ProfileModel>(File.ReadAllText(profile), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+                        if (deserializedProfile.MapId == dungeon.MapId)
                         {
-                            //sleep to have time while porting
-                            Logger.Log("Savety Sleep for 3 Seconds");
-                            Thread.Sleep(3000);
+                            CurrentDungeonProfile = new Profile(deserializedProfile, _entityCache);
+                            Logger.Log($"Dungeon Profile loaded: {deserializedProfile.Name}.{Environment.NewLine} with the MapID { deserializedProfile.MapId}.{ Environment.NewLine} with at Total Steps { deserializedProfile.StepModels.Count()}.{ Environment.NewLine} with a { deserializedProfile.DeathRunPath.Count()}.{ Environment.NewLine} Steps Deathrun and { deserializedProfile.OffMeshConnections.Count()}.{ Environment.NewLine} OffmeshConnections");
+                            CurrentDungeonProfile.SetFirstLaunchStep();
+                            return;
+                            //PathFinder.OffMeshConnections.AddRange(dungeonProfile.offMeshConnections); <-- in its current state, Profile doesn´t hold any Offmeshes
                         }
-                        CurrentDungeonProfile = new Profile(deserializedProfile, _entityCache);
-                        Logger.Log($"Dungeon Profile loaded: {deserializedProfile.Name}.{Environment.NewLine} with the MapID { deserializedProfile.MapId}.{ Environment.NewLine} with at Total Steps { deserializedProfile.StepModels.Count()}.{ Environment.NewLine} with a { deserializedProfile.DeathRunPath.Count()}.{ Environment.NewLine} Steps Deathrun and { deserializedProfile.OffMeshConnections.Count()}.{ Environment.NewLine} OffmeshConnections");
-                        CurrentDungeonProfile.SetFirstLaunchStep();
-                        return;
-                        //PathFinder.OffMeshConnections.AddRange(dungeonProfile.offMeshConnections); <-- in its current state, Profile doesn´t hold any Offmeshes
-                    }
-                    else
-                    {
-                        Logger.Log($"Dungeon Profile not loaded: {deserializedProfile.Name}.{Environment.NewLine} with the DungeonID { deserializedProfile.MapId} did not match the dungeon id of your current dungeon {dungeon.Name}: {dungeon.MapId}.");
-                        return;
+                        else
+                        {
+                            Logger.Log($"Dungeon Profile not loaded: {deserializedProfile.Name}.{Environment.NewLine} with the DungeonID { deserializedProfile.MapId} did not match the dungeon id of your current dungeon {dungeon.Name}: {dungeon.MapId}.");
+                            return;
+                        }
                     }
                 }
-            }
-            Logger.Log("No Profile found!");
-            CurrentDungeonProfile = null;
-            return;
+                Logger.Log("No Profile found!");
+                CurrentDungeonProfile = null;
+            });
         }
 
         private DungeonModel CheckandChooseactualDungeon()

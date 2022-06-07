@@ -28,10 +28,10 @@ namespace WholesomeDungeonCrawler.Bot
                 _cache.Initialize();
                 _entityCache = new EntityCache();
                 _entityCache.Initialize();
-                _partyChatManager = new PartyChatManager(_entityCache);
-                _partyChatManager.Initialize();
                 _profileManager = new ProfileManager(_entityCache, _cache);
                 _profileManager.Initialize();
+                _partyChatManager = new PartyChatManager(_entityCache, _profileManager);
+                _partyChatManager.Initialize();
                 _targetingManager = new TargetingManager(_entityCache, _cache);
                 _targetingManager.Initialize();
                 //Update Spellbook after Initialization
@@ -61,7 +61,6 @@ namespace WholesomeDungeonCrawler.Bot
 
                 _fsm.AddState(new LeaveDungeon(_cache, _entityCache, _profileManager, 14));
 
-
                 _fsm.AddState(new GroupRevive(_cache, _entityCache, 13));
                 _fsm.AddState(new WaitRest(_cache, _entityCache, 12));
                 //_fsm.AddState(new MovementSlaveBETA(_cache, _entityCache, 11));
@@ -77,7 +76,8 @@ namespace WholesomeDungeonCrawler.Bot
                 _movementSlaveZero.Initialize();
                 _fsm.AddState(_movementSlaveZero);
                 */
-                _fsm.AddState(new DungeonLogic(_cache, _entityCache, _profileManager, 4));
+                _fsm.AddState(new RejoinTank(_cache, _entityCache, _profileManager, _partyChatManager, 4));
+                _fsm.AddState(new DungeonLogic(_cache, _entityCache, _profileManager, 3));
 
 
                 //Default State

@@ -31,18 +31,9 @@ namespace WholesomeDungeonCrawler.States
                 if (!Conditions.InGameAndConnected
                     || !_entityCache.Me.Valid
                     || Fight.InFight
+                    || _entityCache.TankUnit == null
                     || _profileManager.CurrentDungeonProfile == null
                     || _profileManager.CurrentDungeonProfile.CurrentStep == null)
-                {
-                    return false;
-                }
-
-                if (!_entityCache.IAmTank)
-                {
-                    return false;
-                }
-
-                if (_entityCache.Me.Dead)
                 {
                     return false;
                 }
