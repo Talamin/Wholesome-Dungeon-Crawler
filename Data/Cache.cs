@@ -1,11 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using WholesomeDungeonCrawler.CrawlerSettings;
-using WholesomeDungeonCrawler.Helpers;
 using WholesomeToolbox;
 using wManager.Events;
-using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -26,7 +22,6 @@ namespace WholesomeDungeonCrawler.Data
         public bool LFGProposalShown { get; private set; }
         public bool LFGRoleCheckShown { get; private set; }
         public bool LootRollShow { get; private set; }
-        public bool IAmTank { get; private set; }
 
         public bool HaveResurrection { get; private set; }
 
@@ -44,15 +39,14 @@ namespace WholesomeDungeonCrawler.Data
             CachePartyInviteRequest();
             //CachePlayerSpec();
             CacheRoleCheckShow();
-            if(ObjectManager.Me.IsInGroup)
+            if (ObjectManager.Me.IsInGroup)
             {
                 CachePartyMemberChanged();
             }
-            CacheIAmTank();
             CacheHaveResurretion();
             //Beginning of Event Subscriptions
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
-        
+
             //EventsLua.AttachEventLua("PLAYER_LEVEL_UP", m => CachePlayerSpec());
 
             EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaWithArgs;
@@ -61,24 +55,21 @@ namespace WholesomeDungeonCrawler.Data
 
         private void EventsLuaWithArgs_OnEventsLuaWithArgs(string id, List<string> args)
         {
-            switch(id)
+            switch (id)
             {
                 case "WORLD_MAP_UPDATE":
                     CacheIsInInstance();
-                    CacheIAmTank();
                     break;
                 case "PARTY_INVITE_REQUEST":
                     CachePartyInviteRequest();
                     break;
                 case "PLAYER_ENTERING_WORLD":
-                    CacheIAmTank();
                     break;
                 case "LFG_COMPLETION_REWARD":
                     CacheLFGCompletionReward();
                     break;
                 case "PARTY_MEMBERS_CHANGED":
                     CachePartyMemberChanged();
-                    CacheIAmTank();
                     break;
                 case "LFG_QUEUE_STATUS_UPDATE":
                     GetLFGModes();
@@ -140,12 +131,12 @@ namespace WholesomeDungeonCrawler.Data
         {
             string StaticPopupText = Lua.LuaDoString<string>("return StaticPopup1Text:GetText()");
             bool isvisible = Lua.LuaDoString<bool>("return StaticPopup1 and StaticPopup1:IsVisible();");
-            if(isvisible && StaticPopupText.Contains("invites you to a group"))
+            if (isvisible && StaticPopupText.Contains("invites you to a group"))
             {
                 IsPartyInviteRequest = true;
                 return;
             }
-            IsPartyInviteRequest = false;         
+            IsPartyInviteRequest = false;
         }
 
         private void CacheLFGCompletionReward()
@@ -176,7 +167,7 @@ namespace WholesomeDungeonCrawler.Data
                             plist = plist .. UnitName('party'..i) ..','
                         end
                     end", "plist");
-                if(plist != null)
+                if (plist != null)
                 {
                     ListPartyMemberNames = plist.Remove(plist.Length - 1, 1).Split(',').ToList();
                 }
@@ -227,11 +218,6 @@ namespace WholesomeDungeonCrawler.Data
         private void CacheLootRollShow()
         {
             LootRollShow = Lua.LuaDoString<bool>("for i = 1, 4 do local b = ['GroupLootFrame'..i] if b and b:IsVisible() then return true end end return false");
-        }
-
-        private void CacheIAmTank()
-        {
-            IAmTank = ObjectManager.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName;
         }
 
         private void CacheHaveResurretion()

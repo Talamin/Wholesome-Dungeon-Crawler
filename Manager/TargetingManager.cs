@@ -29,7 +29,7 @@ namespace WholesomeDungeonCrawler.Manager
             }
             Target = null;
 
-            if (_cache.IAmTank)
+            if (_entityCache.IAmTank)
             {
                 IWoWUnit currentTarget = _entityCache.Target;
                 if (currentTarget.IsAttackingMe)

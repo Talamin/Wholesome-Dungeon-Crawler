@@ -17,6 +17,8 @@ namespace WholesomeDungeonCrawler.Bot
         private IEntityCache _entityCache;
         private IProfileManager _profileManager;
         private ITargetingManager _targetingManager;
+        private IPartyChatManager _partyChatManager;
+        //private MovementSlaveZero _movementSlaveZero;
 
         internal bool InitialSetup()
         {
@@ -26,6 +28,8 @@ namespace WholesomeDungeonCrawler.Bot
                 _cache.Initialize();
                 _entityCache = new EntityCache();
                 _entityCache.Initialize();
+                _partyChatManager = new PartyChatManager(_entityCache);
+                _partyChatManager.Initialize();
                 _profileManager = new ProfileManager(_entityCache, _cache);
                 _profileManager.Initialize();
                 _targetingManager = new TargetingManager(_entityCache, _cache);
@@ -61,16 +65,19 @@ namespace WholesomeDungeonCrawler.Bot
                 _fsm.AddState(new GroupRevive(_cache, _entityCache, 13));
                 _fsm.AddState(new WaitRest(_cache, _entityCache, 12));
                 //_fsm.AddState(new MovementSlaveBETA(_cache, _entityCache, 11));
+                //_fsm.AddState(new MovementSlave(_cache, _entityCache, 11));
 
 
-
-                _fsm.AddState(new SlaveCombat(_cache, _entityCache, 11));
-                _fsm.AddState(new TankCombat(_cache, _entityCache, 10));
-                _fsm.AddState(new ClearPathCombat(_cache, _entityCache, 9));
-                _fsm.AddState(new Looting { Priority = 8 });
-                _fsm.AddState(new MovementSlave(_cache, _entityCache, 7));
-
-                _fsm.AddState(new DungeonLogic(_cache, _entityCache, _profileManager, 5));
+                _fsm.AddState(new SlaveCombat(_cache, _entityCache, 9));
+                _fsm.AddState(new TankCombat(_cache, _entityCache, 8));
+                _fsm.AddState(new ClearPathCombat(_cache, _entityCache, 7));
+                _fsm.AddState(new Looting { Priority = 6 });
+                /*
+                _movementSlaveZero = new MovementSlaveZero(_cache, _entityCache, _profileManager, 5);
+                _movementSlaveZero.Initialize();
+                _fsm.AddState(_movementSlaveZero);
+                */
+                _fsm.AddState(new DungeonLogic(_cache, _entityCache, _profileManager, 4));
 
 
                 //Default State
@@ -97,11 +104,13 @@ namespace WholesomeDungeonCrawler.Bot
             try
             {
                 CustomClass.DisposeCustomClass();
-                _fsm.StopEngine();
-                _cache.Dispose();
-                _entityCache.Dispose();
-                _profileManager.Dispose();
-                _targetingManager.Dispose();
+                //_movementSlaveZero.Dispose();
+                _partyChatManager?.Dispose();
+                _fsm?.StopEngine();
+                _cache?.Dispose();
+                _entityCache?.Dispose();
+                _profileManager?.Dispose();
+                _targetingManager?.Dispose();
                 Fight.StopFight();
             }
             catch (Exception e)

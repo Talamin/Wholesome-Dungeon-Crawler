@@ -28,7 +28,7 @@ namespace WholesomeDungeonCrawler.States
                     || Fight.InFight
                     || _entityCache.Me.InCombatFlagOnly
                     || !_cache.IsInInstance
-                    || !_cache.IAmTank)
+                    || !_entityCache.IAmTank)
                 {
                     return false;
                 }

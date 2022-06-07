@@ -1,7 +1,9 @@
 ﻿using robotManager.Helpful;
 using System;
 using WholesomeDungeonCrawler.Data;
+using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Helpers
 {
@@ -35,6 +37,15 @@ namespace WholesomeDungeonCrawler.Helpers
                 }
             }
             return foundUnit;
+        }
+
+        public static bool IHaveLineOfSightOn(WoWObject wowObject)
+        {
+            Vector3 myPos = ObjectManager.Me.Position;
+            Vector3 objectPos = (wowObject is WoWUnit) ? new Vector3(wowObject.Position.X, wowObject.Position.Y, wowObject.Position.Z + 2) : wowObject.Position;
+            return !TraceLine.TraceLineGo(new Vector3(myPos.X, myPos.Y, myPos.Z + 2),
+                objectPos,
+                CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);
         }
     }
 }

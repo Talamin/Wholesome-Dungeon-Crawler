@@ -13,7 +13,7 @@ public class Main : IProduct
     private ProductSettingsControl _settingsUserControl;
     private readonly string _productVersion = "0.0.04";
     private readonly string _productName = "Wholesome Dungeon Crawler";
-    private readonly string _fileName = "WholesomeDungeonCrawler";
+    //private readonly string _fileName = "WholesomeDungeonCrawler";
     public bool IsStarted { get; private set; }
 
     public void Initialize()

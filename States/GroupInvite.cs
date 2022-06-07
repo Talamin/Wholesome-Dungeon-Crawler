@@ -34,7 +34,7 @@ namespace WholesomeDungeonCrawler.States
                     || !ObjectManager.Me.IsValid 
                     || Fight.InFight
                     || _cache.IsInInstance
-                    || !_cache.IAmTank)
+                    || !_entityCache.IAmTank)
                 {
                     return false;
                 }

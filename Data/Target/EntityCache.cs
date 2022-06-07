@@ -1,5 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
+using System.Threading;
 using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
 using wManager.Events;
@@ -27,6 +28,7 @@ namespace WholesomeDungeonCrawler.Data
             EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaStringWithArgs;
             OnObjectManagerPulse();
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
+            IAmTank = ObjectManager.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName;
         }
 
         private void EventsLuaWithArgs_OnEventsLuaStringWithArgs(string id, List<string> args)
@@ -37,6 +39,31 @@ namespace WholesomeDungeonCrawler.Data
                     CacheListPartyMemberGuid();
                     break;
                 case "PARTY_MEMBERS_CHANGED":
+                    Logger.LogError("PARTY_MEMBERS_CHANGED");
+                    CacheListPartyMemberGuid();
+                    break;
+                case "PARTY_MEMBER_DISABLE":
+                    Logger.LogError("PARTY_MEMBER_DISABLE");
+                    CacheListPartyMemberGuid();
+                    break;
+                case "PARTY_MEMBER_ENABLE":
+                    Logger.LogError("PARTY_MEMBER_ENABLE");
+                    CacheListPartyMemberGuid();
+                    break;
+                case "RAID_ROSTER_UPDATE":
+                    Logger.LogError("RAID_ROSTER_UPDATE");
+                    CacheListPartyMemberGuid();
+                    break;
+                case "GROUP_ROSTER_CHANGED":
+                    Logger.LogError("GROUP_ROSTER_CHANGED");
+                    CacheListPartyMemberGuid();
+                    break;
+                case "PARTY_CONVERTED_TO_RAID":
+                    Logger.LogError("PARTY_CONVERTED_TO_RAID");
+                    CacheListPartyMemberGuid();
+                    break;
+                case "RAID_TARGET_UPDATE":
+                    Logger.LogError("RAID_TARGET_UPDATE");
                     CacheListPartyMemberGuid();
                     break;
             }
@@ -58,15 +85,16 @@ namespace WholesomeDungeonCrawler.Data
 
         private List<ulong> ListPartyMemberGuid { get; set; } = new List<ulong>();
         private ulong TankGuid { get; set; }
+        public bool IAmTank { get; private set; }
 
 
         //Groupplay  Section
         public IWoWUnit[] EnemyAttackingGroup { get; private set; } = new IWoWUnit[0];
-
+        
         private float EnemiesNearTargetRange;
         private float EnemiesNearMeRange;
         private float InterruptibleEnemiesRange;
-
+        
         private static IWoWLocalPlayer Cache(WoWLocalPlayer player) => new CachedWoWLocalPlayer(player);
         private static IWoWUnit Cache(WoWUnit unit) => new CachedWoWUnit(unit);
         private static IWoWPlayer Cache(WoWPlayer player) => new CachedWoWPlayer(player);
@@ -125,6 +153,8 @@ namespace WholesomeDungeonCrawler.Data
             var playerPosition = cachedPlayer.PositionWithoutType;
             var playerGuid = cachedPlayer.Guid;
 
+            bool tankFound = false;
+
             foreach (var play in playerUnits)
             {
                 IWoWPlayer cachedplayer = Cache(play);
@@ -134,9 +164,15 @@ namespace WholesomeDungeonCrawler.Data
                     if (cachedplayer.Guid == TankGuid)
                     {
                         TankUnit = cachedplayer;
+                        tankFound = true;
                     }
                 }
                 ListGroupMember = listGroupMember.ToArray();
+            }
+
+            if (!tankFound)
+            {
+                TankUnit = null;
             }
 
             foreach (var unit in units)
@@ -210,15 +246,15 @@ namespace WholesomeDungeonCrawler.Data
         }
         private void CacheListPartyMemberGuid()
         {
+            Thread.Sleep(500);
             List<ulong> partyMembers = new List<ulong>();
+            TankGuid = 0;
             foreach (WoWPlayer p in Party.GetParty())
             {
                 partyMembers.Add(p.Guid);
-                //Logger.Log($"Updated Party, added Groupmember: {p.Name} ");
                 if (p.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
                 {
                     TankGuid = p.Guid;
-                    //Logger.Log($"Updated Party, added Tank: {p.Name} ");
                 }
             }
             partyMembers.Add(Me.Guid);
