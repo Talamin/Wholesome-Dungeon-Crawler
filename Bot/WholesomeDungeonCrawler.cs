@@ -59,7 +59,7 @@ namespace WholesomeDungeonCrawler.Bot
                     new Regeneration(),
                     new GroupRevive(_cache, _entityCache),
                     new Looting(),
-                    new OpenSatchel(_cache, 24),
+                    new OpenSatchel(_cache),
                     new ToTown(),
                     new Trainers(),
                     new GroupInviteAccept(_cache),

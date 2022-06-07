@@ -12,10 +12,9 @@ namespace WholesomeDungeonCrawler.States
         public override string DisplayName => "Open Satchel";
         private readonly ICache _cache;
 
-        public OpenSatchel(ICache iCache, int priority)
+        public OpenSatchel(ICache iCache)
         {
             _cache = iCache;
-            Priority = priority;
         }
 
         public override bool NeedToRun
