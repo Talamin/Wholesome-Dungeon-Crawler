@@ -9,12 +9,14 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private GoToModel _gotoModel;
         private readonly IEntityCache _entityCache;
         public override string Name { get; }
+        public override int Order { get; }
 
         public GoToStep(GoToModel goToModel, IEntityCache entityCache)
         {
             _gotoModel = goToModel;
             _entityCache = entityCache;
             Name = goToModel.Name;
+            Order = goToModel.Order;
         }
 
         public override void Run()

@@ -16,12 +16,14 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private InteractWithModel _interactWithModel;
         private readonly IEntityCache _entityCache;
         public override string Name { get; }
+        public override int Order { get; }
 
         public InteractWithStep(InteractWithModel interactWithModel, IEntityCache entityCache)
         {
             _interactWithModel = interactWithModel;
             _entityCache = entityCache;
             Name = interactWithModel.Name;
+            Order = interactWithModel.Order;
         }
         public override void Run()
         {

@@ -52,32 +52,20 @@ namespace WholesomeDungeonCrawler.Bot
                 _fsm.AddState(new NPCScanState { Priority = 21 });
                 _fsm.AddState(new ToTown { Priority = 20 });
                 _fsm.AddState(new Trainers { Priority = 19 });
-
                 _fsm.AddState(new GroupInviteAccept(_cache, 18));
                 _fsm.AddState(new GroupInvite(_cache, _entityCache, 17));
                 _fsm.AddState(new GroupProposal(_cache,_entityCache, 16));
                 _fsm.AddState(new GroupQueueAccept(_cache, _entityCache, 16));
                 _fsm.AddState(new GroupQueue(_cache, _entityCache, 15));
-
                 _fsm.AddState(new LeaveDungeon(_cache, _entityCache, _profileManager, 14));
-
                 _fsm.AddState(new GroupRevive(_cache, _entityCache, 13));
                 _fsm.AddState(new WaitRest(_cache, _entityCache, 12));
-                //_fsm.AddState(new MovementSlaveBETA(_cache, _entityCache, 11));
-                //_fsm.AddState(new MovementSlave(_cache, _entityCache, 11));
-
-
                 _fsm.AddState(new SlaveCombat(_cache, _entityCache, 9));
                 _fsm.AddState(new TankCombat(_cache, _entityCache, 8));
-                _fsm.AddState(new ClearPathCombat(_cache, _entityCache, 7));
-                _fsm.AddState(new Looting { Priority = 6 });
-                /*
-                _movementSlaveZero = new MovementSlaveZero(_cache, _entityCache, _profileManager, 5);
-                _movementSlaveZero.Initialize();
-                _fsm.AddState(_movementSlaveZero);
-                */
-                _fsm.AddState(new RejoinTank(_cache, _entityCache, _profileManager, _partyChatManager, 4));
-                _fsm.AddState(new DungeonLogic(_cache, _entityCache, _profileManager, 3));
+                _fsm.AddState(new CheckPathAhead(_entityCache, _partyChatManager, 7));
+                _fsm.AddState(new ClearPathCombat(_entityCache, 6));
+                _fsm.AddState(new Looting { Priority = 5 });
+                _fsm.AddState(new DungeonLogic(_entityCache, _profileManager, _partyChatManager, 3));
 
 
                 //Default State

@@ -3,40 +3,46 @@ using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeToolbox;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class ClearPathCombat : State
+    internal class CheckPathAhead : State
     {
-        public override string DisplayName => "ClearPath";
+        public override string DisplayName { get; set; } = "Check Path Ahead";
 
         private readonly IEntityCache _entityCache;
-        private IWoWUnit _unitToClear = null;
+        private readonly IPartyChatManager _partyChatManager;
+        private IWoWUnit _unitOnPath = null;
+        private Timer _broadcastTimer = new Timer();
 
-        public ClearPathCombat(IEntityCache EntityCache, int priority)
+        public CheckPathAhead(IEntityCache EntityCache, IPartyChatManager partyChatManager, int priority)
         {
             _entityCache = EntityCache;
             Priority = priority;
+            _partyChatManager = partyChatManager;
         }
 
         public override bool NeedToRun
         {
             get
             {
-                if (!Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause
-                    || !_entityCache.Me.Valid
+                if (!_entityCache.Me.Valid
                     || _entityCache.Me.InCombatFlagOnly
                     || Fight.InFight
-                    || !_entityCache.IAmTank
                     || MovementManager.CurrentPath == null
-                    || MovementManager.CurrentPath.Count <= 0)
+                    || MovementManager.CurrentPath.Count <= 0
+                    || !Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause
+                    || _entityCache.IAmTank && MyTeamIsAround
+                    || !_entityCache.IAmTank && _entityCache.TankUnit.TargetGuid != 0)
                 {
                     return false;
                 }
 
+                _unitOnPath = null;
                 List<Vector3> currentPath = MovementManager.CurrentPath;
                 Vector3 nextNode = MovementManager.CurrentMoveTo;
                 Vector3 myPosition = _entityCache.Me.PositionWithoutType;
@@ -87,46 +93,64 @@ namespace WholesomeDungeonCrawler.States
                 List<IWoWUnit> unitsAlongLine = new List<IWoWUnit>();
                 foreach ((Vector3 a, Vector3 b) line in linesToCheck)
                 {
-                    if (_unitToClear == null)
+                    foreach (IWoWUnit unit in hostileUnits)
                     {
-                        foreach (IWoWUnit unit in hostileUnits)
+                        if (WTLocation.GetZDifferential(unit.PositionWithoutType) > 5
+                            || WTPathFinder.PointDistanceToLine(line.a, line.b, unit.PositionWithoutType) > 20)
                         {
-                            if (WTLocation.GetZDifferential(unit.PositionWithoutType) > 5
-                                || WTPathFinder.PointDistanceToLine(line.a, line.b, unit.PositionWithoutType) > 20)
-                            {
-                                continue;
-                            }
-
-                            if (TargetingHelper.IHaveLineOfSightOn(unit.WowUnit))
-                            {
-                                unitsAlongLine.Add(unit);
-                            }
+                            continue;
                         }
+                        _unitOnPath = unit;
+                        break;
                     }
-                    else
+
+                    if (_unitOnPath != null)
                     {
                         break;
                     }
                 }
 
-                if (unitsAlongLine.Count > 0)
+                // the tank is closer from the unit, we can go
+                if (_unitOnPath != null
+                    && !_entityCache.IAmTank
+                    && _entityCache.TankUnit != null
+                    && _entityCache.TankUnit.PositionWithoutType.DistanceTo(_unitOnPath.PositionWithoutType) + 15 < _entityCache.Me.PositionWithoutType.DistanceTo(_unitOnPath.PositionWithoutType))
                 {
-                    _unitToClear = unitsAlongLine
-                        .OrderBy(unit => myPosition.DistanceTo(unit.PositionWithoutType))
-                        .First();
+                    return false;
                 }
 
-                return _unitToClear != null;
+                return _unitOnPath != null;
             }
         }
 
         public override void Run()
         {
-            DisplayName = $"Clearing Path {_unitToClear.Name}";
-            Logger.Log($"Clearing Path {_unitToClear.Name}");
             MovementManager.StopMove();
-            Fight.StartFight(_unitToClear.Guid);
-            _unitToClear = null;
+
+            if (_broadcastTimer.IsReady)
+            {
+                if (_entityCache.IAmTank)
+                {
+                    Logger.Log($"{_unitOnPath.Name} is on the way. Waiting for the team to move their frail asses.");
+                    _broadcastTimer = new Timer(1000 * 10);
+                }
+                else
+                {
+                    if (_entityCache.TankUnit != null)
+                    {
+                        Logger.Log($"{_unitOnPath.Name} is on the way. Waiting for the tank to move his fat ass.");
+                        _broadcastTimer = new Timer(1000 * 10);
+                    }
+                    else
+                    {
+                        _partyChatManager.Broadcast(PartyChatManager.ChatMessageType.ASSIST_WITH_ENEMIES_AHEAD, null);
+                        _broadcastTimer = new Timer(1000 * 10);
+                    }
+                }
+            }
         }
+
+        private bool MyTeamIsAround => _entityCache.ListGroupMember.Length == _entityCache.ListPartyMemberNames.Count
+                    && _entityCache.ListGroupMember.All(member => member.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) < 40);
     }
 }

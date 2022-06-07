@@ -1,10 +1,12 @@
-﻿using robotManager.Helpful;
-using WholesomeDungeonCrawler.ProductCache;
+﻿using WholesomeDungeonCrawler.ProductCache;
+using static WholesomeDungeonCrawler.Managers.PartyChatManager;
 
 namespace WholesomeDungeonCrawler.Managers
 {
     internal interface IPartyChatManager : ICycleable
     {
-        Vector3 TankPosition { get; }
+        PlayerStatus TankStatus { get; }
+
+        void Broadcast(ChatMessageType messageType, string message);
     }
 }

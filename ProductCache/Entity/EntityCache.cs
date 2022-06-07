@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
+using System.Threading.Tasks;
 using WholesomeDungeonCrawler.CrawlerSettings;
-using WholesomeDungeonCrawler.Helpers;
 using wManager.Events;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
@@ -26,7 +25,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         }
         public void Initialize()
         {
-            if(ObjectManager.Me.IsInGroup)
+            if (ObjectManager.Me.IsInGroup)
             {
                 CachePartyMemberChanged();
             }
@@ -69,6 +68,8 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             }
         }
 
+        public event TankOMHandler OnTankEnteringOM;
+
         public IWoWUnit Target { get; private set; } = Cache(new WoWUnit(0));
         public IWoWUnit Pet { get; private set; } = Cache(new WoWUnit(0));
         public IWoWLocalPlayer Me { get; private set; } = Cache(new WoWLocalPlayer(0));
@@ -81,9 +82,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public IWoWUnit[] EnemyUnitsList { get; private set; } = new IWoWUnit[0];
         public IWoWPlayer[] ListGroupMember { get; private set; } = new IWoWPlayer[0];
         public List<string> ListPartyMemberNames { get; private set; } = new List<string>();
-
         public IWoWPlayer TankUnit { get; private set; }
-
         private List<ulong> ListPartyMemberGuid { get; set; } = new List<ulong>();
         private ulong TankGuid { get; set; }
         public bool IAmTank { get; private set; }
@@ -141,6 +140,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 units = ObjectManager.GetObjectWoWUnit();
                 playerUnits = ObjectManager.GetObjectWoWPlayer();
             }
+
             var enemyUnitsNearTarget = new List<IWoWUnit>(units.Count);
             var enemyUnitsNearPlayer = new List<IWoWUnit>(units.Count);
             var interruptibleEnemyUnits = new List<IWoWUnit>(units.Count);
@@ -155,7 +155,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             var playerPosition = cachedPlayer.PositionWithoutType;
             var playerGuid = cachedPlayer.Guid;
 
-            bool tankFound = false;
+            IWoWPlayer tankUnit = null;
 
             foreach (var play in playerUnits)
             {
@@ -165,17 +165,18 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                     listGroupMember.Add(cachedplayer);
                     if (cachedplayer.Guid == TankGuid)
                     {
-                        TankUnit = cachedplayer;
-                        tankFound = true;
+                        tankUnit = cachedplayer;
                     }
                 }
                 ListGroupMember = listGroupMember.ToArray();
             }
 
-            if (!tankFound)
+            if (TankUnit == null && tankUnit != null)
             {
-                TankUnit = null;
+                OnTankEnteringOM();
             }
+
+            TankUnit = tankUnit;
 
             foreach (var unit in units)
             {
@@ -245,27 +246,31 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             EnemyUnitsLootable = enemyUnitsLootable.ToArray();
             EnemyAttackingGroup = enemyAttackingGroup.ToArray();
             EnemyUnitsList = enemyUnits.ToArray();
-
+            /*
             if (watch.ElapsedMilliseconds > 50)
-                Logger.LogError($"Entity cache pulse took {watch.ElapsedMilliseconds}");
+                Logger.LogError($"Entity cache pulse took {watch.ElapsedMilliseconds} - Tank unit is {TankUnit?.Name}");
+            */
         }
 
         private void CacheListPartyMemberGuid()
         {
-            Thread.Sleep(500);
-            List<ulong> partyMembers = new List<ulong>();
-            TankGuid = 0;
-            foreach (WoWPlayer p in Party.GetParty())
+            Task.Delay(1000).ContinueWith(x =>
             {
-                partyMembers.Add(p.Guid);
-                if (p.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+                List<ulong> partyMembers = new List<ulong>();
+                TankGuid = 0;
+                foreach (WoWPlayer p in Party.GetParty())
                 {
-                    TankGuid = p.Guid;
+                    partyMembers.Add(p.Guid);
+                    if (p.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+                    {
+                        TankGuid = p.Guid;
+                    }
                 }
-            }
-            partyMembers.Add(Me.Guid);
-            ListPartyMemberGuid = partyMembers;
+                partyMembers.Add(Me.Guid);
+                ListPartyMemberGuid = partyMembers;
+            });
         }
+
         private void ClearCachedLists()
         {
             ListPartyMemberNames.Clear();

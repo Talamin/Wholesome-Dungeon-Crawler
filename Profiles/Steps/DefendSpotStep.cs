@@ -12,12 +12,14 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private readonly IEntityCache _entityCache;
 
         public override string Name { get; }
+        public override int Order { get; }
 
         public DefendSpotStep(DefendSpotModel defendSpotModel, IEntityCache entityCache)
         {
             _defendSpotModel = defendSpotModel;
             _entityCache = entityCache;
             Name = _defendSpotModel.Name;
+            Order = _defendSpotModel.Order;
         }
 
         private Timer stepTimer = new Timer();

@@ -33,7 +33,7 @@ namespace WholesomeDungeonCrawler.States
                 {
                     return false;
                 }
-
+                /*
                 foreach (string playername in _entityCache.ListPartyMemberNames)
                 {
                     if (!_entityCache.ListGroupMember.Any(y => y.Name == playername))
@@ -42,7 +42,7 @@ namespace WholesomeDungeonCrawler.States
                         return true;
                     }
                 }
-
+                */
                 foreach (IWoWPlayer player in _entityCache.ListGroupMember)
                 {
                     if (!player.IsConnected)
@@ -60,11 +60,13 @@ namespace WholesomeDungeonCrawler.States
                         DisplayName = $"We wait because Member {player.Name} is being thirsty or  Hungry";
                         return true;
                     }
+                    /*
                     if (player.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40)
                     {
                         DisplayName = $"We wait because Member {player.Name} is being lazy";
                         return true;
                     }
+                    */
                 }
                 return false;
             }
@@ -72,7 +74,9 @@ namespace WholesomeDungeonCrawler.States
         public override void Run()
         {
             if (MovementManager.InMovement)
+            {
                 MovementManager.StopMove();
+            }
 
             Thread.Sleep(500);
         }
