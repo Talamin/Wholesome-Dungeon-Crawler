@@ -67,21 +67,18 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 Usefuls.WaitIsCasting();
             }
 
-            if (_interactWithModel.isCompleted(foundObject))
+            if (!_interactWithModel.CompleteCondition.HasCompleteCondition)
             {
                 Logger.Log($"Interaction with object {foundObject.Entry} is complete");
-                if (!_interactWithModel.CompleteCondition.HasCompleteCondition)
-                {
-                    IsCompleted = true;
-                    return;
-                }
-                else if (EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
-                {
-                    IsCompleted = true;
-                    return;
-                }
+                IsCompleted = true;
+                return;
             }
-
+            else if (EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
+            {
+                Logger.Log($"Interaction with object {foundObject.Entry} is complete");
+                IsCompleted = true;
+                return;
+            }
             return;
         }
 

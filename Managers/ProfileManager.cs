@@ -69,11 +69,13 @@ namespace WholesomeDungeonCrawler.Managers
                             Logger.Log("Savety Sleep for 3 Seconds");
                             Thread.Sleep(3000);
                         }
+                        if (deserializedProfile.OffMeshConnections.Count > 0)
+                            PathFinder.OffMeshConnections.AddRange(deserializedProfile.OffMeshConnections);
                         CurrentDungeonProfile = new Profile(deserializedProfile, _entityCache);
                         Logger.Log($"Dungeon Profile loaded: {deserializedProfile.Name}.{Environment.NewLine} with the MapID { deserializedProfile.MapId}.{ Environment.NewLine} with at Total Steps { deserializedProfile.StepModels.Count()}.{ Environment.NewLine} with a { deserializedProfile.DeathRunPath.Count()}.{ Environment.NewLine} Steps Deathrun and { deserializedProfile.OffMeshConnections.Count()}.{ Environment.NewLine} OffmeshConnections");
                         CurrentDungeonProfile.SetFirstLaunchStep();
-
                         return;
+
                     }
                     else
                     {

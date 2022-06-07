@@ -14,6 +14,8 @@ namespace WholesomeDungeonCrawler.States
 {
     class Dead : State, IState
     {
+        public override string DisplayName => "Dead";
+
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;

@@ -100,6 +100,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Managers\ILuaStatusFrameManager.cs" />
+    <Compile Include="Managers\LuaStatusFrameManager.cs" />
     <Compile Include="ProductCache\Cache.cs" />
     <Compile Include="Helpers\ProductEnums.cs" />
     <Compile Include="Models\DungeonModel.cs" />

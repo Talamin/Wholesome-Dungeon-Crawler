@@ -1,6 +1,8 @@
 ﻿using robotManager.FiniteStateMachine;
+using robotManager.Helpful;
 using System.Linq;
 using System.Threading;
+using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
@@ -38,7 +40,7 @@ namespace WholesomeDungeonCrawler.States
                 {
                     if (!_entityCache.ListGroupMember.Any(y => y.Name == playername))
                     {
-                        DisplayName = $"We wait because Member {playername} is not in  ObjectManager";
+                        Logger.Log($"We wait because Member {playername} is not in  ObjectManager");
                         return true;
                     }
                 }
@@ -47,22 +49,22 @@ namespace WholesomeDungeonCrawler.States
                 {
                     if (!player.IsConnected)
                     {
-                        DisplayName = $"We wait because Member {player.Name} is not logged into game";
+                        Logger.Log($"We wait because Member {player.Name} is not logged into game");
                         return true;
                     }
                     if (player.Dead || player.Auras.ContainsKey(8326))
                     {
-                        DisplayName = $"We wait because Member {player.Name} is being dead/spooky";
+                        Logger.Log($"We wait because Member {player.Name} is being dead/spooky");
                         return true;
                     }
                     if (player.HasDrinkBuff || player.HasFoodBuff)
                     {
-                        DisplayName = $"We wait because Member {player.Name} is being thirsty or  Hungry";
+                        Logger.Log($"We wait because Member {player.Name} is being thirsty or  Hungry");
                         return true;
                     }
                     if (player.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40)
                     {
-                        DisplayName = $"We wait because Member {player.Name} is being lazy";
+                        Logger.Log($"We wait because Member {player.Name} is being lazy");
                         return true;
                     }
                 }

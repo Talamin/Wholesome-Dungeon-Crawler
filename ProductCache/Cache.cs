@@ -15,7 +15,7 @@ namespace WholesomeDungeonCrawler.ProductCache
         public bool IsInInstance { get; private set; }
         public bool IsPartyInviteRequest { get; private set; }
         public bool HaveSatchel { get; private set; }
-
+        public string CurrentState { get; set; }
         public string GetLFGMode { get; private set; }
         public bool MiniMapLFGFrameIcon { get; private set; }
         public string GetPlayerSpec { get; private set; }
@@ -46,11 +46,17 @@ namespace WholesomeDungeonCrawler.ProductCache
             CacheHaveResurretion();
             //Beginning of Event Subscriptions
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
-
+            robotManager.Events.FiniteStateMachineEvents.OnRunState += FiniteStateMachineEvents_OnRunState;
             //EventsLua.AttachEventLua("PLAYER_LEVEL_UP", m => CachePlayerSpec());
 
             EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaWithArgs;
             //EventsLua.AttachEventLua(LuaEventsId.PLAYER_LEVEL_UP  <-- depreciated, only for lookup
+        }
+
+        private void FiniteStateMachineEvents_OnRunState(robotManager.FiniteStateMachine.Engine engine, robotManager.FiniteStateMachine.State state, System.ComponentModel.CancelEventArgs cancelable)
+        {
+            if (!state.DisplayName.Contains("Security"))
+                CurrentState = state.DisplayName;
         }
 
         private void EventsLuaWithArgs_OnEventsLuaWithArgs(string id, List<string> args)
@@ -108,6 +114,7 @@ namespace WholesomeDungeonCrawler.ProductCache
         public void Dispose()
         {
             ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
+            robotManager.Events.FiniteStateMachineEvents.OnRunState -= FiniteStateMachineEvents_OnRunState;
             EventsLuaWithArgs.OnEventsLuaStringWithArgs -= EventsLuaWithArgs_OnEventsLuaWithArgs;
         }
 

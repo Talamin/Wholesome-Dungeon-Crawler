@@ -74,8 +74,6 @@ namespace WholesomeDungeonCrawler.Models
 
         public bool StrictPosition { get; set; }
         public bool FindClosest { get; set; }
-
-        public Func<WoWGameObject, bool> isCompleted { get; set; }
     }
 
     public class DefendSpotModel : StepModel

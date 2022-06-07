@@ -18,6 +18,7 @@ namespace WholesomeDungeonCrawler.Bot
         private IProfileManager _profileManager;
         private ITargetingManager _targetingManager;
         private IPartyChatManager _partyChatManager;
+        private ILuaStatusFrameManager _luaStatusFrameManager;
         //private MovementSlaveZero _movementSlaveZero;
 
         internal bool InitialSetup()
@@ -34,6 +35,8 @@ namespace WholesomeDungeonCrawler.Bot
                 _profileManager.Initialize();
                 _targetingManager = new TargetingManager(_entityCache, _cache);
                 _targetingManager.Initialize();
+                _luaStatusFrameManager = new LuaStatusFrameManager(_cache, _entityCache, _profileManager);
+                _luaStatusFrameManager.Initialize();
                 //Update Spellbook after Initialization
                 SpellManager.UpdateSpellBook();
 
@@ -110,6 +113,7 @@ namespace WholesomeDungeonCrawler.Bot
                 _entityCache?.Dispose();
                 _profileManager?.Dispose();
                 _targetingManager?.Dispose();
+                _luaStatusFrameManager?.Dispose();
                 Fight.StopFight();
             }
             catch (Exception e)
