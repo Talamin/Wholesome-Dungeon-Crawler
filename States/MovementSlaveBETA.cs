@@ -1,15 +1,10 @@
 ﻿using robotManager.FiniteStateMachine;
 using robotManager.Helpful;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WholesomeDungeonCrawler.CrawlerSettings;
-using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
-using WholesomeToolbox;
-using wManager.Wow.Bot.Tasks;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
@@ -68,14 +63,14 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 //BUILDING A STRICT FOLLOWPATH
-                if(strictoldleaderpos == new Vector3(0, 0, 0))
+                if (strictoldleaderpos == new Vector3(0, 0, 0))
                 {
                     strictoldleaderpos = Tank.PositionWithoutType;
                     Logger.Log("Set strictoldleaderpos: " + strictoldleaderpos);
                     strictfollowpath.Add(strictoldleaderpos);
                     Logger.Log("Added strictoldleaderpos to strictfollowpath");
                 }
-                if(Tank.PositionWithoutType.DistanceTo(strictoldleaderpos) >2)
+                if (Tank.PositionWithoutType.DistanceTo(strictoldleaderpos) > 2)
                 {
                     strictoldleaderpos = Tank.PositionWithoutType;
                     strictfollowpath.Add(Tank.PositionWithoutType);

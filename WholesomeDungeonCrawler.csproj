@@ -100,32 +100,32 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\Cache.cs" />
-    <Compile Include="Data\LFGEnums.cs" />
-    <Compile Include="Data\Model\DungeonModel.cs" />
-    <Compile Include="Data\Model\ProfileModel.cs" />
-    <Compile Include="Data\Model\StepModel.cs" />
-    <Compile Include="Data\Target\CachedAura.cs" />
-    <Compile Include="Data\Target\CachedWoWLocalPlayer.cs" />
-    <Compile Include="Data\Target\CachedWoWPlayer.cs" />
-    <Compile Include="Data\Target\CachedWoWUnits.cs" />
-    <Compile Include="Data\Target\EntityCache.cs" />
-    <Compile Include="Data\Target\IAura.cs" />
-    <Compile Include="Data\ICache.cs" />
-    <Compile Include="Data\ICycleable.cs" />
-    <Compile Include="Data\Target\IEntityCache.cs" />
-    <Compile Include="Data\Target\IWoWLocalPlayer.cs" />
-    <Compile Include="Data\Target\IWoWPlayer.cs" />
-    <Compile Include="Data\Target\IWoWUnit.cs" />
+    <Compile Include="ProductCache\Cache.cs" />
+    <Compile Include="Helpers\ProductEnums.cs" />
+    <Compile Include="Models\DungeonModel.cs" />
+    <Compile Include="Models\ProfileModel.cs" />
+    <Compile Include="Models\StepModel.cs" />
+    <Compile Include="ProductCache\Entity\CachedAura.cs" />
+    <Compile Include="ProductCache\Entity\CachedWoWLocalPlayer.cs" />
+    <Compile Include="ProductCache\Entity\CachedWoWPlayer.cs" />
+    <Compile Include="ProductCache\Entity\CachedWoWUnits.cs" />
+    <Compile Include="ProductCache\Entity\EntityCache.cs" />
+    <Compile Include="ProductCache\Entity\IAura.cs" />
+    <Compile Include="ProductCache\ICache.cs" />
+    <Compile Include="ProductCache\ICycleable.cs" />
+    <Compile Include="ProductCache\Entity\IEntityCache.cs" />
+    <Compile Include="ProductCache\Entity\IWoWLocalPlayer.cs" />
+    <Compile Include="ProductCache\Entity\IWoWPlayer.cs" />
+    <Compile Include="ProductCache\Entity\IWoWUnit.cs" />
     <Compile Include="GUI\AdvancedSettings.xaml.cs">
       <DependentUpon>AdvancedSettings.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AutoUpdater.cs" />
     <Compile Include="Helpers\TargetingHelper.cs" />
-    <Compile Include="Manager\IPartyChatManager.cs" />
-    <Compile Include="Manager\ITargetingManager.cs" />
-    <Compile Include="Manager\PartyChatManager.cs" />
-    <Compile Include="Manager\TargetingManager.cs" />
+    <Compile Include="Managers\IPartyChatManager.cs" />
+    <Compile Include="Managers\ITargetingManager.cs" />
+    <Compile Include="Managers\PartyChatManager.cs" />
+    <Compile Include="Managers\TargetingManager.cs" />
     <Compile Include="Profiles\IProfile.cs" />
     <Compile Include="Profiles\Steps\DefendSpotStep.cs" />
     <Compile Include="Profiles\Steps\FollowUnitStep.cs" />
@@ -144,8 +144,8 @@
     <Compile Include="Helpers\IMoveHelper.cs" />
     <Compile Include="Helpers\Lists.cs" />
     <Compile Include="Helpers\MoveHelper.cs" />
-    <Compile Include="Manager\IProfileManager.cs" />
-    <Compile Include="Manager\ProfileManager.cs" />
+    <Compile Include="Managers\IProfileManager.cs" />
+    <Compile Include="Managers\ProfileManager.cs" />
     <Compile Include="Profiles\Steps\ExecuteStep.cs" />
     <Compile Include="Profiles\Steps\GoToStep.cs" />
     <Compile Include="Profiles\Steps\InteractWithStep.cs" />
@@ -197,9 +197,7 @@
     <Compile Include="Wholesome-Toolbox\WTTransport.cs" />
     <Compile Include="Wholesome-Toolbox\WTTravel.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Dungeonlogic\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Compiled\WholesomeDungeonCrawler.dll" />
     <Content Include="Dependencies\robotManager.dll" />

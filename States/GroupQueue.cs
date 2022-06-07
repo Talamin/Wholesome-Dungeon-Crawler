@@ -1,9 +1,8 @@
 ﻿using robotManager.FiniteStateMachine;
 using System.Linq;
-using WholesomeDungeonCrawler.Data;
-using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
-using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
@@ -11,7 +10,7 @@ namespace WholesomeDungeonCrawler.States
     {
         public override string DisplayName => "GroupQueue";
         private readonly ICache _cache;
-        private readonly IEntityCache _entityCache;        
+        private readonly IEntityCache _entityCache;
 
         public GroupQueue(ICache iCache, IEntityCache EntityCache, int priority)
         {
@@ -24,8 +23,8 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected 
-                    || !_entityCache.Me.Valid 
+                if (!Conditions.InGameAndConnected
+                    || !_entityCache.Me.Valid
                     || Fight.InFight
                     || _entityCache.Me.Auras.Any(y => y.Key == 71041)
                     //|| ObjectManager.Me.HaveBuff("Dungeon Deserter") //71041

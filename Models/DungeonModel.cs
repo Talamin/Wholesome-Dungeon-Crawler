@@ -1,12 +1,6 @@
 ﻿using robotManager.Helpful;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using wManager.Wow.Helpers;
 
-namespace WholesomeDungeonCrawler.Data.Model
+namespace WholesomeDungeonCrawler.Models
 {
     public class DungeonModel
     {

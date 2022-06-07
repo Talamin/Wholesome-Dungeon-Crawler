@@ -1,10 +1,10 @@
 ﻿using robotManager.FiniteStateMachine;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using WholesomeDungeonCrawler.CrawlerSettings;
-using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 using Timer = robotManager.Helpful.Timer;
@@ -30,8 +30,8 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!timer.IsReady
-                    || !Conditions.InGameAndConnected 
-                    || !ObjectManager.Me.IsValid 
+                    || !Conditions.InGameAndConnected
+                    || !ObjectManager.Me.IsValid
                     || Fight.InFight
                     || _cache.IsInInstance
                     || !_entityCache.IAmTank)

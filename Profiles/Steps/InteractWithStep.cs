@@ -1,14 +1,13 @@
-﻿using System;
-using robotManager.Helpful;
+﻿using robotManager.Helpful;
+using System;
 using System.Linq;
+using System.Threading;
+using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Models;
+using WholesomeDungeonCrawler.ProductCache.Entity;
+using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
-using System.Threading;
-using WholesomeDungeonCrawler.Profiles.Steps;
-using WholesomeDungeonCrawler.Data.Model;
-using WholesomeDungeonCrawler.Helpers;
-using wManager.Wow.Bot.Tasks;
-using WholesomeDungeonCrawler.Data;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {
@@ -38,7 +37,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             if (!MovementManager.InMovement && ObjectManager.Me.PositionWithoutType.DistanceTo(_interactWithModel.ExpectedPosition) > 20 + 4f)
             {
                 Logger.Log($"Moving to object {_interactWithModel.ObjectId} at {_interactWithModel.ExpectedPosition}");
-                GoToTask.ToPosition(_interactWithModel.ExpectedPosition, 3.5f,false, context => ObjectManager.Me.PositionWithoutType.DistanceTo(foundObject.Position) <= 20 + 4f);
+                GoToTask.ToPosition(_interactWithModel.ExpectedPosition, 3.5f, false, context => ObjectManager.Me.PositionWithoutType.DistanceTo(foundObject.Position) <= 20 + 4f);
                 IsCompleted = false;
                 return;
             }

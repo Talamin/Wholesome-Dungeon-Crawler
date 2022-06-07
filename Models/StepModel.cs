@@ -1,14 +1,15 @@
 ﻿using robotManager.Helpful;
 using System;
 using System.Collections.Generic;
+using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.ObjectManager;
 
-namespace WholesomeDungeonCrawler.Data.Model
+namespace WholesomeDungeonCrawler.Models
 {
     public abstract class StepModel
     {
         public string Name { get; set; }
-        public int Order { get; set; }        
+        public int Order { get; set; }
         public StepCompleteConditionModel CompleteCondition { get; set; }
     }
 

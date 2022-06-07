@@ -1,10 +1,9 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
-using WholesomeDungeonCrawler.Data.Model;
+using WholesomeDungeonCrawler.Models;
 
 namespace WholesomeDungeonCrawler.Helpers
 {
-
     class Lists
     {
         internal static readonly List<DungeonModel> AllDungeons = new List<DungeonModel>
@@ -49,7 +48,7 @@ namespace WholesomeDungeonCrawler.Helpers
             new DungeonModel { Name="The Steamvault",DungeonId =147, MapId=545,ContinentId=530, EntranceLoc=new Vector3(816.4943, 6952.726, -80.54607, "None") },
             new DungeonModel { Name="Shadow Labyrinth",DungeonId =151, MapId=555,ContinentId=530, EntranceLoc=new Vector3(-3653.643, 4944.552, -101.3898, "None") },
             new DungeonModel { Name="The Arcatraz",DungeonId =174, MapId=552,ContinentId=530, EntranceLoc=new Vector3(3313.221, 1328.768, 505.5585, "Flying") },
-            new DungeonModel { Name="The Black Morass",DungeonId =171, MapId=269,ContinentId=530, EntranceLoc=new Vector3(-8768.379, -4164.33, -210.2725, "None") },            
+            new DungeonModel { Name="The Black Morass",DungeonId =171, MapId=269,ContinentId=530, EntranceLoc=new Vector3(-8768.379, -4164.33, -210.2725, "None") },
             new DungeonModel { Name="The Botanica",DungeonId =173, MapId=553,ContinentId=530, EntranceLoc=new Vector3(3417.226, 1480.172, 182.8366, "Flying") },
             new DungeonModel { Name="The Mechanar",DungeonId =172, MapId=554,ContinentId=530, EntranceLoc=new Vector3(2860.551, 1544.211, 252.159, "Flying") },
             new DungeonModel { Name="The Shattered Halls",DungeonId =138, MapId=540,ContinentId=530, EntranceLoc=new Vector3(-310.0916, 3089.395, -4.094568, "None") },
@@ -57,14 +56,14 @@ namespace WholesomeDungeonCrawler.Helpers
             new DungeonModel { Name="Utgarde Keep",DungeonId =242, MapId=574,ContinentId=571, EntranceLoc=new Vector3(1236.232, -4859.632, 41.24857, "None") },
             new DungeonModel { Name="The Nexus",DungeonId =225, MapId=576,ContinentId=571, EntranceLoc=new Vector3(3906.412, 6985.285, 69.4881, "None") },
             new DungeonModel { Name="Azjol Nerub",DungeonId =204, MapId=601,ContinentId=571, EntranceLoc=new Vector3(3669.932, 2173.066, 36.05176, "None") },
-            new DungeonModel { Name="Ahn'kahet The Old Kingdom",DungeonId =218, MapId=619,ContinentId=571, EntranceLoc=new Vector3(3639.375, 2026.671, 2.541712, "None") },            
+            new DungeonModel { Name="Ahn'kahet The Old Kingdom",DungeonId =218, MapId=619,ContinentId=571, EntranceLoc=new Vector3(3639.375, 2026.671, 2.541712, "None") },
             new DungeonModel { Name="Drak'Tharon Keep",DungeonId =214, MapId=600,ContinentId=571, EntranceLoc=new Vector3(4774.752, -2018.308, 229.394, "None") },
             new DungeonModel { Name="The Violet Hold",DungeonId =220, MapId=608,ContinentId=571, EntranceLoc=new Vector3(5675.277, 479.8194, 652.2078, "None") },
             new DungeonModel { Name="Gundrak",DungeonId =216, MapId=604,ContinentId=571, EntranceLoc=new Vector3(6972.771, -4399.461, 441.576, "None") },
             new DungeonModel { Name="Halls of Stone",DungeonId =208, MapId=599,ContinentId=571, EntranceLoc=new Vector3(8920.499, -962.8192, 1039.132, "Flying") },
             new DungeonModel { Name="Halls of Lightning",DungeonId =207, MapId=602,ContinentId=571, EntranceLoc=new Vector3(9192.92, -1388.867, 1110.215, "Flying") },
             new DungeonModel { Name="The Oculus",DungeonId =206, MapId=578,ContinentId=571, EntranceLoc=new Vector3(3869.969, 6984.653, 108.1261, "None") },
-            new DungeonModel { Name="The Culling of Stratholme",DungeonId =209, MapId=595,ContinentId=571, EntranceLoc=new Vector3(-8757.122, -4466.833, -201.2474, "None") },            
+            new DungeonModel { Name="The Culling of Stratholme",DungeonId =209, MapId=595,ContinentId=571, EntranceLoc=new Vector3(-8757.122, -4466.833, -201.2474, "None") },
             new DungeonModel { Name="Utgarde Pinnacle",DungeonId =203, MapId=575,ContinentId=571, EntranceLoc=new Vector3(1230.303, -4861.86, 218.289, "None") },
             new DungeonModel { Name="Trial of the Champion",DungeonId =249, MapId=650,ContinentId=571, EntranceLoc=new Vector3(0, 0,0, "None") },
             new DungeonModel { Name="The Forge of Souls",DungeonId =251, MapId=632,ContinentId=571, EntranceLoc=new Vector3(0, 0, 0, "None") },

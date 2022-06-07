@@ -1,14 +1,8 @@
 ﻿using robotManager.FiniteStateMachine;
 using robotManager.Helpful;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WholesomeDungeonCrawler.CrawlerSettings;
-using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
-using wManager.Wow.Bot.Tasks;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
@@ -42,13 +36,13 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                if(_entityCache.IAmTank)
+                if (_entityCache.IAmTank)
                 {
                     return false;
                 }
 
                 IWoWUnit Tank = _entityCache.TankUnit;
-                if(Tank == null)
+                if (Tank == null)
                 {
                     return false;
                 }
@@ -77,7 +71,7 @@ namespace WholesomeDungeonCrawler.States
                 if (oldleaderpos == new Vector3(0, 0, 0))
                 {
                     //set oldleaderpos to actual leader Position
-                    oldleaderpos =Tank.PositionWithoutType;
+                    oldleaderpos = Tank.PositionWithoutType;
                 }
                 //Check if our Tank made 6 yards from his old position, then follow him
                 if (Tank.PositionWithoutType.DistanceTo(oldleaderpos) > 6)
@@ -85,7 +79,7 @@ namespace WholesomeDungeonCrawler.States
                     oldleaderpos = Tank.PositionWithoutType;
                 }
                 //If we are in Range of our Tank
-                if(_entityCache.Me.PositionWithoutType.DistanceTo(oldleaderpos) <= FollowRange)
+                if (_entityCache.Me.PositionWithoutType.DistanceTo(oldleaderpos) <= FollowRange)
                 {
                     return false;
                 }
@@ -106,7 +100,7 @@ namespace WholesomeDungeonCrawler.States
             //If we differ 5%, we have to consider that the real path is larger to avoid an obstacle, so we use pathfinder and navigate relatively close to him
             //Else we use direkt moveto
 
-           
+
             //calculates real distance by using pathfinder
             float pathcalc = WholesomeToolbox.WTPathFinder.CalculatePathTotalDistance(_entityCache.Me.PositionWithoutType, _entityCache.TankUnit.PositionWithoutType);
             //calculates distance by sightdistance
@@ -125,7 +119,7 @@ namespace WholesomeDungeonCrawler.States
             //check if the difference between calculated path and on sight is more then 5%, so we use pathfinder and navigate until we are near the half way of the follow state
             if ((pathcalc / sight) * 100 > 105)
             {
-                if(_entityCache.Me.PositionWithoutType.DistanceTo(_entityCache.TankUnit.PositionWithoutType) >= (FollowRange / 2))
+                if (_entityCache.Me.PositionWithoutType.DistanceTo(_entityCache.TankUnit.PositionWithoutType) >= (FollowRange / 2))
                 {
                     Logger.Log("Following State: Leader is behind a Cliff, using Pathfinder to get along");
                     MovementManager.Go(PathFinder.FindPath(_entityCache.Me.PositionWithoutType, oldleaderpos, false));

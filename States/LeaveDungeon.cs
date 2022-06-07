@@ -1,18 +1,12 @@
 ﻿using robotManager.FiniteStateMachine;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using WholesomeDungeonCrawler.Data;
-using WholesomeDungeonCrawler.Helpers;
-using WholesomeDungeonCrawler.Manager;
+using WholesomeDungeonCrawler.Managers;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class LeaveDungeon:  State
+    class LeaveDungeon : State
     {
         public override string DisplayName => "Leaving Dungeon";
 
@@ -42,7 +36,7 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                if(_cache.LootRollShow)
+                if (_cache.LootRollShow)
                 {
                     return false;
                 }
@@ -53,7 +47,7 @@ namespace WholesomeDungeonCrawler.States
 
 
         public override void Run()
-        {           
+        {
             Lua.LuaDoString("LFGTeleport(true);");
         }
 

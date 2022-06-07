@@ -1,14 +1,11 @@
 ﻿using robotManager.FiniteStateMachine;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
+using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
-using wManager.Wow.ObjectManager;
-using wManager.Wow.Bot.Tasks;
 
 namespace WholesomeDungeonCrawler.States
 {
@@ -19,7 +16,7 @@ namespace WholesomeDungeonCrawler.States
         private readonly ICache _cache;
         private readonly IEntityCache _entitycache;
 
-        private Dictionary<WoWClass, string> _rezzClasses = new Dictionary<WoWClass, string> 
+        private Dictionary<WoWClass, string> _rezzClasses = new Dictionary<WoWClass, string>
         { { WoWClass.Druid, "Revive" }, { WoWClass.Paladin, "Redemption" }, { WoWClass.Priest, "Resurrection" }, { WoWClass.Shaman, "Ancestral Spirit" } };
 
         public GroupRevive(ICache iCache, IEntityCache entityCache, int priority)
@@ -49,9 +46,9 @@ namespace WholesomeDungeonCrawler.States
             var rezzUnit = _entitycache.ListGroupMember.FirstOrDefault();
             var spell = _rezzClasses[_entitycache.Me.WoWClass];
 
-            if(_entitycache.Me.PositionWithoutType.DistanceTo(rezzUnit.PositionWithoutType) > 25)
+            if (_entitycache.Me.PositionWithoutType.DistanceTo(rezzUnit.PositionWithoutType) > 25)
             {
-                GoToTask.ToPosition(rezzUnit.PositionWithoutType, conditionExit: _ => _entitycache.Me.PositionWithoutType.DistanceTo(rezzUnit.PositionWithoutType) <= 25);     
+                GoToTask.ToPosition(rezzUnit.PositionWithoutType, conditionExit: _ => _entitycache.Me.PositionWithoutType.DistanceTo(rezzUnit.PositionWithoutType) <= 25);
             }
 
             Interact.InteractGameObject(rezzUnit.GetBaseAdress);

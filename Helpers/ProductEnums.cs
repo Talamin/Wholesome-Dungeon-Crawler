@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace WholesomeDungeonCrawler.Data
+﻿namespace WholesomeDungeonCrawler.Helpers
 {
     public enum LFGRoles
     {
@@ -13,6 +7,7 @@ namespace WholesomeDungeonCrawler.Data
         Tank,
         Heal
     }
+
     public enum LFGMode
     {
         abandonedInDungeon = 1, //LFG party disbanded, player still in dungeon.
@@ -22,6 +17,7 @@ namespace WholesomeDungeonCrawler.Data
         rolecheck = 5, //Querying groupmates to select their LFG roles before queuing.
         nil = 6 //Not in LFG.
     }
+
     public enum CompleteConditionType
     {
         None,

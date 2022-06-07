@@ -5,7 +5,7 @@ using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
-namespace WholesomeDungeonCrawler.Data
+namespace WholesomeDungeonCrawler.ProductCache.Entity
 {
     internal class CachedWoWUnit : IWoWUnit
     {

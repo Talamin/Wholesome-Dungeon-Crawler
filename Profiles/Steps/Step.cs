@@ -1,7 +1,6 @@
 ﻿using System.Linq;
-using WholesomeDungeonCrawler.Data;
-using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Models;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 

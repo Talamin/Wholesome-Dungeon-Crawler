@@ -1,11 +1,11 @@
 ﻿using robotManager.Helpful;
 using System;
 using System.Collections.Generic;
-using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
 
-namespace WholesomeDungeonCrawler.Manager
+namespace WholesomeDungeonCrawler.Managers
 {
     internal class PartyChatManager : IPartyChatManager
     {

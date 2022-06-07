@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using robotManager.Helpful;
-using WholesomeDungeonCrawler.Data;
-using WholesomeDungeonCrawler.Data.Model;
+﻿using robotManager.Helpful;
+using WholesomeDungeonCrawler.Models;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
-using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {

@@ -5,13 +5,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using WholesomeDungeonCrawler.Data;
-using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Models;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles;
 using wManager.Wow.Helpers;
 
-namespace WholesomeDungeonCrawler.Manager
+namespace WholesomeDungeonCrawler.Managers
 {
     class ProfileManager : IProfileManager
     {

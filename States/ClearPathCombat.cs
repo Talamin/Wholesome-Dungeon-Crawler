@@ -2,10 +2,10 @@
 using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
-using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeToolbox;
-using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States

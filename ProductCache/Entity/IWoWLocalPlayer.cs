@@ -1,6 +1,6 @@
 ﻿using robotManager.Helpful;
 
-namespace WholesomeDungeonCrawler.Data
+namespace WholesomeDungeonCrawler.ProductCache.Entity
 {
     public interface IWoWLocalPlayer : IWoWPlayer
     {

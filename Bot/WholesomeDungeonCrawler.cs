@@ -1,9 +1,9 @@
 ﻿using robotManager.FiniteStateMachine;
 using System;
-using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
-using WholesomeDungeonCrawler.Manager;
-using WholesomeDungeonCrawler.Profiles;
+using WholesomeDungeonCrawler.Managers;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.States;
 using wManager.Wow.Bot.States;
 using wManager.Wow.Helpers;

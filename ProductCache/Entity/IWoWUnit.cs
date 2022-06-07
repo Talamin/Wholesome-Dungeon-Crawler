@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using wManager.Wow.Enums;
 using wManager.Wow.ObjectManager;
 
-namespace WholesomeDungeonCrawler.Data
+namespace WholesomeDungeonCrawler.ProductCache.Entity
 {
     public interface IWoWUnit
     {
@@ -24,7 +24,7 @@ namespace WholesomeDungeonCrawler.Data
         bool IsAttackingGroup { get; }
         bool IsAttackingMe { get; }
         bool IsPartyMember { get; }
-        WoWClass WoWClass { get; }     
+        WoWClass WoWClass { get; }
         uint GetBaseAdress { get; }
         bool Fleeing { get; }
         IReadOnlyDictionary<uint, IAura> Auras { get; }

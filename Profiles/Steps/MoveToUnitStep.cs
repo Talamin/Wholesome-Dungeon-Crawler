@@ -1,13 +1,11 @@
 ﻿using robotManager.Helpful;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using WholesomeDungeonCrawler.Data;
-using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Models;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeToolbox;
 using wManager.Wow.Bot.Tasks;
-using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps

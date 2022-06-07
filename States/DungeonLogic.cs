@@ -1,6 +1,7 @@
 ﻿using robotManager.FiniteStateMachine;
-using WholesomeDungeonCrawler.Data;
-using WholesomeDungeonCrawler.Manager;
+using WholesomeDungeonCrawler.Managers;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
@@ -41,7 +42,7 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                if(_entityCache.Me.Dead)
+                if (_entityCache.Me.Dead)
                 {
                     return false;
                 }

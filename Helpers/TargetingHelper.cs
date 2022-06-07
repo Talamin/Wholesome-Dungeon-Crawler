@@ -1,6 +1,6 @@
 ﻿using robotManager.Helpful;
 using System;
-using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;

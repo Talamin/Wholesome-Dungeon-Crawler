@@ -2,9 +2,10 @@
 using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
-using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
-using WholesomeDungeonCrawler.Manager;
+using WholesomeDungeonCrawler.Managers;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
@@ -73,8 +74,8 @@ namespace WholesomeDungeonCrawler.States
 
             if (!_cache.IsInInstance)
             {
-                if(_profileManager.CurrentDungeonProfile.DeathRunPathList != null)
-                _deathrun = _profileManager.CurrentDungeonProfile.DeathRunPathList;
+                if (_profileManager.CurrentDungeonProfile.DeathRunPathList != null)
+                    _deathrun = _profileManager.CurrentDungeonProfile.DeathRunPathList;
                 if (_profileManager.CurrentDungeonProfile.DeathRunPathList != null && _profileManager.CurrentDungeonProfile.DeathRunPathList.Count > 0)
                     MovementManager.Go(_deathrun);
                 else

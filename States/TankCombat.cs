@@ -1,22 +1,13 @@
 ﻿using robotManager.FiniteStateMachine;
 using robotManager.Helpful;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WholesomeDungeonCrawler.CrawlerSettings;
-using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
-using WholesomeToolbox;
-using wManager.Wow.Enums;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
-using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class TankCombat: State
+    class TankCombat : State
     {
         public override string DisplayName => "TankCombat";
 
@@ -44,12 +35,12 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                if(_entityCache.Target.Dead)
+                if (_entityCache.Target.Dead)
                 {
                     Interact.ClearTarget();
                 }
 
-                if(!Fight.InFight)
+                if (!Fight.InFight)
                 {
                     IWoWUnit attackerGroupMember = AttackingGroupMember();
                     if (attackerGroupMember != null && attackerGroupMember.TargetGuid != _entityCache.Me.Guid)

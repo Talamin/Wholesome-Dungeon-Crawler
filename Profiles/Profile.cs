@@ -1,12 +1,11 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
-using WholesomeDungeonCrawler.Data;
-using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Models;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles.Steps;
 using wManager.Wow.Helpers;
-//using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Profiles
 {
@@ -58,7 +57,7 @@ namespace WholesomeDungeonCrawler.Profiles
                 }
                 //elseif...
             }
-            foreach(Vector3 point in profileModel.DeathRunPath)
+            foreach (Vector3 point in profileModel.DeathRunPath)
             {
                 DeathRunPathList.Add(point);
             }
@@ -99,7 +98,7 @@ namespace WholesomeDungeonCrawler.Profiles
 
             // we order the dictionary by distance
             Dictionary<int, float> orderedStepDistances = stepDistances
-                .OrderBy(entry => entry.Value)  
+                .OrderBy(entry => entry.Value)
                 .ToDictionary(entry => entry.Key, entry => entry.Value);
 
             resultIndex = orderedStepDistances.ElementAt(0).Key;
@@ -157,8 +156,8 @@ namespace WholesomeDungeonCrawler.Profiles
 
                 CurrentStep = _profileSteps.Find(step => !step.IsCompleted);
             }
-        }   
-        
+        }
+
         public bool ProfileIsCompleted => _profileSteps.All(p => p.IsCompleted);
     }
 }

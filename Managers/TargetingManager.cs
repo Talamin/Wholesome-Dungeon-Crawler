@@ -1,11 +1,12 @@
-﻿using System.ComponentModel;
-using WholesomeDungeonCrawler.Data;
+﻿using robotManager.Helpful;
+using System.ComponentModel;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
-using robotManager.Helpful;
 
-namespace WholesomeDungeonCrawler.Manager
+namespace WholesomeDungeonCrawler.Managers
 {
     class TargetingManager : ITargetingManager
     {
@@ -43,11 +44,12 @@ namespace WholesomeDungeonCrawler.Manager
                         SwitchedTargetFight(Target);
                     }
                 }
-            } else
+            }
+            else
             {
                 // Check for fleeing units
                 IWoWUnit fleeUnit = FleeingUnit(_entityCache.TankUnit);
-                if (fleeUnit != null)                
+                if (fleeUnit != null)
                 {
                     // If we are not already targeting it, target it
                     if (_entityCache.Me.TargetGuid != fleeUnit.Guid)
@@ -56,7 +58,7 @@ namespace WholesomeDungeonCrawler.Manager
                         Logger.Log($"TargetingManager: Target fleeing: {Target.Name} , switching");
                         cancable.Cancel = true;
                         SwitchedTargetFight(Target);
-                    }                    
+                    }
                 }
                 else
                 {
@@ -64,13 +66,13 @@ namespace WholesomeDungeonCrawler.Manager
                     IWoWUnit assistTankUnit = AssistTank(_entityCache.TankUnit);
                     if (assistTankUnit != null)
                     {
-                        if (assistTankUnit.Guid != _entityCache.Me.TargetGuid) 
+                        if (assistTankUnit.Guid != _entityCache.Me.TargetGuid)
                         {
                             Target = assistTankUnit;
                             Logger.Log($"TargetingManager: Target attacking Tank: {Target.Name} , switching");
                             cancable.Cancel = true;
                             SwitchedTargetFight(Target);
-                        }                        
+                        }
                     }
                     else
                     {
@@ -84,7 +86,7 @@ namespace WholesomeDungeonCrawler.Manager
                                 Logger.Log($"TargetingManager: Target attacking Groupmember: {Target.Name} , switching");
                                 cancable.Cancel = true;
                                 SwitchedTargetFight(Target);
-                            }                            
+                            }
                         }
                         else
                         {
@@ -98,16 +100,16 @@ namespace WholesomeDungeonCrawler.Manager
                                     Logger.Log($"TargetingManager: Target attacking Groupmember: {Target.Name} , switching");
                                     cancable.Cancel = true;
                                     SwitchedTargetFight(Target);
-                                }                                
+                                }
                             }
                         }
                     }
-                }                
+                }
             }
         }
 
         private void SwitchedTargetFight(IWoWUnit target)
-        {           
+        {
             ObjectManager.Me.Target = Target.Guid;
             Fight.StartFight(target.Guid, false);
         }

@@ -1,7 +1,7 @@
 ﻿using robotManager.Helpful;
-using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.ProductCache;
 
-namespace WholesomeDungeonCrawler.Manager
+namespace WholesomeDungeonCrawler.Managers
 {
     internal interface IPartyChatManager : ICycleable
     {

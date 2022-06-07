@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using WholesomeDungeonCrawler.CrawlerSettings;
-using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.Helpers;
 
 namespace WholesomeDungeonCrawler.GUI
 {
@@ -26,7 +26,7 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 MessageBox.Show(Ex.Message);
             }
-            
+
         }
 
         private void SaveSettings(object sender, RoutedEventArgs e)

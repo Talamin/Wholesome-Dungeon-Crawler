@@ -5,7 +5,7 @@ using wManager.Events;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
-namespace WholesomeDungeonCrawler.Data
+namespace WholesomeDungeonCrawler.ProductCache
 {
     internal class Cache : ICache
     {

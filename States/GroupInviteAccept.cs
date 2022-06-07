@@ -1,7 +1,7 @@
 ﻿using robotManager.FiniteStateMachine;
 using WholesomeDungeonCrawler.CrawlerSettings;
-using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.ProductCache;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -22,8 +22,8 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected 
-                    || !ObjectManager.Me.IsValid 
+                if (!Conditions.InGameAndConnected
+                    || !ObjectManager.Me.IsValid
                     || Fight.InFight
                     || _cache.IsInInstance)
                 {

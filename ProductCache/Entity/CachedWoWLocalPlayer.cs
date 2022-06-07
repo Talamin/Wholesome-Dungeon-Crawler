@@ -1,7 +1,7 @@
 ﻿using robotManager.Helpful;
 using wManager.Wow.ObjectManager;
 
-namespace WholesomeDungeonCrawler.Data
+namespace WholesomeDungeonCrawler.ProductCache.Entity
 {
     internal sealed class CachedWoWLocalPlayer : CachedWoWPlayer, IWoWLocalPlayer
     {

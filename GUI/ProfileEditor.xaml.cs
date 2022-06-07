@@ -1,32 +1,24 @@
 ﻿using MahApps.Metro.Controls.Dialogs;
+using Newtonsoft.Json;
+using robotManager.Helpful;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using WholesomeDungeonCrawler.Helpers;
-using robotManager.Helpful;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
 using System.Windows.Forms;
-using wManager.Wow.Helpers;
-using System.Security.Cryptography;
-using Newtonsoft.Json;
-using System.IO;
-using WholesomeDungeonCrawler.Data.Model;
-using wManager.Wow.ObjectManager;
+using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Models;
 using wManager.Wow.Class;
+using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.GUI
 {
@@ -127,8 +119,8 @@ namespace WholesomeDungeonCrawler.GUI
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        
-        
+
+
 
         private void btnNewProfile_Click(object sender, RoutedEventArgs e)
         {
@@ -157,11 +149,11 @@ namespace WholesomeDungeonCrawler.GUI
                             File.WriteAllText(path, output);
                             Setup();
 
-                            
+
                             await this.ShowMessageAsync("Profile Saved!", "Saved to " + path, MessageDialogStyle.Affirmative, basicDialogSettings);
                         }
                     }
-                    else 
+                    else
                     {
                         await this.ShowMessageAsync("Save Failed.", "Profile Name has not been set.", MessageDialogStyle.Affirmative, basicDialogSettings);
                     }
@@ -175,7 +167,7 @@ namespace WholesomeDungeonCrawler.GUI
             catch (Exception ex)
             {
                 await this.ShowMessageAsync("Save Failed.", $"Error message: {ex.Message}\n\n" +
-                $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);                
+                $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
             }
         }
 
@@ -344,7 +336,7 @@ namespace WholesomeDungeonCrawler.GUI
             try
             {
                 var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
-                if(x != null)
+                if (x != null)
                 {
                     var pathStep = new MoveAlongPathModel() { Name = x, Order = StepCollection.Count, Path = new List<Vector3>() };
                     StepCollection.Add(pathStep);
@@ -679,7 +671,7 @@ namespace WholesomeDungeonCrawler.GUI
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if((int)value >= 0)
+            if ((int)value >= 0)
                 return System.Windows.Visibility.Visible;
             return System.Windows.Visibility.Collapsed;
         }

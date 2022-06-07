@@ -8,7 +8,7 @@ using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
-namespace WholesomeDungeonCrawler.Data
+namespace WholesomeDungeonCrawler.ProductCache.Entity
 {
     internal class EntityCache : IEntityCache
     {
@@ -90,11 +90,11 @@ namespace WholesomeDungeonCrawler.Data
 
         //Groupplay  Section
         public IWoWUnit[] EnemyAttackingGroup { get; private set; } = new IWoWUnit[0];
-        
+
         private float EnemiesNearTargetRange;
         private float EnemiesNearMeRange;
         private float InterruptibleEnemiesRange;
-        
+
         private static IWoWLocalPlayer Cache(WoWLocalPlayer player) => new CachedWoWLocalPlayer(player);
         private static IWoWUnit Cache(WoWUnit unit) => new CachedWoWUnit(unit);
         private static IWoWPlayer Cache(WoWPlayer player) => new CachedWoWPlayer(player);

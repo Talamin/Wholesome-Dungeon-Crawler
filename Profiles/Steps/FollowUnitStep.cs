@@ -1,12 +1,9 @@
 ﻿using robotManager.Helpful;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WholesomeDungeonCrawler.Data;
-using WholesomeDungeonCrawler.Data.Model;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Models;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeToolbox;
 using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
@@ -41,7 +38,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     if (myPosition.DistanceTo(_followUnitModel.ExpectedEndPosition) >= 15)
                     {
                         // Goto expected position
-                        GoToTask.ToPosition(_followUnitModel.ExpectedStartPosition, 3.5f, false, context=> IsCompleted);
+                        GoToTask.ToPosition(_followUnitModel.ExpectedStartPosition, 3.5f, false, context => IsCompleted);
                     }
                     else if (_followUnitModel.SkipIfNotFound || myPosition.DistanceTo(_followUnitModel.ExpectedEndPosition) < 15)
                     {

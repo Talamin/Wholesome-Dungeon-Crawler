@@ -1,30 +1,7 @@
 ﻿using MahApps.Metro.Controls.Dialogs;
-using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using WholesomeDungeonCrawler.Helpers;
-using robotManager.Helpful;
-using System.Diagnostics;
-using System.Collections.ObjectModel;
-using System.Windows.Forms;
-using wManager.Wow.Helpers;
-using System.Security.Cryptography;
-using Newtonsoft.Json;
-using System.IO;
-using WholesomeDungeonCrawler.Data.Model;
 
 namespace WholesomeDungeonCrawler.GUI
 {
@@ -35,7 +12,7 @@ namespace WholesomeDungeonCrawler.GUI
         public ObservableCollection<string> PartyMemberCollection { get; set; }
 
         public AdvancedSettings()
-        {            
+        {
             InitializeComponent();
             this.DataContext = CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting;
             Setup();

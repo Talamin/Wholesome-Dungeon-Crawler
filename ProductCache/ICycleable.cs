@@ -1,4 +1,4 @@
-﻿namespace WholesomeDungeonCrawler.Data
+﻿namespace WholesomeDungeonCrawler.ProductCache
 {
     public interface ICycleable
     {

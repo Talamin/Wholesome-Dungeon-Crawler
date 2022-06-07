@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WholesomeDungeonCrawler.Data
+namespace WholesomeDungeonCrawler.ProductCache
 {
     interface ICache : ICycleable
     {

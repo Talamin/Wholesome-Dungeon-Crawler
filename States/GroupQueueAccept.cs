@@ -1,14 +1,10 @@
 ﻿
 using robotManager.FiniteStateMachine;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
-using wManager.Wow.ObjectManager;
 using Timer = robotManager.Helpful.Timer;
 
 namespace WholesomeDungeonCrawler.States
@@ -47,8 +43,8 @@ namespace WholesomeDungeonCrawler.States
                 return _cache.LFGRoleCheckShown;
 
             }
- 
-        }   
+
+        }
 
         public override void Run()
         {

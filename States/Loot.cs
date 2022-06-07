@@ -2,14 +2,15 @@
 using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
-using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
-     class Loot : State, IState
+    class Loot : State, IState
     {
         public override string DisplayName => "Looting";
         private readonly int LootRange = 20;
@@ -27,8 +28,8 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected 
-                    || !ObjectManager.Me.IsValid 
+                if (!Conditions.InGameAndConnected
+                    || !ObjectManager.Me.IsValid
                     || Fight.InFight
                     || Bag.GetContainerNumFreeSlots <= 2) // could be interesting to cache that too
                 {

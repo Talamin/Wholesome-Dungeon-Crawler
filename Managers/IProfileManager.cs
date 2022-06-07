@@ -1,7 +1,7 @@
-﻿using WholesomeDungeonCrawler.Data;
+﻿using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.Profiles;
 
-namespace WholesomeDungeonCrawler.Manager
+namespace WholesomeDungeonCrawler.Managers
 {
     interface IProfileManager : ICycleable
     {

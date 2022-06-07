@@ -1,6 +1,6 @@
 ﻿using wManager.Wow.Class;
 
-namespace WholesomeDungeonCrawler.Data
+namespace WholesomeDungeonCrawler.ProductCache.Entity
 {
     internal sealed class CachedAura : IAura
     {

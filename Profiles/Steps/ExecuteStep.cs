@@ -1,11 +1,5 @@
-﻿using robotManager.Helpful;
-using System.Linq;
-using WholesomeDungeonCrawler.Data;
-using WholesomeDungeonCrawler.Data.Model;
-using WholesomeToolbox;
-using wManager.Wow.Bot.Tasks;
-using wManager.Wow.Helpers;
-using wManager.Wow.ObjectManager;
+﻿using WholesomeDungeonCrawler.Models;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {
@@ -25,7 +19,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public override void Run()
         {
 
-            
+
         }
     }
 }

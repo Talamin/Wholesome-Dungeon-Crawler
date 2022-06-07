@@ -1,7 +1,8 @@
 ﻿using robotManager.FiniteStateMachine;
 using System.Linq;
 using System.Threading;
-using WholesomeDungeonCrawler.Data;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
@@ -33,33 +34,33 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                foreach(string playername in _cache.ListPartyMemberNames)
+                foreach (string playername in _cache.ListPartyMemberNames)
                 {
-                    if(!_entityCache.ListGroupMember.Any(y=> y.Name == playername))
+                    if (!_entityCache.ListGroupMember.Any(y => y.Name == playername))
                     {
                         DisplayName = $"We wait because Member {playername} is not in  ObjectManager";
                         return true;
                     }
                 }
 
-                foreach(IWoWPlayer player in _entityCache.ListGroupMember)
-                {                  
-                    if(!player.IsConnected)
+                foreach (IWoWPlayer player in _entityCache.ListGroupMember)
+                {
+                    if (!player.IsConnected)
                     {
                         DisplayName = $"We wait because Member {player.Name} is not logged into game";
                         return true;
                     }
-                    if(player.Dead || player.Auras.ContainsKey(8326))
+                    if (player.Dead || player.Auras.ContainsKey(8326))
                     {
                         DisplayName = $"We wait because Member {player.Name} is being dead/spooky";
                         return true;
                     }
-                    if(player.HasDrinkBuff || player.HasFoodBuff)
+                    if (player.HasDrinkBuff || player.HasFoodBuff)
                     {
                         DisplayName = $"We wait because Member {player.Name} is being thirsty or  Hungry";
                         return true;
                     }
-                    if(player.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40)
+                    if (player.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40)
                     {
                         DisplayName = $"We wait because Member {player.Name} is being lazy";
                         return true;

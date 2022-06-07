@@ -1,6 +1,7 @@
 ﻿using robotManager.FiniteStateMachine;
-using WholesomeDungeonCrawler.Data;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 

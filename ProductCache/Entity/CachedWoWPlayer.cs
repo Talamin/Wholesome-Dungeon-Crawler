@@ -1,7 +1,7 @@
 ﻿using wManager.Wow;
 using wManager.Wow.ObjectManager;
 
-namespace WholesomeDungeonCrawler.Data
+namespace WholesomeDungeonCrawler.ProductCache.Entity
 {
     internal class CachedWoWPlayer : CachedWoWUnit, IWoWPlayer
     {
