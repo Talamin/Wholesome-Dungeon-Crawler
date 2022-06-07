@@ -19,10 +19,9 @@ namespace WholesomeDungeonCrawler.States
         private Dictionary<WoWClass, string> _rezzClasses = new Dictionary<WoWClass, string>
         { { WoWClass.Druid, "Revive" }, { WoWClass.Paladin, "Redemption" }, { WoWClass.Priest, "Resurrection" }, { WoWClass.Shaman, "Ancestral Spirit" } };
 
-        public GroupRevive(ICache iCache, IEntityCache entityCache, int priority)
+        public GroupRevive(ICache iCache, IEntityCache entityCache)
         {
             _cache = iCache;
-            Priority = priority;
             _entitycache = entityCache;
         }
         public override bool NeedToRun

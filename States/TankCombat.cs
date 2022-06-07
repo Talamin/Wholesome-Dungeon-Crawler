@@ -14,11 +14,10 @@ namespace WholesomeDungeonCrawler.States
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
 
-        public TankCombat(ICache iCache, IEntityCache EntityCache, int priority)
+        public TankCombat(ICache iCache, IEntityCache EntityCache)
         {
             _cache = iCache;
             _entityCache = EntityCache;
-            Priority = priority;
         }
 
         private IWoWUnit foundtarget;

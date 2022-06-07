@@ -13,9 +13,8 @@ namespace WholesomeDungeonCrawler.Helpers
 
         public static void Log(string message)
         {
-            var msg = $"[{WholesomeDungeonCrawlerSettings.CurrentSetting.ProductName}]: {message}";
-            Logging.Write(msg, Logging.LogType.Normal, Color.DarkSlateBlue);
-            Logging.Status = msg;
+            Logging.Write($"[{WholesomeDungeonCrawlerSettings.CurrentSetting.ProductName}]: {message}", Logging.LogType.Normal, Color.DarkSlateBlue);
+            Logging.Status = message;
         }
 
         public static void LogDebug(string message)

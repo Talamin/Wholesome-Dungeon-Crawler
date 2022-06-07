@@ -18,11 +18,10 @@ namespace WholesomeDungeonCrawler.States
         private readonly IEntityCache _entityCache;
         private Timer timer = new Timer(1000);
 
-        public GroupInvite(ICache iCache, IEntityCache EntityCache, int priority)
+        public GroupInvite(ICache iCache, IEntityCache EntityCache)
         {
             _cache = iCache;
             _entityCache = EntityCache;
-            Priority = priority;
         }
 
         public override bool NeedToRun

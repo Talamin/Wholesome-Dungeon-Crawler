@@ -14,12 +14,11 @@ namespace WholesomeDungeonCrawler.States
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
 
-        public LeaveDungeon(ICache iCache, IEntityCache EntityCache, IProfileManager profilemanager, int priority)
+        public LeaveDungeon(ICache iCache, IEntityCache EntityCache, IProfileManager profilemanager)
         {
             _cache = iCache;
             _entityCache = EntityCache;
             _profileManager = profilemanager;
-            Priority = priority;
         }
 
         public override bool NeedToRun

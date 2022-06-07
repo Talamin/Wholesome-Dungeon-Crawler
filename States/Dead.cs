@@ -21,12 +21,11 @@ namespace WholesomeDungeonCrawler.States
         private readonly IProfileManager _profileManager;
         private List<Vector3> _deathrun = new List<Vector3>();
 
-        public Dead(ICache iCache, IEntityCache iEntityCache, IProfileManager profilemanager, int priority)
+        public Dead(ICache iCache, IEntityCache iEntityCache, IProfileManager profilemanager)
         {
             _cache = iCache;
             _entityCache = iEntityCache;
             _profileManager = profilemanager;
-            Priority = priority;
         }
 
         private List<WoWClass> _rezzClasses = new List<WoWClass> { WoWClass.Druid, WoWClass.Paladin, WoWClass.Priest, WoWClass.Shaman };

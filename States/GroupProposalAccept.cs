@@ -15,11 +15,10 @@ namespace WholesomeDungeonCrawler.States
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
 
-        public GroupProposal(ICache iCache, IEntityCache iEntityCache, int priority)
+        public GroupProposal(ICache iCache, IEntityCache iEntityCache)
         {
             _cache = iCache;
             _entityCache = iEntityCache;
-            Priority = priority;
         }
 
         private Timer timer = new Timer();

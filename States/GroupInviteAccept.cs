@@ -12,10 +12,9 @@ namespace WholesomeDungeonCrawler.States
         public override string DisplayName => "Group Accept";
         private readonly ICache _cache;
 
-        public GroupInviteAccept(ICache iCache, int priority)
+        public GroupInviteAccept(ICache iCache)
         {
             _cache = iCache;
-            Priority = priority;
         }
 
         public override bool NeedToRun

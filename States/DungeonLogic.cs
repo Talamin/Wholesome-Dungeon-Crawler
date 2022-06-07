@@ -1,4 +1,5 @@
 ﻿using robotManager.FiniteStateMachine;
+using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
@@ -8,16 +9,17 @@ namespace WholesomeDungeonCrawler.States
 {
     class DungeonLogic : State, IState
     {
+        public override string DisplayName => "DungeonLogic";
+
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
 
-        public DungeonLogic(ICache iCache, IEntityCache iEntityCache, IProfileManager profilemanager, int priority)
+        public DungeonLogic(ICache iCache, IEntityCache iEntityCache, IProfileManager profilemanager)
         {
             _cache = iCache;
             _entityCache = iEntityCache;
             _profileManager = profilemanager;
-            Priority = priority;
         }
         public override bool NeedToRun
         {
@@ -25,7 +27,7 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (_profileManager.CurrentDungeonProfile?.CurrentStep == null)
                 {
-                    DisplayName = $"DungeonLogic: None";
+                    Logger.Log($"DungeonLogic: None");
                 }
 
                 if (!Conditions.InGameAndConnected
@@ -59,7 +61,7 @@ namespace WholesomeDungeonCrawler.States
             }
             else
             {
-                DisplayName = $"DungeonLogic: {_profileManager.CurrentDungeonProfile.CurrentStep.Name}";
+                Logger.Log($"DungeonLogic: {_profileManager.CurrentDungeonProfile.CurrentStep.Name}");
                 _profileManager.CurrentDungeonProfile.CurrentStep.Run();
             }
         }

@@ -15,11 +15,10 @@ namespace WholesomeDungeonCrawler.States
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
 
-        public GroupQueueAccept(ICache iCache, IEntityCache cache, int priority)
+        public GroupQueueAccept(ICache iCache, IEntityCache cache)
         {
             _cache = iCache;
             _entityCache = cache;
-            Priority = priority;
         }
 
         private Timer timer = new Timer();

@@ -15,11 +15,10 @@ namespace WholesomeDungeonCrawler.States
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
 
-        public WaitRest(ICache iCache, IEntityCache EntityCache, int priority)
+        public WaitRest(ICache iCache, IEntityCache EntityCache)
         {
             _cache = iCache;
             _entityCache = EntityCache;
-            Priority = priority;
         }
 
         public override bool NeedToRun
