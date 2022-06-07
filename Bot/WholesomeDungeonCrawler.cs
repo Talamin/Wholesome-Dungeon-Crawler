@@ -55,7 +55,7 @@ namespace WholesomeDungeonCrawler.Bot
 
                 _fsm.AddState(new GroupInviteAccept(_cache, 18));
                 _fsm.AddState(new GroupInvite(_cache, _entityCache, 17));
-                _fsm.AddState(new GroupProposal(_cache,_entityCache, 16));
+                _fsm.AddState(new GroupProposal(_cache, _entityCache, 16));
                 _fsm.AddState(new GroupQueueAccept(_cache, _entityCache, 16));
                 _fsm.AddState(new GroupQueue(_cache, _entityCache, 15));
 
@@ -63,9 +63,8 @@ namespace WholesomeDungeonCrawler.Bot
 
 
                 _fsm.AddState(new GroupRevive(_cache, _entityCache, 13));
-                _fsm.AddState(new WaitRest(_cache, _entityCache, 12));
-                //_fsm.AddState(new MovementSlaveBETA(_cache, _entityCache, 11));
-                //_fsm.AddState(new MovementSlave(_cache, _entityCache, 11));
+                _fsm.AddState(new WaitRest(_cache, _entityCache, 12));              
+                _fsm.AddState(new MovementSlave(_cache, _entityCache, 11));
 
 
                 _fsm.AddState(new SlaveCombat(_cache, _entityCache, 9));

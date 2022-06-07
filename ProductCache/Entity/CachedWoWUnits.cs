@@ -28,7 +28,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public bool IsAttackingGroup { get; }
         public bool IsAttackingMe { get; }
         public bool IsPartyMember { get; }
-        public WoWClass WoWClass { get; }
         public uint GetBaseAdress { get; }
         public bool Fleeing { get; }
         public WoWUnit WowUnit { get; }
@@ -52,9 +51,8 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             IsAttackingGroup = unit.IsTargetingPartyMember;
             IsPartyMember = unit.IsPartyMember;
             TargetGuid = unit.Target;
-            WoWClass = unit.WowClass;
             Fleeing = unit.Fleeing;
-            WowUnit = unit;
+            //WowUnit = unit;
 
             GetBaseAdress = unit.GetBaseAddress;
 

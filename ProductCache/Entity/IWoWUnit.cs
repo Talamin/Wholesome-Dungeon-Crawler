@@ -24,11 +24,9 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         bool IsAttackingGroup { get; }
         bool IsAttackingMe { get; }
         bool IsPartyMember { get; }
-        WoWClass WoWClass { get; }
         uint GetBaseAdress { get; }
         bool Fleeing { get; }
         IReadOnlyDictionary<uint, IAura> Auras { get; }
-
         bool HasDrinkBuff { get; }
         bool HasFoodBuff { get; }
         WoWUnit WowUnit { get; }

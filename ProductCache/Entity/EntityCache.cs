@@ -1,5 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using WholesomeDungeonCrawler.CrawlerSettings;
@@ -81,7 +82,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         //public IWoWUnit[] EnemyUnitsNearTarget { get; private set; } = new IWoWUnit[0];
         //public IWoWUnit[] EnemyUnitsNearPlayer { get; private set; } = new IWoWUnit[0];
         //public IWoWUnit[] InterruptibleEnemyUnits { get; private set; } = new IWoWUnit[0];
-        public IWoWUnit[] EnemyUnitsTargetingPlayer { get; private set; } = new IWoWUnit[0];
+        //public IWoWUnit[] EnemyUnitsTargetingPlayer { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsTargetingGroup { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsLootable { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsList { get; private set; } = new IWoWUnit[0];
@@ -119,6 +120,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
         private void OnObjectManagerPulse()
         {
+            Stopwatch watch = Stopwatch.StartNew();
             WoWLocalPlayer player;
             IWoWLocalPlayer cachedPlayer;
             IWoWUnit cachedTarget, cachedPet;
@@ -146,19 +148,13 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 units = ObjectManager.GetObjectWoWUnit();
                 playerUnits = ObjectManager.GetObjectWoWPlayer();
             }
-            var enemyUnitsNearTarget = new List<IWoWUnit>(units.Count);
-            var enemyUnitsNearPlayer = new List<IWoWUnit>(units.Count);
-            var interruptibleEnemyUnits = new List<IWoWUnit>(units.Count);
-            var enemyUnitsTargetingPlayer = new List<IWoWUnit>(units.Count);
             var enemyUnitsLootable = new List<IWoWUnit>(units.Count);
             var enemyAttackingGroup = new List<IWoWUnit>(units.Count);
             var enemyUnits = new List<IWoWUnit>(units.Count);
             var listGroupMember = new List<IWoWPlayer>(units.Count);
 
-            var targetPosition = cachedTarget.PositionWithoutType;
             var targetGuid = cachedTarget.Guid;
             var playerPosition = cachedPlayer.PositionWithoutType;
-            var playerGuid = cachedPlayer.Guid;
 
             bool tankFound = false;
 
@@ -193,63 +189,33 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 {
                     enemyUnitsLootable.Add(cachedUnit);
                 }
+
                 if (!unit.IsDead && unit.Level > 1 && unit.Reaction <= Reaction.Neutral && unit.PositionWithoutType.DistanceTo(playerPosition) <= 100)
                 {
                     enemyUnits.Add(cachedUnit);
                 }
-                if (!unit.IsAlive)
+
+                if (!unit.IsAlive || unit.NotSelectable)
                 {
                     continue;
                 }
-
-                if (!unit.IsAttackable || unit.NotSelectable)
-                {
-                    continue;
-                }
-
-                if (unitGuid != targetGuid && unit.Target != playerGuid)
-                {
-                    continue;
-                }
-
-                if (unitGuid != targetGuid)
-                {
-                    enemyUnitsTargetingPlayer.Add(cachedUnit);
-                }
-
-                //if (targetPosition.DistanceTo(unitPosition) <= EnemiesNearTargetRange && Reachable(playerPosition, unitPosition, ref cachedReachable))
-                //{
-                //    enemyUnitsNearTarget.Add(cachedUnit);
-                //}
 
                 if (unit.IsTargetingPartyMember && Reachable(playerPosition, unitPosition, ref cachedReachable))
                 {
                     enemyAttackingGroup.Add(cachedUnit);
                 }
-
-                //var playerDistance = playerPosition.DistanceTo(unitPosition);
-                //if (playerDistance <= EnemiesNearMeRange && Reachable(playerPosition, unitPosition, ref cachedReachable))
-                //{
-                //    enemyUnitsNearPlayer.Add(cachedUnit);
-                //}
-
-                //if (playerDistance <= InterruptibleEnemiesRange && Reachable(playerPosition, unitPosition, ref cachedReachable) && unit.CanInterruptCasting)
-                //{
-                //    interruptibleEnemyUnits.Add(cachedUnit);
-                //}
             }
 
             Me = cachedPlayer;
             Target = cachedTarget;
             Pet = cachedPet;
 
-            //EnemyUnitsNearTarget = enemyUnitsNearTarget.ToArray();
-            //EnemyUnitsNearPlayer = enemyUnitsNearPlayer.ToArray();
-            //InterruptibleEnemyUnits = interruptibleEnemyUnits.ToArray();
-            EnemyUnitsTargetingPlayer = enemyUnitsTargetingPlayer.ToArray();
             EnemyUnitsLootable = enemyUnitsLootable.ToArray();
             EnemyAttackingGroup = enemyAttackingGroup.ToArray();
             EnemyUnitsList = enemyUnits.ToArray();
+
+            if (watch.ElapsedMilliseconds > 50)
+                Logger.LogError($"Entity cache pulse took {watch.ElapsedMilliseconds}");
         }
         private void CacheListPartyMemberGuid()
         {
