@@ -15,7 +15,7 @@ namespace WholesomeDungeonCrawler.ProductCache
         public bool IsInInstance { get; private set; }
         public bool IsPartyInviteRequest { get; private set; }
         public bool HaveSatchel { get; private set; }
-        public List<string> ListPartyMemberNames { get; private set; } = new List<string>();
+
         public string GetLFGMode { get; private set; }
         public bool MiniMapLFGFrameIcon { get; private set; }
         public string GetPlayerSpec { get; private set; }
@@ -147,32 +147,11 @@ namespace WholesomeDungeonCrawler.ProductCache
             }
         }
 
-        private void ClearCachedLists()
-        {
-            ListPartyMemberNames.Clear();
-        }
-
         private void CachePartyMemberChanged()
         {
             //Debugger.Break();
             CachePartyInviteRequest();
-            ClearCachedLists();
             GetLFGModes();
-            lock (cacheLock)
-            {
-                var plist = Lua.LuaDoString<string>(@"
-                    plist='';
-                    for i=1,4 do
-                        if (UnitName('party'..i)) then
-                            plist = plist .. UnitName('party'..i) ..','
-                        end
-                    end", "plist");
-                if (plist != null)
-                {
-                    ListPartyMemberNames = plist.Remove(plist.Length - 1, 1).Split(',').ToList();
-                }
-
-            }
         }
 
         private void GetLFGModes()

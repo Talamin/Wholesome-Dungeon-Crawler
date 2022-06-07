@@ -1,5 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
@@ -24,6 +25,10 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         }
         public void Initialize()
         {
+            if(ObjectManager.Me.IsInGroup)
+            {
+                CachePartyMemberChanged();
+            }
             CacheListPartyMemberGuid();
             EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaStringWithArgs;
             OnObjectManagerPulse();
@@ -41,6 +46,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 case "PARTY_MEMBERS_CHANGED":
                     Logger.LogError("PARTY_MEMBERS_CHANGED");
                     CacheListPartyMemberGuid();
+                    CachePartyMemberChanged();
                     break;
                 case "PARTY_MEMBER_DISABLE":
                     Logger.LogError("PARTY_MEMBER_DISABLE");
@@ -72,14 +78,15 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public IWoWUnit Target { get; private set; } = Cache(new WoWUnit(0));
         public IWoWUnit Pet { get; private set; } = Cache(new WoWUnit(0));
         public IWoWLocalPlayer Me { get; private set; } = Cache(new WoWLocalPlayer(0));
-        public IWoWUnit[] EnemyUnitsNearTarget { get; private set; } = new IWoWUnit[0];
-        public IWoWUnit[] EnemyUnitsNearPlayer { get; private set; } = new IWoWUnit[0];
-        public IWoWUnit[] InterruptibleEnemyUnits { get; private set; } = new IWoWUnit[0];
+        //public IWoWUnit[] EnemyUnitsNearTarget { get; private set; } = new IWoWUnit[0];
+        //public IWoWUnit[] EnemyUnitsNearPlayer { get; private set; } = new IWoWUnit[0];
+        //public IWoWUnit[] InterruptibleEnemyUnits { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsTargetingPlayer { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsTargetingGroup { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsLootable { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsList { get; private set; } = new IWoWUnit[0];
         public IWoWPlayer[] ListGroupMember { get; private set; } = new IWoWPlayer[0];
+        public List<string> ListPartyMemberNames { get; private set; } = new List<string>();
 
         public IWoWPlayer TankUnit { get; private set; }
 
@@ -91,9 +98,9 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         //Groupplay  Section
         public IWoWUnit[] EnemyAttackingGroup { get; private set; } = new IWoWUnit[0];
 
-        private float EnemiesNearTargetRange;
-        private float EnemiesNearMeRange;
-        private float InterruptibleEnemiesRange;
+        //private float EnemiesNearTargetRange;
+        //private float EnemiesNearMeRange;
+        //private float InterruptibleEnemiesRange;
 
         private static IWoWLocalPlayer Cache(WoWLocalPlayer player) => new CachedWoWLocalPlayer(player);
         private static IWoWUnit Cache(WoWUnit unit) => new CachedWoWUnit(unit);
@@ -210,35 +217,35 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                     enemyUnitsTargetingPlayer.Add(cachedUnit);
                 }
 
-                if (targetPosition.DistanceTo(unitPosition) <= EnemiesNearTargetRange && Reachable(playerPosition, unitPosition, ref cachedReachable))
-                {
-                    enemyUnitsNearTarget.Add(cachedUnit);
-                }
+                //if (targetPosition.DistanceTo(unitPosition) <= EnemiesNearTargetRange && Reachable(playerPosition, unitPosition, ref cachedReachable))
+                //{
+                //    enemyUnitsNearTarget.Add(cachedUnit);
+                //}
 
                 if (unit.IsTargetingPartyMember && Reachable(playerPosition, unitPosition, ref cachedReachable))
                 {
                     enemyAttackingGroup.Add(cachedUnit);
                 }
 
-                var playerDistance = playerPosition.DistanceTo(unitPosition);
-                if (playerDistance <= EnemiesNearMeRange && Reachable(playerPosition, unitPosition, ref cachedReachable))
-                {
-                    enemyUnitsNearPlayer.Add(cachedUnit);
-                }
+                //var playerDistance = playerPosition.DistanceTo(unitPosition);
+                //if (playerDistance <= EnemiesNearMeRange && Reachable(playerPosition, unitPosition, ref cachedReachable))
+                //{
+                //    enemyUnitsNearPlayer.Add(cachedUnit);
+                //}
 
-                if (playerDistance <= InterruptibleEnemiesRange && Reachable(playerPosition, unitPosition, ref cachedReachable) && unit.CanInterruptCasting)
-                {
-                    interruptibleEnemyUnits.Add(cachedUnit);
-                }
+                //if (playerDistance <= InterruptibleEnemiesRange && Reachable(playerPosition, unitPosition, ref cachedReachable) && unit.CanInterruptCasting)
+                //{
+                //    interruptibleEnemyUnits.Add(cachedUnit);
+                //}
             }
 
             Me = cachedPlayer;
             Target = cachedTarget;
             Pet = cachedPet;
 
-            EnemyUnitsNearTarget = enemyUnitsNearTarget.ToArray();
-            EnemyUnitsNearPlayer = enemyUnitsNearPlayer.ToArray();
-            InterruptibleEnemyUnits = interruptibleEnemyUnits.ToArray();
+            //EnemyUnitsNearTarget = enemyUnitsNearTarget.ToArray();
+            //EnemyUnitsNearPlayer = enemyUnitsNearPlayer.ToArray();
+            //InterruptibleEnemyUnits = interruptibleEnemyUnits.ToArray();
             EnemyUnitsTargetingPlayer = enemyUnitsTargetingPlayer.ToArray();
             EnemyUnitsLootable = enemyUnitsLootable.ToArray();
             EnemyAttackingGroup = enemyAttackingGroup.ToArray();
@@ -259,6 +266,31 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             }
             partyMembers.Add(Me.Guid);
             ListPartyMemberGuid = partyMembers;
+        }
+        private void ClearCachedLists()
+        {
+            ListPartyMemberNames.Clear();
+        }
+
+        private void CachePartyMemberChanged()
+        {
+            //Debugger.Break();
+            ClearCachedLists();
+            lock (cacheLock)
+            {
+                var plist = Lua.LuaDoString<string>(@"
+                    plist='';
+                    for i=1,4 do
+                        if (UnitName('party'..i)) then
+                            plist = plist .. UnitName('party'..i) ..','
+                        end
+                    end", "plist");
+                if (plist != null)
+                {
+                    ListPartyMemberNames = plist.Remove(plist.Length - 1, 1).Split(',').ToList();
+                }
+
+            }
         }
     }
 }

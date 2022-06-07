@@ -2,6 +2,7 @@
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 using Timer = robotManager.Helpful.Timer;
@@ -12,10 +13,12 @@ namespace WholesomeDungeonCrawler.States
     {
         public override string DisplayName => "GroupProposal Accept";
         private readonly ICache _cache;
+        private readonly IEntityCache _entityCache;
 
-        public GroupProposal(ICache iCache, int priority)
+        public GroupProposal(ICache iCache, IEntityCache iEntityCache, int priority)
         {
             _cache = iCache;
+            _entityCache = iEntityCache;
             Priority = priority;
         }
 
@@ -29,7 +32,7 @@ namespace WholesomeDungeonCrawler.States
                     || !Conditions.InGameAndConnected
                     || !ObjectManager.Me.IsValid
                     || Fight.InFight
-                    || _cache.ListPartyMemberNames.Count() < 4) //changed from 5
+                    || _entityCache.ListPartyMemberNames.Count() < 4) //changed from 5
                 {
                     return false;
                 }

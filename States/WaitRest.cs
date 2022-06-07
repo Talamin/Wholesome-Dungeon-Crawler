@@ -34,7 +34,7 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                foreach (string playername in _cache.ListPartyMemberNames)
+                foreach (string playername in _entityCache.ListPartyMemberNames)
                 {
                     if (!_entityCache.ListGroupMember.Any(y => y.Name == playername))
                     {

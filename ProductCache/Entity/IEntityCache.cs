@@ -1,4 +1,6 @@
-﻿namespace WholesomeDungeonCrawler.ProductCache.Entity
+﻿using System.Collections.Generic;
+
+namespace WholesomeDungeonCrawler.ProductCache.Entity
 {
     public interface IEntityCache : ICycleable
     {
@@ -6,15 +8,16 @@
         IWoWUnit Pet { get; }
         IWoWLocalPlayer Me { get; }
         IWoWPlayer TankUnit { get; }
-        IWoWUnit[] EnemyUnitsNearTarget { get; }
-        IWoWUnit[] EnemyUnitsNearPlayer { get; }
-        IWoWUnit[] InterruptibleEnemyUnits { get; }
+        //IWoWUnit[] EnemyUnitsNearTarget { get; }
+        //IWoWUnit[] EnemyUnitsNearPlayer { get; }
+        //IWoWUnit[] InterruptibleEnemyUnits { get; }
         IWoWUnit[] EnemyUnitsTargetingPlayer { get; }
         IWoWUnit[] EnemyUnitsTargetingGroup { get; }
         IWoWUnit[] EnemyUnitsLootable { get; }
         IWoWUnit[] EnemyAttackingGroup { get; }
         IWoWUnit[] EnemyUnitsList { get; }
         IWoWPlayer[] ListGroupMember { get; }
+        List<string> ListPartyMemberNames { get; }
 
         bool IAmTank { get; }
     }

@@ -7,7 +7,6 @@ namespace WholesomeDungeonCrawler.ProductCache
         bool IsInInstance { get; }
         bool IsPartyInviteRequest { get; }
         bool HaveSatchel { get; }
-        List<string> ListPartyMemberNames { get; }
         string GetLFGMode { get; }
         bool MiniMapLFGFrameIcon { get; }
         string GetPlayerSpec { get; }
