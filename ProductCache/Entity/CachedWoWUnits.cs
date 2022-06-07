@@ -52,7 +52,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             IsPartyMember = unit.IsPartyMember;
             TargetGuid = unit.Target;
             Fleeing = unit.Fleeing;
-            //WowUnit = unit;
+            WowUnit = unit;
 
             GetBaseAdress = unit.GetBaseAddress;
 
