@@ -42,7 +42,7 @@ namespace WholesomeDungeonCrawler.States
                 }
 
 
-                if (!_cache.IAmTank)
+                if (!_entityCache.IAmTank)
                 {
                     return false;
                 }

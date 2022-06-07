@@ -24,12 +24,12 @@ namespace WholesomeDungeonCrawler.Bot
         {
             try
             {
-                _partyChatManager = new PartyChatManager();
-                _partyChatManager.Initialize();
                 _cache = new Cache();
                 _cache.Initialize();
                 _entityCache = new EntityCache();
                 _entityCache.Initialize();
+                _partyChatManager = new PartyChatManager(_entityCache);
+                _partyChatManager.Initialize();
                 _profileManager = new ProfileManager(_entityCache, _cache);
                 _profileManager.Initialize();
                 _targetingManager = new TargetingManager(_entityCache, _cache);

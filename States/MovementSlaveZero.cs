@@ -1,4 +1,4 @@
-﻿using robotManager.FiniteStateMachine;
+﻿/*using robotManager.FiniteStateMachine;
 using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Drawing;
@@ -239,3 +239,4 @@ namespace WholesomeDungeonCrawler.States
         }
     }
 }
+*/

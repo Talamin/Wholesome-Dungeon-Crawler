@@ -6,7 +6,6 @@
         IWoWUnit Pet { get; }
         IWoWLocalPlayer Me { get; }
         IWoWPlayer TankUnit { get; }
-
         IWoWUnit[] EnemyUnitsNearTarget { get; }
         IWoWUnit[] EnemyUnitsNearPlayer { get; }
         IWoWUnit[] InterruptibleEnemyUnits { get; }
@@ -16,5 +15,7 @@
         IWoWUnit[] EnemyAttackingGroup { get; }
         IWoWUnit[] EnemyUnitsList { get; }
         IWoWPlayer[] ListGroupMember { get; }
+
+        bool IAmTank { get; }
     }
 }

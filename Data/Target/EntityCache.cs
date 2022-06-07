@@ -28,6 +28,7 @@ namespace WholesomeDungeonCrawler.Data
             EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaStringWithArgs;
             OnObjectManagerPulse();
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
+            IAmTank = ObjectManager.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName;
         }
 
         private void EventsLuaWithArgs_OnEventsLuaStringWithArgs(string id, List<string> args)
@@ -84,15 +85,16 @@ namespace WholesomeDungeonCrawler.Data
 
         private List<ulong> ListPartyMemberGuid { get; set; } = new List<ulong>();
         private ulong TankGuid { get; set; }
+        public bool IAmTank { get; private set; }
 
 
         //Groupplay  Section
         public IWoWUnit[] EnemyAttackingGroup { get; private set; } = new IWoWUnit[0];
-
+        
         private float EnemiesNearTargetRange;
         private float EnemiesNearMeRange;
         private float InterruptibleEnemiesRange;
-
+        
         private static IWoWLocalPlayer Cache(WoWLocalPlayer player) => new CachedWoWLocalPlayer(player);
         private static IWoWUnit Cache(WoWUnit unit) => new CachedWoWUnit(unit);
         private static IWoWPlayer Cache(WoWPlayer player) => new CachedWoWPlayer(player);
