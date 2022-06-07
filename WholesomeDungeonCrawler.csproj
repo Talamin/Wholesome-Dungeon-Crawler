@@ -159,6 +159,7 @@
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="States\CheckPathAhead.cs" />
     <Compile Include="States\Dead.cs" />
     <Compile Include="States\MovementSlaveZero.cs" />
     <Compile Include="States\SlaveCombat.cs" />

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache;
@@ -41,7 +41,6 @@ namespace WholesomeDungeonCrawler.Managers
             switch (id)
             {
                 case "PLAYER_ENTERING_WORLD":
-                    Logger.Log("PLAYER ENTERING WORLD OUT OF PROFILEMANAGER");
                     LoadProfile(true);
                     break;
             }

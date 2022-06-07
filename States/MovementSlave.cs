@@ -22,6 +22,7 @@ namespace WholesomeDungeonCrawler.States
 
         private int FollowRange = 10;
         private Vector3 oldleaderpos = new Vector3(0, 0, 0);
+
         public override bool NeedToRun
         {
             get

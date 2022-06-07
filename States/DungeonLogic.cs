@@ -1,7 +1,6 @@
 ﻿using robotManager.FiniteStateMachine;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
-using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
 
@@ -14,12 +13,17 @@ namespace WholesomeDungeonCrawler.States
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
+        private readonly IPartyChatManager _partyChatManager;
 
-        public DungeonLogic(ICache iCache, IEntityCache iEntityCache, IProfileManager profilemanager)
+        public DungeonLogic(IEntityCache iEntityCache,
+            IProfileManager profilemanager,
+            IPartyChatManager partyChatManager,
+            int priority)
         {
-            _cache = iCache;
             _entityCache = iEntityCache;
             _profileManager = profilemanager;
+            _partyChatManager = partyChatManager;
+            Priority = priority;
         }
         public override bool NeedToRun
         {
@@ -34,17 +38,8 @@ namespace WholesomeDungeonCrawler.States
                     || !_entityCache.Me.Valid
                     || Fight.InFight
                     || _profileManager.CurrentDungeonProfile == null
-                    || _profileManager.CurrentDungeonProfile.CurrentStep == null)
-                {
-                    return false;
-                }
-
-                if (!_entityCache.IAmTank)
-                {
-                    return false;
-                }
-
-                if (_entityCache.Me.Dead)
+                    || _profileManager.CurrentDungeonProfile.CurrentStep == null
+                    || _profileManager.CurrentDungeonProfile.CurrentStep.Order > _partyChatManager.TankStatus?.StepOrder)
                 {
                     return false;
                 }

@@ -16,12 +16,14 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private PickupObjectModel _pickupObjectModel;
         private readonly IEntityCache _entityCache;
         public override string Name { get; }
+        public override int Order { get; }
 
         public PickupObjectStep(PickupObjectModel pickupObjectModel, IEntityCache entityCache)
         {
             _pickupObjectModel = pickupObjectModel;
             _entityCache = entityCache;
             Name = pickupObjectModel.Name;
+            Order = pickupObjectModel.Order;
         }
         public override void Run()
         {

@@ -146,7 +146,7 @@ namespace WholesomeDungeonCrawler.Profiles
 
             if (CurrentStep.IsCompleted)
             {
-                Logger.Log($"Completed Current Step: {CurrentStep}");
+                Logger.Log($"Completed Current Step: {CurrentStep.Name}");
                 if (completedSteps == totalSteps)
                 {
                     Logger.Log("Profile is Done");

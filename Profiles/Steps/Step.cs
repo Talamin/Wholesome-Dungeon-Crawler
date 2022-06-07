@@ -10,6 +10,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
     {
         public bool IsCompleted { get; protected set; }
         public abstract string Name { get; }
+        public abstract int Order { get; }
 
         public abstract void Run();
 
@@ -23,7 +24,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     var obj = ObjectManager.GetWoWGameObjectByEntry(stepCompleteCondition.GameObjectId).OrderBy(x => x.GetDistance).FirstOrDefault();
                     return obj.FlagsInt != stepCompleteCondition.InitialFlags;
                 case CompleteConditionType.HaveItem:
-                    var bagItems = wManager.Wow.Helpers.ItemsManager.GetItemCountByIdLUA((uint)stepCompleteCondition.ItemId);
+                    var bagItems = ItemsManager.GetItemCountByIdLUA((uint)stepCompleteCondition.ItemId);
                     return bagItems > 0;
                 case CompleteConditionType.MobDead:
                     var deadmob = ObjectManager.GetObjectWoWUnit().Where(x => x.Entry == stepCompleteCondition.DeadMobId).OrderBy(x => x.GetDistance).FirstOrDefault();

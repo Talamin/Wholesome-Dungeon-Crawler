@@ -30,10 +30,10 @@ namespace WholesomeDungeonCrawler.Bot
                 _cache.Initialize();
                 _entityCache = new EntityCache();
                 _entityCache.Initialize();
-                _partyChatManager = new PartyChatManager(_entityCache);
-                _partyChatManager.Initialize();
                 _profileManager = new ProfileManager(_entityCache, _cache);
                 _profileManager.Initialize();
+                _partyChatManager = new PartyChatManager(_entityCache, _profileManager);
+                _partyChatManager.Initialize();
                 _targetingManager = new TargetingManager(_entityCache, _cache);
                 _targetingManager.Initialize();
                 _luaStatusFrameManager = new LuaStatusFrameManager(_cache, _entityCache, _profileManager);

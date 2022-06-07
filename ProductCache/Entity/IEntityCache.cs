@@ -2,6 +2,8 @@
 
 namespace WholesomeDungeonCrawler.ProductCache.Entity
 {
+    public delegate void TankOMHandler();
+
     public interface IEntityCache : ICycleable
     {
         IWoWUnit Target { get; }
@@ -16,5 +18,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         List<string> ListPartyMemberNames { get; }
 
         bool IAmTank { get; }
+
+        event TankOMHandler OnTankEnteringOM;
     }
 }

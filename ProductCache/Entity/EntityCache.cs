@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
+using System.Threading.Tasks;
 using WholesomeDungeonCrawler.CrawlerSettings;
-using WholesomeDungeonCrawler.Helpers;
 using wManager.Events;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
@@ -26,7 +25,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         }
         public void Initialize()
         {
-            if(ObjectManager.Me.IsInGroup)
+            if (ObjectManager.Me.IsInGroup)
             {
                 CachePartyMemberChanged();
             }
@@ -45,36 +44,31 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                     CacheListPartyMemberGuid();
                     break;
                 case "PARTY_MEMBERS_CHANGED":
-                    Logger.LogError("PARTY_MEMBERS_CHANGED");
                     CacheListPartyMemberGuid();
                     CachePartyMemberChanged();
                     break;
                 case "PARTY_MEMBER_DISABLE":
-                    Logger.LogError("PARTY_MEMBER_DISABLE");
                     CacheListPartyMemberGuid();
                     break;
                 case "PARTY_MEMBER_ENABLE":
-                    Logger.LogError("PARTY_MEMBER_ENABLE");
                     CacheListPartyMemberGuid();
                     break;
                 case "RAID_ROSTER_UPDATE":
-                    Logger.LogError("RAID_ROSTER_UPDATE");
                     CacheListPartyMemberGuid();
                     break;
                 case "GROUP_ROSTER_CHANGED":
-                    Logger.LogError("GROUP_ROSTER_CHANGED");
                     CacheListPartyMemberGuid();
                     break;
                 case "PARTY_CONVERTED_TO_RAID":
-                    Logger.LogError("PARTY_CONVERTED_TO_RAID");
                     CacheListPartyMemberGuid();
                     break;
                 case "RAID_TARGET_UPDATE":
-                    Logger.LogError("RAID_TARGET_UPDATE");
                     CacheListPartyMemberGuid();
                     break;
             }
         }
+
+        public event TankOMHandler OnTankEnteringOM;
 
         public IWoWUnit Target { get; private set; } = Cache(new WoWUnit(0));
         public IWoWUnit Pet { get; private set; } = Cache(new WoWUnit(0));
@@ -88,9 +82,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public IWoWUnit[] EnemyUnitsList { get; private set; } = new IWoWUnit[0];
         public IWoWPlayer[] ListGroupMember { get; private set; } = new IWoWPlayer[0];
         public List<string> ListPartyMemberNames { get; private set; } = new List<string>();
-
         public IWoWPlayer TankUnit { get; private set; }
-
         private List<ulong> ListPartyMemberGuid { get; set; } = new List<ulong>();
         private ulong TankGuid { get; set; }
         public bool IAmTank { get; private set; }
@@ -156,7 +148,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             var targetGuid = cachedTarget.Guid;
             var playerPosition = cachedPlayer.PositionWithoutType;
 
-            bool tankFound = false;
+            IWoWPlayer tankUnit = null;
 
             foreach (var play in playerUnits)
             {
@@ -166,17 +158,18 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                     listGroupMember.Add(cachedplayer);
                     if (cachedplayer.Guid == TankGuid)
                     {
-                        TankUnit = cachedplayer;
-                        tankFound = true;
+                        tankUnit = cachedplayer;
                     }
                 }
                 ListGroupMember = listGroupMember.ToArray();
             }
 
-            if (!tankFound)
+            if (TankUnit == null && tankUnit != null)
             {
-                TankUnit = null;
+                OnTankEnteringOM();
             }
+
+            TankUnit = tankUnit;
 
             foreach (var unit in units)
             {
@@ -212,22 +205,26 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             if (watch.ElapsedMilliseconds > 50)
                 Logger.LogError($"Entity cache pulse took {watch.ElapsedMilliseconds}");
         }
+
         private void CacheListPartyMemberGuid()
         {
-            Thread.Sleep(500);
-            List<ulong> partyMembers = new List<ulong>();
-            TankGuid = 0;
-            foreach (WoWPlayer p in Party.GetParty())
+            Task.Delay(1000).ContinueWith(x =>
             {
-                partyMembers.Add(p.Guid);
-                if (p.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+                List<ulong> partyMembers = new List<ulong>();
+                TankGuid = 0;
+                foreach (WoWPlayer p in Party.GetParty())
                 {
-                    TankGuid = p.Guid;
+                    partyMembers.Add(p.Guid);
+                    if (p.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+                    {
+                        TankGuid = p.Guid;
+                    }
                 }
-            }
-            partyMembers.Add(Me.Guid);
-            ListPartyMemberGuid = partyMembers;
+                partyMembers.Add(Me.Guid);
+                ListPartyMemberGuid = partyMembers;
+            });
         }
+
         private void ClearCachedLists()
         {
             ListPartyMemberNames.Clear();
@@ -239,18 +236,18 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             ClearCachedLists();
             lock (cacheLock)
             {
-                var plist = Lua.LuaDoString<string>(@"
+                string plist = Lua.LuaDoString<string>(@"
                     plist='';
                     for i=1,4 do
                         if (UnitName('party'..i)) then
                             plist = plist .. UnitName('party'..i) ..','
                         end
                     end", "plist");
-                if (plist != null)
+
+                if (plist != null && plist.Length > 0)
                 {
                     ListPartyMemberNames = plist.Remove(plist.Length - 1, 1).Split(',').ToList();
                 }
-
             }
         }
     }
