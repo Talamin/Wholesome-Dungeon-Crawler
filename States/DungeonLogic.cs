@@ -10,20 +10,17 @@ namespace WholesomeDungeonCrawler.States
     {
         public override string DisplayName => "DungeonLogic";
 
-        private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
         private readonly IPartyChatManager _partyChatManager;
 
         public DungeonLogic(IEntityCache iEntityCache,
             IProfileManager profilemanager,
-            IPartyChatManager partyChatManager,
-            int priority)
+            IPartyChatManager partyChatManager)
         {
             _entityCache = iEntityCache;
             _profileManager = profilemanager;
             _partyChatManager = partyChatManager;
-            Priority = priority;
         }
         public override bool NeedToRun
         {
@@ -56,7 +53,7 @@ namespace WholesomeDungeonCrawler.States
             }
             else
             {
-                Logger.Log($"DungeonLogic: {_profileManager.CurrentDungeonProfile.CurrentStep.Name}");
+                //Logger.Log($"DungeonLogic: {_profileManager.CurrentDungeonProfile.CurrentStep.Name}");
                 _profileManager.CurrentDungeonProfile.CurrentStep.Run();
             }
         }

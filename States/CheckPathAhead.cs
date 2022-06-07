@@ -19,10 +19,9 @@ namespace WholesomeDungeonCrawler.States
         private IWoWUnit _unitOnPath = null;
         private Timer _broadcastTimer = new Timer();
 
-        public CheckPathAhead(IEntityCache EntityCache, IPartyChatManager partyChatManager, int priority)
+        public CheckPathAhead(IEntityCache EntityCache, IPartyChatManager partyChatManager)
         {
             _entityCache = EntityCache;
-            Priority = priority;
             _partyChatManager = partyChatManager;
         }
 

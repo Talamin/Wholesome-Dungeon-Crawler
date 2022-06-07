@@ -16,7 +16,7 @@ namespace WholesomeDungeonCrawler.States
         private readonly IEntityCache _entityCache;
         private IWoWUnit _unitToClear = null;
 
-        public ClearPathCombat(IEntityCache EntityCache, int priority)
+        public ClearPathCombat(IEntityCache EntityCache)
         {
             _entityCache = EntityCache;
         }
