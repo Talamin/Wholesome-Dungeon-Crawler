@@ -89,7 +89,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     if (!MovementManager.InMovement ||
                         _entityCache.Me.PositionWithoutType.DistanceTo(targetPosition) > followDistance)
                     {
-                        GoToTask.ToPosition(targetPosition, 3.5f, false, context => _entityCache.Me.PositionWithoutType.DistanceTo(targetPosition) < followDistance);
+                        GoToTask.ToPosition(targetPosition, 2.5f, false, context => _entityCache.Me.PositionWithoutType.DistanceTo(targetPosition) <= 5);
                     }
                 }
 
