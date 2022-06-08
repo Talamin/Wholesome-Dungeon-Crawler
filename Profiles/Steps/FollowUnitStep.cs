@@ -74,12 +74,22 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         };
                     }
                     Vector3 targetPosition = foundUnit.PositionWithoutType;
-                    float followDistance = 15;
+                    float followDistance = 25;
+
+                    foreach(IWoWUnit unit in _entityCache.EnemyUnitsList)
+                    { 
+                        if(unit.TargetGuid == foundUnit.Guid)
+                        {
+                            Logger.Log("Defending Follow Unit");
+                            ObjectManager.Me.Target = unit.Guid;
+                            Fight.StartFight(unit.Guid, false);
+                        }
+                    }
 
                     if (!MovementManager.InMovement ||
-                        MovementManager.CurrentMoveTo.DistanceTo(targetPosition) > followDistance)
+                        _entityCache.Me.PositionWithoutType.DistanceTo(targetPosition) > followDistance)
                     {
-                        GoToTask.ToPosition(targetPosition, 3.5f, false, context => ObjectManager.Me.PositionWithoutType.DistanceTo(targetPosition) < followDistance);
+                        GoToTask.ToPosition(targetPosition, 3.5f, false, context => _entityCache.Me.PositionWithoutType.DistanceTo(targetPosition) < followDistance);
                     }
                 }
 
