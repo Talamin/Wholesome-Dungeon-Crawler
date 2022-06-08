@@ -1,5 +1,7 @@
 ﻿using robotManager.Helpful;
+using System;
 using System.ComponentModel;
+using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
@@ -39,9 +41,19 @@ namespace WholesomeDungeonCrawler.Managers
                     if (newTarget != null)
                     {
                         Target = newTarget;
-                        Logger.Log($"TargetingManager: Target attacking Groupmember: {Target.Name}, switching");
+                        Logger.Log($"{Target.Name} needs tanking");
                         cancable.Cancel = true;
                         SwitchedTargetFight(Target);
+                    } else
+                    {
+                        newTarget = GetWeakestEnemyUnit();
+                        if (newTarget != currentTarget)
+                        {
+                            Target = newTarget;
+                            Logger.Log($"{Target.Name} needs finishing off");
+                            cancable.Cancel = true;
+                            SwitchedTargetFight(Target);
+                        }
                     }
                 }
             }
@@ -55,7 +67,7 @@ namespace WholesomeDungeonCrawler.Managers
                     if (_entityCache.Me.TargetGuid != fleeUnit.Guid)
                     {
                         Target = FleeingUnit(_entityCache.TankUnit);
-                        Logger.Log($"TargetingManager: Target fleeing: {Target.Name} , switching");
+                        Logger.Log($"{Target.Name} is fleeing");
                         cancable.Cancel = true;
                         SwitchedTargetFight(Target);
                     }
@@ -69,7 +81,7 @@ namespace WholesomeDungeonCrawler.Managers
                         if (assistTankUnit.Guid != _entityCache.Me.TargetGuid)
                         {
                             Target = assistTankUnit;
-                            Logger.Log($"TargetingManager: Target attacking Tank: {Target.Name} , switching");
+                            Logger.Log($"Assisting tank with : {Target.Name}");
                             cancable.Cancel = true;
                             SwitchedTargetFight(Target);
                         }
@@ -83,7 +95,7 @@ namespace WholesomeDungeonCrawler.Managers
                             if (assistGroupUnit.Guid != _entityCache.Me.TargetGuid)
                             {
                                 Target = assistGroupUnit;
-                                Logger.Log($"TargetingManager: Target attacking Groupmember: {Target.Name} , switching");
+                                Logger.Log($"Assisting Groupmember with : {Target.Name}");
                                 cancable.Cancel = true;
                                 SwitchedTargetFight(Target);
                             }
@@ -97,7 +109,7 @@ namespace WholesomeDungeonCrawler.Managers
                                 if (attackingMe.Guid != _entityCache.Me.TargetGuid)
                                 {
                                     Target = attackingMe;
-                                    Logger.Log($"TargetingManager: Target attacking Groupmember: {Target.Name} , switching");
+                                    Logger.Log($"Soloing : {Target.Name}");
                                     cancable.Cancel = true;
                                     SwitchedTargetFight(Target);
                                 }
@@ -119,6 +131,11 @@ namespace WholesomeDungeonCrawler.Managers
             return TargetingHelper.FindClosestUnit(unit =>
                 unit.IsAttackingGroup && !unit.IsAttackingMe && !unit.Dead && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60,
                 _entityCache.Me.PositionWithoutType, _entityCache.EnemyUnitsList);
+        }
+
+        private IWoWUnit GetWeakestEnemyUnit()
+        {
+            return _entityCache.EnemyUnitsList.Where(e => e.IsAttackingGroup && !e.Dead).OrderBy(e => e.WowUnit.Health).First();            
         }
 
         private IWoWUnit FleeingUnit(IWoWUnit tank)
