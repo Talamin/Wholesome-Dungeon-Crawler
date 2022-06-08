@@ -26,10 +26,6 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (_profileManager.CurrentDungeonProfile?.CurrentStep == null)
-                {
-                    Logger.Log($"DungeonLogic: None");
-                }
 
                 if (!Conditions.InGameAndConnected
                     || !_entityCache.Me.Valid
