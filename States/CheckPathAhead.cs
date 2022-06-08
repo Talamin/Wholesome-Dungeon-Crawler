@@ -36,7 +36,7 @@ namespace WholesomeDungeonCrawler.States
                     || MovementManager.CurrentPath.Count <= 0
                     || !Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause
                     || _entityCache.IAmTank && MyTeamIsAround
-                    || !_entityCache.IAmTank && _entityCache.TankUnit.TargetGuid != 0)
+                    /*|| !_entityCache.IAmTank && _entityCache.TankUnit?.TargetGuid != 0*/)
                 {
                     return false;
                 }
@@ -113,7 +113,7 @@ namespace WholesomeDungeonCrawler.States
                 if (_unitOnPath != null
                     && !_entityCache.IAmTank
                     && _entityCache.TankUnit != null
-                    && _entityCache.TankUnit.PositionWithoutType.DistanceTo(_unitOnPath.PositionWithoutType) + 15 < _entityCache.Me.PositionWithoutType.DistanceTo(_unitOnPath.PositionWithoutType))
+                    && _entityCache.TankUnit.PositionWithoutType.DistanceTo(_unitOnPath.PositionWithoutType) + 10 < _entityCache.Me.PositionWithoutType.DistanceTo(_unitOnPath.PositionWithoutType))
                 {
                     return false;
                 }

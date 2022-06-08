@@ -69,7 +69,6 @@ namespace WholesomeDungeonCrawler.Bot
                     new WaitRest(_cache, _entityCache),
                     new CheckPathAhead(_entityCache, _partyChatManager),
                     new ClearPathCombat(_entityCache),
-                    new MovementSlave(_cache, _entityCache),
                     new LeaveDungeon(_cache, _entityCache, _profileManager),
                     new DungeonLogic(_entityCache, _profileManager, _partyChatManager),
                     new AntiAfk(),

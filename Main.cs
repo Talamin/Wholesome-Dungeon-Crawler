@@ -5,6 +5,7 @@ using WholesomeDungeonCrawler.Bot;
 using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.GUI;
 using WholesomeDungeonCrawler.Helpers;
+using wManager;
 using wManager.Plugin;
 
 public class Main : IProduct
@@ -43,6 +44,8 @@ public class Main : IProduct
             {
                 Logger.Log("Started");
                 PluginsManager.LoadAllPlugins();
+                wManagerSetting.CurrentSetting.WallDistancePathFinder = 2;
+                wManagerSetting.CurrentSetting.Save();
                 IsStarted = true;
             }
         }

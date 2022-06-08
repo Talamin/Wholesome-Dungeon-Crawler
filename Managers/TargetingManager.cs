@@ -121,14 +121,14 @@ namespace WholesomeDungeonCrawler.Managers
                 _entityCache.Me.PositionWithoutType, _entityCache.EnemyUnitsList);
         }
 
-        private IWoWUnit FleeingUnit(IWoWUnit Tank)
+        private IWoWUnit FleeingUnit(IWoWUnit tank)
         {
             IWoWUnit Unit = TargetingHelper.FindClosestUnit(unit =>
-            unit.IsAttackingGroup
-            && unit.Fleeing
-            && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-            && !unit.Dead, Tank.PositionWithoutType, _entityCache.EnemyUnitsList);
-            return Unit;
+                unit.IsAttackingGroup
+                && unit.Fleeing
+                && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
+                && !unit.Dead, tank.PositionWithoutType, _entityCache.EnemyUnitsList);
+                return Unit;
         }
 
         private IWoWUnit AttackingMe()

@@ -202,9 +202,10 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             EnemyUnitsLootable = enemyUnitsLootable.ToArray();
             EnemyAttackingGroup = enemyAttackingGroup.ToArray();
             EnemyUnitsList = enemyUnits.ToArray();
-
+            /*
             if (watch.ElapsedMilliseconds > 50)
                 Logger.LogError($"Entity cache pulse took {watch.ElapsedMilliseconds}");
+            */
         }
 
         private void CacheListPartyMemberGuid()
