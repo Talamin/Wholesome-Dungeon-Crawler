@@ -14,7 +14,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         IWoWUnit[] EnemyUnitsLootable { get; }
         IWoWUnit[] EnemyAttackingGroup { get; }
         IWoWUnit[] EnemyUnitsList { get; }
-        IWoWUnit[] FriendlyDefendUnitsList { get; }
         IWoWPlayer[] ListGroupMember { get; }
         List<string> ListPartyMemberNames { get; }
 

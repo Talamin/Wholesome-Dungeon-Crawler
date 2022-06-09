@@ -16,10 +16,8 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
     internal class EntityCache : IEntityCache
     {
         private object cacheLock = new object();
-        private ITargetingManager _targetingManager;
-        public EntityCache(ITargetingManager targetingManager)
-        {
-            _targetingManager = targetingManager;
+        public EntityCache()
+        {          
         }
 
         public void Dispose()
@@ -80,7 +78,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public IWoWUnit[] EnemyUnitsTargetingGroup { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsLootable { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsList { get; private set; } = new IWoWUnit[0];
-        public IWoWUnit[] FriendlyDefendUnitsList { get; private set; } = new IWoWUnit[0];
         public IWoWPlayer[] ListGroupMember { get; private set; } = new IWoWPlayer[0];
         public List<string> ListPartyMemberNames { get; private set; } = new List<string>();
         public IWoWPlayer TankUnit { get; private set; }
@@ -145,7 +142,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             var enemyAttackingGroup = new List<IWoWUnit>(units.Count);
             var enemyUnits = new List<IWoWUnit>(units.Count);
             var listGroupMember = new List<IWoWPlayer>(units.Count);
-            var friendlyDefendUnitsList = new List<IWoWUnit>(units.Count);
 
             var targetGuid = cachedTarget.Guid;
             var playerPosition = cachedPlayer.PositionWithoutType;
@@ -180,11 +176,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 bool? cachedReachable = unitGuid == targetGuid ? true : (bool?)null;
                 var unitPosition = unit.PositionWithoutType;
 
-                if(!unit.IsDead && _targetingManager._npcsToDefendID.Contains((int)unit.DisplayId))
-                {
-                    friendlyDefendUnitsList.Add(cachedUnit);
-                }
-
                 if (!unit.IsDead && unit.Level > 1 && unit.Reaction <= Reaction.Neutral && unit.PositionWithoutType.DistanceTo(playerPosition) <= 100)
                 {
                     enemyUnits.Add(cachedUnit);
@@ -209,7 +200,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             EnemyUnitsLootable = enemyUnitsLootable.ToArray();
             EnemyAttackingGroup = enemyAttackingGroup.ToArray();
             EnemyUnitsList = enemyUnits.ToArray();
-            FriendlyDefendUnitsList = friendlyDefendUnitsList.ToArray();
             /*
             if (watch.ElapsedMilliseconds > 50)
                 Logger.LogError($"Entity cache pulse took {watch.ElapsedMilliseconds}");

@@ -27,7 +27,7 @@ namespace WholesomeDungeonCrawler.Bot
             {
                 _cache = new Cache();
                 _cache.Initialize();
-                _entityCache = new EntityCache(_targetingManager);
+                _entityCache = new EntityCache();
                 _entityCache.Initialize();
                 _profileManager = new ProfileManager(_entityCache, _cache, _targetingManager);
                 _profileManager.Initialize();
