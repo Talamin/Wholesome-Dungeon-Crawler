@@ -135,7 +135,7 @@ namespace WholesomeDungeonCrawler.Managers
 
         private IWoWUnit GetWeakestEnemyUnit()
         {
-            return _entityCache.EnemyUnitsList.Where(e => e.IsAttackingGroup && !e.Dead).OrderBy(e => e.WowUnit.Health).First();            
+            return _entityCache.EnemyUnitsList.Where(e => e.IsAttackingGroup && !e.Dead).OrderBy(e => e.WowUnit.Health).FirstOrDefault();            
         }
 
         private IWoWUnit FleeingUnit(IWoWUnit tank)

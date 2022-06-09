@@ -27,14 +27,14 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
-            if (_moveAlongPathModel.Path.Count <= 0)
+            if (GetMoveAlongPath.Count <= 0)
             {
                 Logger.LogError($"Step {Name} path is empty, skipping.");
                 IsCompleted = true;
                 return;
             }
 
-            Vector3 lastPointOfPath = _moveAlongPathModel.Path.Last();
+            Vector3 lastPointOfPath = GetMoveAlongPath.Last();
 
             if (_entityCache.Me.PositionWithoutType.DistanceTo(lastPointOfPath) < 5f)
             {
@@ -49,18 +49,22 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
             if (!MovementManager.InMovement)
             {
-                MovementManager.Go(WTPathFinder.PathFromClosestPoint(_moveAlongPathModel.Path));
+                List<Vector3> pathToFollow = WTPathFinder.PathFromClosestPoint(GetMoveAlongPath);
+                if (pathToFollow[0].DistanceTo(_entityCache.Me.PositionWithoutType) <= 5)
+                {
+                    Logger.Log($"Starting path");
+                    MovementManager.Go(pathToFollow.GetRange(1, pathToFollow.Count - 1));
+                    return;
+                }
+                else
+                {
+                    List<Vector3> joinPath = PathFinder.FindPath(pathToFollow[0]);
+                    Logger.Log($"Starting adjusted path ({joinPath.Count} nodes)");
+                    joinPath.AddRange(pathToFollow.GetRange(1, pathToFollow.Count - 1));
+                    MovementManager.Go(joinPath);
+                    return;
+                }
             }
-
-            IsCompleted = false;
-            return;
-        }
-
-        private bool CompletionConditionMet()
-        {
-            return _moveAlongPathModel.CompleteCondition == null
-                    || !_moveAlongPathModel.CompleteCondition.HasCompleteCondition
-                    || EvaluateCompleteCondition(_moveAlongPathModel.CompleteCondition);
         }
 
         public List<Vector3> GetMoveAlongPath => _moveAlongPathModel.Path;
