@@ -16,9 +16,13 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         IWoWUnit[] EnemyUnitsList { get; }
         IWoWPlayer[] ListGroupMember { get; }
         List<string> ListPartyMemberNames { get; }
+        List<IWoWUnit> NpcsToDefend { get; }
 
         bool IAmTank { get; }
 
         event TankOMHandler OnTankEnteringOM;
+
+        void AddNpcIdToDefend(int npcId);
+        void ClearNpcListIdToDefend();
     }
 }

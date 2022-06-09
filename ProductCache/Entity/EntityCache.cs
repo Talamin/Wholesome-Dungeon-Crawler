@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
-using WholesomeDungeonCrawler.Managers;
 using wManager.Events;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
@@ -17,7 +16,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
     {
         private object cacheLock = new object();
         public EntityCache()
-        {          
+        {
         }
 
         public void Dispose()
@@ -85,6 +84,11 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         private ulong TankGuid { get; set; }
         public bool IAmTank { get; private set; }
 
+        private List<int> _npcToDefendEntries = new List<int>();
+        public List<IWoWUnit> NpcsToDefend { get; private set; } = new List<IWoWUnit>();
+        public void AddNpcIdToDefend(int npcId) => _npcToDefendEntries.Add(npcId);
+        public void ClearNpcListIdToDefend() => _npcToDefendEntries.Clear();
+
 
         //Groupplay  Section
         public IWoWUnit[] EnemyAttackingGroup { get; private set; } = new IWoWUnit[0];
@@ -138,6 +142,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 units = ObjectManager.GetObjectWoWUnit();
                 playerUnits = ObjectManager.GetObjectWoWPlayer();
             }
+
             var enemyUnitsLootable = new List<IWoWUnit>(units.Count);
             var enemyAttackingGroup = new List<IWoWUnit>(units.Count);
             var enemyUnits = new List<IWoWUnit>(units.Count);
@@ -167,6 +172,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 OnTankEnteringOM();
             }
 
+            NpcsToDefend.Clear();
             TankUnit = tankUnit;
 
             foreach (var unit in units)
@@ -175,6 +181,12 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 IWoWUnit cachedUnit = unitGuid == targetGuid ? cachedTarget : Cache(unit);
                 bool? cachedReachable = unitGuid == targetGuid ? true : (bool?)null;
                 var unitPosition = unit.PositionWithoutType;
+
+                if (unit.IsAlive && _npcToDefendEntries.Contains(unit.Entry))
+                {
+                    NpcsToDefend.Add(cachedUnit);
+                    continue;
+                }
 
                 if (!unit.IsDead && unit.Level > 1 && unit.Reaction <= Reaction.Neutral && unit.PositionWithoutType.DistanceTo(playerPosition) <= 100)
                 {

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
-using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles.Steps;
@@ -13,7 +12,6 @@ namespace WholesomeDungeonCrawler.Profiles
     public class Profile : IProfile
     {
         private IEntityCache _entityCache;
-        private ITargetingManager _targetingManager;
         private List<IStep> _profileSteps = new List<IStep>();
         public List<PathFinder.OffMeshConnection> OffMeshConnectionsList = new List<PathFinder.OffMeshConnection>();
 
@@ -22,10 +20,9 @@ namespace WholesomeDungeonCrawler.Profiles
         public IStep CurrentStep { get; private set; }
         public Dictionary<IStep, List<Vector3>> DungeonPath { get; private set; } = new Dictionary<IStep, List<Vector3>>();
 
-        public Profile(ProfileModel profileModel, IEntityCache entityCache, ITargetingManager targetingManager)
+        public Profile(ProfileModel profileModel, IEntityCache entityCache)
         {
             _entityCache = entityCache;
-            _targetingManager = targetingManager;
 
             foreach (StepModel model in profileModel.StepModels)
             {
@@ -52,21 +49,19 @@ namespace WholesomeDungeonCrawler.Profiles
                         _profileSteps.Add(new PickupObjectStep((PickupObjectModel)model, entityCache));
                         break;
                     case FollowUnitModel _:
-                        _profileSteps.Add(new FollowUnitStep((FollowUnitModel)model, entityCache));
+                        FollowUnitModel fuModel = model as FollowUnitModel;
+                        _profileSteps.Add(new FollowUnitStep(fuModel, entityCache));
+                        _entityCache.AddNpcIdToDefend(fuModel.UnitId);
                         break;
                     case DefendSpotModel _:
                         _profileSteps.Add(new DefendSpotStep((DefendSpotModel)model, entityCache));
                         break;
                 }
-                //elseif...
             }
+
             foreach (Vector3 point in profileModel.DeathRunPath)
             {
                 DeathRunPathList.Add(point);
-            }
-            foreach(FollowUnitModel model in profileModel.StepModels)
-            {
-                targetingManager._npcsToDefendID.Add(model.UnitId);
             }
 
             PathFinder.OffMeshConnections.AddRange(profileModel.OffMeshConnections);
