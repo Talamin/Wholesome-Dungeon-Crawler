@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Managers;
 using wManager.Events;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
@@ -15,8 +16,10 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
     internal class EntityCache : IEntityCache
     {
         private object cacheLock = new object();
-        public EntityCache()
+        private ITargetingManager _targetingManager;
+        public EntityCache(ITargetingManager targetingManager)
         {
+            _targetingManager = targetingManager;
         }
 
         public void Dispose()
@@ -74,13 +77,10 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public IWoWUnit Target { get; private set; } = Cache(new WoWUnit(0));
         public IWoWUnit Pet { get; private set; } = Cache(new WoWUnit(0));
         public IWoWLocalPlayer Me { get; private set; } = Cache(new WoWLocalPlayer(0));
-        //public IWoWUnit[] EnemyUnitsNearTarget { get; private set; } = new IWoWUnit[0];
-        //public IWoWUnit[] EnemyUnitsNearPlayer { get; private set; } = new IWoWUnit[0];
-        //public IWoWUnit[] InterruptibleEnemyUnits { get; private set; } = new IWoWUnit[0];
-        //public IWoWUnit[] EnemyUnitsTargetingPlayer { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsTargetingGroup { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsLootable { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsList { get; private set; } = new IWoWUnit[0];
+        public IWoWUnit[] FriendlyDefendUnitsList { get; private set; } = new IWoWUnit[0];
         public IWoWPlayer[] ListGroupMember { get; private set; } = new IWoWPlayer[0];
         public List<string> ListPartyMemberNames { get; private set; } = new List<string>();
         public IWoWPlayer TankUnit { get; private set; }
@@ -145,6 +145,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             var enemyAttackingGroup = new List<IWoWUnit>(units.Count);
             var enemyUnits = new List<IWoWUnit>(units.Count);
             var listGroupMember = new List<IWoWPlayer>(units.Count);
+            var friendlyDefendUnitsList = new List<IWoWUnit>(units.Count);
 
             var targetGuid = cachedTarget.Guid;
             var playerPosition = cachedPlayer.PositionWithoutType;
@@ -179,6 +180,11 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 bool? cachedReachable = unitGuid == targetGuid ? true : (bool?)null;
                 var unitPosition = unit.PositionWithoutType;
 
+                if(!unit.IsDead && _targetingManager._npcsToDefendID.Contains((int)unit.DisplayId))
+                {
+                    friendlyDefendUnitsList.Add(cachedUnit);
+                }
+
                 if (!unit.IsDead && unit.Level > 1 && unit.Reaction <= Reaction.Neutral && unit.PositionWithoutType.DistanceTo(playerPosition) <= 100)
                 {
                     enemyUnits.Add(cachedUnit);
@@ -195,6 +201,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 }
             }
 
+
             Me = cachedPlayer;
             Target = cachedTarget;
             Pet = cachedPet;
@@ -202,6 +209,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             EnemyUnitsLootable = enemyUnitsLootable.ToArray();
             EnemyAttackingGroup = enemyAttackingGroup.ToArray();
             EnemyUnitsList = enemyUnits.ToArray();
+            FriendlyDefendUnitsList = friendlyDefendUnitsList.ToArray();
             /*
             if (watch.ElapsedMilliseconds > 50)
                 Logger.LogError($"Entity cache pulse took {watch.ElapsedMilliseconds}");

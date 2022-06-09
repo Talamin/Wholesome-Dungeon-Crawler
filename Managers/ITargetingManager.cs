@@ -1,8 +1,11 @@
-﻿using WholesomeDungeonCrawler.ProductCache;
+﻿using System.Collections.Generic;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 
 namespace WholesomeDungeonCrawler.Managers
 {
-    interface ITargetingManager : ICycleable
+    public interface ITargetingManager : ICycleable
     {
+        List<int> _npcsToDefendID { get; }
     }
 }

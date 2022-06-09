@@ -22,11 +22,13 @@ namespace WholesomeDungeonCrawler.Managers
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
+        private readonly ITargetingManager _targetingManager;
 
-        public ProfileManager(IEntityCache entityCache, ICache cache)
+        public ProfileManager(IEntityCache entityCache, ICache cache, ITargetingManager targetingManager)
         {
             _entityCache = entityCache;
             _cache = cache;
+            _targetingManager = targetingManager;
         }
         public void Initialize()
         {
@@ -70,7 +72,7 @@ namespace WholesomeDungeonCrawler.Managers
                             {
                                 PathFinder.OffMeshConnections.AddRange(deserializedProfile.OffMeshConnections);
                             }
-                            CurrentDungeonProfile = new Profile(deserializedProfile, _entityCache);
+                            CurrentDungeonProfile = new Profile(deserializedProfile, _entityCache, _targetingManager);
                             Logger.Log($"Dungeon Profile loaded: {deserializedProfile.Name}.{Environment.NewLine} with the MapID { deserializedProfile.MapId}.{ Environment.NewLine} with at Total Steps { deserializedProfile.StepModels.Count()}.{ Environment.NewLine} with a { deserializedProfile.DeathRunPath.Count()}.{ Environment.NewLine} Steps Deathrun and { deserializedProfile.OffMeshConnections.Count()}.{ Environment.NewLine} OffmeshConnections");
                             CurrentDungeonProfile.SetFirstLaunchStep();
                             return;

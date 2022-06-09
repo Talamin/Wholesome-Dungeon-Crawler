@@ -1,5 +1,6 @@
 ﻿using robotManager.Helpful;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
@@ -21,6 +22,8 @@ namespace WholesomeDungeonCrawler.Managers
             _entityCache = entityCache;
             _cache = cache;
         }
+
+        public List<int> _npcsToDefendID { get; set;}
 
         private IWoWUnit Target;
 
