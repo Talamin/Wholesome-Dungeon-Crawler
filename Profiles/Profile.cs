@@ -71,6 +71,7 @@ namespace WholesomeDungeonCrawler.Profiles
 
         public void Dispose()
         {
+            _entityCache.ClearNpcListIdToDefend();
         }
 
         // A method to set the closest movealong step after a restart
