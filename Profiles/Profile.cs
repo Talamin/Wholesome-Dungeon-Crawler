@@ -69,6 +69,11 @@ namespace WholesomeDungeonCrawler.Profiles
             MapId = profileModel.MapId;
         }
 
+        public void Initialize()
+        {
+
+        }
+
         public void Dispose()
         {
             _entityCache.ClearNpcListIdToDefend();

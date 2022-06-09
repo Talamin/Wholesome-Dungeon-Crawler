@@ -47,7 +47,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 }
             }
 
-            if (!MovementManager.InMovement)
+            if (!MovementManager.InMovement && !_entityCache.Me.Dead)
             {
                 List<Vector3> pathToFollow = WTPathFinder.PathFromClosestPoint(GetMoveAlongPath);
                 if (pathToFollow[0].DistanceTo(_entityCache.Me.PositionWithoutType) <= 5)

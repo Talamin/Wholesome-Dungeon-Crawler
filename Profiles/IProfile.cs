@@ -1,10 +1,11 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
+using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.Profiles.Steps;
 
 namespace WholesomeDungeonCrawler.Profiles
 {
-    public interface IProfile
+    public interface IProfile : ICycleable
     {
         IStep CurrentStep { get; }
         bool ProfileIsCompleted { get; }

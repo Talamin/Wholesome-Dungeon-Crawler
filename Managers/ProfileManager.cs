@@ -20,19 +20,15 @@ namespace WholesomeDungeonCrawler.Managers
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
-        private readonly ITargetingManager _targetingManager;
 
-        public ProfileManager(IEntityCache entityCache, ICache cache, ITargetingManager targetingManager)
+        public ProfileManager(IEntityCache entityCache, ICache cache)
         {
             _entityCache = entityCache;
             _cache = cache;
-            _targetingManager = targetingManager;
         }
         public void Initialize()
         {
             LoadProfile(false);
-            //starting with Event Substcription
-            //EventsLua.AttachEventLua("PLAYER_ENTERING_WORLD", m => CachePlayerEnteringWorld());
             EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaStringWithArgs;
         }
 
@@ -52,6 +48,15 @@ namespace WholesomeDungeonCrawler.Managers
 
             Task.Delay(waitTime).ContinueWith(t =>
             {
+                if ((_entityCache.Me.Dead || _entityCache.Me.Auras.ContainsKey(8326)) // Ghost
+                    && CurrentDungeonProfile != null) 
+                {
+                    return;
+                }
+
+                CurrentDungeonProfile?.Dispose();
+                CurrentDungeonProfile = null;
+
                 DungeonModel dungeon = CheckandChooseactualDungeon();
                 if (dungeon != null)
                 {
@@ -84,7 +89,6 @@ namespace WholesomeDungeonCrawler.Managers
                     }
                 }
                 Logger.Log("No Profile found!");
-                CurrentDungeonProfile = null;
             });
         }
 
