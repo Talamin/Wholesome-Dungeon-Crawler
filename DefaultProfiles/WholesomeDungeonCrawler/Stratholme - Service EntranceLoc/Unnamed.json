@@ -1,0 +1,25 @@
+{
+  "Steps": [],
+  "Dungeon": {
+    "Name": "Stratholme - Service EntranceLoc",
+    "MapId": 329,
+    "DungeonId": 274,
+    "Start": {
+      "X": 3591.732,
+      "Y": -3643.578,
+      "Z": 138.4914,
+      "Type": "None",
+      "Action": ""
+    },
+    "EntranceLoc": {
+      "X": 3237.718,
+      "Y": -4055.83,
+      "Z": 108.4676,
+      "Type": "None",
+      "Action": ""
+    }
+  },
+  "Name": "Unnamed",
+  "CurrentState": "Idle profile",
+  "OverrideNeedToRun": false
+}

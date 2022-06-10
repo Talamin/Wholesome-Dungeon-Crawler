@@ -201,7 +201,9 @@
     <Compile Include="Wholesome-Toolbox\WTTransport.cs" />
     <Compile Include="Wholesome-Toolbox\WTTravel.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="DefaultProfiles\WholesomeDungeonCrawler\Maraudon - Foulspore Cavern\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Compiled\WholesomeDungeonCrawler.dll" />
     <Content Include="Dependencies\robotManager.dll" />
@@ -235,11 +237,16 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Compiled\default_profiles.zip" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Gundrak\gggggg.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Stratholme - Service EntranceLoc\Unnamed.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Wailing Caverns\WailingCaverns.json" />
     <None Include="Wholesome-Toolbox\Wholesome_Toolbox.projitems" />
     <None Include="Wholesome-Toolbox\Wholesome_Toolbox.shproj" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy /Y/F "$(TargetDir)\WholesomeDungeonCrawler.dll" "$(ProjectDir)\Compiled"</PostBuildEvent>
+    <PostBuildEvent>xcopy /Y/F "$(TargetDir)\WholesomeDungeonCrawler.dll" "$(ProjectDir)\Compiled"
+powershell Compress-Archive "$(ProjectDir)\DefaultProfiles\WholesomeDungeonCrawler" "$(ProjectDir)\Compiled\default_wdc_profiles.zip" -Force</PostBuildEvent>
   </PropertyGroup>
 </Project>
