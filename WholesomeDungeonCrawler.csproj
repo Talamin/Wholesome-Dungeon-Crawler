@@ -102,7 +102,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Maraudon - Foulspore Cavern\test2.json" />
     <Compile Include="Managers\ILuaStatusFrameManager.cs" />
     <Compile Include="Managers\LuaStatusFrameManager.cs" />
     <Compile Include="ProductCache\Cache.cs" />
@@ -239,10 +238,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Compiled\default_profiles.zip" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Gundrak\gggggg.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Ragefire Chasm\RagefireChasm.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Shadowfang Keep\Shadowfang Keep.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Stratholme - Service EntranceLoc\Unnamed.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Wailing Caverns\WailingCaverns.json" />
     <None Include="Wholesome-Toolbox\Wholesome_Toolbox.projitems" />
     <None Include="Wholesome-Toolbox\Wholesome_Toolbox.shproj" />
