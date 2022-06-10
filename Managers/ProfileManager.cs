@@ -48,8 +48,15 @@ namespace WholesomeDungeonCrawler.Managers
 
             Task.Delay(waitTime).ContinueWith(t =>
             {
+                // We died while in a dungeon
                 if ((_entityCache.Me.Dead || _entityCache.Me.Auras.ContainsKey(8326)) // Ghost
                     && CurrentDungeonProfile != null) 
+                {
+                    return;
+                }
+
+                // We stepped back in a dungeon with a profile already loaded
+                if (CurrentDungeonProfile?.MapId == Usefuls.ContinentId)
                 {
                     return;
                 }

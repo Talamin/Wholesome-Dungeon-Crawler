@@ -188,6 +188,7 @@
     <Compile Include="Wholesome-Toolbox\WTLocation.cs" />
     <Compile Include="Wholesome-Toolbox\WTLogger.cs" />
     <Compile Include="Wholesome-Toolbox\WTLua.cs" />
+    <Compile Include="Wholesome-Toolbox\WTLuaFrames.cs" />
     <Compile Include="Wholesome-Toolbox\WTPathFinder.cs" />
     <Compile Include="Wholesome-Toolbox\WTPet.cs" />
     <Compile Include="Wholesome-Toolbox\WTPlayer.cs" />

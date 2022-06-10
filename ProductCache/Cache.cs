@@ -188,14 +188,17 @@ namespace WholesomeDungeonCrawler.ProductCache
         {
             LFGProposalShown = Lua.LuaDoString<bool>("return LFDDungeonReadyDialogEnterDungeonButton:IsVisible()");
         }
+
         private void CacheLFGProposalFailed()
         {
             LFGProposalShown = Lua.LuaDoString<bool>("return LFDDungeonReadyDialogEnterDungeonButton:IsVisible()");
         }
+
         private void CacheLFGProposalSucceeded()
         {
             LFGProposalShown = Lua.LuaDoString<bool>("return LFDDungeonReadyDialogEnterDungeonButton:IsVisible()");
         }
+
         private void CacheRoleCheckShow()
         {
             LFGRoleCheckShown = Lua.LuaDoString<bool>("return LFDRoleCheckPopupAcceptButton:IsVisible()");

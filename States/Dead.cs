@@ -2,10 +2,12 @@
 using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
+using WholesomeToolbox;
 using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
@@ -16,14 +18,11 @@ namespace WholesomeDungeonCrawler.States
     {
         public override string DisplayName => "Dead";
 
-        private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
-        private List<Vector3> _deathrun = new List<Vector3>();
 
-        public Dead(ICache iCache, IEntityCache iEntityCache, IProfileManager profilemanager)
+        public Dead(IEntityCache iEntityCache, IProfileManager profilemanager)
         {
-            _cache = iCache;
             _entityCache = iEntityCache;
             _profileManager = profilemanager;
         }
@@ -35,8 +34,6 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (!Conditions.InGameAndConnected
                     || !_entityCache.Me.Valid)
-                //|| _profileManager.CurrentDungeonProfile == null
-                //|| _profileManager.CurrentDungeonProfile.CurrentStep == null)
                 {
                     return false;
                 }
@@ -47,47 +44,54 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            //Notes: 
-            //First: Check if we can  Selfrezz
-            //Second: Check if a Character is around which can rezz and is alive
-            //Third: Release for  Deathrun
-            //Find out in which Dungeon we died.
-            if (_cache.HaveResurrection)
+            if (WTLuaFrames.GetStaticPopup1Text().Contains("wants to resurrect you"))
             {
+                Logger.Log("Accepting resurrection from a player");
                 Lua.LuaDoString("StaticPopup1Button1:Click()");
-                Logger.Log("Accepted Resurrection");
+                return;
             }
 
-            if (_cache.IsInInstance)
+            if (_entityCache.Me.Auras.ContainsKey(20762)) // Soulstone
             {
-                if (_entityCache.Me.Auras.ContainsKey(20762))//Soulstonebuff
-                {
-                    Lua.LuaDoString("StaticPopup1Button1:Click()");
-                    Logger.Log("SelfRezz progressed");
-                }
-                if (!_entityCache.ListGroupMember.Any(y => _rezzClasses.Contains(y.WoWClass) && !y.Dead && _entityCache.Me.PositionWithoutType.DistanceTo(y.PositionWithoutType) < 50))
-                {
-                    Logger.Log("No one to Rezz around, we have to use our Feet and walk back");
-                    Lua.LuaDoString("RepopMe();");
-                }
+                Logger.Log("Accepting soulstone resurrection");
+                Lua.LuaDoString("StaticPopup1Button1:Click()");
+                return;
             }
 
-
-            if (!_cache.IsInInstance)
+            if (_entityCache.Me.Auras.ContainsKey(8326)) // Ghost
             {
-                if (_profileManager.CurrentDungeonProfile.DeathRunPathList != null)
-                    _deathrun = _profileManager.CurrentDungeonProfile.DeathRunPathList;
-                if (_profileManager.CurrentDungeonProfile.DeathRunPathList != null && _profileManager.CurrentDungeonProfile.DeathRunPathList.Count > 0)
-                    MovementManager.Go(_deathrun);
+                if (MovementManager.InMovement)
+                {
+                    return;
+                }
+
+                if (_profileManager.CurrentDungeonProfile?.DeathRunPathList != null
+                    && _profileManager.CurrentDungeonProfile.DeathRunPathList.Count > 0)
+                {
+                    Logger.Log("Running profile's death run");
+                    List<Vector3> adjustedDeathPath = WTPathFinder.PathFromClosestPoint(_profileManager.CurrentDungeonProfile.DeathRunPathList);
+                    MovementManager.Go(adjustedDeathPath);
+                }
                 else
                 {
-                    if (!MovementManager.InMovement)
-                    {
-                        Logger.Log("No Deathrun route found, using pathfinder.");
-                        var dungeon = Lists.AllDungeons.Where(x => x.MapId == _profileManager.CurrentDungeonProfile.MapId).FirstOrDefault();
-                        GoToTask.ToPosition(dungeon.EntranceLoc, skipIfCannotMakePath: false);
-                    }
+                    Logger.Log("No profile death run found, using pathfinder.");
+                    var dungeon = Lists.AllDungeons.Where(x => x.MapId == _profileManager.CurrentDungeonProfile.MapId).FirstOrDefault();
+                    GoToTask.ToPosition(dungeon.EntranceLoc, skipIfCannotMakePath: false);
                 }
+            }
+
+            if (_entityCache.ListGroupMember
+                .Any(player => _rezzClasses.Contains(player.WoWClass)
+                    && !player.Dead
+                    && _entityCache.Me.PositionWithoutType.DistanceTo(player.PositionWithoutType) < 50))
+            {
+                Logger.Log("A group member can resurrect me. Waiting.");
+                Thread.Sleep(3000);
+            }
+            else
+            {
+                Logger.Log("Nothing can resurrect me. We will have to walk.");
+                Lua.LuaDoString("RepopMe();");
             }
         }
     }

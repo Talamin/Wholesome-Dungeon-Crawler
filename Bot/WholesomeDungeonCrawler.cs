@@ -51,7 +51,7 @@ namespace WholesomeDungeonCrawler.Bot
                 {
                     new Relogger(),
                     new Pause(),
-                    new Dead(_cache, _entityCache, _profileManager),
+                    new Dead(_entityCache, _profileManager),
                     new MyMacro(),
                     new SlaveCombat(_cache, _entityCache),
                     new TankCombat(_cache, _entityCache),
@@ -70,7 +70,7 @@ namespace WholesomeDungeonCrawler.Bot
                     new CheckPathAhead(_entityCache, _partyChatManager),
                     new ClearPathCombat(_entityCache),
                     new LeaveDungeon(_cache, _entityCache, _profileManager),
-                    new DungeonLogic(_entityCache, _profileManager, _partyChatManager),
+                    new DungeonLogic(_entityCache, _profileManager, _partyChatManager, _cache),
                     new AntiAfk(),
                     new Idle(),
                 };

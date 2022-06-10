@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using WholesomeDungeonCrawler.CrawlerSettings;
-using WholesomeDungeonCrawler.Helpers;
 using wManager.Events;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
@@ -30,8 +29,8 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             {
                 CachePartyMemberChanged();
             }
-            CacheListPartyMemberGuid();
             EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaStringWithArgs;
+            CacheListPartyMemberGuid();
             OnObjectManagerPulse();
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             IAmTank = ObjectManager.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName;
@@ -42,29 +41,53 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             switch (id)
             {
                 case "WORLD_MAP_UPDATE":
-                    CacheListPartyMemberGuid();
+                    Task.Delay(1000).ContinueWith(x =>
+                    {
+                        CacheListPartyMemberGuid();
+                    });
                     break;
                 case "PARTY_MEMBERS_CHANGED":
-                    CacheListPartyMemberGuid();
-                    CachePartyMemberChanged();
+                    Task.Delay(1000).ContinueWith(x =>
+                    {
+                        CacheListPartyMemberGuid();
+                        CachePartyMemberChanged();
+                    });
                     break;
                 case "PARTY_MEMBER_DISABLE":
-                    CacheListPartyMemberGuid();
+                    Task.Delay(1000).ContinueWith(x =>
+                    {
+                        CacheListPartyMemberGuid();
+                    });
                     break;
                 case "PARTY_MEMBER_ENABLE":
-                    CacheListPartyMemberGuid();
+                    Task.Delay(1000).ContinueWith(x =>
+                    {
+                        CacheListPartyMemberGuid();
+                    });
                     break;
                 case "RAID_ROSTER_UPDATE":
-                    CacheListPartyMemberGuid();
+                    Task.Delay(1000).ContinueWith(x =>
+                    {
+                        CacheListPartyMemberGuid();
+                    });
                     break;
                 case "GROUP_ROSTER_CHANGED":
-                    CacheListPartyMemberGuid();
+                    Task.Delay(1000).ContinueWith(x =>
+                    {
+                        CacheListPartyMemberGuid();
+                    });
                     break;
                 case "PARTY_CONVERTED_TO_RAID":
-                    CacheListPartyMemberGuid();
+                    Task.Delay(1000).ContinueWith(x =>
+                    {
+                        CacheListPartyMemberGuid();
+                    });
                     break;
                 case "RAID_TARGET_UPDATE":
-                    CacheListPartyMemberGuid();
+                    Task.Delay(1000).ContinueWith(x =>
+                    {
+                        CacheListPartyMemberGuid();
+                    });
                     break;
             }
         }
@@ -120,7 +143,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             IWoWUnit cachedTarget, cachedPet;
             List<WoWUnit> units;
             List<WoWPlayer> playerUnits;
-            //IWoWLocalPlayer cachedPlayer;
 
             lock (cacheLock)
             {
@@ -220,32 +242,21 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
         private void CacheListPartyMemberGuid()
         {
-            Task.Delay(1000).ContinueWith(x =>
+            List<ulong> partyMembersGuids = new List<ulong>();
+            TankGuid = 0;
+            foreach (WoWPlayer p in Party.GetParty())
             {
-                List<ulong> partyMembers = new List<ulong>();
-                TankGuid = 0;
-                foreach (WoWPlayer p in Party.GetParty())
+                partyMembersGuids.Add(p.Guid);
+                if (p.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
                 {
-                    partyMembers.Add(p.Guid);
-                    if (p.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
-                    {
-                        TankGuid = p.Guid;
-                    }
+                    TankGuid = p.Guid;
                 }
-                partyMembers.Add(Me.Guid);
-                ListPartyMemberGuid = partyMembers;
-            });
-        }
-
-        private void ClearCachedLists()
-        {
-            ListPartyMemberNames.Clear();
+            }
+            ListPartyMemberGuid = partyMembersGuids;
         }
 
         private void CachePartyMemberChanged()
         {
-            //Debugger.Break();
-            ClearCachedLists();
             lock (cacheLock)
             {
                 string plist = Lua.LuaDoString<string>(@"

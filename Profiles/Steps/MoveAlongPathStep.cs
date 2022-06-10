@@ -50,20 +50,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             if (!MovementManager.InMovement && !_entityCache.Me.Dead)
             {
                 List<Vector3> pathToFollow = WTPathFinder.PathFromClosestPoint(GetMoveAlongPath);
-                if (pathToFollow[0].DistanceTo(_entityCache.Me.PositionWithoutType) <= 5)
-                {
-                    Logger.Log($"Starting path");
-                    MovementManager.Go(pathToFollow.GetRange(1, pathToFollow.Count - 1));
-                    return;
-                }
-                else
-                {
-                    List<Vector3> joinPath = PathFinder.FindPath(pathToFollow[0]);
-                    Logger.Log($"Starting adjusted path ({joinPath.Count} nodes)");
-                    joinPath.AddRange(pathToFollow.GetRange(1, pathToFollow.Count - 1));
-                    MovementManager.Go(joinPath);
-                    return;
-                }
+                MovementManager.Go(pathToFollow);
             }
         }
 
