@@ -236,7 +236,7 @@
             <StackPanel>
                 <StackPanel.Style>
                     <Style TargetType="StackPanel">
-                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Setter Property="Visibility" Value="Visible"/>
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem, Converter={StaticResource TypeConverter}}" Value="FollowUnitModel">
                                 <Setter Property="Visibility" Value="Visible"/>
@@ -261,8 +261,8 @@
                             <Button x:Name="btnFollowUnitGetCurrentPosEnd" Content="Get Target Position" Margin="5" Click="btnFollowUnitGetCurrentPosEnd_Click" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal"  Margin="5">
-                            <Controls:NumericUpDown x:Name="txtFollowUnitId" Controls:TextBoxHelper.Watermark="Unit ID" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.UnitId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <Button x:Name="btnGetFollowUnitId" Content="Get Target Unit Id" Margin="5" Click="btnGetFollowUnitId_Click" />
+                            <TextBox x:Name="txtFollowUnitId" Controls:TextBoxHelper.Watermark="Unit ID, Unit ID" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.UnitId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Button x:Name="btnGetFollowUnitId" Content="Add Target Unit Id" Margin="5" Click="btnGetFollowUnitId_Click" />
                         </StackPanel>
                         <Controls:ToggleSwitch x:Name="chkFollowUnitFindClosest" IsChecked="{Binding SelectedItem.FindClosest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Find Closest" OffLabel="Find Closest" Margin="10 5"/>
                         <Controls:ToggleSwitch x:Name="chkFollowUnitSkipIfNotFound" IsChecked="{Binding SelectedItem.SkipIfNotFound, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Skip If Not Found" OffLabel="Skip If Not Found" Margin="10 5"/>

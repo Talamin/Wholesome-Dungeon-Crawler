@@ -225,7 +225,7 @@ namespace WholesomeDungeonCrawler.GUI
             var target = ObjectManager.Target;
             if (target != null)
             {
-                txtFollowUnitId.Value = target.Entry;
+                txtFollowUnitId.Text += $"{target.Entry},";
             }
         }
 

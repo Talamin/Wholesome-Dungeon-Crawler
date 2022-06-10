@@ -50,8 +50,10 @@ namespace WholesomeDungeonCrawler.Profiles
                         break;
                     case FollowUnitModel _:
                         FollowUnitModel fuModel = model as FollowUnitModel;
-                        _profileSteps.Add(new FollowUnitStep(fuModel, entityCache));
-                        _entityCache.AddNpcIdToDefend(fuModel.UnitId);
+                        FollowUnitStep fuStep = new FollowUnitStep(fuModel, entityCache);
+                        _profileSteps.Add(fuStep);
+                        foreach (var unit in fuStep._followUnitEntries)
+                            _entityCache.AddNpcIdToDefend(unit);
                         break;
                     case DefendSpotModel _:
                         _profileSteps.Add(new DefendSpotStep((DefendSpotModel)model, entityCache));
