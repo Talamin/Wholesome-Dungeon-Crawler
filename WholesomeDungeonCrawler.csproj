@@ -84,6 +84,8 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -100,7 +102,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Maraudon - Foulspore Cavern\test.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Maraudon - Foulspore Cavern\test2.json" />
     <Compile Include="Managers\ILuaStatusFrameManager.cs" />
     <Compile Include="Managers\LuaStatusFrameManager.cs" />
     <Compile Include="ProductCache\Cache.cs" />

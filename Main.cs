@@ -14,7 +14,6 @@ public class Main : IProduct
     private ProductSettingsControl _settingsUserControl;
     private readonly string _productVersion = "0.0.02";
     private readonly string _productName = "Wholesome Dungeon Crawler";
-    private readonly string _fileName = "WholesomeDungeonCrawler";
     public bool IsStarted { get; private set; }
 
     public void Initialize()
@@ -34,7 +33,7 @@ public class Main : IProduct
     {
         try
         {
-            if (AutoUpdater.CheckUpdate(_productVersion, _fileName))
+            if (AutoUpdater.CheckUpdate(_productVersion))
             {
                 return;
             }
