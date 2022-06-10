@@ -100,6 +100,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Maraudon - Foulspore Cavern\test.json" />
     <Compile Include="Managers\ILuaStatusFrameManager.cs" />
     <Compile Include="Managers\LuaStatusFrameManager.cs" />
     <Compile Include="ProductCache\Cache.cs" />
@@ -201,9 +202,7 @@
     <Compile Include="Wholesome-Toolbox\WTTransport.cs" />
     <Compile Include="Wholesome-Toolbox\WTTravel.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DefaultProfiles\WholesomeDungeonCrawler\Maraudon - Foulspore Cavern\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Compiled\WholesomeDungeonCrawler.dll" />
     <Content Include="Dependencies\robotManager.dll" />
