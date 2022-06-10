@@ -25,13 +25,10 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         }
         public void Initialize()
         {
-            if (ObjectManager.Me.IsInGroup)
-            {
-                CachePartyMemberChanged();
-            }
-            EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaStringWithArgs;
+            CachePartyMemberChanged();
             CacheListPartyMemberGuid();
             OnObjectManagerPulse();
+            EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaStringWithArgs;
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             IAmTank = ObjectManager.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName;
         }
@@ -191,7 +188,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
             if (TankUnit == null && tankUnit != null)
             {
-                OnTankEnteringOM();
+                OnTankEnteringOM?.Invoke();
             }
 
             NpcsToDefend.Clear();

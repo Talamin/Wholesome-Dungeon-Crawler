@@ -37,6 +37,7 @@ namespace WholesomeDungeonCrawler.Bot
                 _targetingManager.Initialize();
                 _luaStatusFrameManager = new LuaStatusFrameManager(_cache, _entityCache, _profileManager);
                 _luaStatusFrameManager.Initialize();
+
                 //Update Spellbook after Initialization
                 SpellManager.UpdateSpellBook();
 

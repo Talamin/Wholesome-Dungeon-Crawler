@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
-using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeToolbox;
 using wManager.Wow.Bot.Tasks;
