@@ -6,6 +6,5 @@ namespace WholesomeDungeonCrawler.Managers
 {
     public interface ITargetingManager : ICycleable
     {
-        List<int> _npcsToDefendID { get; }
     }
 }

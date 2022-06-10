@@ -15,6 +15,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         bool IsLootable { get; }
         Vector3 PositionWithoutType { get; }
         double HealthPercent { get; }
+        long Health { get; }
         double ManaPercent { get; }
         double RagePercent { get; }
         double FocusPercent { get; }

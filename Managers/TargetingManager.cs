@@ -23,8 +23,6 @@ namespace WholesomeDungeonCrawler.Managers
             _cache = cache;
         }
 
-        public List<int> _npcsToDefendID { get; set;}
-
         private IWoWUnit Target;
 
         public void Targetswitcher(WoWUnit target, CancelEventArgs cancable)
@@ -47,10 +45,19 @@ namespace WholesomeDungeonCrawler.Managers
                         Logger.Log($"{Target.Name} needs tanking");
                         cancable.Cancel = true;
                         SwitchedTargetFight(Target);
-                    } else
+                    }
+                    IWoWUnit newNPCDefendTarget = GetNearestEnemyAttackingNPCtoProtect();
+                    if(newNPCDefendTarget != null)
+                    {
+                        Target = newNPCDefendTarget;
+                        Logger.Log($"{Target.Name} needs tanking");
+                        cancable.Cancel = true;
+                        SwitchedTargetFight(Target);
+                    }
+                    else
                     {
                         newTarget = GetWeakestEnemyUnit();
-                        if (newTarget != currentTarget)
+                        if (newTarget != currentTarget && newTarget != null)
                         {
                             Target = newTarget;
                             Logger.Log($"{Target.Name} needs finishing off");
@@ -129,6 +136,17 @@ namespace WholesomeDungeonCrawler.Managers
             Fight.StartFight(target.Guid, false);
         }
 
+        private IWoWUnit GetNearestEnemyAttackingNPCtoProtect()
+        {
+            foreach(IWoWUnit uni in _entityCache.NpcsToDefend)
+            {
+                return TargetingHelper.FindClosestUnit(unit =>
+                unit.TargetGuid == uni.Guid,
+                _entityCache.Me.PositionWithoutType, _entityCache.EnemyUnitsList);
+            }
+            return null;
+        }
+
         private IWoWUnit GetNearestEnemyAttackingGroupMember()
         {
             return TargetingHelper.FindClosestUnit(unit =>
@@ -138,7 +156,7 @@ namespace WholesomeDungeonCrawler.Managers
 
         private IWoWUnit GetWeakestEnemyUnit()
         {
-            return _entityCache.EnemyUnitsList.Where(e => e.IsAttackingGroup && !e.Dead).OrderBy(e => e.WowUnit.Health).FirstOrDefault();            
+            return _entityCache.EnemyUnitsList.Where(e => e.IsAttackingGroup && !e.Dead).OrderBy(e => e.Health).FirstOrDefault();            
         }
 
         private IWoWUnit FleeingUnit(IWoWUnit tank)
