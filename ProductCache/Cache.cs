@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using WholesomeDungeonCrawler.Helpers;
 using WholesomeToolbox;
 using wManager.Events;
 using wManager.Wow.Helpers;
@@ -36,7 +34,6 @@ namespace WholesomeDungeonCrawler.ProductCache
         {
             //First Initalization of Variables
             CacheIsInInstance();
-            CacheLFGCompletionReward();
             CachePartyInviteRequest();
             //CachePlayerSpec();
             CacheRoleCheckShow();
@@ -67,9 +64,6 @@ namespace WholesomeDungeonCrawler.ProductCache
                     break;
                 case "PARTY_INVITE_REQUEST":
                     CachePartyInviteRequest();
-                    break;
-                case "LFG_COMPLETION_REWARD":
-                    CacheLFGCompletionReward();
                     break;
                 case "PARTY_MEMBERS_CHANGED":
                     CachePartyMemberChanged();
@@ -141,14 +135,6 @@ namespace WholesomeDungeonCrawler.ProductCache
                 return;
             }
             IsPartyInviteRequest = false;
-        }
-
-        private void CacheLFGCompletionReward()
-        {
-            lock (cacheLock)
-            {
-                HaveSatchel = Bag.GetBagItem().Count(item => item.Name.Contains("Satchel of")) > 0;
-            }
         }
 
         private void CachePartyMemberChanged()

@@ -1,4 +1,5 @@
 ﻿using robotManager.FiniteStateMachine;
+using robotManager.Helpful;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache;
@@ -11,6 +12,7 @@ namespace WholesomeDungeonCrawler.States
     {
         public override string DisplayName => "Open Satchel";
         private readonly ICache _cache;
+        private Timer _stateTimer = new Timer();
 
         public OpenSatchel(ICache iCache)
         {
@@ -21,15 +23,18 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
+                if (!_stateTimer.IsReady
+                    || _cache.IsInInstance
+                    || !Conditions.InGameAndConnected
                     || !ObjectManager.Me.IsValid
-                    || Fight.InFight
-                    || _cache.IsInInstance)
+                    || Fight.InFight)
                 {
                     return false;
                 }
 
-                return _cache.HaveSatchel;
+                _stateTimer = new Timer(5000);
+
+                return Bag.GetBagItem().Exists(item => item.Name.Contains("Satchel of"));
             }
         }
 
@@ -38,7 +43,7 @@ namespace WholesomeDungeonCrawler.States
             WoWItem item = Bag.GetBagItem().FirstOrDefault(x => x.Name.Contains("Satchel of"));
             if (item != null)
             {
-                Logger.Log($"Found Satchel {item}");
+                Logger.Log($"Opening {item.Name}");
                 ItemsManager.UseItem(item.Name);
             }
         }
