@@ -40,7 +40,7 @@ namespace WholesomeDungeonCrawler.States
 
                 timer = new Timer(5000);
 
-                return _entityCache.ListPartyMemberNames.Count() < 4; //changed from 5 for testing
+                return _entityCache.ListPartyMemberNames.Count() < WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers.Count;
             }
         }
 

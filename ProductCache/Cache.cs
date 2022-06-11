@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using WholesomeDungeonCrawler.Helpers;
 using WholesomeToolbox;
 using wManager.Events;
 using wManager.Wow.Helpers;
@@ -44,13 +45,11 @@ namespace WholesomeDungeonCrawler.ProductCache
                 CachePartyMemberChanged();
             }
             CacheHaveResurretion();
+
             //Beginning of Event Subscriptions
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             robotManager.Events.FiniteStateMachineEvents.OnRunState += FiniteStateMachineEvents_OnRunState;
-            //EventsLua.AttachEventLua("PLAYER_LEVEL_UP", m => CachePlayerSpec());
-
             EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaWithArgs;
-            //EventsLua.AttachEventLua(LuaEventsId.PLAYER_LEVEL_UP  <-- depreciated, only for lookup
         }
 
         private void FiniteStateMachineEvents_OnRunState(robotManager.FiniteStateMachine.Engine engine, robotManager.FiniteStateMachine.State state, System.ComponentModel.CancelEventArgs cancelable)
@@ -68,8 +67,6 @@ namespace WholesomeDungeonCrawler.ProductCache
                     break;
                 case "PARTY_INVITE_REQUEST":
                     CachePartyInviteRequest();
-                    break;
-                case "PLAYER_ENTERING_WORLD":
                     break;
                 case "LFG_COMPLETION_REWARD":
                     CacheLFGCompletionReward();

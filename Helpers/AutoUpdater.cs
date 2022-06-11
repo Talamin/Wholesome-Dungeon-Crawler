@@ -60,7 +60,6 @@ namespace WholesomeDungeonCrawler.Helpers
             {
                 WholesomeDungeonCrawlerSettings.CurrentSetting.LastUpdateDate = elapsedTicks;
                 WholesomeDungeonCrawlerSettings.CurrentSetting.Save();
-                Logger.Log("Starting updater");
 
                 bool updatedProfiles = !Directory.Exists(@$"{_profilesFolder}\WholesomeDungeonCrawler") && UpdateProfiles();
 
@@ -70,11 +69,9 @@ namespace WholesomeDungeonCrawler.Helpers
                 string onlineVersionTxt = new System.Net.WebClient { Encoding = Encoding.UTF8 }.DownloadString(onlineVersionLink);
                 Version onlineVersion = new Version(onlineVersionTxt);
 
-                Logger.Log($"Online Version : {onlineVersion}");
-                int compareVersion = onlineVersion.CompareTo(currentVersion);
-                if (compareVersion <= 0)
+                if (onlineVersion.CompareTo(currentVersion) <= 0)
                 {
-                    Logger.Log($"Your version is up to date ({currentVersion})");
+                    Logger.Log($"Your version is up to date ({currentVersion} / {onlineVersion})");
                     return false;
                 }
 
@@ -83,8 +80,7 @@ namespace WholesomeDungeonCrawler.Helpers
                 // dll
                 if (onlineDllContent != null && onlineDllContent.Length > 0)
                 {
-                    Logger.Log($"Your version : {currentVersion}");
-                    Logger.Log("Trying to update");
+                    Logger.Log($"Updating your version {currentVersion} to online Version {onlineVersion}");
 
                     File.Move(_currentDll, _oldDll);
 

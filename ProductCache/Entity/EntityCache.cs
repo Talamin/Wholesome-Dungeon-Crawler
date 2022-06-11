@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using WholesomeDungeonCrawler.CrawlerSettings;
+using WholesomeDungeonCrawler.Helpers;
 using wManager.Events;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
@@ -140,6 +141,11 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             IWoWUnit cachedTarget, cachedPet;
             List<WoWUnit> units;
             List<WoWPlayer> playerUnits;
+
+            if (!Conditions.InGameAndConnected)
+            {
+                return;
+            }
 
             lock (cacheLock)
             {
