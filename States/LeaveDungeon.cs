@@ -30,7 +30,7 @@ namespace WholesomeDungeonCrawler.States
                     || Fight.InFight
                     || !_cache.IsInInstance
                     || _profileManager.CurrentDungeonProfile == null
-                    || _profileManager.CurrentDungeonProfile.CurrentStep == null) // could be interesting to cache that too
+                    || _profileManager.CurrentDungeonProfile.CurrentStep == null)
                 {
                     return false;
                 }

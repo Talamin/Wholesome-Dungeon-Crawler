@@ -33,31 +33,37 @@ namespace WholesomeDungeonCrawler.States
                 {
                     return false;
                 }
-                /*
-                foreach (string playername in _entityCache.ListPartyMemberNames)
-                {
-                    if (!_entityCache.ListGroupMember.Any(y => y.Name == playername))
-                    {
-                        Logger.Log($"We wait because Member {playername} is not in  ObjectManager");
-                        return true;
-                    }
-                }
-                */
+
+                double totalManaPercent = _entityCache.Me.ManaPercent;
+                double totalHealthPercent = _entityCache.Me.HealthPercent;
+                int playerCount = 1;
+                int playerWithManaCount = _entityCache.Me.Mana > 0 ? 1 : 0;
+
                 foreach (IWoWPlayer player in _entityCache.ListGroupMember)
-                {
+                {                    
                     if (!player.IsConnected)
                     {
                         Logger.Log($"We wait because Member {player.Name} is not logged into game");
                         return true;
                     }
+
                     if (player.Dead || player.Auras.ContainsKey(8326))
                     {
                         Logger.Log($"We wait because Member {player.Name} is being dead/spooky");
                         return true;
                     }
+
+                    if (player.Mana > 0)
+                    {
+                        playerWithManaCount++;
+                        totalManaPercent += player.ManaPercent;
+                    }
+                    totalHealthPercent += player.HealthPercent;
+                    playerCount++;
+
                     if (player.HasDrinkBuff || player.HasFoodBuff)
                     {
-                        Logger.Log($"We wait because Member {player.Name} is being thirsty or  Hungry");
+                        Logger.Log($"We wait because Member {player.Name} is being thirsty or hungry");
                         return true;
                     }
                     /*
@@ -68,6 +74,19 @@ namespace WholesomeDungeonCrawler.States
                     }
                     */
                 }
+
+                if (totalHealthPercent / playerCount < 50)
+                {
+                    Logger.Log($"We wait because the team needs health");
+                    return true;
+                }
+
+                if (totalManaPercent / playerWithManaCount < 50)
+                {
+                    Logger.Log($"We wait because the team needs mana");
+                    return true;
+                }
+
                 return false;
             }
         }

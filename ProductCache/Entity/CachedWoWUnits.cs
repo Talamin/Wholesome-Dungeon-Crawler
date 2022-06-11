@@ -17,6 +17,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public Vector3 PositionWithoutType { get; }
         public double HealthPercent { get; }
         public long Health { get; }
+        public long Mana { get; }
         public double ManaPercent { get; }
         public double RagePercent { get; }
         public double FocusPercent { get; }
@@ -42,6 +43,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             PositionWithoutType = unit.PositionWithoutType;
             HealthPercent = unit.HealthPercent;
             Health = unit.Health;
+            Mana = unit.Mana;
             ManaPercent = unit.ManaPercentage;
             RagePercent = unit.RagePercentage;
             FocusPercent = unit.FocusPercentage;
