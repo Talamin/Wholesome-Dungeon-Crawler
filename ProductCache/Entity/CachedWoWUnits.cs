@@ -24,8 +24,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public bool InCombatFlagOnly { get; }
         public  Reaction Reaction { get; }
         public UnitFlags UnitFlags { get; }
-        public IReadOnlyDictionary<uint, IAura> Auras { get; }
-   
+        public IReadOnlyDictionary<uint, IAura> Auras { get; }   
         public bool IsLootable { get; }
         public bool IsAttackingGroup { get; }
         public bool IsAttackingMe { get; }

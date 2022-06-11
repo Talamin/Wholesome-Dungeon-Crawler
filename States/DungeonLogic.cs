@@ -1,5 +1,4 @@
 ﻿using robotManager.FiniteStateMachine;
-using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
@@ -30,7 +29,6 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-
                 if (!Conditions.InGameAndConnected
                     || !_entityCache.Me.Valid
                     || Fight.InFight
