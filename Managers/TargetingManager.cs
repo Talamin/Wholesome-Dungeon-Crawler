@@ -70,13 +70,14 @@ namespace WholesomeDungeonCrawler.Managers
             else
             {
                 // Check for fleeing units
-                IWoWUnit fleeUnit = FleeingUnit(_entityCache.TankUnit);
+                IWoWUnit fleeUnit = FleeingUnit();
                 if (fleeUnit != null)
                 {
                     // If we are not already targeting it, target it
                     if (_entityCache.Me.TargetGuid != fleeUnit.Guid)
                     {
-                        Target = FleeingUnit(_entityCache.TankUnit);
+
+                        Target = fleeUnit;
                         Logger.Log($"{Target.Name} is fleeing");
                         cancable.Cancel = true;
                         SwitchedTargetFight(Target);
@@ -99,7 +100,7 @@ namespace WholesomeDungeonCrawler.Managers
                     else
                     {
                         //Assist any Groupmember if Tank has no target
-                        IWoWUnit assistGroupUnit = AssistGroup(_entityCache.TankUnit);
+                        IWoWUnit assistGroupUnit = AssistGroup();
                         if (assistGroupUnit != null)
                         {
                             if (assistGroupUnit.Guid != _entityCache.Me.TargetGuid)
@@ -153,20 +154,19 @@ namespace WholesomeDungeonCrawler.Managers
                 unit.IsAttackingGroup && !unit.IsAttackingMe && !unit.Dead && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60,
                 _entityCache.Me.PositionWithoutType, _entityCache.EnemyUnitsList);
         }
-
         private IWoWUnit GetWeakestEnemyUnit()
         {
             return _entityCache.EnemyUnitsList.Where(e => e.IsAttackingGroup && !e.Dead).OrderBy(e => e.Health).FirstOrDefault();            
         }
 
-        private IWoWUnit FleeingUnit(IWoWUnit tank)
+        private IWoWUnit FleeingUnit()
         {
             IWoWUnit Unit = TargetingHelper.FindClosestUnit(unit =>
                 unit.IsAttackingGroup
                 && unit.Fleeing
                 && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-                && !unit.Dead, tank.PositionWithoutType, _entityCache.EnemyUnitsList);
-                return Unit;
+                && !unit.Dead, PointInMidOfGroup(), _entityCache.EnemyUnitsList);
+            return Unit;
         }
 
         private IWoWUnit AttackingMe()
@@ -179,20 +179,24 @@ namespace WholesomeDungeonCrawler.Managers
         }
         private IWoWUnit AssistTank(IWoWUnit Tank)
         {
-            IWoWUnit Unit = TargetingHelper.FindClosestUnit(unit =>
-            unit.TargetGuid == Tank.Guid
-            && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-            && !unit.Dead, Tank.PositionWithoutType, _entityCache.EnemyUnitsList);
-            return Unit;
+            if (Tank == null)
+                return null;
+            else
+            {
+                IWoWUnit Unit = TargetingHelper.FindClosestUnit(unit =>
+                unit.TargetGuid == Tank.Guid
+                && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
+                && !unit.Dead, Tank.PositionWithoutType, _entityCache.EnemyUnitsList);
+                return Unit;
+            }
         }
 
-        private IWoWUnit AssistGroup(IWoWUnit Tank)
+        private IWoWUnit AssistGroup()
         {
             IWoWUnit Unit = TargetingHelper.FindClosestUnit(unit =>
             unit.IsAttackingGroup
-            && unit.TargetGuid != Tank.Guid
             && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-            && !unit.Dead, Tank.PositionWithoutType, _entityCache.EnemyUnitsList);
+            && !unit.Dead, PointInMidOfGroup(), _entityCache.EnemyUnitsList);
             return Unit;
         }
 
