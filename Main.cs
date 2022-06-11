@@ -41,7 +41,6 @@ public class Main : IProduct
                 return;
             }
             */
-            
             if (_crawler.InitialSetup())
             {
                 Logger.Log("Started");

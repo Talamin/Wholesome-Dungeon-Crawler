@@ -11,8 +11,6 @@ namespace WholesomeDungeonCrawler.Helpers
 {
     public static class AutoUpdater
     {
-        private static string _currentVersion = null;
-        private static string _onlineVersion = null;
         private static readonly string _dllFileName = "WholesomeDungeonCrawler";
         private static readonly string _zipFileName = "default_wdc_profiles";
         private static readonly string _profilesFolder = Others.GetCurrentDirectory + $@"Profiles";
@@ -21,7 +19,7 @@ namespace WholesomeDungeonCrawler.Helpers
 
         public static bool CheckUpdate(string mainVersion)
         {
-            _currentVersion = mainVersion;
+            Version currentVersion = new Version(mainVersion);
             DateTime dateBegin = new DateTime(2020, 1, 1);
             DateTime currentDate = DateTime.Now;
 
@@ -44,10 +42,10 @@ namespace WholesomeDungeonCrawler.Helpers
                     }
                     fs.Close();
                 }
-                catch
+                catch (Exception e)
                 {
-                    ShowReloadMessage();
-                    return true;
+                    Logger.LogError($"Error while deleting dump file: {e}");
+                    return false;
                 }
             }
 
@@ -66,24 +64,26 @@ namespace WholesomeDungeonCrawler.Helpers
 
                 bool updatedProfiles = !Directory.Exists(@$"{_profilesFolder}\WholesomeDungeonCrawler") && UpdateProfiles();
 
-                string onlineDll = "https://github.com/Talamin/Wholesome-Dungeon-Crawler/raw/master/Compiled/WholesomeDungeonCrawler.dll";
-                string onlineVersion = "https://raw.githubusercontent.com/Talamin/Wholesome-Dungeon-Crawler/master/Compiled/Version.txt";
+                string onlineDllLink = "https://github.com/Talamin/Wholesome-Dungeon-Crawler/raw/master/Compiled/WholesomeDungeonCrawler.dll";
+                string onlineVersionLink = "https://raw.githubusercontent.com/Talamin/Wholesome-Dungeon-Crawler/master/Compiled/Version.txt";
 
-                _onlineVersion = new System.Net.WebClient { Encoding = Encoding.UTF8 }.DownloadString(onlineVersion);
+                string onlineVersionTxt = new System.Net.WebClient { Encoding = Encoding.UTF8 }.DownloadString(onlineVersionLink);
+                Version onlineVersion = new Version(onlineVersionTxt);
 
-                Logger.Log($"Online Version : {_onlineVersion}");
-                if (_onlineVersion == null || _onlineVersion.Length > 10 || _onlineVersion == _currentVersion)
+                Logger.Log($"Online Version : {onlineVersion}");
+                int compareVersion = onlineVersion.CompareTo(currentVersion);
+                if (compareVersion <= 0)
                 {
-                    Logger.Log($"Your version is up to date ({_currentVersion})");
+                    Logger.Log($"Your version is up to date ({currentVersion})");
                     return false;
                 }
 
-                byte[] onlineDllContent = new System.Net.WebClient { Encoding = Encoding.UTF8 }.DownloadData(onlineDll);
+                byte[] onlineDllContent = new System.Net.WebClient { Encoding = Encoding.UTF8 }.DownloadData(onlineDllLink);
                 
                 // dll
                 if (onlineDllContent != null && onlineDllContent.Length > 0)
                 {
-                    Logger.Log($"Your version : {_currentVersion}");
+                    Logger.Log($"Your version : {currentVersion}");
                     Logger.Log("Trying to update");
 
                     File.Move(_currentDll, _oldDll);
@@ -99,7 +99,10 @@ namespace WholesomeDungeonCrawler.Helpers
                         Thread.Sleep(1000);
                     }
 
-                    ShowReloadMessage();
+                    Logger.LogError($"A new version of the Wholesome Dungeon Crawler has been downloaded, please restart WRobot.".ToUpper() +
+                        $"\r{currentVersion} => {onlineVersion}".ToUpper());
+                    Products.DisposeProduct();
+
                     return true;
                 }
             }
@@ -108,13 +111,6 @@ namespace WholesomeDungeonCrawler.Helpers
                 Logger.LogError("Auto update: " + e);
             }
             return false;
-        }
-
-        private static void ShowReloadMessage()
-        {
-            Logger.LogError($"A new version of the Wholesome Dungeon Crawler has been downloaded, please restart WRobot.".ToUpper() +
-                $"\r{_currentVersion} => {_onlineVersion}".ToUpper());
-            Products.DisposeProduct();
         }
 
         private static bool UpdateProfiles()
