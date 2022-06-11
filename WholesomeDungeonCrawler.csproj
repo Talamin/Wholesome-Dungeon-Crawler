@@ -241,6 +241,7 @@
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Blackfathom Deeps\Blackfathom Deeps.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Ragefire Chasm\RagefireChasm.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Razorfen Kraul\Razorfen Kraul.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Shadowfang Keep\Ally Shadowfang Keep.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Shadowfang Keep\Shadowfang Keep.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Stormwind Stockade\Stockades.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Wailing Caverns\WailingCaverns.json" />
