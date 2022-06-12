@@ -1,10 +1,10 @@
 ﻿using robotManager.FiniteStateMachine;
 using robotManager.Helpful;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache.Entity;
-using WholesomeToolbox;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
@@ -15,10 +15,23 @@ namespace WholesomeDungeonCrawler.States
 
         private readonly IEntityCache _entityCache;
         private IWoWUnit _unitToClear = null;
+        private List<(Vector3 a, Vector3 b)> _linesToCheck = new List<(Vector3 a, Vector3 b)>();
+        private List<IWoWUnit> _unitsAlongLine = new List<IWoWUnit>();
 
         public ClearPathCombat(IEntityCache EntityCache)
         {
             _entityCache = EntityCache;
+        }
+
+        public void Initialize()
+        {
+            Radar3D.OnDrawEvent += Radar3DOnDrawEvent;
+            Radar3D.Pulse();
+        }
+
+        public void Dispose()
+        {
+            Radar3D.OnDrawEvent -= Radar3DOnDrawEvent;
         }
 
         public override bool NeedToRun
@@ -36,81 +49,16 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                List<Vector3> currentPath = MovementManager.CurrentPath;
-                Vector3 nextNode = MovementManager.CurrentMoveTo;
+                _unitsAlongLine.Clear();
+                _linesToCheck.Clear();
+                _unitToClear = null;
                 Vector3 myPosition = _entityCache.Me.PositionWithoutType;
-                List<(Vector3 a, Vector3 b)> linesToCheck = new List<(Vector3, Vector3)>();
-                bool nextNodeFound = false;
-                for (int i = 0; i < currentPath.Count; i++)
+                _linesToCheck = MoveHelper.GetLinesToCheckOnCurrentPath(myPosition);
+                _unitsAlongLine = MoveHelper.GetEnemiesAlongLines(_linesToCheck, _entityCache.EnemyUnitsList, true);
+
+                if (_unitsAlongLine.Count > 0)
                 {
-                    // break on last node unless it's the only node
-                    if (i >= currentPath.Count - 1 && linesToCheck.Count > 0)
-                    {
-                        break;
-                    }
-
-                    // skip nodes behind me
-                    if (!nextNodeFound)
-                    {
-                        if (currentPath[i] != nextNode)
-                        {
-                            continue;
-                        }
-                        nextNodeFound = true;
-                    }
-
-                    // Ignore if too far
-                    if (linesToCheck.Count > 2 && currentPath[i].DistanceTo(myPosition) > 50)
-                    {
-                        break;
-                    }
-
-                    // Path ahead of me
-                    if (linesToCheck.Count <= 0)
-                    {
-                        linesToCheck.Add((myPosition, currentPath[i]));
-                        if (currentPath.Count > i + 1)
-                        {
-                            linesToCheck.Add((currentPath[i], currentPath[i + 1]));
-                        }
-                    }
-                    else
-                    {
-                        linesToCheck.Add((currentPath[i], currentPath[i + 1]));
-                    }
-                }
-
-                // Check if enemies along the lines
-                IWoWUnit[] hostileUnits = _entityCache.EnemyUnitsList;
-                // Check for hostiles along the lines
-                List<IWoWUnit> unitsAlongLine = new List<IWoWUnit>();
-                foreach ((Vector3 a, Vector3 b) line in linesToCheck)
-                {
-                    if (_unitToClear == null)
-                    {
-                        foreach (IWoWUnit unit in hostileUnits)
-                        {
-                            if (WTLocation.GetZDifferential(unit.PositionWithoutType) > 5
-                                || WTPathFinder.PointDistanceToLine(line.a, line.b, unit.PositionWithoutType) > 20)
-                            {
-                                continue;
-                            }
-
-                            if (TargetingHelper.IHaveLineOfSightOn(unit.WowUnit))
-                            {
-                                unitsAlongLine.Add(unit);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-
-                if (unitsAlongLine.Count > 0)
-                {
-                    _unitToClear = unitsAlongLine
+                    _unitToClear = _unitsAlongLine
                         .OrderBy(unit => myPosition.DistanceTo(unit.PositionWithoutType))
                         .First();
                 }
@@ -125,7 +73,31 @@ namespace WholesomeDungeonCrawler.States
             Logger.Log($"Clearing Path {_unitToClear.Name}");
             MovementManager.StopMove();
             Fight.StartFight(_unitToClear.Guid);
-            _unitToClear = null;
+        }
+
+        private void Radar3DOnDrawEvent()
+        {
+            if (_unitToClear != null)
+            {
+                Radar3D.DrawLine(_entityCache.Me.PositionWithoutType, _unitToClear.PositionWithoutType, Color.Red, 150);
+                Radar3D.DrawCircle(_unitToClear.PositionWithoutType, 1.3f, Color.Red, true, 150);
+            }
+
+            if (_linesToCheck.Count > 0)
+            {
+                foreach ((Vector3 a, Vector3 b) line in _linesToCheck)
+                {
+                    Radar3D.DrawLine(line.a, line.b, Color.Red, 150);
+                }
+            }
+
+            if (_unitsAlongLine.Count > 0)
+            {
+                foreach (IWoWUnit unit in _unitsAlongLine)
+                {
+                    Radar3D.DrawCircle(unit.PositionWithoutType, 1.3f, Color.Gray, true, 150);
+                }
+            }
         }
     }
 }

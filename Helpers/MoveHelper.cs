@@ -1,5 +1,8 @@
 ﻿using robotManager.Helpful;
+using System.Collections.Generic;
 using System.Threading;
+using WholesomeDungeonCrawler.ProductCache.Entity;
+using WholesomeToolbox;
 using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
 
@@ -80,6 +83,81 @@ namespace WholesomeDungeonCrawler.Helpers
                     }
                 });
             }
+        }
+
+        public static List<(Vector3 a, Vector3 b)> GetLinesToCheckOnCurrentPath(Vector3 myPos)
+        {
+            List<Vector3> currentPath = MovementManager.CurrentPath;
+            List<(Vector3 a, Vector3 b)> result = new List<(Vector3, Vector3)>();
+            Vector3 nextNode = MovementManager.CurrentMoveTo;
+            bool nextNodeFound = false;
+            float lineToCHeckDistance = 0;
+
+            for (int i = 0; i < currentPath.Count; i++)
+            {
+                // break on last node unless it's the only node
+                if (i >= currentPath.Count - 1 && result.Count > 0)
+                {
+                    break;
+                }
+
+                // skip nodes behind me
+                if (!nextNodeFound)
+                {
+                    if (currentPath[i] != nextNode)
+                    {
+                        continue;
+                    }
+                    nextNodeFound = true;
+                }
+
+                // Ignore if too far
+                if (result.Count > 2 && lineToCHeckDistance > 50)
+                {
+                    break;
+                }
+
+                // Path ahead of me
+                if (result.Count <= 0)
+                {
+                    result.Add((myPos, currentPath[i]));
+                    lineToCHeckDistance += myPos.DistanceTo(currentPath[i]);
+                    if (currentPath.Count > i + 1)
+                    {
+                        result.Add((currentPath[i], currentPath[i + 1]));
+                        lineToCHeckDistance += currentPath[i].DistanceTo(currentPath[i + 1]);
+                    }
+                }
+                else
+                {
+                    result.Add((currentPath[i], currentPath[i + 1]));
+                    lineToCHeckDistance += currentPath[i].DistanceTo(currentPath[i + 1]);
+                }
+            }
+
+            return result;
+        }
+
+        public static List<IWoWUnit> GetEnemiesAlongLines(List<(Vector3 a, Vector3 b)> lines, IWoWUnit[] hostileUnits, bool withLos)
+        {
+            List<IWoWUnit> result = new List<IWoWUnit>();
+
+            foreach ((Vector3 a, Vector3 b) line in lines)
+            {
+                foreach (IWoWUnit unit in hostileUnits)
+                {
+                    if (WTLocation.GetZDifferential(unit.PositionWithoutType) > 5
+                        || WTPathFinder.PointDistanceToLine(line.a, line.b, unit.PositionWithoutType) > 20
+                        || withLos && !TargetingHelper.IHaveLineOfSightOn(unit.WowUnit))
+                    {
+                        continue;
+                    }
+
+                    result.Add(unit);
+                }
+            }
+
+            return result;
         }
     }
 }

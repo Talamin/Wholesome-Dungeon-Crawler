@@ -1,11 +1,11 @@
 ﻿using robotManager.FiniteStateMachine;
 using robotManager.Helpful;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache.Entity;
-using WholesomeToolbox;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
@@ -16,13 +16,26 @@ namespace WholesomeDungeonCrawler.States
 
         private readonly IEntityCache _entityCache;
         private readonly IPartyChatManager _partyChatManager;
-        private IWoWUnit _unitOnPath = null;
         private Timer _broadcastTimer = new Timer();
+        private IWoWUnit _unitOnPath = null;
+        private List<(Vector3 a, Vector3 b)> _linesToCheck = new List<(Vector3 a, Vector3 b)>();
+        private List<IWoWUnit> _unitsAlongLine = new List<IWoWUnit>();
 
         public CheckPathAhead(IEntityCache EntityCache, IPartyChatManager partyChatManager)
         {
             _entityCache = EntityCache;
             _partyChatManager = partyChatManager;
+        }
+
+        public void Initialize()
+        {
+            Radar3D.OnDrawEvent += Radar3DOnDrawEvent;
+            Radar3D.Pulse();
+        }
+
+        public void Dispose()
+        {
+            Radar3D.OnDrawEvent -= Radar3DOnDrawEvent;
         }
 
         public override bool NeedToRun
@@ -35,78 +48,23 @@ namespace WholesomeDungeonCrawler.States
                     || MovementManager.CurrentPath == null
                     || MovementManager.CurrentPath.Count <= 0
                     || !Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause
-                    || _entityCache.IAmTank && MyTeamIsAround
-                    /*|| !_entityCache.IAmTank && _entityCache.TankUnit?.TargetGuid != 0*/)
+                    || _entityCache.IAmTank && MyTeamIsAround)
                 {
                     return false;
                 }
 
+                _unitsAlongLine.Clear();
+                _linesToCheck.Clear();
                 _unitOnPath = null;
-                List<Vector3> currentPath = MovementManager.CurrentPath;
-                Vector3 nextNode = MovementManager.CurrentMoveTo;
                 Vector3 myPosition = _entityCache.Me.PositionWithoutType;
-                List<(Vector3 a, Vector3 b)> linesToCheck = new List<(Vector3, Vector3)>();
-                bool nextNodeFound = false;
-                for (int i = 0; i < currentPath.Count; i++)
+                _linesToCheck = MoveHelper.GetLinesToCheckOnCurrentPath(_entityCache.Me.PositionWithoutType);
+                _unitsAlongLine = MoveHelper.GetEnemiesAlongLines(_linesToCheck, _entityCache.EnemyUnitsList, false);
+
+                if (_unitsAlongLine.Count > 0)
                 {
-                    // break on last node unless it's the only node
-                    if (i >= currentPath.Count - 1 && linesToCheck.Count > 0)
-                    {
-                        break;
-                    }
-
-                    // skip nodes behind me
-                    if (!nextNodeFound)
-                    {
-                        if (currentPath[i] != nextNode)
-                        {
-                            continue;
-                        }
-                        nextNodeFound = true;
-                    }
-
-                    // Ignore if too far
-                    if (linesToCheck.Count > 2 && currentPath[i].DistanceTo(myPosition) > 50)
-                    {
-                        break;
-                    }
-
-                    // Path ahead of me
-                    if (linesToCheck.Count <= 0)
-                    {
-                        linesToCheck.Add((myPosition, currentPath[i]));
-                        if (currentPath.Count > i + 1)
-                        {
-                            linesToCheck.Add((currentPath[i], currentPath[i + 1]));
-                        }
-                    }
-                    else
-                    {
-                        linesToCheck.Add((currentPath[i], currentPath[i + 1]));
-                    }
-                }
-
-                // Check if enemies along the lines
-                IWoWUnit[] hostileUnits = _entityCache.EnemyUnitsList;
-                // Check for hostiles along the lines
-                List<IWoWUnit> unitsAlongLine = new List<IWoWUnit>();
-                foreach ((Vector3 a, Vector3 b) line in linesToCheck)
-                {
-                    foreach (IWoWUnit unit in hostileUnits)
-                    {
-                        if (WTLocation.GetZDifferential(unit.PositionWithoutType) > 5
-                            || WTPathFinder.PointDistanceToLine(line.a, line.b, unit.PositionWithoutType) > 20)
-                        {
-                            continue;
-                        }
-                        _unitOnPath = unit;
-                        break;
-                    }
-
-                    if (_unitOnPath != null)
-                    {
-                        break;
-                    }
+                    _unitOnPath = _unitsAlongLine
+                        .OrderBy(unit => myPosition.DistanceTo(unit.PositionWithoutType))
+                        .First();
                 }
 
                 // the tank is closer from the unit, we can go
@@ -151,5 +109,30 @@ namespace WholesomeDungeonCrawler.States
 
         private bool MyTeamIsAround => _entityCache.ListGroupMember.Length == _entityCache.ListPartyMemberNames.Count
                     && _entityCache.ListGroupMember.All(member => member.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) < 40);
+
+        private void Radar3DOnDrawEvent()
+        {
+            if (_unitOnPath != null)
+            {
+                Radar3D.DrawLine(_entityCache.Me.PositionWithoutType, _unitOnPath.PositionWithoutType, Color.PaleTurquoise, 150);
+                Radar3D.DrawCircle(_unitOnPath.PositionWithoutType, 1.3f, Color.PaleTurquoise, true, 150);
+            }
+
+            if (_linesToCheck.Count > 0)
+            {
+                foreach ((Vector3 a, Vector3 b) line in _linesToCheck)
+                {
+                    Radar3D.DrawLine(line.a, line.b, Color.PaleTurquoise, 150);
+                }
+            }
+
+            if (_unitsAlongLine.Count > 0)
+            {
+                foreach (IWoWUnit unit in _unitsAlongLine)
+                {
+                    Radar3D.DrawCircle(unit.PositionWithoutType, 1.3f, Color.Gray, true, 150);
+                }
+            }
+        }
     }
 }

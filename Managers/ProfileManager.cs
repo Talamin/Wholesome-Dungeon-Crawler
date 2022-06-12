@@ -38,7 +38,11 @@ namespace WholesomeDungeonCrawler.Managers
             switch (id)
             {
                 case "PLAYER_ENTERING_WORLD":
+                    MovementManager.StopMove();
                     LoadProfile(true);
+                    break;
+                case "PLAYER_LEAVING_WORLD":
+                    MovementManager.StopMove();
                     break;
             }
         }
@@ -55,13 +59,13 @@ namespace WholesomeDungeonCrawler.Managers
                 {
                     return;
                 }
-
+                /*
                 // We stepped back in a dungeon with a profile already loaded
                 if (CurrentDungeonProfile?.MapId == Usefuls.ContinentId)
                 {
                     return;
                 }
-
+                */
                 CurrentDungeonProfile?.Dispose();
                 CurrentDungeonProfile = null;
 

@@ -9,6 +9,7 @@ using WholesomeDungeonCrawler.GUI;
 using WholesomeDungeonCrawler.Helpers;
 using wManager;
 using wManager.Plugin;
+using wManager.Wow.Helpers;
 
 public class Main : IProduct
 {
@@ -61,6 +62,7 @@ public class Main : IProduct
     {
         try
         {
+            MovementManager.StopMove();
             IsStarted = false;
             PluginsManager.DisposeAllPlugins();
             _crawler.Dispose();
