@@ -211,10 +211,10 @@
     },
     {
       "$type": "WholesomeDungeonCrawler.Models.InteractWithModel, WholesomeDungeonCrawler",
-      "ObjectId": 101811,
+      "ObjectId": 18901,
       "ExpectedPosition": {
-        "X": -245.598,
-        "Y": 2132.32,
+        "X": -249.22,
+        "Y": 2123.1,
         "Z": 82.8052,
         "Type": "None",
         "Action": ""
@@ -226,7 +226,7 @@
       "CompleteCondition": {
         "HasCompleteCondition": true,
         "ConditionType": 2,
-        "GameObjectId": 18935,
+        "GameObjectId": 18936,
         "InitialFlags": 34,
         "ItemId": 0,
         "CSharpCondition": null,
@@ -241,18 +241,18 @@
     {
       "$type": "WholesomeDungeonCrawler.Models.MoveToUnitModel, WholesomeDungeonCrawler",
       "ExpectedPosition": {
-        "X": -239.492,
-        "Y": 2132.84,
-        "Z": 81.1798248,
+        "X": -240.904,
+        "Y": 2122.55,
+        "Z": 81.17965,
         "Type": "None",
         "Action": ""
       },
       "FindClosest": false,
       "SkipIfNotFound": false,
-      "UnitId": 17822,
+      "UnitId": 3850,
       "Interactwithunit": false,
       "GossipIndex": 1,
-      "Name": "Talk to Landen Stilwell",
+      "Name": "Talk to Sorcerer Ashcrombe",
       "Order": 4,
       "CompleteCondition": {
         "HasCompleteCondition": true,
@@ -263,7 +263,7 @@
         "CSharpCondition": null,
         "DeadMobId": 0,
         "MobPositionId": 0,
-        "MobId": 17822,
+        "MobId": 3850,
         "MobPositionVector": null,
         "LOSPositionVector": null,
         "WaitTime": 0
