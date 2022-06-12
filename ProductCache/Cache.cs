@@ -21,10 +21,8 @@ namespace WholesomeDungeonCrawler.ProductCache
         public bool LFGProposalShown { get; private set; }
         public bool LFGRoleCheckShown { get; private set; }
         public bool LootRollShow { get; private set; }
-
+        public bool IAmAlliance { get; private set; }
         public bool HaveResurrection { get; private set; }
-
-        //general
 
         public Cache()
         {
@@ -32,6 +30,7 @@ namespace WholesomeDungeonCrawler.ProductCache
 
         public void Initialize()
         {
+            IAmAlliance = ObjectManager.Me.IsAlliance;
             //First Initalization of Variables
             CacheIsInInstance();
             CachePartyInviteRequest();

@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace WholesomeDungeonCrawler.ProductCache
+﻿namespace WholesomeDungeonCrawler.ProductCache
 {
     interface ICache : ICycleable
     {
@@ -13,7 +11,8 @@ namespace WholesomeDungeonCrawler.ProductCache
         string GetPlayerSpec { get; }
         bool LFGProposalShown { get; }
         bool LFGRoleCheckShown { get; }
-        bool LootRollShow { get;}
-        public bool HaveResurrection { get;}
+        bool LootRollShow { get; }
+        public bool HaveResurrection { get; }
+        public bool IAmAlliance { get; }
     }
 }

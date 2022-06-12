@@ -77,38 +77,14 @@ namespace WholesomeDungeonCrawler.Bot
                 };
                 // Reverse the array so hiest prio states have the highest index
                 states = states.Reverse().ToArray();
+                
                 // Add the states with correct priority
                 for (int i = 0; i < states.Length; i++)
                 {
-                    Logger.Log($"State:{i}, Prio:{states[i].DisplayName}");
+                    //Logger.Log($"State: {states[i].DisplayName}, Prio: {i}");
                     states[i].Priority = i;
                     _fsm.AddState(states[i]);
                 }
-
-                //_fsm.AddState(new Relogger { Priority = 200 });
-                //_fsm.AddState(new Pause { Priority = 150 });
-                //_fsm.AddState(new Dead(_cache, _entityCache, _profileManager));
-                //_fsm.AddState(new OpenSatchel(_cache, 24));
-                //_fsm.AddState(new MyMacro { Priority = 23 });
-                //_fsm.AddState(new Regeneration { Priority = 22 });
-                //_fsm.AddState(new NPCScanState { Priority = 21 });
-                //_fsm.AddState(new ToTown { Priority = 20 });
-                //_fsm.AddState(new Trainers { Priority = 19 });
-                //_fsm.AddState(new GroupInviteAccept(_cache));
-                //_fsm.AddState(new GroupInvite(_cache, _entityCache));
-                //_fsm.AddState(new GroupProposal(_cache, _entityCache));
-                //_fsm.AddState(new GroupQueueAccept(_cache, _entityCache));
-                //_fsm.AddState(new GroupQueue(_cache, _entityCache));
-                //_fsm.AddState(new LeaveDungeon(_cache, _entityCache, _profileManager));
-                //_fsm.AddState(new GroupRevive(_cache, _entityCache));
-                //_fsm.AddState(new WaitRest(_cache, _entityCache));              
-                //_fsm.AddState(new MovementSlave(_cache, _entityCache));
-                //_fsm.AddState(new SlaveCombat(_cache, _entityCache));
-                //_fsm.AddState(new TankCombat(_cache, _entityCache));
-                //_fsm.AddState(new ClearPathCombat(_cache, _entityCache));
-                //_fsm.AddState(new Looting { Priority = 6 });
-                //_fsm.AddState(new DungeonLogic(_cache, _entityCache, _profileManager));
-                //_fsm.AddState(new Idle { Priority = 1 });
 
                 _fsm.States.Sort();
 

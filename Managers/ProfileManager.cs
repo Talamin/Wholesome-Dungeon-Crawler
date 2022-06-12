@@ -11,6 +11,7 @@ using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles;
 using wManager.Wow.Helpers;
+using static wManager.Wow.Class.Npc;
 
 namespace WholesomeDungeonCrawler.Managers
 {
@@ -50,7 +51,7 @@ namespace WholesomeDungeonCrawler.Managers
             {
                 // We died while in a dungeon
                 if ((_entityCache.Me.Dead || _entityCache.Me.Auras.ContainsKey(8326)) // Ghost
-                    && CurrentDungeonProfile != null) 
+                    && CurrentDungeonProfile != null)
                 {
                     return;
                 }
@@ -67,35 +68,61 @@ namespace WholesomeDungeonCrawler.Managers
                 DungeonModel dungeon = CheckandChooseactualDungeon();
                 if (dungeon != null)
                 {
-                    var profilePath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");
-                    var profilecount = profilePath.GetFiles().Count();
+                    DirectoryInfo profilePath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");
+                    int profilecount = profilePath.GetFiles().Count();
                     if (profilecount > 0)
                     {
-                        var files = profilePath.GetFiles();
-                        var chosenFile = files[new Random().Next(0, files.Length)];
-                        Logger.Log($"Randomly selected {chosenFile.Name} from the {dungeon.Name} folder.");
-                        var profile = chosenFile.FullName;
-                        var deserializedProfile = JsonConvert.DeserializeObject<ProfileModel>(File.ReadAllText(profile), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
-                        if (deserializedProfile.MapId == dungeon.MapId)
-                        {
-                            if (deserializedProfile.OffMeshConnections.Count > 0)
-                            {
-                                PathFinder.OffMeshConnections.AddRange(deserializedProfile.OffMeshConnections);
-                            }
-                            CurrentDungeonProfile = new Profile(deserializedProfile, _entityCache);
-                            Logger.Log($"Dungeon Profile loaded: {deserializedProfile.Name}.{Environment.NewLine} with the MapID { deserializedProfile.MapId}.{ Environment.NewLine} with at Total Steps { deserializedProfile.StepModels.Count()}.{ Environment.NewLine} with a { deserializedProfile.DeathRunPath.Count()}.{ Environment.NewLine} Steps Deathrun and { deserializedProfile.OffMeshConnections.Count()}.{ Environment.NewLine} OffmeshConnections");
-                            CurrentDungeonProfile.SetFirstLaunchStep();
-                            return;
+                        List<FileInfo> files = profilePath.GetFiles().ToList();
+                        files.RemoveAll(file => !file.Name.EndsWith(".json"));
+                        List<ProfileModel> profileModels = new List<ProfileModel>();
 
-                        }
-                        else
+                        // Deserialize and filter json files
+                        foreach (FileInfo file in files)
                         {
-                            Logger.Log($"Dungeon Profile not loaded: {deserializedProfile.Name}.{Environment.NewLine} with the DungeonID { deserializedProfile.MapId} did not match the dungeon id of your current dungeon {dungeon.Name}: {dungeon.MapId}.");
-                            return;
+                            ProfileModel deserializedProfile = JsonConvert.DeserializeObject<ProfileModel>(
+                                File.ReadAllText(file.FullName),
+                                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+
+                            // wrong map id
+                            if (deserializedProfile.MapId != dungeon.MapId)
+                            {
+                                Logger.LogError($"The Map ID {deserializedProfile.MapId} should be {dungeon.MapId} in the following file: {file.FullName}");
+                                continue;
+                            }
+
+                            if (deserializedProfile.Faction == FactionType.Alliance && !_cache.IAmAlliance
+                                || deserializedProfile.Faction == FactionType.Horde && _cache.IAmAlliance)
+                            {
+                                continue;
+                            }
+
+                            profileModels.Add(deserializedProfile);
                         }
+
+                        if (profileModels.Count <= 0)
+                        {
+                            Logger.LogError($"No profile found for your faction in folder {profilePath}");
+                        }
+
+                        ProfileModel chosenModel = profileModels[new Random().Next(0, profileModels.Count)];
+                        Logger.Log($"Randomly selected {chosenModel.Name} from the {dungeon.Name} folder.");
+                        if (chosenModel.OffMeshConnections.Count > 0)
+                        {
+                            PathFinder.OffMeshConnections.AddRange(chosenModel.OffMeshConnections);
+                        }
+                        CurrentDungeonProfile = new Profile(chosenModel, _entityCache);
+                        Logger.Log($"Dungeon Profile loaded: {chosenModel.Name} {Environment.NewLine} MapID {chosenModel.MapId}{Environment.NewLine} {chosenModel.StepModels.Count()} steps{Environment.NewLine} {chosenModel.DeathRunPath.Count()} deathrun nodes{Environment.NewLine} {chosenModel.OffMeshConnections.Count()} offmesh connections");
+                        CurrentDungeonProfile.SetFirstLaunchStep();
+                        return;
+                    }
+                    else
+                    {
+                        Logger.LogError($"No profile found in folder {profilePath}");
+                        return;
                     }
                 }
-                Logger.Log("No Profile found!");
+
+                Logger.Log($"You're not in a dungeon. Map ID {Usefuls.ContinentId}.");
             });
         }
 
@@ -105,7 +132,8 @@ namespace WholesomeDungeonCrawler.Managers
             {
                 return Lists.AllDungeons.Where(x => x.ContinentId == Usefuls.ContinentId).OrderBy(x => _entityCache.Me.PositionCorpse.DistanceTo(x.EntranceLoc)).First();
             }
-            if (CheckactualDungeonProfileInList())
+
+            if (Lists.AllDungeons.Any(d => d.MapId == Usefuls.ContinentId))
             {
                 if (Lists.AllDungeons.Count(d => d.MapId == Usefuls.ContinentId) > 1)
                 {
@@ -116,11 +144,8 @@ namespace WholesomeDungeonCrawler.Managers
                     return Lists.AllDungeons.Where(d => d.MapId == Usefuls.ContinentId).FirstOrDefault();
                 }
             }
+
             return null;
-        }
-        private bool CheckactualDungeonProfileInList()
-        {
-            return Lists.AllDungeons.Any(d => d.MapId == Usefuls.ContinentId);
         }
 
         public void Dispose()

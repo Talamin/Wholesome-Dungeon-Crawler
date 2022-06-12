@@ -6,6 +6,7 @@ using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles.Steps;
 using wManager.Wow.Helpers;
+using static wManager.Wow.Class.Npc;
 
 namespace WholesomeDungeonCrawler.Profiles
 {
@@ -19,6 +20,7 @@ namespace WholesomeDungeonCrawler.Profiles
         public List<Vector3> DeathRunPathList { get; private set; } = new List<Vector3>();
         public IStep CurrentStep { get; private set; }
         public Dictionary<IStep, List<Vector3>> DungeonPath { get; private set; } = new Dictionary<IStep, List<Vector3>>();
+        public FactionType FactionType { get; private set; }
 
         public Profile(ProfileModel profileModel, IEntityCache entityCache)
         {
@@ -67,6 +69,7 @@ namespace WholesomeDungeonCrawler.Profiles
             PathFinder.OffMeshConnections.AddRange(profileModel.OffMeshConnections);
 
             MapId = profileModel.MapId;
+            FactionType = profileModel.Faction;
         }
 
         public void Initialize()
