@@ -112,6 +112,9 @@ namespace WholesomeDungeonCrawler.States
 
         private void Radar3DOnDrawEvent()
         {
+            if (Fight.InFight)
+                return;
+
             if (_unitOnPath != null)
             {
                 Radar3D.DrawLine(_entityCache.Me.PositionWithoutType, _unitOnPath.PositionWithoutType, Color.PaleTurquoise, 150);
