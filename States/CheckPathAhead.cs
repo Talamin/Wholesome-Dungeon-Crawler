@@ -99,7 +99,7 @@ namespace WholesomeDungeonCrawler.States
                     }
                     else
                     {
-                        Logger.Log($"Clearing Path {_unitOnPath.unit.Name}");
+                        Logger.Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Engaging fight.");
                         Fight.StartFight(_unitOnPath.unit.Guid);
 
                     }
@@ -142,13 +142,13 @@ namespace WholesomeDungeonCrawler.States
                     // check if units have LoS on point
                     foreach (IWoWUnit unit in hostileUnits)
                     {
-                        if (WTPathFinder.PointDistanceToLine(segment.start, segment.end, unit.PositionWithoutType) > 25)
+                        if (WTPathFinder.PointDistanceToLine(segment.start, segment.end, unit.PositionWithoutType) > 20)
                         {
                             continue;
                         }
 
                         TraceLineResult losResult = LosCache
-                            .Where(tsResult => tsResult.Start.DistanceTo(offset) < 1 && tsResult.End.DistanceTo(unit.PositionWithoutType) < 1)
+                            .Where(tsResult => tsResult.Start.DistanceTo(offset) < 2 && tsResult.End.DistanceTo(unit.PositionWithoutType) < 2)
                             .FirstOrDefault();
 
                         if (losResult == null)
