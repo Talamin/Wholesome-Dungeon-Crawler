@@ -22,7 +22,6 @@ namespace WholesomeDungeonCrawler.States
         private Timer _broadcastTimer = new Timer();
         private (IWoWUnit unit, float pathDistance) _unitOnPath = (null, 0);
         private List<(Vector3 a, Vector3 b)> _linesToCheck = new List<(Vector3 a, Vector3 b)>();
-        private List<IWoWUnit> _unitsAlongLine = new List<IWoWUnit>();
         private List<Vector3> _pointsAlongPathSegments = new List<Vector3>();
         private List<(Vector3 a, Vector3 b)> _dangerTracelines = new List<(Vector3 a, Vector3 b)>();
 
@@ -50,6 +49,7 @@ namespace WholesomeDungeonCrawler.States
                 if (!_entityCache.Me.Valid
                     || _entityCache.Me.InCombatFlagOnly
                     || Fight.InFight
+                    || _entityCache.Me.InCombatFlagOnly
                     || MovementManager.CurrentPath == null
                     || MovementManager.CurrentPath.Count <= 0
                     || !Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause)
@@ -60,7 +60,6 @@ namespace WholesomeDungeonCrawler.States
                 Stopwatch watch = Stopwatch.StartNew();
 
                 _dangerTracelines.Clear();
-                _unitsAlongLine.Clear();
                 _linesToCheck.Clear();
                 _pointsAlongPathSegments.Clear();
                 _unitOnPath = (null, 0);
@@ -210,12 +209,6 @@ namespace WholesomeDungeonCrawler.States
             foreach ((Vector3 a, Vector3 b) line in _linesToCheck)
             {
                 Radar3D.DrawLine(line.a, line.b, Color.PaleTurquoise, 150);
-            }
-
-
-            foreach (IWoWUnit unit in _unitsAlongLine)
-            {
-                Radar3D.DrawCircle(unit.PositionWithoutType, 1.3f, Color.Gray, true, 150);
             }
 
             foreach (Vector3 point in _pointsAlongPathSegments)
