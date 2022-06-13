@@ -20,7 +20,7 @@ namespace WholesomeDungeonCrawler.Bot
         private ITargetingManager _targetingManager;
         private IPartyChatManager _partyChatManager;
         private ILuaStatusFrameManager _luaStatusFrameManager;
-        private ClearPathCombat _clearPathCombatState;
+        //private ClearPathCombat _clearPathCombatState;
         private CheckPathAhead _checkPathAheadState;
 
         internal bool InitialSetup()
@@ -49,8 +49,8 @@ namespace WholesomeDungeonCrawler.Bot
                 //FSM
                 _fsm.States.Clear();
 
-                _clearPathCombatState = new ClearPathCombat(_entityCache);
-                _clearPathCombatState.Initialize();
+                //_clearPathCombatState = new ClearPathCombat(_entityCache);
+                //_clearPathCombatState.Initialize();
                 _checkPathAheadState = new CheckPathAhead(_entityCache, _partyChatManager);
                 _checkPathAheadState.Initialize();
 
@@ -78,7 +78,7 @@ namespace WholesomeDungeonCrawler.Bot
                     //new CheckPathAhead(_entityCache, _partyChatManager),
                     //new ClearPathCombat(_entityCache),
                     _checkPathAheadState,
-                    _clearPathCombatState,
+                    //_clearPathCombatState,
                     new LeaveDungeon(_cache, _entityCache, _profileManager),
                     new DungeonLogic(_entityCache, _profileManager, _partyChatManager, _cache),
                     new AntiAfk(),
@@ -117,7 +117,7 @@ namespace WholesomeDungeonCrawler.Bot
             {
                 CustomClass.DisposeCustomClass();
                 _checkPathAheadState.Dispose();
-                _clearPathCombatState.Dispose();
+                //_clearPathCombatState.Dispose();
                 _partyChatManager?.Dispose();
                 _fsm?.StopEngine();
                 _cache?.Dispose();

@@ -28,7 +28,7 @@ public class Main : IProduct
         }
         catch (Exception e)
         {
-            Logger.LogError("Main -> Initialize(): " + e);
+            Logging.WriteError("Main -> Initialize(): " + e);
         }
     }
 
@@ -42,6 +42,7 @@ public class Main : IProduct
                 return;
             }
             */
+            
             if (_crawler.InitialSetup())
             {
                 Logger.Log("Started");

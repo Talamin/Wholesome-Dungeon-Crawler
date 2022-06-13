@@ -4,7 +4,7 @@ using WholesomeDungeonCrawler.CrawlerSettings;
 
 namespace WholesomeDungeonCrawler.Helpers
 {
-    class Logger
+    static class Logger
     {
         public static void LogError(string message)
         {
@@ -14,7 +14,7 @@ namespace WholesomeDungeonCrawler.Helpers
         public static void Log(string message)
         {
             Logging.Write($"[{WholesomeDungeonCrawlerSettings.CurrentSetting.ProductName}]: {message}", Logging.LogType.Normal, Color.DarkSlateBlue);
-            Logging.Status = message;
+            //Logging.Status = message;
         }
 
         public static void LogDebug(string message)
