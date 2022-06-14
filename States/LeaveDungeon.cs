@@ -1,4 +1,6 @@
 ﻿using robotManager.FiniteStateMachine;
+using System.Threading;
+using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
@@ -47,8 +49,10 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            Lua.LuaDoString("LFGTeleport(true);");
+            Logger.Log($"Leaving dungeon in 10 seconds.");
+            Thread.Sleep(10 * 1000);
+            //Lua.LuaDoString("LFGTeleport(true);");
+            Toolbox.LeaveDungeonAndGroup();
         }
-
     }
 }

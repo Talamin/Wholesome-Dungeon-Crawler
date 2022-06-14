@@ -42,18 +42,6 @@ namespace WholesomeDungeonCrawler.States
 
                 Target = null;
 
-                // Defend players when the tank is dead, out of OM, or has no target
-                if (_entityCache.TankUnit == null || _entityCache.TankUnit.Dead || _entityCache.TankUnit.TargetGuid == 0)
-                {
-                    IWoWUnit _attackingPlayer = AttackingPlayer();
-                    if (_attackingPlayer != null)
-                    {
-                        Target = _attackingPlayer;
-                        Logger.Log($"SlaveCombat: Target attacking Player: {Target.Name} , start defending");
-                        return true;
-                    }
-                }
-
                 // Defend tank
                 if (_entityCache.TankUnit != null)
                 {
@@ -62,6 +50,18 @@ namespace WholesomeDungeonCrawler.States
                     {
                         Target = _attackingTank;
                         Logger.Log($"SlaveCombat: Target attacking Tank: {Target.Name} , start defending");
+                        return true;
+                    }
+                }
+
+                // Defend players when the tank is dead, out of OM, or has no target
+                if (_entityCache.TankUnit == null || _entityCache.TankUnit.Dead || _entityCache.TankUnit.TargetGuid == 0)
+                {
+                    IWoWUnit _attackingPlayer = AttackingPlayer();
+                    if (_attackingPlayer != null)
+                    {
+                        Target = _attackingPlayer;
+                        Logger.Log($"SlaveCombat: Target attacking Player: {Target.Name} , start defending");
                         return true;
                     }
                 }

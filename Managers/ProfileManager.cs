@@ -105,7 +105,8 @@ namespace WholesomeDungeonCrawler.Managers
 
                         if (profileModels.Count <= 0)
                         {
-                            Logger.LogError($"No profile found for your faction in folder {profilePath}");
+                            Logger.LogError($"No profile found for your faction in folder {profilePath}, leaving dungeon");
+                            Toolbox.LeaveDungeonAndGroup();
                         }
 
                         ProfileModel chosenModel = profileModels[new Random().Next(0, profileModels.Count)];
@@ -121,7 +122,8 @@ namespace WholesomeDungeonCrawler.Managers
                     }
                     else
                     {
-                        Logger.LogError($"No profile found in folder {profilePath}");
+                        Logger.LogError($"No profile found in folder {profilePath}, leaving dungeon");
+                        Toolbox.LeaveDungeonAndGroup();
                         return;
                     }
                 }

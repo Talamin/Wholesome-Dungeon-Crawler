@@ -1,6 +1,7 @@
 ﻿using robotManager.FiniteStateMachine;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Bot.Tasks;
@@ -17,13 +18,19 @@ namespace WholesomeDungeonCrawler.States
         private readonly IEntityCache _entitycache;
 
         private Dictionary<WoWClass, string> _rezzClasses = new Dictionary<WoWClass, string>
-        { { WoWClass.Druid, "Revive" }, { WoWClass.Paladin, "Redemption" }, { WoWClass.Priest, "Resurrection" }, { WoWClass.Shaman, "Ancestral Spirit" } };
+        {
+            { WoWClass.Druid, "Revive" },
+            { WoWClass.Paladin, "Redemption" },
+            { WoWClass.Priest, "Resurrection" },
+            { WoWClass.Shaman, "Ancestral Spirit" }
+        };
 
         public GroupRevive(ICache iCache, IEntityCache entityCache)
         {
             _cache = iCache;
             _entitycache = entityCache;
         }
+
         public override bool NeedToRun
         {
             get
@@ -42,19 +49,25 @@ namespace WholesomeDungeonCrawler.States
         }
         public override void Run()
         {
-            var rezzUnit = _entitycache.ListGroupMember.FirstOrDefault();
-            var spell = _rezzClasses[_entitycache.Me.WoWClass];
+            string spell = _rezzClasses[_entitycache.Me.WoWClass];
+            List<IWoWPlayer> playersToResurrect = _entitycache.ListGroupMember
+                .Where(u => u.Dead)
+                .ToList();
 
-            if (_entitycache.Me.PositionWithoutType.DistanceTo(rezzUnit.PositionWithoutType) > 25)
+            foreach (IWoWPlayer player in playersToResurrect)
             {
-                GoToTask.ToPosition(rezzUnit.PositionWithoutType, conditionExit: _ => _entitycache.Me.PositionWithoutType.DistanceTo(rezzUnit.PositionWithoutType) <= 25);
-            }
+                if (_entitycache.Me.PositionWithoutType.DistanceTo(player.PositionWithoutType) > 25)
+                {
+                    GoToTask.ToPosition(player.PositionWithoutType, conditionExit: _ => _entitycache.Me.PositionWithoutType.DistanceTo(player.PositionWithoutType) <= 25);
+                }
 
-            Interact.InteractGameObject(rezzUnit.GetBaseAdress);
-            if (SpellManager.KnowSpell(spell) && SpellManager.SpellUsableLUA(spell))
-            {
-                SpellManager.CastSpellByNameLUA(spell);
-                Usefuls.WaitIsCasting();
+                Interact.InteractGameObject(player.GetBaseAdress);
+                if (SpellManager.KnowSpell(spell) && SpellManager.SpellUsableLUA(spell))
+                {
+                    SpellManager.CastSpellByNameLUA(spell);
+                    Usefuls.WaitIsCasting();
+                    Thread.Sleep(1000);
+                }
             }
         }
     }

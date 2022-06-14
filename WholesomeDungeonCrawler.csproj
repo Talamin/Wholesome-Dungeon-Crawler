@@ -102,6 +102,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\Toolbox.cs" />
     <Compile Include="Managers\ILuaStatusFrameManager.cs" />
     <Compile Include="Managers\LuaStatusFrameManager.cs" />
     <Compile Include="ProductCache\Cache.cs" />

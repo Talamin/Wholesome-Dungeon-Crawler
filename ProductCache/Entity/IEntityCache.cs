@@ -10,7 +10,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         IWoWUnit Pet { get; }
         IWoWLocalPlayer Me { get; }
         IWoWPlayer TankUnit { get; }
-        IWoWUnit[] EnemyUnitsTargetingGroup { get; }
+        //IWoWUnit[] EnemyUnitsTargetingGroup { get; }
         IWoWUnit[] EnemyUnitsLootable { get; }
         IWoWUnit[] EnemyAttackingGroup { get; }
         IWoWUnit[] EnemyUnitsList { get; }

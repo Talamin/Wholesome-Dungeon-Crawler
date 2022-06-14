@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
+using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.GUI
 {
@@ -50,6 +51,22 @@ namespace WholesomeDungeonCrawler.GUI
         private void cbLFGRole_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             WholesomeDungeonCrawlerSettings.CurrentSetting.Save();
+
+            switch (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole)
+            {
+                case LFGRoles.Tank:
+                    Lua.LuaDoString("SetLFGRoles(false, true, false, false)");
+                    break;
+                case LFGRoles.Heal:
+                    Lua.LuaDoString("SetLFGRoles(false, false, true, false)");
+                    break;
+                case LFGRoles.MDPS:
+                    Lua.LuaDoString("SetLFGRoles(false, false, false, true)");
+                    break;
+                case LFGRoles.RDPS:
+                    Lua.LuaDoString("SetLFGRoles(false, false, false, true)");
+                    break;
+            }
         }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using robotManager.Helpful;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
@@ -16,6 +14,7 @@ namespace WholesomeDungeonCrawler.Managers
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
+        private IWoWUnit Target;
 
         public TargetingManager(IEntityCache entityCache, ICache cache)
         {
@@ -23,14 +22,22 @@ namespace WholesomeDungeonCrawler.Managers
             _cache = cache;
         }
 
-        private IWoWUnit Target;
-
-        public void Targetswitcher(WoWUnit target, CancelEventArgs cancable)
+        public void OnFightHandler(WoWUnit target, CancelEventArgs cancable)
         {
             if (_entityCache.Target.Dead)
             {
                 Interact.ClearTarget();
             }
+
+            if (_entityCache.ListGroupMember.Any(member => member.HasDrinkBuff || member.HasFoodBuff)
+                && !_entityCache.EnemyUnitsList.Any(enemy => enemy.IsAttackingGroup || enemy.IsAttackingMe))
+            {
+                Logger.Log($"Cancelling fight because someone needs regeneration");
+                cancable.Cancel = true;
+                MovementManager.StopMove();
+                return;
+            }
+
             Target = null;
 
             if (_entityCache.IAmTank)
@@ -47,7 +54,7 @@ namespace WholesomeDungeonCrawler.Managers
                         SwitchedTargetFight(Target);
                     }
                     IWoWUnit newNPCDefendTarget = GetNearestEnemyAttackingNPCtoProtect();
-                    if(newNPCDefendTarget != null)
+                    if (newNPCDefendTarget != null)
                     {
                         Target = newNPCDefendTarget;
                         Logger.Log($"{Target.Name} needs tanking");
@@ -139,7 +146,7 @@ namespace WholesomeDungeonCrawler.Managers
 
         private IWoWUnit GetNearestEnemyAttackingNPCtoProtect()
         {
-            foreach(IWoWUnit uni in _entityCache.NpcsToDefend)
+            foreach (IWoWUnit uni in _entityCache.NpcsToDefend)
             {
                 return TargetingHelper.FindClosestUnit(unit =>
                 unit.TargetGuid == uni.Guid,
@@ -156,7 +163,7 @@ namespace WholesomeDungeonCrawler.Managers
         }
         private IWoWUnit GetWeakestEnemyUnit()
         {
-            return _entityCache.EnemyUnitsList.Where(e => e.IsAttackingGroup && !e.Dead).OrderBy(e => e.Health).FirstOrDefault();            
+            return _entityCache.EnemyUnitsList.Where(e => e.IsAttackingGroup && !e.Dead).OrderBy(e => e.Health).FirstOrDefault();
         }
 
         private IWoWUnit FleeingUnit()
@@ -221,12 +228,12 @@ namespace WholesomeDungeonCrawler.Managers
 
         public void Initialize()
         {
-            wManager.Events.FightEvents.OnFightLoop += Targetswitcher;
+            wManager.Events.FightEvents.OnFightLoop += OnFightHandler;
         }
 
         public void Dispose()
         {
-            wManager.Events.FightEvents.OnFightLoop -= Targetswitcher;
+            wManager.Events.FightEvents.OnFightLoop -= OnFightHandler;
         }
     }
 }

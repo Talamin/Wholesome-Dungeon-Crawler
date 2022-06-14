@@ -39,53 +39,41 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             switch (id)
             {
                 case "WORLD_MAP_UPDATE":
-                    Task.Delay(1000).ContinueWith(x =>
-                    {
-                        CacheListPartyMemberGuid();
-                    });
+                    CacheGroupMembers();
+                    Toolbox.StopAllMoves();
+                    break;
+                case "PLAYER_ENTERING_WORLD":
+                    CacheGroupMembers();
+                    Toolbox.StopAllMoves();
                     break;
                 case "PARTY_MEMBERS_CHANGED":
-                    Task.Delay(1000).ContinueWith(x =>
-                    {
-                        CacheListPartyMemberGuid();
-                        CachePartyMemberChanged();
-                    });
+                    CacheGroupMembers();
                     break;
-                case "PARTY_MEMBER_DISABLE":
-                    Task.Delay(1000).ContinueWith(x =>
-                    {
-                        CacheListPartyMemberGuid();
-                    });
-                    break;
-                case "PARTY_MEMBER_ENABLE":
-                    Task.Delay(1000).ContinueWith(x =>
-                    {
-                        CacheListPartyMemberGuid();
-                    });
-                    break;
+                /*
+            case "PARTY_MEMBER_DISABLE":
+                Task.Delay(1000).ContinueWith(x =>
+                {
+                    CacheListPartyMemberGuid();
+                });
+                break;
+            case "PARTY_MEMBER_ENABLE":
+                Task.Delay(1000).ContinueWith(x =>
+                {
+                    CacheListPartyMemberGuid();
+                });
+                break;
+                */
                 case "RAID_ROSTER_UPDATE":
-                    Task.Delay(1000).ContinueWith(x =>
-                    {
-                        CacheListPartyMemberGuid();
-                    });
+                    CacheGroupMembers();
                     break;
                 case "GROUP_ROSTER_CHANGED":
-                    Task.Delay(1000).ContinueWith(x =>
-                    {
-                        CacheListPartyMemberGuid();
-                    });
+                    CacheGroupMembers();
                     break;
                 case "PARTY_CONVERTED_TO_RAID":
-                    Task.Delay(1000).ContinueWith(x =>
-                    {
-                        CacheListPartyMemberGuid();
-                    });
+                    CacheGroupMembers();
                     break;
                 case "RAID_TARGET_UPDATE":
-                    Task.Delay(1000).ContinueWith(x =>
-                    {
-                        CacheListPartyMemberGuid();
-                    });
+                    CacheGroupMembers();
                     break;
             }
         }
@@ -95,7 +83,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public IWoWUnit Target { get; private set; } = Cache(new WoWUnit(0));
         public IWoWUnit Pet { get; private set; } = Cache(new WoWUnit(0));
         public IWoWLocalPlayer Me { get; private set; } = Cache(new WoWLocalPlayer(0));
-        public IWoWUnit[] EnemyUnitsTargetingGroup { get; private set; } = new IWoWUnit[0];
+        //public IWoWUnit[] EnemyUnitsTargetingGroup { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsLootable { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsList { get; private set; } = new IWoWUnit[0];
         public IWoWPlayer[] ListGroupMember { get; private set; } = new IWoWPlayer[0];
@@ -178,7 +166,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
             IWoWPlayer tankUnit = null;
 
-            foreach (var play in playerUnits)
+            foreach (WoWPlayer play in playerUnits)
             {
                 IWoWPlayer cachedplayer = Cache(play);
                 if (ListPartyMemberGuid.Contains(cachedplayer.Guid))
@@ -239,10 +227,11 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             EnemyUnitsList = enemyUnits.ToArray();
             /*
             if (watch.ElapsedMilliseconds > 50)
-                Logger.LogError($"Entity cache pulse took {watch.ElapsedMilliseconds}");
-            */
+                Logger.LogError($"Entity cache pulse took {watch.ElapsedMilliseconds}");*/
+
         }
 
+        // Records guid of players in object manager
         private void CacheListPartyMemberGuid()
         {
             List<ulong> partyMembersGuids = new List<ulong>();
@@ -258,6 +247,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             ListPartyMemberGuid = partyMembersGuids;
         }
 
+        // Records name of players even if outside object manager
         private void CachePartyMemberChanged()
         {
             lock (cacheLock)
@@ -274,7 +264,18 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 {
                     ListPartyMemberNames = plist.Remove(plist.Length - 1, 1).Split(',').ToList();
                 }
+                Logging.Write($"CachePartyMemberChanged()");
+                ListPartyMemberNames.ForEach(m => Logging.Write(m));
             }
+        }
+
+        private void CacheGroupMembers()
+        {
+            Task.Delay(2000).ContinueWith(x =>
+            {
+                CacheListPartyMemberGuid();
+                CachePartyMemberChanged();
+            });
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using robotManager.FiniteStateMachine;
+using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
@@ -35,7 +36,7 @@ namespace WholesomeDungeonCrawler.States
                     || !_cache.IsInInstance
                     || _profileManager.CurrentDungeonProfile == null
                     || _profileManager.CurrentDungeonProfile.CurrentStep == null
-                    || _profileManager.CurrentDungeonProfile.CurrentStep.Order > _partyChatManager.TankStatus?.StepOrder)
+                    /*|| _profileManager.CurrentDungeonProfile.CurrentStep.Order > _partyChatManager.TankStatus?.StepOrder*/)
                 {
                     return false;
                 }

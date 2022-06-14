@@ -31,12 +31,7 @@ namespace WholesomeDungeonCrawler.States
                 {
                     return false;
                 }
-                /*
-                double totalManaPercent = _entityCache.Me.Mana > 0 ? _entityCache.Me.ManaPercent : 0;
-                double totalHealthPercent = _entityCache.Me.HealthPercent;
-                int playerCount = 1;
-                int playerWithManaCount = _entityCache.Me.Mana > 0 ? 1 : 0;
-                */
+
                 foreach (IWoWPlayer player in _entityCache.ListGroupMember)
                 {
                     if (!player.IsConnected)
@@ -50,15 +45,7 @@ namespace WholesomeDungeonCrawler.States
                         Logger.Log($"We wait because Member {player.Name} is being dead/spooky");
                         return true;
                     }
-                    /*
-                    if (player.Mana > 0)
-                    {
-                        playerWithManaCount++;
-                        totalManaPercent += player.ManaPercent;
-                    }
-                    totalHealthPercent += player.HealthPercent;
-                    playerCount++;
-                    */
+
                     if (player.HasDrinkBuff || player.HasFoodBuff)
                     {
                         Logger.Log($"We wait because Member {player.Name} is being thirsty or hungry");
@@ -72,19 +59,7 @@ namespace WholesomeDungeonCrawler.States
                     }
                     */
                 }
-                /*
-                if (totalHealthPercent / playerCount < 50)
-                {
-                    Logger.Log($"We wait because the team needs health");
-                    return true;
-                }
 
-                if (totalManaPercent / playerWithManaCount < 50)
-                {
-                    Logger.Log($"We wait because the team needs mana");
-                    return true;
-                }
-                */
                 return false;
             }
         }

@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
+using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeToolbox;
 using wManager.Wow.Enums;
@@ -19,16 +20,18 @@ namespace WholesomeDungeonCrawler.States
 
         private readonly IEntityCache _entityCache;
         private readonly IPartyChatManager _partyChatManager;
+        private readonly ICache _cache;
         private Timer _broadcastTimer = new Timer();
         private (IWoWUnit unit, float pathDistance) _unitOnPath = (null, 0);
         private List<(Vector3 a, Vector3 b)> _linesToCheck = new List<(Vector3 a, Vector3 b)>();
         private List<Vector3> _pointsAlongPathSegments = new List<Vector3>();
         private List<(Vector3 a, Vector3 b)> _dangerTracelines = new List<(Vector3 a, Vector3 b)>();
 
-        public CheckPathAhead(IEntityCache EntityCache, IPartyChatManager partyChatManager)
+        public CheckPathAhead(IEntityCache EntityCache, IPartyChatManager partyChatManager, ICache cache)
         {
             _entityCache = EntityCache;
             _partyChatManager = partyChatManager;
+            _cache = cache;
         }
 
         public void Initialize()
@@ -46,9 +49,15 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
+                _dangerTracelines.Clear();
+                _linesToCheck.Clear();
+                _pointsAlongPathSegments.Clear();
+                _unitOnPath = (null, 0);
+
                 if (!_entityCache.Me.Valid
                     || _entityCache.Me.InCombatFlagOnly
                     || Fight.InFight
+                    || !_cache.IsInInstance
                     || _entityCache.Me.InCombatFlagOnly
                     || MovementManager.CurrentPath == null
                     || MovementManager.CurrentPath.Count <= 0
@@ -58,11 +67,6 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 Stopwatch watch = Stopwatch.StartNew();
-
-                _dangerTracelines.Clear();
-                _linesToCheck.Clear();
-                _pointsAlongPathSegments.Clear();
-                _unitOnPath = (null, 0);
                 
                 _linesToCheck = MoveHelper.GetLinesToCheckOnCurrentPath(_entityCache.Me.PositionWithoutType);
                 _unitOnPath = EnemyAlongTheLine(_linesToCheck, _entityCache.EnemyUnitsList);
@@ -240,9 +244,6 @@ namespace WholesomeDungeonCrawler.States
 
         private void Radar3DOnDrawEvent()
         {
-            if (Fight.InFight)
-                return;
-
             if (_unitOnPath.unit != null)
             {
                 Radar3D.DrawCircle(_unitOnPath.unit.PositionWithoutType, 0.4f, Color.Red, true, 200);
