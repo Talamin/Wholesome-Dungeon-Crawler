@@ -129,17 +129,22 @@ namespace WholesomeDungeonCrawler.States
             {
                 Vector3 segmentStart = segments[i].start;
                 Vector3 segmentEnd = segments[i].end;
-                int pointsOffset = 3;
                 _pointsAlongPathSegments.Add(segmentEnd);
                 float segmentLength = segmentStart.DistanceTo(segmentEnd);
 
                 // get points along line
-                for (int j = pointsOffset; j < segmentLength; j += pointsOffset)
+                for (int j = 3; j < segmentLength; j += 3)
                 {
                     Vector3 vector = new Vector3(segmentEnd.X - segmentStart.X, segmentEnd.Y - segmentStart.Y, segmentEnd.Z - segmentStart.Z);
                     double c = System.Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
                     double a = j / c;
                     Vector3 offset = new Vector3(segmentStart.X + vector.X * a, segmentStart.Y + vector.Y * a, segmentStart.Z + vector.Z * a);
+
+                    if (offset.DistanceTo(_entityCache.Me.PositionWithoutType) < 5)
+                    {
+                        continue;
+                    }
+
                     _pointsAlongPathSegments.Add(offset);
 
                     // check if units have LoS on point
@@ -180,64 +185,6 @@ namespace WholesomeDungeonCrawler.States
 
             return (null, 0);
         }
-
-        /*
-        private (IWoWUnit unit, float pathDistance) EnemyAlongTheLine(List<(Vector3 a, Vector3 b)> segments, IWoWUnit[] hostileUnits)
-        {
-            float distanceToUnit = 0;
-            foreach ((Vector3 start, Vector3 end) segment in segments)
-            {
-                int pointsOffset = 3;
-                _pointsAlongPathSegments.Add(segment.end);
-                float segmentLength = segment.start.DistanceTo(segment.end);
-                
-                // get points along line
-                for (int i = pointsOffset; i < segmentLength; i += pointsOffset)
-                {
-                    Vector3 vector = new Vector3(segment.end.X - segment.start.X, segment.end.Y - segment.start.Y, segment.end.Z - segment.start.Z);
-                    double c = System.Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
-                    double a = i / c;
-                    Vector3 offset = new Vector3(segment.start.X + vector.X * a, segment.start.Y + vector.Y * a, segment.start.Z + vector.Z * a);
-                    _pointsAlongPathSegments.Add(offset);
-                    
-                    // check if units have LoS on point
-                    foreach (IWoWUnit unit in hostileUnits)
-                    {
-                        if (WTPathFinder.PointDistanceToLine(segment.start, segment.end, unit.PositionWithoutType) > 20)
-                        {
-                            continue;
-                        }
-
-                        TraceLineResult losResult = LosCache
-                            .Where(tsResult => tsResult.Start.DistanceTo(offset) < 2 && tsResult.End.DistanceTo(unit.PositionWithoutType) < 2)
-                            .FirstOrDefault();
-
-                        if (losResult == null)
-                        {
-                            losResult = new TraceLineResult(offset, unit.PositionWithoutType);
-                            LosCache.Add(losResult);
-                            if (LosCache.Count > 300)
-                            {
-                                LosCache.RemoveRange(0, 50);
-                            }
-                        }
-                        
-                        if (losResult.HasLoS)
-                        {
-                            distanceToUnit += segment.start.DistanceTo(offset) + offset.DistanceTo(unit.PositionWithoutType);
-                            if (distanceToUnit < 40)
-                            {
-                                _dangerTracelines.Add((offset, unit.PositionWithoutType));
-                                return (unit, distanceToUnit);
-                            }
-                        }
-                    }
-                }
-                distanceToUnit += segmentLength;
-            }
-
-            return (null, 0);
-        }*/
 
         private List<TraceLineResult> LosCache = new List<TraceLineResult>();
 
