@@ -3938,7 +3938,7 @@
         "Action": ""
       },
       "FindClosest": false,
-      "SkipIfNotFound": false,
+      "SkipIfNotFound": true,
       "UnitId": 3678,
       "Interactwithunit": false,
       "GossipIndex": 1,
