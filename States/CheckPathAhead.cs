@@ -120,6 +120,68 @@ namespace WholesomeDungeonCrawler.States
             }
         }
 
+
+        private (IWoWUnit unit, float pathDistance) EnemyAlongTheLine(List<(Vector3 start, Vector3 end)> segments, IWoWUnit[] hostileUnits)
+        {
+            float distanceToUnit = 0;
+            List<Vector3> pointsAlongLine = new List<Vector3>();
+            for (int i = 0; i < segments.Count; i++)
+            {
+                Vector3 segmentStart = segments[i].start;
+                Vector3 segmentEnd = segments[i].end;
+                int pointsOffset = 3;
+                _pointsAlongPathSegments.Add(segmentEnd);
+                float segmentLength = segmentStart.DistanceTo(segmentEnd);
+
+                // get points along line
+                for (int j = pointsOffset; j < segmentLength; j += pointsOffset)
+                {
+                    Vector3 vector = new Vector3(segmentEnd.X - segmentStart.X, segmentEnd.Y - segmentStart.Y, segmentEnd.Z - segmentStart.Z);
+                    double c = System.Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
+                    double a = j / c;
+                    Vector3 offset = new Vector3(segmentStart.X + vector.X * a, segmentStart.Y + vector.Y * a, segmentStart.Z + vector.Z * a);
+                    _pointsAlongPathSegments.Add(offset);
+
+                    // check if units have LoS on point
+                    foreach (IWoWUnit unit in hostileUnits)
+                    {
+                        if (WTPathFinder.PointDistanceToLine(segmentStart, segmentEnd, unit.PositionWithoutType) > 20)
+                        {
+                            continue;
+                        }
+
+                        TraceLineResult losResult = LosCache
+                            .Where(tsResult => tsResult.Start.DistanceTo(offset) < 2 && tsResult.End.DistanceTo(unit.PositionWithoutType) < 2)
+                            .FirstOrDefault();
+
+                        if (losResult == null)
+                        {
+                            losResult = new TraceLineResult(offset, unit.PositionWithoutType);
+                            LosCache.Add(losResult);
+                            if (LosCache.Count > 300)
+                            {
+                                LosCache.RemoveRange(0, 50);
+                            }
+                        }
+
+                        if (losResult.IsVisibleAndReachable)
+                        {
+                            distanceToUnit += losResult.PathLength;
+                            if (distanceToUnit < 40)
+                            {
+                                _dangerTracelines.Add((offset, unit.PositionWithoutType));
+                                return (unit, distanceToUnit);
+                            }
+                        }
+                    }
+                }
+                distanceToUnit += segmentLength;
+            }
+
+            return (null, 0);
+        }
+
+        /*
         private (IWoWUnit unit, float pathDistance) EnemyAlongTheLine(List<(Vector3 a, Vector3 b)> segments, IWoWUnit[] hostileUnits)
         {
             float distanceToUnit = 0;
@@ -175,7 +237,7 @@ namespace WholesomeDungeonCrawler.States
             }
 
             return (null, 0);
-        }
+        }*/
 
         private List<TraceLineResult> LosCache = new List<TraceLineResult>();
 
@@ -184,13 +246,25 @@ namespace WholesomeDungeonCrawler.States
             public Vector3 Start;
             public Vector3 End;
             public bool HasLoS;
+            public List<Vector3> Path;
+            public float PathLength;
+            public float Distance;
 
             public TraceLineResult(Vector3 start, Vector3 end)
             {
                 Start = start;
                 End = end;
                 HasLoS = !TraceLine.TraceLineGo(start, end, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);
+                if (!HasLoS)
+                    return;
+                Path = PathFinder.FindPath(start, end, true);
+                PathLength = WTPathFinder.CalculatePathTotalDistance(Path);
+                Distance = start.DistanceTo(end);
             }
+
+            public bool IsVisibleAndReachable => PathLength > 0 
+                && HasLoS
+                && PathLength < Distance * 2;
         }
 
         private bool MyTeamIsAround => _entityCache.ListGroupMember.Length == _entityCache.ListPartyMemberNames.Count
