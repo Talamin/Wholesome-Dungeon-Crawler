@@ -73,8 +73,10 @@ namespace WholesomeDungeonCrawler.States
                 }
                 else
                 {
+                    var dungeon = Lists.AllDungeons.Where(x => x.ContinentId == Usefuls.ContinentId)
+                            .OrderBy(y =>y.EntranceLoc.DistanceTo(_entityCache.Me.PositionCorpse))
+                            .FirstOrDefault();
                     Logger.Log("No profile death run found, using pathfinder.");
-                    var dungeon = Lists.AllDungeons.Where(x => x.MapId == _profileManager.CurrentDungeonProfile.MapId).FirstOrDefault();
                     GoToTask.ToPosition(dungeon.EntranceLoc, skipIfCannotMakePath: false);
                 }
             }

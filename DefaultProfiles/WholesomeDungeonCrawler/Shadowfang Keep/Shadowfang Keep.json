@@ -248,7 +248,7 @@
         "Action": ""
       },
       "FindClosest": false,
-      "SkipIfNotFound": false,
+      "SkipIfNotFound": true,
       "UnitId": 3849,
       "Interactwithunit": false,
       "GossipIndex": 1,
@@ -636,7 +636,7 @@
         "Action": ""
       },
       "FindClosest": false,
-      "SkipIfNotFound": false,
+      "SkipIfNotFound": true,
       "UnitId": 3887,
       "Interactwithunit": false,
       "GossipIndex": 0,
