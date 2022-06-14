@@ -123,21 +123,34 @@ namespace WholesomeDungeonCrawler.States
 
         private (IWoWUnit unit, float pathDistance) EnemyAlongTheLine(List<(Vector3 start, Vector3 end)> segments, IWoWUnit[] hostileUnits)
         {
-            float distanceToUnit = 0;
             List<Vector3> pointsAlongLine = new List<Vector3>();
+            List<ulong> unreableMobsGuid = new List<ulong>();
+            float distanceToUnit = 0;
+            float remainder = 0;
+
             for (int i = 0; i < segments.Count; i++)
             {
                 Vector3 segmentStart = segments[i].start;
                 Vector3 segmentEnd = segments[i].end;
-                _pointsAlongPathSegments.Add(segmentEnd);
                 float segmentLength = segmentStart.DistanceTo(segmentEnd);
 
                 // get points along line
-                for (int j = 3; j < segmentLength; j += 3)
+                for (float offsetIndex = 3; offsetIndex < segmentLength; offsetIndex += 3)
                 {
+                    if (remainder > 0)
+                    {
+                        offsetIndex -= remainder;
+                        remainder = 0;
+                    }
+
+                    if (offsetIndex + 3 > segmentLength)
+                    {
+                        remainder = segmentLength - offsetIndex;
+                    }
+
                     Vector3 vector = new Vector3(segmentEnd.X - segmentStart.X, segmentEnd.Y - segmentStart.Y, segmentEnd.Z - segmentStart.Z);
                     double c = System.Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
-                    double a = j / c;
+                    double a = offsetIndex / c;
                     Vector3 offset = new Vector3(segmentStart.X + vector.X * a, segmentStart.Y + vector.Y * a, segmentStart.Z + vector.Z * a);
 
                     if (offset.DistanceTo(_entityCache.Me.PositionWithoutType) < 5)
@@ -147,22 +160,30 @@ namespace WholesomeDungeonCrawler.States
 
                     _pointsAlongPathSegments.Add(offset);
 
-                    // check if units have LoS on point
+                    // check if units have LoS/path from point
                     foreach (IWoWUnit unit in hostileUnits)
                     {
-                        if (WTPathFinder.PointDistanceToLine(segmentStart, segmentEnd, unit.PositionWithoutType) > 20)
+                        if (WTPathFinder.PointDistanceToLine(segmentStart, segmentEnd, unit.PositionWithoutType) > 20
+                            || unit.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) > 40
+                            || unreableMobsGuid.Contains(unit.Guid))
                         {
                             continue;
                         }
 
                         TraceLineResult losResult = LosCache
-                            .Where(tsResult => tsResult.Start.DistanceTo(offset) < 2 && tsResult.End.DistanceTo(unit.PositionWithoutType) < 2)
+                            .Where(tsResult => tsResult.Start.DistanceTo(offset) < 3f && tsResult.End.DistanceTo(unit.PositionWithoutType) < 3f)
                             .FirstOrDefault();
 
                         if (losResult == null)
                         {
                             losResult = new TraceLineResult(offset, unit.PositionWithoutType);
                             LosCache.Add(losResult);
+
+                            if (losResult.PathLength <= 0 && !unreableMobsGuid.Contains(unit.Guid))
+                            {
+                                unreableMobsGuid.Add(unit.Guid);
+                            }
+
                             if (LosCache.Count > 300)
                             {
                                 LosCache.RemoveRange(0, 50);
@@ -204,8 +225,8 @@ namespace WholesomeDungeonCrawler.States
                 HasLoS = !TraceLine.TraceLineGo(start, end, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);
                 if (!HasLoS)
                     return;
-                Path = PathFinder.FindPath(start, end, true);
-                PathLength = WTPathFinder.CalculatePathTotalDistance(Path);
+                Path = PathFinder.FindPath(start, end, out bool resultSuccess,  skipIfPartiel: true);
+                PathLength = resultSuccess ? WTPathFinder.CalculatePathTotalDistance(Path) : 0;
                 Distance = start.DistanceTo(end);
             }
 
@@ -234,12 +255,12 @@ namespace WholesomeDungeonCrawler.States
 
             foreach (Vector3 point in _pointsAlongPathSegments)
             {
-                Radar3D.DrawCircle(point, 0.4f, Color.Green, true, 100);
+                Radar3D.DrawCircle(point, 0.2f, Color.Green, true, 150);
             }
 
             foreach ((Vector3 a, Vector3 b) line in _dangerTracelines)
             {
-                Radar3D.DrawCircle(line.a, 0.4f, Color.Red, true, 200);
+                Radar3D.DrawCircle(line.a, 0.4f, Color.Red, false, 200);
                 Radar3D.DrawLine(line.a, line.b, Color.Red, 200);
             }
         }
