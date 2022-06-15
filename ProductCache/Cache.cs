@@ -31,7 +31,6 @@ namespace WholesomeDungeonCrawler.ProductCache
         public void Initialize()
         {
             IAmAlliance = ObjectManager.Me.IsAlliance;
-            //First Initalization of Variables
             CacheIsInInstance();
             CachePartyInviteRequest();
             //CachePlayerSpec();
@@ -42,7 +41,6 @@ namespace WholesomeDungeonCrawler.ProductCache
             }
             CacheHaveResurretion();
 
-            //Beginning of Event Subscriptions
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             robotManager.Events.FiniteStateMachineEvents.OnRunState += FiniteStateMachineEvents_OnRunState;
             EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaWithArgs;
@@ -97,7 +95,6 @@ namespace WholesomeDungeonCrawler.ProductCache
                 case "RESURRECT_REQUEST":
                     CacheHaveResurretion();
                     break;
-
             }
         }
 

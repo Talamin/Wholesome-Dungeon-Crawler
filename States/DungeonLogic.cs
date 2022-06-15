@@ -13,17 +13,14 @@ namespace WholesomeDungeonCrawler.States
 
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
-        private readonly IPartyChatManager _partyChatManager;
         private readonly ICache _cache;
 
         public DungeonLogic(IEntityCache iEntityCache,
             IProfileManager profilemanager,
-            IPartyChatManager partyChatManager,
             ICache cache)
         {
             _entityCache = iEntityCache;
             _profileManager = profilemanager;
-            _partyChatManager = partyChatManager;
             _cache = cache;
         }
         public override bool NeedToRun
@@ -35,8 +32,7 @@ namespace WholesomeDungeonCrawler.States
                     || Fight.InFight
                     || !_cache.IsInInstance
                     || _profileManager.CurrentDungeonProfile == null
-                    || _profileManager.CurrentDungeonProfile.CurrentStep == null
-                    /*|| _profileManager.CurrentDungeonProfile.CurrentStep.Order > _partyChatManager.TankStatus?.StepOrder*/)
+                    || _profileManager.CurrentDungeonProfile.CurrentStep == null)
                 {
                     return false;
                 }
@@ -53,7 +49,6 @@ namespace WholesomeDungeonCrawler.States
             }
             else
             {
-                //Logger.Log($"DungeonLogic: {_profileManager.CurrentDungeonProfile.CurrentStep.Name}");
                 _profileManager.CurrentDungeonProfile.CurrentStep.Run();
             }
         }

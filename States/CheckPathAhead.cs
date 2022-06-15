@@ -74,15 +74,6 @@ namespace WholesomeDungeonCrawler.States
                 if (watch.ElapsedMilliseconds > 50)
                     Logger.LogError($"Calc took {watch.ElapsedMilliseconds} ms | {LosCache.Count} in cache");
 
-                // the tank is closer from the unit, we can go
-                if (_unitOnPath.unit != null
-                    && !_entityCache.IAmTank
-                    && _entityCache.TankUnit != null
-                    && _entityCache.TankUnit.PositionWithoutType.DistanceTo(_unitOnPath.unit.PositionWithoutType) + 15 < _entityCache.Me.PositionWithoutType.DistanceTo(_unitOnPath.unit.PositionWithoutType))
-                {
-                    return false;
-                }
-
                 return _unitOnPath.unit != null;
             }
         }

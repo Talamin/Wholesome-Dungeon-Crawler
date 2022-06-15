@@ -39,23 +39,28 @@ namespace WholesomeDungeonCrawler.States
                     Interact.ClearTarget();
                 }
 
-                if (!Fight.InFight)
+                IWoWUnit attackerGroupMember = TargetingHelper.FindClosestUnit(unit =>
+                    _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60,
+                    Toolbox.PointInMidOfGroup(_entityCache.ListGroupMember),
+                    _entityCache.EnemiesAttackingGroup);
+                if (attackerGroupMember != null && attackerGroupMember.TargetGuid != _entityCache.Me.Guid)
                 {
-                    IWoWUnit attackerGroupMember = AttackingGroupMember();
-                    if (attackerGroupMember != null && attackerGroupMember.TargetGuid != _entityCache.Me.Guid)
-                    {
-                        foundtarget = attackerGroupMember;
-                        Logger.Log($"Attacking: {foundtarget.Name} is attacking Groupmember, switching");
-                        return true;
-                    }
+                    foundtarget = attackerGroupMember;
+                    Logger.Log($"Attacking: {foundtarget.Name} is attacking Groupmember, switching");
+                    return true;
+                }
 
-                    IWoWUnit attackerMe = AttackingMe();
-                    if (attackerMe != null && attackerMe.TargetGuid == _entityCache.Me.Guid)
-                    {
-                        foundtarget = attackerMe;
-                        Logger.Log($"Attacking: {foundtarget.Name} is attacking Me, switching");
-                        return true;
-                    }
+                // defend against enemy attacking me
+                IWoWUnit attackerMe = TargetingHelper.FindClosestUnit(unit =>
+                    unit.TargetGuid == _entityCache.Me.Guid
+                    && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60,
+                    _entityCache.Me.PositionWithoutType,
+                    _entityCache.EnemiesAttackingGroup);
+                if (attackerMe != null && attackerMe.TargetGuid == _entityCache.Me.Guid)
+                {
+                    foundtarget = attackerMe;
+                    Logger.Log($"Attacking: {foundtarget.Name} is attacking Me, switching");
+                    return true;
                 }
 
                 return false;
@@ -68,42 +73,6 @@ namespace WholesomeDungeonCrawler.States
             MovementManager.StopMove();
             Fight.StopFight();
             Fight.StartFight(foundtarget.Guid, false);
-        }
-
-        private IWoWUnit AttackingGroupMember()
-        {
-            IWoWUnit Unit = TargetingHelper.FindClosestUnit(unit =>
-            unit.IsAttackingGroup
-            && !unit.IsAttackingMe
-            && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-            && !unit.Dead, PointInMidOfGroup(), _entityCache.EnemyUnitsList);
-            return Unit;
-        }
-
-        private IWoWUnit AttackingMe()
-        {
-            IWoWUnit Unit = TargetingHelper.FindClosestUnit(unit =>
-            unit.IsAttackingMe
-            && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-            && !unit.Dead, _entityCache.Me.PositionWithoutType, _entityCache.EnemyUnitsList);
-            return Unit;
-        }
-
-        private Vector3 PointInMidOfGroup()
-        {
-            float xvec = 0, yvec = 0, zvec = 0;
-
-            int counter = 0;
-            foreach (IWoWUnit player in _entityCache.ListGroupMember)
-            {
-                xvec = xvec + player.PositionWithoutType.X;
-                yvec = yvec + player.PositionWithoutType.Y;
-                zvec = zvec + player.PositionWithoutType.Z;
-
-                counter++;
-            }
-
-            return new Vector3(xvec / counter, yvec / counter, zvec / counter);
         }
     }
 }

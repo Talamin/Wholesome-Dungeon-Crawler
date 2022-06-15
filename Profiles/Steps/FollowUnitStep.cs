@@ -76,9 +76,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     Vector3 targetPosition = foundUnit.PositionWithoutType;
                     float followDistance = 20;
 
-                    foreach(IWoWUnit unit in _entityCache.EnemyUnitsList)
-                    { 
-                        if(unit.TargetGuid == foundUnit.Guid)
+                    foreach (IWoWUnit unit in _entityCache.EnemyUnitsList)
+                    {
+                        if (unit.TargetGuid == foundUnit.Guid)
                         {
                             Logger.Log("Defending Follow Unit");
                             ObjectManager.Me.Target = unit.Guid;

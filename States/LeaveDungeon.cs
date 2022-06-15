@@ -32,12 +32,8 @@ namespace WholesomeDungeonCrawler.States
                     || Fight.InFight
                     || !_cache.IsInInstance
                     || _profileManager.CurrentDungeonProfile == null
-                    || _profileManager.CurrentDungeonProfile.CurrentStep == null)
-                {
-                    return false;
-                }
-
-                if (_cache.LootRollShow)
+                    || _profileManager.CurrentDungeonProfile.CurrentStep == null
+                    || _cache.LootRollShow)
                 {
                     return false;
                 }

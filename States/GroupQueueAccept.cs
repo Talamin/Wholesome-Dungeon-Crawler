@@ -1,5 +1,4 @@
-﻿
-using robotManager.FiniteStateMachine;
+﻿using robotManager.FiniteStateMachine;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache;
@@ -14,6 +13,7 @@ namespace WholesomeDungeonCrawler.States
         public override string DisplayName => "GroupQueue Accept";
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
+        private Timer timer = new Timer();
 
         public GroupQueueAccept(ICache iCache, IEntityCache cache)
         {
@@ -21,9 +21,6 @@ namespace WholesomeDungeonCrawler.States
             _entityCache = cache;
         }
 
-        private Timer timer = new Timer();
-
-        //private readonly bool LFDRoleCheckPopupAcceptButton = Lua.LuaDoString<bool>("return LFDRoleCheckPopupAcceptButton:IsVisible()");
         public override bool NeedToRun
         {
             get
@@ -37,12 +34,12 @@ namespace WholesomeDungeonCrawler.States
                 {
                     return false;
                 }
+
                 timer = new Timer(1000);
 
                 return _cache.LFGRoleCheckShown;
 
             }
-
         }
 
         public override void Run()
@@ -50,6 +47,5 @@ namespace WholesomeDungeonCrawler.States
             Logger.Log("Accept Role Queue Check!");
             Lua.LuaDoString("LFDRoleCheckPopupAcceptButton:Click()");
         }
-
     }
 }

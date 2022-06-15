@@ -167,23 +167,23 @@ namespace WholesomeDungeonCrawler.Managers
             var step = _profileManager.CurrentDungeonProfile.CurrentStep != null ? _profileManager.CurrentDungeonProfile.CurrentStep.Name : "N/A";
 
             Lua.LuaDoString($@"
-            if wdcrawler then
-                wdcrawler.statustext:SetText(""{Logging.Status}"")
-                wdcrawler.statetext:SetText(""{_cache.CurrentState}"")
-                wdcrawler.followingtext:SetText(""{follow}"")
-                wdcrawler.dungeontext:SetText(""{dung}"")
-                wdcrawler.steptext:SetText(""{step}"")
-            end
-        ");
+                if wdcrawler then
+                    wdcrawler.statustext:SetText(""{Logging.Status}"")
+                    wdcrawler.statetext:SetText(""{_cache.CurrentState}"")
+                    wdcrawler.followingtext:SetText(""{follow}"")
+                    wdcrawler.dungeontext:SetText(""{dung}"")
+                    wdcrawler.steptext:SetText(""{step}"")
+                end
+            ");
         }
 
         public void HideFrame()
         {
             Lua.LuaDoString($@"
-            if wdcrawler then
-                wdcrawler:Hide();
-            end
-        ");
+                if wdcrawler then
+                    wdcrawler:Hide();
+                end
+            ");
         }
     }
 }

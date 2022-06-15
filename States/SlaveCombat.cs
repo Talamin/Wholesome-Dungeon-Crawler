@@ -1,4 +1,5 @@
 ﻿using robotManager.FiniteStateMachine;
+using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
@@ -45,25 +46,29 @@ namespace WholesomeDungeonCrawler.States
                 // Defend tank
                 if (_entityCache.TankUnit != null)
                 {
-                    IWoWUnit _attackingTank = AttackingTank(_entityCache.TankUnit);
-                    if (_attackingTank != null && _entityCache.Me.TargetGuid == 0)
+                    IWoWUnit attackingTank = TargetingHelper.FindClosestUnit(unit =>
+                        unit.TargetGuid == _entityCache.TankUnit.Guid,
+                        _entityCache.TankUnit.PositionWithoutType,
+                        _entityCache.EnemiesAttackingGroup);
+
+                    if (attackingTank != null)
                     {
-                        Target = _attackingTank;
+                        Target = attackingTank;
                         Logger.Log($"SlaveCombat: Target attacking Tank: {Target.Name} , start defending");
                         return true;
                     }
                 }
 
                 // Defend players when the tank is dead, out of OM, or has no target
-                if (_entityCache.TankUnit == null || _entityCache.TankUnit.Dead || _entityCache.TankUnit.TargetGuid == 0)
+                IWoWUnit attackingGroup = _entityCache.EnemiesAttackingGroup
+                    .OrderBy(unit => unit.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType))
+                    .FirstOrDefault();
+
+                if (attackingGroup != null)
                 {
-                    IWoWUnit _attackingPlayer = AttackingPlayer();
-                    if (_attackingPlayer != null)
-                    {
-                        Target = _attackingPlayer;
-                        Logger.Log($"SlaveCombat: Target attacking Player: {Target.Name} , start defending");
-                        return true;
-                    }
+                    Target = attackingGroup;
+                    Logger.Log($"SlaveCombat: Target attacking Player: {Target.Name} , start defending");
+                    return true;
                 }
 
                 return false;
@@ -76,17 +81,7 @@ namespace WholesomeDungeonCrawler.States
             Fight.StopFight();
             Logger.Log("Start Fight with: " + Target.Guid + " Slave Combat State");
             ObjectManager.Me.Target = Target.Guid;
-            //Fight.CurrentTarget = Target.WowUnit;
             Fight.StartFight(Target.Guid, false);
         }
-
-
-        private IWoWUnit AttackingTank(IWoWUnit tank) => TargetingHelper.FindClosestUnit(unit =>
-                unit.TargetGuid == tank.Guid,
-                tank.PositionWithoutType, _entityCache.EnemyUnitsList);
-
-        private IWoWUnit AttackingPlayer() => TargetingHelper.FindClosestUnit(unit =>
-                unit.IsAttackingGroup || unit.IsAttackingMe, _entityCache.Me.PositionWithoutType, _entityCache.EnemyUnitsList);
-
     }
 }

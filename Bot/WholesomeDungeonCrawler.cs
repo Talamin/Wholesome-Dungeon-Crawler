@@ -34,18 +34,14 @@ namespace WholesomeDungeonCrawler.Bot
                 _profileManager.Initialize();
                 _partyChatManager = new PartyChatManager(_entityCache, _profileManager);
                 _partyChatManager.Initialize();
-                _targetingManager = new TargetingManager(_entityCache, _cache);
+                _targetingManager = new TargetingManager(_entityCache);
                 _targetingManager.Initialize();
                 _luaStatusFrameManager = new LuaStatusFrameManager(_cache, _entityCache, _profileManager);
                 _luaStatusFrameManager.Initialize();
 
-                //Update Spellbook after Initialization
                 SpellManager.UpdateSpellBook();
-
-                //Load CustomClass
                 CustomClass.LoadCustomClass();
 
-                //FSM
                 _fsm.States.Clear();
 
                 _checkPathAheadState = new CheckPathAhead(_entityCache, _partyChatManager, _cache);
@@ -74,18 +70,18 @@ namespace WholesomeDungeonCrawler.Bot
                     new WaitRest(_cache, _entityCache),
                     _checkPathAheadState,
                     new LeaveDungeon(_cache, _entityCache, _profileManager),
-                    new DungeonLogic(_entityCache, _profileManager, _partyChatManager, _cache),
+                    new DungeonLogic(_entityCache, _profileManager, _cache),
                     new AntiAfk(),
                     new Idle(),
                 };
 
-                // Reverse the array so hiest prio states have the highest index
+                // Reverse the array so highest prio states have the highest index
                 states = states.Reverse().ToArray();
                 
                 // Add the states with correct priority
                 for (int i = 0; i < states.Length; i++)
                 {
-                    //Logger.Log($"State: {states[i].DisplayName}, Prio: {i}");
+                    // Logger.Log($"State: {states[i].DisplayName}, Prio: {i}");
                     states[i].Priority = i;
                     _fsm.AddState(states[i]);
                 }

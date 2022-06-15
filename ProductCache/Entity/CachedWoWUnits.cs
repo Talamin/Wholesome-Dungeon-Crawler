@@ -67,6 +67,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             }
             Auras = auras;
         }
+
         private HashSet<uint> _drinkBuffs = new HashSet<uint>()
         {
             430, 431, 432, 833, 1133, 1135, 1137, 2639, 10250, 18071, 18140,
@@ -81,6 +82,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             58645, 58648, 61827, 61828, 61830, 64056, 64354, 65363, 65418,
             65419, 65420, 65421, 65422, 69560, 69561, 72623
         };
+
         public bool HasDrinkBuff => Auras.Any(aura => _drinkBuffs.Contains(aura.Key));
 
         private HashSet<uint> _foodBuffs = new HashSet<uint>()

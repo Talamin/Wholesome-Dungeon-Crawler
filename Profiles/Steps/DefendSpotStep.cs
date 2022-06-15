@@ -30,7 +30,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
-            if(stepTimer == null)
+            if (stepTimer == null)
             {
                 stepTimer = new Timer(new System.TimeSpan(0, 0, _defendSpotModel.Timer));
             }
@@ -48,9 +48,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 }
             }
 
-            foreach(var unit in _entityCache.EnemyUnitsList)
+            foreach (var unit in _entityCache.EnemyUnitsList)
             {
-                if(unit.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= 20)
+                if (unit.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= 20)
                 {
                     Logger.Log("Defending my Spot");
                     ObjectManager.Me.Target = unit.Guid;

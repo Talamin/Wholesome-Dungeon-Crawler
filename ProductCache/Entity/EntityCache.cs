@@ -1,5 +1,4 @@
-﻿using robotManager.Helpful;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,7 +20,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
         public void Dispose()
         {
-            EventsLuaWithArgs.OnEventsLuaStringWithArgs -= EventsLuaWithArgs_OnEventsLuaStringWithArgs;
+            EventsLuaWithArgs.OnEventsLuaStringWithArgs -= OnEventsLuaStringWithArgs;
             ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
         }
         public void Initialize()
@@ -29,12 +28,12 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             CachePartyMemberChanged();
             CacheListPartyMemberGuid();
             OnObjectManagerPulse();
-            EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaStringWithArgs;
+            EventsLuaWithArgs.OnEventsLuaStringWithArgs += OnEventsLuaStringWithArgs;
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             IAmTank = ObjectManager.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName;
         }
 
-        private void EventsLuaWithArgs_OnEventsLuaStringWithArgs(string id, List<string> args)
+        private void OnEventsLuaStringWithArgs(string id, List<string> args)
         {
             switch (id)
             {
@@ -49,20 +48,12 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 case "PARTY_MEMBERS_CHANGED":
                     CacheGroupMembers();
                     break;
-                /*
-            case "PARTY_MEMBER_DISABLE":
-                Task.Delay(1000).ContinueWith(x =>
-                {
-                    CacheListPartyMemberGuid();
-                });
-                break;
-            case "PARTY_MEMBER_ENABLE":
-                Task.Delay(1000).ContinueWith(x =>
-                {
-                    CacheListPartyMemberGuid();
-                });
-                break;
-                */
+                case "PARTY_MEMBER_DISABLE":
+                    CacheGroupMembers();
+                    break;
+                case "PARTY_MEMBER_ENABLE":
+                    CacheGroupMembers();
+                    break;
                 case "RAID_ROSTER_UPDATE":
                     CacheGroupMembers();
                     break;
@@ -82,12 +73,12 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
         public IWoWUnit Target { get; private set; } = Cache(new WoWUnit(0));
         public IWoWUnit Pet { get; private set; } = Cache(new WoWUnit(0));
+        public IWoWUnit[] GroupPets { get; private set; } = new IWoWUnit[0];
         public IWoWLocalPlayer Me { get; private set; } = Cache(new WoWLocalPlayer(0));
-        //public IWoWUnit[] EnemyUnitsTargetingGroup { get; private set; } = new IWoWUnit[0];
-        public IWoWUnit[] EnemyUnitsLootable { get; private set; } = new IWoWUnit[0];
         public IWoWUnit[] EnemyUnitsList { get; private set; } = new IWoWUnit[0];
         public IWoWPlayer[] ListGroupMember { get; private set; } = new IWoWPlayer[0];
         public List<string> ListPartyMemberNames { get; private set; } = new List<string>();
+        public IWoWUnit[] EnemiesAttackingGroup { get; private set; } = new IWoWUnit[0];
         public IWoWPlayer TankUnit { get; private set; }
         private List<ulong> ListPartyMemberGuid { get; set; } = new List<ulong>();
         private ulong TankGuid { get; set; }
@@ -98,34 +89,15 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public void AddNpcIdToDefend(int npcId) => _npcToDefendEntries.Add(npcId);
         public void ClearNpcListIdToDefend() => _npcToDefendEntries.Clear();
 
-
-        //Groupplay  Section
-        public IWoWUnit[] EnemyAttackingGroup { get; private set; } = new IWoWUnit[0];
-
-        //private float EnemiesNearTargetRange;
-        //private float EnemiesNearMeRange;
-        //private float InterruptibleEnemiesRange;
-
         private static IWoWLocalPlayer Cache(WoWLocalPlayer player) => new CachedWoWLocalPlayer(player);
         private static IWoWUnit Cache(WoWUnit unit) => new CachedWoWUnit(unit);
         private static IWoWPlayer Cache(WoWPlayer player) => new CachedWoWPlayer(player);
-        private static bool Reachable(Vector3 a, Vector3 b) => !TraceLine.TraceLineGo(a, b, CGWorldFrameHitFlags.HitTestSpellLoS);
-        private static bool Reachable(Vector3 a, Vector3 b, ref bool? cachedReachable)
-        {
-            if (cachedReachable is bool reachable)
-            {
-                return reachable;
-            }
-            reachable = Reachable(a, b);
-            cachedReachable = reachable;
-            return reachable;
-        }
 
         private void OnObjectManagerPulse()
         {
             Stopwatch watch = Stopwatch.StartNew();
-            WoWLocalPlayer player;
-            IWoWLocalPlayer cachedPlayer;
+            WoWLocalPlayer me;
+            IWoWLocalPlayer cachedMe;
             IWoWUnit cachedTarget, cachedPet;
             List<WoWUnit> units;
             List<WoWPlayer> playerUnits;
@@ -137,18 +109,15 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
             lock (cacheLock)
             {
-                player = ObjectManager.Me;
-                cachedPlayer = Cache(player);
+                me = ObjectManager.Me;
+                cachedMe = Cache(me);
 
                 cachedTarget = Cache(new WoWUnit(0));
-                var targetObjectBaseAddress = ObjectManager.GetObjectByGuid(player.Target).GetBaseAddress;
+                var targetObjectBaseAddress = ObjectManager.GetObjectByGuid(me.Target).GetBaseAddress;
                 if (targetObjectBaseAddress != 0)
                 {
                     var target = new WoWUnit(targetObjectBaseAddress);
-                    if (Reachable(cachedPlayer.PositionWithoutType, target.PositionWithoutType))
-                    {
-                        cachedTarget = Cache(target);
-                    }
+                    cachedTarget = Cache(target);
                 }
 
                 cachedPet = Cache(ObjectManager.Pet);
@@ -156,13 +125,13 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 playerUnits = ObjectManager.GetObjectWoWPlayer();
             }
 
-            var enemyUnitsLootable = new List<IWoWUnit>(units.Count);
-            var enemyAttackingGroup = new List<IWoWUnit>(units.Count);
-            var enemyUnits = new List<IWoWUnit>(units.Count);
-            var listGroupMember = new List<IWoWPlayer>(units.Count);
+            var enemyAttackingGroup = new List<IWoWUnit>();
+            var enemyUnits = new List<IWoWUnit>();
+            var listGroupMember = new List<IWoWPlayer>();
+            var groupPets = new List<IWoWUnit>();
 
             var targetGuid = cachedTarget.Guid;
-            var playerPosition = cachedPlayer.PositionWithoutType;
+            var playerPosition = cachedMe.PositionWithoutType;
 
             IWoWPlayer tankUnit = null;
 
@@ -188,6 +157,11 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             NpcsToDefend.Clear();
             TankUnit = tankUnit;
 
+            List<ulong> allTeamGuids = new List<ulong>();
+            allTeamGuids.Add(cachedMe.Guid);
+            allTeamGuids.AddRange(GroupPets.Select(gp => gp.Guid));
+            allTeamGuids.AddRange(ListGroupMember.Select(lgm => lgm.Guid));
+
             foreach (var unit in units)
             {
                 var unitGuid = unit.Guid;
@@ -195,15 +169,16 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 bool? cachedReachable = unitGuid == targetGuid ? true : (bool?)null;
                 var unitPosition = unit.PositionWithoutType;
 
+                if (ListPartyMemberGuid.Contains(unit.PetOwnerGuid) || unit.IsMyPet)
+                {
+                    groupPets.Add(cachedUnit);
+                    continue;
+                }
+
                 if (unit.IsAlive && _npcToDefendEntries.Contains(unit.Entry))
                 {
                     NpcsToDefend.Add(cachedUnit);
                     continue;
-                }
-
-                if (!unit.IsDead && unit.Level > 1 && unit.Reaction <= Reaction.Neutral && unit.PositionWithoutType.DistanceTo(playerPosition) <= 100)
-                {
-                    enemyUnits.Add(cachedUnit);
                 }
 
                 if (!unit.IsAlive || unit.NotSelectable)
@@ -211,27 +186,34 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                     continue;
                 }
 
-                if (unit.IsTargetingPartyMember && Reachable(playerPosition, unitPosition, ref cachedReachable))
+                if (unit.Level > 1
+                    && unit.Reaction <= Reaction.Neutral
+                    && unit.PositionWithoutType.DistanceTo(playerPosition) <= 100)
                 {
-                    enemyAttackingGroup.Add(cachedUnit);
+                    enemyUnits.Add(cachedUnit);
+
+                    if (unit.Target != 0
+                        && allTeamGuids.Contains(unit.Target))
+                    {
+                        enemyAttackingGroup.Add(cachedUnit);
+                    }
                 }
             }
 
-
-            Me = cachedPlayer;
+            Me = cachedMe;
             Target = cachedTarget;
             Pet = cachedPet;
 
-            EnemyUnitsLootable = enemyUnitsLootable.ToArray();
-            EnemyAttackingGroup = enemyAttackingGroup.ToArray();
+            EnemiesAttackingGroup = enemyAttackingGroup.ToArray();
             EnemyUnitsList = enemyUnits.ToArray();
+            GroupPets = GroupPets.ToArray();
             /*
             if (watch.ElapsedMilliseconds > 50)
                 Logger.LogError($"Entity cache pulse took {watch.ElapsedMilliseconds}");*/
 
         }
 
-        // Records guid of players in object manager
+        // Records guid of players other than me in object manager
         private void CacheListPartyMemberGuid()
         {
             List<ulong> partyMembersGuids = new List<ulong>();
@@ -264,8 +246,10 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 {
                     ListPartyMemberNames = plist.Remove(plist.Length - 1, 1).Split(',').ToList();
                 }
-                Logging.Write($"CachePartyMemberChanged()");
-                ListPartyMemberNames.ForEach(m => Logging.Write(m));
+                else
+                {
+                    ListPartyMemberNames = new List<string>();
+                }
             }
         }
 
