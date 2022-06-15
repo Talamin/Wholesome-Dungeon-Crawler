@@ -78,7 +78,7 @@ namespace WholesomeDungeonCrawler.States
                 if (_unitOnPath.unit != null
                     && !_entityCache.IAmTank
                     && _entityCache.TankUnit != null
-                    && _entityCache.TankUnit.PositionWithoutType.DistanceTo(_unitOnPath.unit.PositionWithoutType) + 5 < _entityCache.Me.PositionWithoutType.DistanceTo(_unitOnPath.unit.PositionWithoutType))
+                    && _entityCache.TankUnit.PositionWithoutType.DistanceTo(_unitOnPath.unit.PositionWithoutType) + 15 < _entityCache.Me.PositionWithoutType.DistanceTo(_unitOnPath.unit.PositionWithoutType))
                 {
                     return false;
                 }

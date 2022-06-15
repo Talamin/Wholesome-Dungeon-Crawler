@@ -4053,7 +4053,7 @@
   ],
   "MapId": 43,
   "Name": "WailingCaverns",
-  "Faction": 1,
+  "Faction": 0,
   "DeathRunPath": [
     {
       "X": -597.9503,

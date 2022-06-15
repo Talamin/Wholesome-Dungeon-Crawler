@@ -271,7 +271,9 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
         private void CacheGroupMembers()
         {
-            Task.Delay(2000).ContinueWith(x =>
+            CacheListPartyMemberGuid();
+            CachePartyMemberChanged();
+            Task.Delay(5000).ContinueWith(x =>
             {
                 CacheListPartyMemberGuid();
                 CachePartyMemberChanged();

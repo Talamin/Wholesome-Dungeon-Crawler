@@ -2742,7 +2742,7 @@
   ],
   "MapId": 48,
   "Name": "BFD",
-  "Faction": 2,
+  "Faction": 0,
   "DeathRunPath": [
     {
       "X": 4290.03662,

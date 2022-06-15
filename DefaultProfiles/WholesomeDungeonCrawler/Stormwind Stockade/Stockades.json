@@ -647,7 +647,7 @@
   ],
   "MapId": 34,
   "Name": "Stockades",
-  "Faction": 2,
+  "Faction": 0,
   "DeathRunPath": [
     {
       "X": -9338.77,

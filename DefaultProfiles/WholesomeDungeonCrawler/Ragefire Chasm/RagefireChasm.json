@@ -839,7 +839,7 @@
       }
     }
   ],
-    "offMeshConnections": [
+  "offMeshConnections": [
     {
       "Path": [
         {
@@ -863,7 +863,7 @@
       "Name": "Graveyard jump"
     }
   ],
-    "DeathRunPath": [
+  "DeathRunPath": [
     {
       "X": 1182.26086,
       "Y": -4458.191,
@@ -1986,7 +1986,6 @@
     }
   ],
   "MapId": 389,
-  "Name": "RagefireChasm"
-  
-
+  "Name": "RagefireChasm",
+  "Faction": 0
 }
