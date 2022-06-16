@@ -4,6 +4,7 @@ using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
+using Timer = robotManager.Helpful.Timer;
 
 namespace WholesomeDungeonCrawler.States
 {
@@ -12,6 +13,7 @@ namespace WholesomeDungeonCrawler.States
         public override string DisplayName { get; set; } = "Wait - Rest";
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
+        private Timer _logTimer = new Timer();
 
         public WaitRest(ICache iCache, IEntityCache EntityCache)
         {
@@ -36,19 +38,22 @@ namespace WholesomeDungeonCrawler.States
                 {
                     if (!player.IsConnected)
                     {
-                        Logger.Log($"We wait because Member {player.Name} is not logged into game");
+                        Log($"We wait because Member {player.Name} is not logged into game");
+                        _logTimer = new Timer(1000 * 10);
                         return true;
                     }
 
                     if (player.Dead || player.Auras.ContainsKey(8326))
                     {
-                        Logger.Log($"We wait because Member {player.Name} is being dead/spooky");
+                        Log($"We wait because Member {player.Name} is being dead/spooky");
+                        _logTimer = new Timer(1000 * 10);
                         return true;
                     }
 
                     if (player.HasDrinkBuff || player.HasFoodBuff)
                     {
-                        Logger.Log($"We wait because Member {player.Name} is being thirsty or hungry");
+                        Log($"We wait because Member {player.Name} is being thirsty or hungry");
+                        _logTimer = new Timer(1000 * 10);
                         return true;
                     }
                     /*
@@ -71,6 +76,14 @@ namespace WholesomeDungeonCrawler.States
             }
 
             Thread.Sleep(500);
+        }
+
+        private void Log(string message)
+        {
+            if (_logTimer.IsReady)
+            {
+                Logger.Log(message);
+            }
         }
     }
 }

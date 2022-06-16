@@ -21,7 +21,7 @@ namespace WholesomeDungeonCrawler.States
         private readonly IEntityCache _entityCache;
         private readonly IPartyChatManager _partyChatManager;
         private readonly ICache _cache;
-        private Timer _broadcastTimer = new Timer();
+        private Timer _logTimer = new Timer();
         private (IWoWUnit unit, float pathDistance) _unitOnPath = (null, 0);
         private List<(Vector3 a, Vector3 b)> _linesToCheck = new List<(Vector3 a, Vector3 b)>();
         private List<Vector3> _pointsAlongPathSegments = new List<Vector3>();
@@ -67,7 +67,7 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 Stopwatch watch = Stopwatch.StartNew();
-                
+
                 _linesToCheck = MoveHelper.GetLinesToCheckOnCurrentPath(_entityCache.Me.PositionWithoutType);
                 _unitOnPath = EnemyAlongTheLine(_linesToCheck, _entityCache.EnemyUnitsList);
 
@@ -82,39 +82,42 @@ namespace WholesomeDungeonCrawler.States
         {
             MovementManager.StopMove();
 
-            if (_broadcastTimer.IsReady)
+            if (_entityCache.IAmTank)
             {
-                if (_entityCache.IAmTank)
+                if (!MyTeamIsAround)
                 {
-                    if (!MyTeamIsAround)
-                    {
-                        Logger.Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Waiting for the team to move their frail asses.");
-                        _broadcastTimer = new Timer(1000 * 10);
-                    }
-                    else
-                    {
-                        Logger.Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Engaging fight.");
-                        Fight.StartFight(_unitOnPath.unit.Guid);
-
-                    }
+                    Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Waiting for the team to move their frail asses.");
+                    _logTimer = new Timer(1000 * 10);
                 }
                 else
                 {
-                    if (_entityCache.TankUnit != null)
-                    {
-                        Logger.Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Waiting for the tank to move his fat ass.");
-                        _broadcastTimer = new Timer(1000 * 10);
-                    }
-                    else
-                    {
-                        Logger.Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). I don't know where the tank is.");
-                        _partyChatManager.Broadcast(PartyChatManager.ChatMessageType.ASSIST_WITH_ENEMIES_AHEAD, null);
-                        _broadcastTimer = new Timer(1000 * 10);
-                    }
+                    Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Engaging fight.");
+                    Fight.StartFight(_unitOnPath.unit.Guid);
+                }
+            }
+            else
+            {
+                if (_entityCache.TankUnit != null)
+                {
+                    Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Waiting for the tank to move his fat ass.");
+                    _logTimer = new Timer(1000 * 10);
+                }
+                else
+                {
+                    Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). I don't know where the tank is.");
+                    _partyChatManager.Broadcast(PartyChatManager.ChatMessageType.ASSIST_WITH_ENEMIES_AHEAD, null);
+                    _logTimer = new Timer(1000 * 10);
                 }
             }
         }
 
+        private void Log(string message)
+        {
+            if (_logTimer.IsReady)
+            {
+                Logger.Log(message);
+            }
+        }
 
         private (IWoWUnit unit, float pathDistance) EnemyAlongTheLine(List<(Vector3 start, Vector3 end)> segments, IWoWUnit[] hostileUnits)
         {
@@ -220,12 +223,12 @@ namespace WholesomeDungeonCrawler.States
                 HasLoS = !TraceLine.TraceLineGo(start, end, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);
                 if (!HasLoS)
                     return;
-                Path = PathFinder.FindPath(start, end, out bool resultSuccess,  skipIfPartiel: true);
+                Path = PathFinder.FindPath(start, end, out bool resultSuccess, skipIfPartiel: true);
                 PathLength = resultSuccess ? WTPathFinder.CalculatePathTotalDistance(Path) : 0;
                 Distance = start.DistanceTo(end);
             }
 
-            public bool IsVisibleAndReachable => PathLength > 0 
+            public bool IsVisibleAndReachable => PathLength > 0
                 && HasLoS
                 && PathLength < Distance * 2;
         }

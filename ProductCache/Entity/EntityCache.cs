@@ -229,7 +229,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             ListPartyMemberGuid = partyMembersGuids;
         }
 
-        // Records name of players even if outside object manager
+        // Records name of other players even if outside object manager
         private void CachePartyMemberChanged()
         {
             lock (cacheLock)
