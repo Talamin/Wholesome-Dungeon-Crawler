@@ -75,14 +75,14 @@
                     </StackPanel>
 
                 </Controls:MetroTabItem>
-                <!--<Controls:MetroTabItem Header="Dungeons">
+                <Controls:MetroTabItem Header="Dungeons">
 
                     <StackPanel HorizontalAlignment="Center">
-                        <GroupBox Header="Specific Dungeons to Queue for" BorderBrush="{x:Null}" MinWidth="200">
+                        <GroupBox Header="Dungeon Config" BorderBrush="{x:Null}" MinWidth="200">
                             <GroupBox.Background>
                                 <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
-                                    <GradientStop Color="#FFFF7C00" Offset="0"/>
-                                    <GradientStop Color="#FFFF0054" Offset="1"/>
+                                    <GradientStop Color="#FF34e89e" Offset="0"/>
+                                    <GradientStop Color="#FF0f3443" Offset="1"/>
                                 </LinearGradientBrush>
                             </GroupBox.Background>
                             <StackPanel>
@@ -91,6 +91,7 @@
                                         <DataGridTextColumn Header="Name" Binding="{Binding Name}" ></DataGridTextColumn>
                                         <Controls:DataGridNumericUpDownColumn Header="Minlvl" Binding="{Binding MinLevel}" ></Controls:DataGridNumericUpDownColumn>
                                         <Controls:DataGridNumericUpDownColumn Header="Maxlvl" Binding="{Binding MaxLevel}" ></Controls:DataGridNumericUpDownColumn>
+                                        <DataGridComboBoxColumn Header="Profile" SelectedValueBinding="{Binding Profile}"></DataGridComboBoxColumn>
                                         <DataGridCheckBoxColumn ElementStyle="{DynamicResource MetroDataGridCheckBox}"
                                                                 EditingElementStyle="{DynamicResource MetroDataGridCheckBox}" 
                                                                 Header="Enabled" Binding="{Binding Enabled}" ></DataGridCheckBoxColumn>
@@ -101,7 +102,7 @@
                         </GroupBox>
                     </StackPanel>
 
-                </Controls:MetroTabItem>-->
+                </Controls:MetroTabItem>
                 
             </Controls:MetroAnimatedTabControl>
 
