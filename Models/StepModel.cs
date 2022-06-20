@@ -89,6 +89,6 @@ namespace WholesomeDungeonCrawler.Models
         public Vector3 ExpectedEndPosition { get; set; }
         public bool FindClosest { get; set; }
         public bool SkipIfNotFound { get; set; }
-        public string UnitId { get; set; }
+        public int UnitId { get; set; }
     }
 }

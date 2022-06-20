@@ -1,6 +1,5 @@
 ﻿using robotManager.Helpful;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
@@ -18,7 +17,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private readonly IEntityCache _entityCache;
         public override string Name { get; }
         public override int Order { get; }
-        public List<int> _followUnitEntries { get; }
 
         public FollowUnitStep(FollowUnitModel followUnitModel, IEntityCache entityCache)
         {
@@ -26,15 +24,14 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _entityCache = entityCache;
             Name = followUnitModel.Name;
             Order = followUnitModel.Order;
-            _followUnitEntries = followUnitModel.UnitId.Split(',').Select(Int32.Parse).ToList();
         }
 
         public override void Run()
         {
             {
                 WoWUnit foundUnit = _followUnitModel.FindClosest
-                    ? FindClosestUnit(unit => unit.Entry == _followUnitEntries.FirstOrDefault())
-                    : ObjectManager.GetObjectWoWUnit().FirstOrDefault(unit => unit.Entry == _followUnitEntries.FirstOrDefault());
+                    ? FindClosestUnit(unit => unit.Entry == _followUnitModel.UnitId)
+                    : ObjectManager.GetObjectWoWUnit().FirstOrDefault(unit => unit.Entry == _followUnitModel.UnitId);
 
                 Vector3 myPosition = _entityCache.Me.PositionWithoutType;
 
@@ -79,9 +76,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     Vector3 targetPosition = foundUnit.PositionWithoutType;
                     float followDistance = 25;
 
-                    foreach(IWoWUnit unit in _entityCache.EnemyUnitsList)
-                    { 
-                        if(unit.TargetGuid == foundUnit.Guid)
+                    foreach (IWoWUnit unit in _entityCache.EnemyUnitsList)
+                    {
+                        if (unit.TargetGuid == foundUnit.Guid)
                         {
                             Logger.Log("Defending Follow Unit");
                             ObjectManager.Me.Target = unit.Guid;
