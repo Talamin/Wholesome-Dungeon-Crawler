@@ -6,13 +6,13 @@ using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class DeadSwim : State, IState
+    class DeadDive : State, IState
     {
-        public override string DisplayName => "DeadSwim";
+        public override string DisplayName => "DeadDive";
 
         private readonly IEntityCache _entityCache;
 
-        public DeadSwim(IEntityCache iEntityCache)
+        public DeadDive(IEntityCache iEntityCache)
         {
             _entityCache = iEntityCache;
         }
@@ -23,7 +23,7 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (!Conditions.InGameAndConnected
                     || !_entityCache.Me.Valid
-                    || !_entityCache.Me.Swimming
+                    || _entityCache.Me.Swimming
                     || !_entityCache.Me.Dead
                     || !MovementManager.InMovement)
                 {

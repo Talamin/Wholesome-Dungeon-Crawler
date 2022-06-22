@@ -52,7 +52,7 @@ namespace WholesomeDungeonCrawler.Bot
                 {
                     new Relogger(),
                     new Pause(),
-                    new DeadSwim(_entityCache),
+                    new DeadDive(_entityCache),
                     new Dead(_entityCache, _profileManager),
                     new MyMacro(),
                     new SlaveCombat(_cache, _entityCache),
