@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Linq;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
@@ -11,6 +12,8 @@ namespace WholesomeDungeonCrawler.Managers
     {
 
         private readonly IEntityCache _entityCache;
+        private static readonly long MIN_TARGET_SWAP_HP = 1000;
+        private static readonly long MIN_TARGET_SWAP_RATIO = 2;
 
         public TargetingManager(IEntityCache entityCache)
         {
@@ -34,102 +37,149 @@ namespace WholesomeDungeonCrawler.Managers
             }
 
             IWoWUnit newTarget = null;
+            IWoWUnit possibleTarget = null;
 
-            if (_entityCache.IAmTank)
+            if (_entityCache.IAmTank) 
             {
-                if (_entityCache.Target.TargetGuid == _entityCache.Me.Guid)
+                // Set target for Tank
+                // NPC is currently being tanked or fleeing, lets check there isn't anyone more important
+                if (_entityCache.Target == null || _entityCache.Target.TargetGuid == _entityCache.Me.Guid || _entityCache.Target.Fleeing)
                 {
-                    // NPC is attacked, attack him
-                    newTarget = GetNearestEnemyAttackingNPCtoProtect();
-                    if (newTarget != null)
+                    if (_entityCache.Target.Fleeing)
                     {
-                        if (newTarget.Guid != _entityCache.Me.TargetGuid)
-                        {
-                            Logger.Log($"{newTarget.Name} needs tanking to protect NPC");
-                            cancable.Cancel = true;
-                            SwitchedTargetFight(newTarget);
-                        }
-                        return;
+                        Logger.Log($"{_entityCache.Target.Name} is fleeing, I hope there is someone else to attack!");
                     }
 
-                    // My target is attacking me, check for untanked units
-                    newTarget = TargetingHelper.FindClosestUnit(unit =>
-                        unit.TargetGuid != _entityCache.Me.Guid
-                        && !unit.Fleeing
-                        && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60,
-                        _entityCache.Me.PositionWithoutType,
-                        _entityCache.EnemiesAttackingGroup);
-
-                    if (newTarget != null)
+                    // Check for escort NPCs being targeted
+                    possibleTarget = GetNearestEnemyAttackingNPCtoProtect();
+                    if (possibleTarget != null && possibleTarget.Guid != _entityCache.Me.TargetGuid)
                     {
-                        if (newTarget.Guid != _entityCache.Me.TargetGuid)
+                        newTarget = possibleTarget;
+                        Logger.Log($"{newTarget.Name} needs tanking to protect NPC");
+                    }
+
+                    if (newTarget == null)
+                    {
+                        // Check for untanked units
+                        possibleTarget = TargetingHelper.FindClosestUnit(unit =>
+                            unit.TargetGuid != _entityCache.Me.Guid
+                            && !unit.Fleeing
+                            && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60,
+                            _entityCache.Me.PositionWithoutType,
+                            _entityCache.EnemiesAttackingGroup);
+                        if (possibleTarget != null && possibleTarget.Guid != _entityCache.Me.TargetGuid)
                         {
+                            newTarget = possibleTarget;
                             Logger.Log($"{newTarget.Name} needs tanking to protect group member");
-                            cancable.Cancel = true;
-                            SwitchedTargetFight(newTarget);
                         }
-                        return;
+                    }
+
+                    // Everything is being tanked, switch tank target to lowest HP mob
+                    if (newTarget == null)
+                    {
+                        possibleTarget = GetWeakestEnemyUnit();
+                        // Don't switch unless the the current mob has both x times the HP of the weakest one and the difference is more than y
+                        if (possibleTarget != null && possibleTarget.Guid != _entityCache.Me.TargetGuid && _entityCache.Target != null
+                            && _entityCache.Target.Health / possibleTarget.Health > MIN_TARGET_SWAP_RATIO
+                            && _entityCache.Target.Health - possibleTarget.Health > MIN_TARGET_SWAP_HP)
+                        {
+                            newTarget = possibleTarget;
+                            Logger.Log($"{newTarget.Name} needs finishing off");
+                        }
+                    }
+                    if (newTarget == null && (_entityCache.Target == null || _entityCache.Target.Fleeing))
+                    {
+                        // No current or priority targets, get closest enemy in combat
+                        possibleTarget = TargetingHelper.FindClosestUnit(unit =>
+                            !unit.Fleeing
+                            && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60,
+                            _entityCache.Me.PositionWithoutType,
+                            _entityCache.EnemiesAttackingGroup);
+                        if (possibleTarget != null && possibleTarget.Guid != _entityCache.Me.TargetGuid)
+                        {
+                            newTarget = possibleTarget;
+                            Logger.Log($"{newTarget.Name} still needs killing");
+                        }
                     }
                 }
             }
             else
-            {
-                // Assist tank
-                if (_entityCache.TankUnit != null)
+            {   // Set target for DPS
+                // Kill fleers
+                if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.RDPS)
                 {
-                    newTarget = TargetingHelper.FindClosestUnit(unit =>
+                    possibleTarget = GetNearestFleeingMob();
+                    if (possibleTarget != null && possibleTarget.Guid != _entityCache.Me.TargetGuid)
+                    {
+                        newTarget = possibleTarget;
+                        Logger.Log($"Murdering fleeing mob: {newTarget.Name}");
+                    }
+                }
+                // Assist tank
+                if (_entityCache.Target == null && newTarget == null && _entityCache.TankUnit != null)
+                {
+                    possibleTarget = TargetingHelper.FindClosestUnit(unit =>
                         unit.TargetGuid == _entityCache.TankUnit.Guid
                         && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60,
                         _entityCache.TankUnit.PositionWithoutType,
                         _entityCache.EnemiesAttackingGroup);
 
-                    if (newTarget != null)
-                    {
-                        if (newTarget.Guid != _entityCache.Me.TargetGuid)
-                        {
-                            Logger.Log($"Assisting tank against {newTarget.Name}");
-                            cancable.Cancel = true;
-                            SwitchedTargetFight(newTarget);
-                        }
-                        return;
+                    if (possibleTarget != null && possibleTarget.Guid != _entityCache.Me.TargetGuid)
+                    {                        
+                            newTarget = possibleTarget;
+                            Logger.Log($"Assisting tank with {newTarget.Name}");                                                  
                     }
                 }
-
-                // Assist any Groupmember if Tank is not here or has no target
-                newTarget = TargetingHelper.FindClosestUnit(unit =>
-                    _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60,
-                    Toolbox.PointInMidOfGroup(_entityCache.ListGroupMember),
-                    _entityCache.EnemiesAttackingGroup);
-
-                if (newTarget != null)
+                if (_entityCache.Target == null && newTarget == null)
                 {
-                    if (newTarget.Guid != _entityCache.Me.TargetGuid)
-                    {
-                        Logger.Log($"Assisting Group member against {newTarget.Name}");
-                        cancable.Cancel = true;
-                        SwitchedTargetFight(newTarget);
-                    }
-                    return;
-                }
-            }
-        }
+                    // Assist any Groupmember if Tank is not here or has no target
+                    possibleTarget = TargetingHelper.FindClosestUnit(unit =>
+                        _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60,
+                        Toolbox.PointInMidOfGroup(_entityCache.ListGroupMember),
+                        _entityCache.EnemiesAttackingGroup);
 
-        private void SwitchedTargetFight(IWoWUnit target)
-        {
-            ObjectManager.Me.Target = target.Guid;
-            Fight.StartFight(target.Guid, false);
+                    if (possibleTarget != null && possibleTarget.Guid != _entityCache.Me.TargetGuid)
+                    {
+                        newTarget = possibleTarget;
+                        Logger.Log($"Assisting Group member with {newTarget.Name}");
+                    }
+                }                
+            }
+            // Actually swap to target
+            if (newTarget != null && newTarget.Guid != _entityCache.Me.TargetGuid)
+            {                
+                cancable.Cancel = true;
+                ObjectManager.Me.Target = newTarget.Guid;
+                Fight.StartFight(newTarget.Guid, false);
+            }
         }
 
         private IWoWUnit GetNearestEnemyAttackingNPCtoProtect()
         {
+            IWoWUnit result = null;
             foreach (IWoWUnit npcToDefend in _entityCache.NpcsToDefend)
             {
-                return TargetingHelper.FindClosestUnit(unit =>
+                result = TargetingHelper.FindClosestUnit(unit =>
                     unit.TargetGuid == npcToDefend.Guid,
                     _entityCache.Me.PositionWithoutType,
                     _entityCache.EnemyUnitsList);
+                if (result != null)
+                {
+                    return result;
+                }
             }
             return null;
+        }
+
+        private IWoWUnit GetWeakestEnemyUnit()
+        {
+            return _entityCache.EnemyUnitsList.Where(e => e.IsAttackingGroup && !e.Dead && !e.Fleeing).OrderBy(e => _entityCache.Me.PositionWithoutType.DistanceTo(e.PositionWithoutType)).FirstOrDefault();
+        }
+
+        private IWoWUnit GetNearestFleeingMob()
+        {
+            return _entityCache.EnemyUnitsList.Where(e => e.Fleeing).OrderBy(e => e.Health).FirstOrDefault();
+
         }
 
         public void Initialize()
