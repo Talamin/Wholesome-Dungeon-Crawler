@@ -58,7 +58,6 @@ namespace WholesomeDungeonCrawler.States
                     || _entityCache.Me.InCombatFlagOnly
                     || Fight.InFight
                     || !_cache.IsInInstance
-                    || _entityCache.Me.InCombatFlagOnly
                     || MovementManager.CurrentPath == null
                     || MovementManager.CurrentPath.Count <= 0
                     || !Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause)

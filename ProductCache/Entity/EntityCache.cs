@@ -168,6 +168,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 // TODO:  Refactor into a list of ignored, NotAttackable mobs if more are needed.
                 if ( (unit.Entry == 2748 // Archaedas
                       || unit.Entry == 10120 // Vault Warder
+                      || unit.Entry == 4857 // Stone Keeper
                       || unit.Entry == 7309 // Earthen Custodian
                       || unit.Entry == 7077 // Earthen Hallshaper
                       || unit.Entry == 7076) // Earthen Guardian

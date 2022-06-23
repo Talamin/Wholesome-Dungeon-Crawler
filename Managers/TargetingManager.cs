@@ -12,12 +12,14 @@ namespace WholesomeDungeonCrawler.Managers
     {
 
         private readonly IEntityCache _entityCache;
-        private static readonly long MIN_TARGET_SWAP_HP = 1000;
+        private static long MIN_TARGET_SWAP_HP = 1000;
         private static readonly long MIN_TARGET_SWAP_RATIO = 2;
+        private bool FleeMessage = false;
 
         public TargetingManager(IEntityCache entityCache)
         {
             _entityCache = entityCache;
+            MIN_TARGET_SWAP_HP = _entityCache.Me.Health / 4;
         }
 
         public void OnFightHandler(WoWUnit currentTarget, CancelEventArgs cancable)
@@ -45,8 +47,9 @@ namespace WholesomeDungeonCrawler.Managers
                 // NPC is currently being tanked or fleeing, lets check there isn't anyone more important
                 if (_entityCache.Target == null || _entityCache.Target.TargetGuid == _entityCache.Me.Guid || _entityCache.Target.Fleeing)
                 {
-                    if (_entityCache.Target.Fleeing)
+                    if (_entityCache.Target.Fleeing && FleeMessage == false)
                     {
+                        FleeMessage = true;
                         Logger.Log($"{_entityCache.Target.Name} is fleeing, I hope there is someone else to attack!");
                     }
 
@@ -147,7 +150,8 @@ namespace WholesomeDungeonCrawler.Managers
             }
             // Actually swap to target
             if (newTarget != null && newTarget.Guid != _entityCache.Me.TargetGuid)
-            {                
+            {
+                FleeMessage = false;
                 cancable.Cancel = true;
                 ObjectManager.Me.Target = newTarget.Guid;
                 Fight.StartFight(newTarget.Guid, false);
