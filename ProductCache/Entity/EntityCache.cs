@@ -164,6 +164,12 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
             foreach (var unit in units)
             {
+                // Replace 1234 by actual mob entry
+                if (unit.Entry == 1234 && !unit.HasTarget)
+                {
+                    continue;
+                }
+
                 var unitGuid = unit.Guid;
                 IWoWUnit cachedUnit = unitGuid == targetGuid ? cachedTarget : Cache(unit);
                 bool? cachedReachable = unitGuid == targetGuid ? true : (bool?)null;
