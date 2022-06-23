@@ -808,9 +808,9 @@
       "$type": "WholesomeDungeonCrawler.Models.GoToModel, WholesomeDungeonCrawler",
       "Precision": 3.0,
       "TargetPosition": {
-        "X": -229.798691,
-        "Y": 2259.98633,
-        "Z": 102.75647,
+        "X": -230.2772,
+        "Y": 2260.31,
+        "Z": 102.7566,
         "Type": "None",
         "Action": ""
       },
@@ -1236,33 +1236,7 @@
         "WaitTime": 0
       }
     },
-    {
-      "$type": "WholesomeDungeonCrawler.Models.GoToModel, WholesomeDungeonCrawler",
-      "Precision": 0.0,
-      "TargetPosition": {
-        "X": -136.5212,
-        "Y": 2161.99585,
-        "Z": 94.04164,
-        "Type": "None",
-        "Action": ""
-      },
-      "Name": "Approach Son of Arugal",
-      "Order": 13,
-      "CompleteCondition": {
-        "HasCompleteCondition": true,
-        "ConditionType": 4,
-        "GameObjectId": 0,
-        "InitialFlags": 0,
-        "ItemId": 0,
-        "CSharpCondition": null,
-        "DeadMobId": 2529,
-        "MobPositionId": 0,
-        "MobId": 0,
-        "MobPositionVector": null,
-        "LOSPositionVector": null,
-        "WaitTime": 0
-      }
-    },
+
     {
       "$type": "WholesomeDungeonCrawler.Models.MoveAlongPathModel, WholesomeDungeonCrawler",
       "Path": [
