@@ -164,12 +164,18 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
             foreach (var unit in units)
             {
-                // Replace 1234 by actual mob entry
-                if (unit.Entry == 1234 && !unit.HasTarget)
+                // Ignore hostile statues in Uldaman until they become animated.
+                // TODO:  Refactor into a list of ignored, NotAttackable mobs if more are needed.
+                if ( (unit.Entry == 2748 // Archaedas
+                      || unit.Entry == 10120 // Vault Warder
+                      || unit.Entry == 7309 // Earthen Custodian
+                      || unit.Entry == 7077 // Earthen Hallshaper
+                      || unit.Entry == 7076) // Earthen Guardian
+                    && ((unit.UnitFlags & UnitFlags.NotAttackable) != 0))
                 {
                     continue;
                 }
-
+                                  
                 var unitGuid = unit.Guid;
                 IWoWUnit cachedUnit = unitGuid == targetGuid ? cachedTarget : Cache(unit);
                 bool? cachedReachable = unitGuid == targetGuid ? true : (bool?)null;
