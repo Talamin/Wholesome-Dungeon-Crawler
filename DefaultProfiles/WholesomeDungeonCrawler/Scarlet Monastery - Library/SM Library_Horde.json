@@ -871,8 +871,8 @@
     }
   ],
   "MapId": 189,
-  "Name": "SM Library",
-  "Faction": 2,
+  "Name": "SM Library_Horde",
+  "Faction": 1,
   "DeathRunPath": [
     {
       "X": 2601.98071,

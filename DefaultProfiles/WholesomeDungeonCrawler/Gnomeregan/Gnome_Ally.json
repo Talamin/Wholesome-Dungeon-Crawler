@@ -1993,7 +1993,7 @@
     }
   ],
   "MapId": 90,
-  "Name": "Gnome",
+  "Name": "Gnome_Ally",
   "Faction": 2,
   "DeathRunPath": [
     {

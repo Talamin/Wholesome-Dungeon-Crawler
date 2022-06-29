@@ -241,12 +241,16 @@
   <ItemGroup>
     <None Include="Compiled\default_profiles.zip" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Blackfathom Deeps\Blackfathom Deeps.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Gnomeregan\Gnome.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Gnomeregan\Gnome_Ally.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Gnomeregan\Gnome_Horde.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Ragefire Chasm\RagefireChasm.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Razorfen Kraul\Razorfen Kraul.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Scarlet Monastery - Armory\SM Arm.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Scarlet Monastery - Graveyard\SM GY.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Scarlet Monastery - Library\SM Library.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Scarlet Monastery - Armory\SM Arm_Ally.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Scarlet Monastery - Armory\SM Arm_Horde.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Scarlet Monastery - Graveyard\SM GY_Ally.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Scarlet Monastery - Graveyard\SM GY_Horde.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Scarlet Monastery - Library\SM Library_Ally.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Scarlet Monastery - Library\SM Library_Horde.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Shadowfang Keep\Ally Shadowfang Keep.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Shadowfang Keep\Shadowfang Keep.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Stormwind Stockade\Stockades.json" />
