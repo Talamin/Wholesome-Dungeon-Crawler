@@ -327,8 +327,18 @@ namespace WholesomeDungeonCrawler.GUI
                 //    currentProfile.StepModels = StepCollection.ToList();
                 //}
                 StepCollection.Remove((StepModel)dgProfileSteps.SelectedItem);
-                currentProfile.StepModels = StepCollection.ToList();
+                RefreshStepOrder();
             }
+        }
+
+        private void RefreshStepOrder()
+        {
+            for (int i = 0; i < StepCollection.Count; i++)
+            {
+                StepCollection[i].Order = i;
+            }
+            currentProfile.StepModels = StepCollection.ToList();
+            dgProfileSteps.ItemsSource = StepCollection;
         }
 
         private async void miMoveAlongPathStep_Click(object sender, RoutedEventArgs e)
@@ -587,6 +597,7 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 if (dgProfileSteps.SelectedItem != null)
                 {
+                    RefreshStepOrder();
                     var currentOrder = ((StepModel)dgProfileSteps.SelectedItem).Order;
                     var closestStep = currentProfile.StepModels.OrderByDescending(x => x.Order).FirstOrDefault(y => y.Order < currentOrder);
                     if (closestStep != null)
@@ -612,6 +623,7 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 if (dgProfileSteps.SelectedItem != null)
                 {
+                    RefreshStepOrder();
                     var currentOrder = ((StepModel)dgProfileSteps.SelectedItem).Order;
                     var closestStep = currentProfile.StepModels.OrderBy(x => x.Order).FirstOrDefault(y => y.Order > currentOrder);
                     if (closestStep != null)
