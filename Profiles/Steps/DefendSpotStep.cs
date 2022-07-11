@@ -34,7 +34,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             {
                 stepTimer = new Timer(new System.TimeSpan(0, 0, _defendSpotModel.Timer));
             }
-            if (_entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) < _defendSpotModel.Precision && stepTimer.IsReady)
+            Logger.Log("Timer: " + stepTimer);
+            if (_entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= _defendSpotModel.Precision && stepTimer.IsReady)
             {
                 if (!_defendSpotModel.CompleteCondition.HasCompleteCondition)
                 {
