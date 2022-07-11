@@ -18,25 +18,34 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         private Timer stepTimer;
 
+        private float Precision;
+
         public DefendSpotStep(DefendSpotModel defendSpotModel, IEntityCache entityCache)
         {
             _defendSpotModel = defendSpotModel;
             _entityCache = entityCache;
             Name = _defendSpotModel.Name;
             Order = _defendSpotModel.Order;
+            Precision = _defendSpotModel.Precision;
         }
 
 
 
         public override void Run()
         {
+            if(Precision == 0)
+            {
+                Precision = 5;
+            }
             if (stepTimer == null)
             {
-                stepTimer = new Timer(new System.TimeSpan(0, 0, _defendSpotModel.Timer));
+                stepTimer = new Timer(_defendSpotModel.Timer);
+                //Logger.Log("Set stepTimer to: " + _defendSpotModel.Timer);
             }
-            Logger.Log("Timer: " + stepTimer);
-            if (_entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= _defendSpotModel.Precision && stepTimer.IsReady)
+            //Logger.Log("Distance To Point: " + _entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition));
+            if (_entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= Precision && stepTimer.IsReady)
             {
+                //Logger.Log("Steptimer Ready? " + stepTimer.IsReady);
                 if (!_defendSpotModel.CompleteCondition.HasCompleteCondition)
                 {
                     IsCompleted = true;
@@ -59,7 +68,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 }
             }
 
-            if (!MovementManager.InMovement || MovementManager.CurrentMoveTo.DistanceTo(_defendSpotModel.DefendPosition) > _defendSpotModel.Precision)
+            //Logger.Log("Steptimer Ready? " + stepTimer.IsReady);
+
+            if (!MovementManager.InMovement || _entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) > Precision)
             {
                 GoToTask.ToPosition(_defendSpotModel.DefendPosition);
             }
