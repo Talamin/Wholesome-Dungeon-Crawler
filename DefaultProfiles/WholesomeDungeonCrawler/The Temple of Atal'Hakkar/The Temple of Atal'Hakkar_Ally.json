@@ -3502,8 +3502,8 @@
     }
   ],
   "MapId": 109,
-  "Name": "The Temple of Atal'Hakkar",
-  "Faction": 0,
+  "Name": "The Temple of Atal'Hakkar_Ally",
+  "Faction": 2,
   "DeathRunPath": [
     {
       "X": -10567.8135,
