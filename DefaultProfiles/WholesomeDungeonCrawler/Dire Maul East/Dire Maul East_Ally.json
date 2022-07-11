@@ -2742,8 +2742,8 @@
     }
   ],
   "MapId": 429,
-  "Name": "Dire Maul East",
-  "Faction": 0,
+  "Name": "Dire Maul East_Ally",
+  "Faction": 2,
   "DeathRunPath": [
     {
       "X": -4590.40869,
