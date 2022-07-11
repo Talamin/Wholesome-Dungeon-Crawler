@@ -33,7 +33,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
-            if(Precision == 0)
+            if(Precision < 5)
             {
                 Precision = 5;
             }
