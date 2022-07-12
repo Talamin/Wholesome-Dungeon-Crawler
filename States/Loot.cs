@@ -1,4 +1,4 @@
-﻿/*using robotManager.FiniteStateMachine;
+﻿using robotManager.FiniteStateMachine;
 using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +17,9 @@ namespace WholesomeDungeonCrawler.States
 
         private readonly ICache _cache;
         private readonly IEntityCache _entitycache;
-        public Loot(ICache iCache, IEntityCache entityCache, int priority)
+        public Loot(ICache iCache, IEntityCache entityCache)
         {
             _cache = iCache;
-            Priority = priority;
             _entitycache = entityCache;
         }
 
@@ -29,14 +28,14 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!Conditions.InGameAndConnected
-                    || !ObjectManager.Me.IsValid
+                    || !_entitycache.Me.Valid
                     || Fight.InFight
-                    || Bag.GetContainerNumFreeSlots <= 2) // could be interesting to cache that too
+                    || Bag.GetContainerNumFreeSlots <= 2) 
                 {
                     return false;
                 }
 
-                return _entitycache.EnemyUnitsLootable.Count() > 0;
+                return GetListLootableUnits().Count() > 0;
             }
         }
 
@@ -57,4 +56,3 @@ namespace WholesomeDungeonCrawler.States
         }
     }
 }
-*/

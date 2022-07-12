@@ -193,7 +193,7 @@
                             <Button x:Name="btnDefendSpotGetCurrentPos" Content="Get Current Position" Margin="5" Click="btnDefendSpotGetCurrentPos_Click" />
                         </StackPanel>
                         <Controls:NumericUpDown x:Name="txtDefendSpotPrecision" Controls:TextBoxHelper.Watermark="Precision" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="10 5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.Precision, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <Controls:NumericUpDown x:Name="txtDefendSpotTimer" Controls:TextBoxHelper.Watermark="Seconds" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="10 5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.Timer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <Controls:NumericUpDown x:Name="txtDefendSpotTimer" Controls:TextBoxHelper.Watermark="MilliSeconds" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="10 5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.Timer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
