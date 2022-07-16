@@ -151,6 +151,10 @@ namespace WholesomeDungeonCrawler.GUI
 
                             await this.ShowMessageAsync("Profile Saved!", "Saved to " + path, MessageDialogStyle.Affirmative, basicDialogSettings);
                         }
+                        else
+                        {
+                            await this.ShowMessageAsync("Save Failed.", "Dungeon does not exist.", MessageDialogStyle.Affirmative, basicDialogSettings);
+                        }
                     }
                     else
                     {

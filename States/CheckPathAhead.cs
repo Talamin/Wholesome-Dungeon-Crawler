@@ -162,6 +162,8 @@ namespace WholesomeDungeonCrawler.States
                     {
                         if (WTPathFinder.PointDistanceToLine(segmentStart, segmentEnd, unit.PositionWithoutType) > 20
                             || unit.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) > 40
+                            || ((int)unit.Reaction) > 2
+                            || Lists.IgnoreWhenCheckingPathListInt.Contains(unit.UnitID)
                             || unreableMobsGuid.Contains(unit.Guid))
                         {
                             continue;
@@ -190,7 +192,7 @@ namespace WholesomeDungeonCrawler.States
                         if (losResult.IsVisibleAndReachable)
                         {
                             distanceToUnit += losResult.PathLength;
-                            if (distanceToUnit < 40)
+                            if (distanceToUnit < 30)
                             {
                                 _dangerTracelines.Add((offset, unit.PositionWithoutType));
                                 return (unit, distanceToUnit);

@@ -165,18 +165,17 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             foreach (var unit in units)
             {
                 // Ignore hostile statues in Uldaman until they become animated.
-                // TODO:  Refactor into a list of ignored, NotAttackable mobs if more are needed.
-                if ( (unit.Entry == 2748 // Archaedas
-                      || unit.Entry == 10120 // Vault Warder
-                      || unit.Entry == 4857 // Stone Keeper
-                      || unit.Entry == 7309 // Earthen Custodian
-                      || unit.Entry == 7077 // Earthen Hallshaper
-                      || unit.Entry == 7076) // Earthen Guardian
+                if (Lists.PriorityTargetListInt.Contains(unit.Entry)                    
                     && ((unit.UnitFlags & UnitFlags.NotAttackable) != 0))
                 {
                     continue;
                 }
-                                  
+                // Ignore seed pods from Nexus
+                if (Lists.IgnoreTargetListInt.Contains(unit.Entry))
+                {
+                    continue;
+                }
+
                 var unitGuid = unit.Guid;
                 IWoWUnit cachedUnit = unitGuid == targetGuid ? cachedTarget : Cache(unit);
                 bool? cachedReachable = unitGuid == targetGuid ? true : (bool?)null;
@@ -199,7 +198,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                     continue;
                 }
 
-                if (unit.Level > 1
+                if (unit.Level > 1                    
                     && unit.Reaction <= Reaction.Neutral
                     && unit.PositionWithoutType.DistanceTo(playerPosition) <= 100)
                 {
