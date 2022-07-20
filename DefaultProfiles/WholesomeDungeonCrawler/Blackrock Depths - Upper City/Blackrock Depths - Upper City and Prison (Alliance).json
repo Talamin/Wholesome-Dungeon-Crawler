@@ -5685,7 +5685,7 @@
         "Action": ""
       },
       "FindClosest": false,
-      "SkipIfNotFound": false,
+      "SkipIfNotFound": true,
       "UnitId": 9039,
       "Interactwithunit": false,
       "GossipIndex": 1,
