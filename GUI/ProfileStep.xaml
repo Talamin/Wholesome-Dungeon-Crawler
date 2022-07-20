@@ -163,6 +163,12 @@
                             <Controls:NumericUpDown x:Name="txtMoveToUnitId" Controls:TextBoxHelper.Watermark="Unit ID" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.UnitId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <Button x:Name="btnGetMoveToUnitId" Content="Get Target Unit Id" Margin="5" Click="btnGetTargetEntry_Click"/>
                         </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5">
+                            <Controls:ToggleSwitch x:Name="chkFoundUnit" IsChecked="{Binding SelectedItem.SkipIfNotFound, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="SkipIfNotFound" OffLabel="SkipIfNotFound" Margin="5"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="5">
+                            <Controls:ToggleSwitch x:Name="chkFindClosest" IsChecked="{Binding SelectedItem.FindClosest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="FindClosest at the End" OffLabel="FindClosest at the End" Margin="5"/>
+                        </StackPanel>
                         <Controls:NumericUpDown Controls:TextBoxHelper.Watermark="Gossip Index" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.GossipIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
                 </GroupBox>

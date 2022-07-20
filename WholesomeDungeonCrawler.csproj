@@ -241,8 +241,11 @@
   <ItemGroup>
     <None Include="Compiled\default_profiles.zip" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Blackfathom Deeps\Blackfathom Deeps.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Dire Maul East\Dire Maul East.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Dire Maul East\Dire Maul East_Ally.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Gnomeregan\Gnome_Ally.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Gnomeregan\Gnome_Horde.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Hellfire Ramparts\Hellfire Ramparts_Ally.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Ragefire Chasm\RagefireChasm.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Razorfen Downs\RazorfenDowns_Neutral.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Razorfen Kraul\Razorfen Kraul.json" />
@@ -257,7 +260,9 @@
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Shadowfang Keep\ShadowfangKeep_Ally.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Shadowfang Keep\ShadowfangKeep_Horde.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Stormwind Stockade\Stockades_Neutral.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\The Blood Furnace\The Blood Furnace %28Alliance%29.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\The Deadmines\TheDeadMines_Netral.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\The Temple of Atal%27Hakkar\The Temple of Atal%27Hakkar_Ally.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Uldaman Echomok Door, second Entrance\Uldaman_Neutral.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Wailing Caverns\WailingCaverns.json" />
     <None Include="Wholesome-Toolbox\Wholesome_Toolbox.projitems" />
