@@ -8,7 +8,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
     public interface IWoWUnit
     {
         string Name { get; }
-        uint UnitID { get; }
+        int UnitID { get; }
         ulong Guid { get; }
         ulong TargetGuid { get; }
         bool Valid { get; }
