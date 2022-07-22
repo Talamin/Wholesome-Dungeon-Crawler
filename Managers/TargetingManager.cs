@@ -108,11 +108,22 @@ namespace WholesomeDungeonCrawler.Managers
             }
             else
             {   // Set target for DPS
+                //KILL Prio Target First
+                if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.RDPS
+                    || WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.MDPS)
+                {
+                    possibleTarget = GetNearestPrioTarget();
+                    if (possibleTarget != null && possibleTarget.Guid != _entityCache.Me.TargetGuid)
+                    {
+                        newTarget = possibleTarget;
+                        Logger.Log($"Slaughering Prio-Target mob: {newTarget.Name}");
+                    }
+                }
                 // Kill fleers
                 if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.RDPS)
                 {
                     possibleTarget = GetNearestFleeingMob();
-                    if (possibleTarget != null && possibleTarget.Guid != _entityCache.Me.TargetGuid)
+                    if (_entityCache.Target == null && newTarget == null && possibleTarget != null && possibleTarget.Guid != _entityCache.Me.TargetGuid)
                     {
                         newTarget = possibleTarget;
                         Logger.Log($"Murdering fleeing mob: {newTarget.Name}");
@@ -175,6 +186,10 @@ namespace WholesomeDungeonCrawler.Managers
             return null;
         }
 
+        private IWoWUnit GetNearestPrioTarget()
+        {
+            return _entityCache.EnemyUnitsList.Where(e => Lists.PriorityTargetListInt.Contains(e.UnitID)).FirstOrDefault();
+        }
         private IWoWUnit GetWeakestEnemyUnit()
         {
             return _entityCache.EnemyUnitsList.Where(e => e.IsAttackingGroup && !e.Dead && !e.Fleeing).OrderBy(e => _entityCache.Me.PositionWithoutType.DistanceTo(e.PositionWithoutType)).FirstOrDefault();

@@ -241,8 +241,11 @@
   <ItemGroup>
     <None Include="Compiled\default_profiles.zip" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Blackfathom Deeps\Blackfathom Deeps.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Blackrock Depths - Prison\Blackrock Depths - Upper City and Prison %28Alliance%29.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Blackrock Depths - Upper City\Blackrock Depths - Upper City and Prison %28Alliance%29.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Dire Maul East\Dire Maul East.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Dire Maul East\Dire Maul East_Ally.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Dire Maul West\Dire Maul West %28Alliance%29.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Gnomeregan\Gnome_Ally.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Gnomeregan\Gnome_Horde.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Hellfire Ramparts\Hellfire Ramparts_Ally.json" />
@@ -265,6 +268,7 @@
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\The Temple of Atal%27Hakkar\The Temple of Atal%27Hakkar_Ally.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Uldaman Echomok Door, second Entrance\Uldaman_Neutral.json" />
     <None Include="DefaultProfiles\WholesomeDungeonCrawler\Wailing Caverns\WailingCaverns.json" />
+    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Zul%27Farrak\Zul%27Farrak %28Alliance%29.json" />
     <None Include="Wholesome-Toolbox\Wholesome_Toolbox.projitems" />
     <None Include="Wholesome-Toolbox\Wholesome_Toolbox.shproj" />
   </ItemGroup>
