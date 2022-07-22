@@ -73,7 +73,11 @@ namespace WholesomeDungeonCrawler.Helpers
 
         public static readonly HashSet<int> PriorityTargetListInt = new HashSet<int>
         {
-            4625 //neutral mobs in  RFK
+            4625, // Neutral mobs in RFK
+            18176,  // Tainted Earthgrab Totem
+            20208, // Mennu's Healing Ward
+            18177, // Tainted Stoneskin Totem
+            18179 // Corrupted Nova Totem 
         };
     }
 }
