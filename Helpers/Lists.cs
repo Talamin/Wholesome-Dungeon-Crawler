@@ -70,5 +70,10 @@ namespace WholesomeDungeonCrawler.Helpers
             new DungeonModel { Name="Pit of Saron",DungeonId =253, MapId=658,ContinentId=571, EntranceLoc=new Vector3(0, 0,0, "None") },
             new DungeonModel { Name="Halls of Reflection",DungeonId =255, MapId=668,ContinentId=571, EntranceLoc=new Vector3(0, 0,0, "None") },
         };
+
+        public static readonly HashSet<uint> PriorityTargetListInt = new HashSet<uint>
+        {
+            4625 //neutral mobs in  RFK
+        };
     }
 }

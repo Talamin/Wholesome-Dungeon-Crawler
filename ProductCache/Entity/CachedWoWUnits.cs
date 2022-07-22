@@ -10,6 +10,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
     internal class CachedWoWUnit : IWoWUnit
     {
         public string Name { get; }
+        public uint UnitID { get; }
         public ulong Guid { get; }
         public ulong TargetGuid { get; }
         public bool Valid { get; }
@@ -36,6 +37,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public CachedWoWUnit(WoWUnit unit)
         {
             Name = unit.Name;
+            UnitID = unit.DisplayId;
             Guid = unit.Guid;
             Valid = unit.IsValid;
             Dead = unit.IsDead;
