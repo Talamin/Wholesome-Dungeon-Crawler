@@ -71,7 +71,7 @@ namespace WholesomeDungeonCrawler.Helpers
             new DungeonModel { Name="Halls of Reflection",DungeonId =255, MapId=668,ContinentId=571, EntranceLoc=new Vector3(0, 0,0, "None") },
         };
 
-        public static readonly HashSet<uint> PriorityTargetListInt = new HashSet<uint>
+        public static readonly HashSet<int> PriorityTargetListInt = new HashSet<int>
         {
             4625 //neutral mobs in  RFK
         };
