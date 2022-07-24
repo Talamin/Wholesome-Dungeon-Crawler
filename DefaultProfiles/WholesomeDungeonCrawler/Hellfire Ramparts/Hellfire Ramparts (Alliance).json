@@ -374,9 +374,9 @@
     {
       "$type": "WholesomeDungeonCrawler.Models.DefendSpotModel, WholesomeDungeonCrawler",
       "DefendPosition": {
-        "X": -1204.99084,
-        "Y": 1439.89429,
-        "Z": 68.54135,
+        "X": -1195.16382,
+        "Y": 1439.51318,
+        "Z": 68.49704,
         "Type": "None",
         "Action": ""
       },
