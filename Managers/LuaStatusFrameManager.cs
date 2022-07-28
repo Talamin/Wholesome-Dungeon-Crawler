@@ -1,5 +1,7 @@
 ﻿using robotManager.Helpful;
+using System.Diagnostics;
 using System.Timers;
+using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
@@ -28,6 +30,18 @@ namespace WholesomeDungeonCrawler.Managers
             LuaFrameUpdateTimer.Elapsed += LuaFrameUpdateTimer_Elapsed;
             LuaFrameUpdateTimer.Interval = 500;
             LuaFrameUpdateTimer.Start();
+            // Commented out until a better solution is found
+            //EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaStringWithArgs;
+        }
+
+        private void EventsLuaWithArgs_OnEventsLuaStringWithArgs(string eventid, System.Collections.Generic.List<string> args)
+        {
+            if (eventid == "CHAT_MSG_ADDON" && args[0] == "WDC" && args[1] == "Skip" && args[3] == _entityCache.Me.Name)
+            {
+                Debugger.Break();
+                _profileManager.CurrentDungeonProfile.CurrentStep.MarkAsCompleted();
+                Logger.Log("User skipped current step.");
+            }
         }
 
         private void LuaFrameUpdateTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -38,12 +52,13 @@ namespace WholesomeDungeonCrawler.Managers
         public void Dispose()
         {
             LuaFrameUpdateTimer.Dispose();
+            EventsLuaWithArgs.OnEventsLuaStringWithArgs -= EventsLuaWithArgs_OnEventsLuaStringWithArgs;
             HideFrame();
         }
 
         public void CreateFrame()
         {
-            Lua.LuaDoString(@"
+            Lua.LuaDoString($@"
                         if not wdcrawler then
                             wdcrawler = CreateFrame(""Frame"",nil,UIParent)
                         end
@@ -60,7 +75,7 @@ namespace WholesomeDungeonCrawler.Managers
                         wdcrawler.title:SetPoint(""TOP"", 0, -20)
                         wdcrawler.title:SetText(""WholesomeDCrawler Status"")
                         wdcrawler.title:SetTextColor(0.25, 0.9, 0.6, 1)
-                        wdcrawler.title:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
+                        wdcrawler.title:SetFont(""Fonts\\ARIALN.TTF"", 15, ""OUTLINE"")
                         
                         if not wdcrawler.status then
                             wdcrawler.status = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
@@ -68,7 +83,7 @@ namespace WholesomeDungeonCrawler.Managers
                         wdcrawler.status:SetPoint(""TOPLEFT"", 20, -40)
                         wdcrawler.status:SetText(""Status:"")
                         wdcrawler.status:SetTextColor(0.25, 0.9, 0.6, 1)
-                        wdcrawler.status:SetFont(""Fonts\\ARIALN.TTF"", 9, ""OUTLINE"")
+                        wdcrawler.status:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
 
                         if not wdcrawler.statustext then
                             wdcrawler.statustext = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
@@ -76,7 +91,7 @@ namespace WholesomeDungeonCrawler.Managers
                         wdcrawler.statustext:ClearAllPoints()
                         wdcrawler.statustext:SetPoint(""LEFT"",wdcrawler.status,""RIGHT"", 0,0)
                         wdcrawler.statustext:SetTextColor(1, 1, 1, 1)
-                        wdcrawler.statustext:SetFont(""Fonts\\ARIALN.TTF"", 9, ""OUTLINE"")
+                        wdcrawler.statustext:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
 
                         if not wdcrawler.state then
                             wdcrawler.state = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
@@ -84,7 +99,7 @@ namespace WholesomeDungeonCrawler.Managers
                         wdcrawler.state:SetPoint(""TOPLEFT"", 20, -60)
                         wdcrawler.state:SetText(""State:"")
                         wdcrawler.state:SetTextColor(0.25, 0.9, 0.6, 1)
-                        wdcrawler.state:SetFont(""Fonts\\ARIALN.TTF"", 9, ""OUTLINE"")
+                        wdcrawler.state:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
 
                         if not wdcrawler.statetext then
                             wdcrawler.statetext = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
@@ -92,7 +107,7 @@ namespace WholesomeDungeonCrawler.Managers
                         wdcrawler.statetext:ClearAllPoints()
                         wdcrawler.statetext:SetPoint(""LEFT"",wdcrawler.state,""RIGHT"", 0,0)
                         wdcrawler.statetext:SetTextColor(1, 1, 1, 1)
-                        wdcrawler.statetext:SetFont(""Fonts\\ARIALN.TTF"", 9, ""OUTLINE"")
+                        wdcrawler.statetext:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
 
                         if not wdcrawler.following then
                             wdcrawler.following = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
@@ -100,7 +115,7 @@ namespace WholesomeDungeonCrawler.Managers
                         wdcrawler.following:SetPoint(""TOPLEFT"", 20, -80)
                         wdcrawler.following:SetText(""Following:"")
                         wdcrawler.following:SetTextColor(0.25, 0.9, 0.6, 1)
-                        wdcrawler.following:SetFont(""Fonts\\ARIALN.TTF"", 9, ""OUTLINE"")
+                        wdcrawler.following:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
 
                         if not wdcrawler.followingtext then
                             wdcrawler.followingtext = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
@@ -108,7 +123,7 @@ namespace WholesomeDungeonCrawler.Managers
                         wdcrawler.followingtext:ClearAllPoints()
                         wdcrawler.followingtext:SetPoint(""LEFT"",wdcrawler.following,""RIGHT"", 0,0)
                         wdcrawler.followingtext:SetTextColor(1, 1, 1, 1)
-                        wdcrawler.followingtext:SetFont(""Fonts\\ARIALN.TTF"", 9, ""OUTLINE"")
+                        wdcrawler.followingtext:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
 
                         if not wdcrawler.dungeon then
                             wdcrawler.dungeon = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
@@ -116,7 +131,7 @@ namespace WholesomeDungeonCrawler.Managers
                         wdcrawler.dungeon:SetPoint(""TOPLEFT"", 20, -100)
                         wdcrawler.dungeon:SetText(""Dungeon:"")
                         wdcrawler.dungeon:SetTextColor(0.25, 0.9, 0.6, 1)
-                        wdcrawler.dungeon:SetFont(""Fonts\\ARIALN.TTF"", 9, ""OUTLINE"")
+                        wdcrawler.dungeon:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
 
                         if not wdcrawler.dungeontext then
                             wdcrawler.dungeontext = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
@@ -124,7 +139,7 @@ namespace WholesomeDungeonCrawler.Managers
                         wdcrawler.dungeontext:ClearAllPoints()
                         wdcrawler.dungeontext:SetPoint(""LEFT"",wdcrawler.dungeon,""RIGHT"", 0,0)
                         wdcrawler.dungeontext:SetTextColor(1, 1, 1, 1)
-                        wdcrawler.dungeontext:SetFont(""Fonts\\ARIALN.TTF"", 9, ""OUTLINE"")
+                        wdcrawler.dungeontext:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
 
                         if not wdcrawler.step then
                             wdcrawler.step = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
@@ -132,7 +147,7 @@ namespace WholesomeDungeonCrawler.Managers
                         wdcrawler.step:SetPoint(""TOPLEFT"", 20, -120)
                         wdcrawler.step:SetText(""Step:"")
                         wdcrawler.step:SetTextColor(0.25, 0.9, 0.6, 1)
-                        wdcrawler.step:SetFont(""Fonts\\ARIALN.TTF"", 9, ""OUTLINE"")
+                        wdcrawler.step:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
 
                         if not wdcrawler.steptext then
                             wdcrawler.steptext = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
@@ -140,15 +155,31 @@ namespace WholesomeDungeonCrawler.Managers
                         wdcrawler.steptext:ClearAllPoints()
                         wdcrawler.steptext:SetPoint(""LEFT"",wdcrawler.step,""RIGHT"", 0,0)
                         wdcrawler.steptext:SetTextColor(1, 1, 1, 1)
-                        wdcrawler.steptext:SetFont(""Fonts\\ARIALN.TTF"", 9, ""OUTLINE"")
+                        wdcrawler.steptext:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
+
 
                         if not wdcrawler.stepskipbtn then
                             wdcrawler.stepskipbtn = CreateFrame(""BUTTON"", nil, wdcrawler)
                         end
-                        wdcrawler.stepskipbtn:SetWidth(40)
-                        wdcrawler.stepskipbtn:SetHeight(40)
+                        wdcrawler.stepskipbtn:SetWidth(32)
+                        wdcrawler.stepskipbtn:SetHeight(20)
                         wdcrawler.stepskipbtn:SetPoint(""LEFT"",wdcrawler.steptext,""RIGHT"", 0,0)
-                        wdcrawler.stepskipbtn:SetText(""Skip"")
+                        wdcrawler.stepskipbtn:SetBackdrop({{ edgeFile = ""Interface\\Buttons\\WHITE8X8"", edgeSize = 1 }})
+                        wdcrawler.stepskipbtn:SetBackdropColor(.09,.09,.09,1)
+	                    wdcrawler.stepskipbtn:SetBackdropBorderColor(.2,.2,.2,1)                        
+                        wdcrawler.stepskipbtn.tooltiptext = ""Skips the current step.""
+
+                        if not wdcrawler.stepskipbtn.stepskipbtntext then
+                            wdcrawler.stepskipbtn.stepskipbtntext = wdcrawler.stepskipbtn:CreateFontString(nil, ""ARTWORK"", ""GameFontNormal"")
+                        end
+                        wdcrawler.stepskipbtn.stepskipbtntext:ClearAllPoints()
+                        wdcrawler.stepskipbtn.stepskipbtntext:SetPoint(""LEFT"",wdcrawler.steptext,""RIGHT"", 3,0)
+                        wdcrawler.stepskipbtn.stepskipbtntext:SetTextColor(1, 1, 1, 1)
+                        wdcrawler.stepskipbtn.stepskipbtntext:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
+                        wdcrawler.stepskipbtn.stepskipbtntext:SetText(""Skip"")
+                        wdcrawler.stepskipbtn.stepskipbtntext:SetTextColor(0.25, 0.9, 0.6, 1)
+
+                        wdcrawler.stepskipbtn:SetFontString(wdcrawler.stepskipbtn.stepskipbtntext)
 
                         wdcrawler:SetMovable(true)
                         wdcrawler:EnableMouse(true)
@@ -161,11 +192,16 @@ namespace WholesomeDungeonCrawler.Managers
         }
         public void UpdateFrame()
         {
-            var dung = _profileManager.CurrentDungeonProfile.MapId != 0 ? _profileManager.CurrentDungeonProfile.MapId.ToString() : "N/A";
+            var step = "N/A";
+            var dung = "N/A";
+            if (_profileManager.CurrentDungeonProfile != null)
+            {
+                step = _profileManager.CurrentDungeonProfile.CurrentStep != null ? _profileManager.CurrentDungeonProfile.CurrentStep.Name : "N/A";
+                dung = _profileManager.CurrentDungeonProfile.MapId != 0 ? _profileManager.CurrentDungeonProfile.MapId.ToString() : "N/A";
+            }
             var follow = _entityCache.TankUnit != null ? _entityCache.TankUnit.Name : "N/A";
             //var healer = _entityCache. != null ? Bot.lfgHealer.Name : "N/A";
-            var step = _profileManager.CurrentDungeonProfile.CurrentStep != null ? _profileManager.CurrentDungeonProfile.CurrentStep.Name : "N/A";
-
+            
             Lua.LuaDoString($@"
                 if wdcrawler then
                     wdcrawler.statustext:SetText(""{Logging.Status}"")

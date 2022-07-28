@@ -133,12 +133,11 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                //Debugger.Break();
                 if (currentProfile.MapId > 0)
                 {
                     if (!string.IsNullOrWhiteSpace(currentProfile.Name))
                     {
-                        var dungeon = Lists.AllDungeons.FirstOrDefault(x => x.MapId == currentProfile.MapId);
+                        var dungeon = Lists.AllDungeons.FirstOrDefault(x => x.Name == currentProfile.Name);
                         if (dungeon != null)
                         {
                             var rootpath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");

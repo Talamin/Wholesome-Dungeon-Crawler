@@ -170,6 +170,8 @@
                             <Controls:ToggleSwitch x:Name="chkFindClosest" IsChecked="{Binding SelectedItem.FindClosest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="FindClosest at the End" OffLabel="FindClosest at the End" Margin="5"/>
                         </StackPanel>
                         <Controls:NumericUpDown Controls:TextBoxHelper.Watermark="Gossip Index" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.GossipIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <Controls:ToggleSwitch x:Name="chkMoveToUnitSkipIfNotFound" IsChecked="{Binding SelectedItem.SkipIfNotFound, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="SkipIfNotFound" OffLabel="SkipIfNotFound" Margin="10 5"/>
+                        <Controls:ToggleSwitch x:Name="chkMoveToUnitFindClosest" IsChecked="{Binding SelectedItem.FindClosest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Find Closest" OffLabel="Find Closest" Margin="10 5"/>
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
