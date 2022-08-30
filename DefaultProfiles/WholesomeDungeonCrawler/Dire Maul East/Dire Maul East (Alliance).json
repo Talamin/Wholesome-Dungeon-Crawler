@@ -81,37 +81,23 @@
           "Action": ""
         },
         {
-          "X": -9.725184,
-          "Y": -182.664978,
-          "Z": -3.329652,
+          "X": -9.571761, 
+          "Y": -191.9617, 
+          "Z": -4.152665,
           "Type": "None",
           "Action": ""
         },
         {
-          "X": -18.1784916,
-          "Y": -183.087891,
-          "Z": -3.66704941,
+          "X": -23.20005, 
+          "Y": -195.3451, 
+          "Z": -4.153899,
           "Type": "None",
           "Action": ""
         },
         {
-          "X": -26.81845,
-          "Y": -185.32312,
-          "Z": -4.040891,
-          "Type": "None",
-          "Action": ""
-        },
-        {
-          "X": -35.6625023,
-          "Y": -188.4282,
-          "Z": -4.09032726,
-          "Type": "None",
-          "Action": ""
-        },
-        {
-          "X": -43.4348869,
-          "Y": -191.648865,
-          "Z": -4.14307,
+          "X": -40.72693, 
+          "Y": -197.754,
+          "Z":  -4.145269,
           "Type": "None",
           "Action": ""
         },
@@ -1192,6 +1178,20 @@
           "Z": -59.0366478,
           "Type": "None",
           "Action": ""
+        },
+        {
+          "X": -25,
+          "Y": -434,
+          "Z": -59.95,
+          "Type": "None",
+          "Action": ""
+        },
+        {
+          "X": -15.88977, 
+          "Y": -433.9902, 
+          "Z": -59.95031,
+          "Type": "None",
+          "Action": ""
         }
       ],
       "Name": "Boss - Hydraspawn",
@@ -1213,35 +1213,56 @@
     },
     {
       "$type": "WholesomeDungeonCrawler.Models.MoveAlongPathModel, WholesomeDungeonCrawler",
-      "Path": [
+      "Path": [        
         {
-          "X": -11.1476669,
-          "Y": -428.404816,
-          "Z": -59.9521637,
+          "X": -15.88977, 
+          "Y": -433.9902, 
+          "Z": -59.95031,
+          "Type": "None",
+          "Action": ""
+        },  
+        {
+          "X": -25,
+          "Y": -434,
+          "Z": -59.95,
           "Type": "None",
           "Action": ""
         },
         {
-          "X": -5.00375652,
-          "Y": -434.6933,
-          "Z": -59.9521637,
-          "Type": "None",
-          "Action": ""
-        },
-        {
-          "X": 0.6497307,
-          "Y": -440.463257,
-          "Z": -59.95502,
-          "Type": "None",
-          "Action": ""
-        },
-        {
-          "X": 8.797037,
-          "Y": -449.520081,
+          "X": -25.61976,
+          "Y":  -434,
           "Z": -58.63037,
           "Type": "None",
           "Action": ""
-        },
+        },                 
+        {
+          "X": -26.30925,
+          "Y":  -443.0524,
+          "Z":  -58.61702,
+          "Type": "None",
+          "Action": ""
+        },        
+        {
+          "X":  -25.37958,
+          "Y": -453.6144,
+          "Z": -58.61841,
+          "Type": "None",
+          "Action": ""
+        },         
+        {
+          "X": -11.93269,
+          "Y":  -461.5997,
+          "Z":  -58.62691,
+          "Type": "None",
+          "Action": ""
+        },        
+        {
+          "X": 9.14932,
+          "Y":  -462.0111,
+          "Z": -58.6399,
+          "Type": "None",
+          "Action": ""
+        },                 
         {
           "X": 17.4005222,
           "Y": -451.271942,
@@ -2075,22 +2096,22 @@
         "Action": ""
       },
       "FindClosest": false,
-      "SkipIfNotFound": false,
-      "UnitId": 11491,
+      "SkipIfNotFound": true,
+      "UnitId": 14241,
       "Interactwithunit": false,
       "GossipIndex": 1,
       "Name": "Interact with Old Ironbark",
       "Order": 4,
       "CompleteCondition": {
-        "HasCompleteCondition": false,
-        "ConditionType": 0,
+        "HasCompleteCondition": true,
+        "ConditionType": 7,
         "GameObjectId": 0,
         "InitialFlags": 0,
         "ItemId": 0,
         "CSharpCondition": null,
         "DeadMobId": 0,
         "MobPositionId": 0,
-        "MobId": 0,
+        "MobId": 14241,
         "MobPositionVector": null,
         "LOSPositionVector": null,
         "WaitTime": 0
@@ -2693,7 +2714,21 @@
           "Z": -119.961807,
           "Type": "None",
           "Action": ""
-        }
+        },
+        {
+          "X": 262.4751,
+          "Y": -451.9456,
+          "Z": -119.9618,
+          "Type": "None",
+          "Action": ""
+        }  ,
+        {
+          "X":269.0152,
+          "Y": -435.6516,
+          "Z": -119.9618,
+          "Type": "None",
+          "Action": ""
+        }  
       ],
       "Name": "Boss - Alzzin the Wildshaper",
       "Order": 5,
@@ -3866,8 +3901,8 @@
       "Action": ""
     },
     {
-      "X": -3750.008,
-      "Y": 945.318237,
+      "X": -3732, 
+      "Y": 935.18237,
       "Z": 161.01593,
       "Type": "None",
       "Action": ""
