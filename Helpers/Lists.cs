@@ -73,11 +73,42 @@ namespace WholesomeDungeonCrawler.Helpers
 
         public static readonly HashSet<int> PriorityTargetListInt = new HashSet<int>
         {
-            4625, // Neutral mobs in RFK
-            18176,  // Tainted Earthgrab Totem
-            20208, // Mennu's Healing Ward
-            18177, // Tainted Stoneskin Totem
-            18179 // Corrupted Nova Totem 
+            4625, // Neutral mobs (RFK)
+            18176,  // Tainted Earthgrab Totem (Mennu, Slave Pens)
+            20208, // Mennu's Healing Ward (Mennu, Slave Pens)
+            18177, // Tainted Stoneskin Totem (Mennu, Slave Pens)
+            18179, // Corrupted Nova Totem (Mennu, Slave Pens)
+            26918, // Chaotic Rift (Anomalus, Nexus)
+            30176, // Ahn'kahar Guardian (Elder Nadox, Old Kingdom)
+            30385, // Twilight Volunteer (Jedoga Shadowseer, Old Kingdom)
+            28619, // Web Wrap (Krik'thier, Azjol Nerub)
+            28734, // Anubar Skirmisher (Krik'thier, Azjol Nerub)
+            42672, // Frost Tomb(Prince Kelesth, Utgard Keep)
+            23775, // Head of the Horseman (Haloween Event)
+
+        };
+
+        public static readonly HashSet<int> IgnoreWhenUnattackableListInt = new HashSet<int>
+        {
+            2748, // Archaedas
+            10120, // Vault Warder
+            4857, // Stone Keeper
+            7309, // Earthen Custodian
+            7077, // Earthen Hallshaper
+            7076, // Earthen Guardian
+            26793, // Crystalline Frayer (Nexus)
+            191016, // Seed Pod (Nexus)
+        };
+        public static readonly HashSet<int> IgnoreWhenCheckingPathListInt = new HashSet<int>
+        {
+            26793, // Crystalline Frayer (Nexus)
+            191016, // Seed Pod (Nexus)
+            32593, // Skittering Swarmer Anub'arak
+        };
+        public static readonly HashSet<int> IgnoreTargetListInt = new HashSet<int>
+        {
+             26793, // Crystalline Frayer (Nexus) [TODO Remove]
+            191016, // Seed Pod (Nexus)
         };
     }
 }

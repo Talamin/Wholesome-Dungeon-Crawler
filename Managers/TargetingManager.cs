@@ -113,7 +113,8 @@ namespace WholesomeDungeonCrawler.Managers
                     || WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.MDPS)
                 {
                     possibleTarget = GetNearestPrioTarget();
-                    if (possibleTarget != null && possibleTarget.Guid != _entityCache.Me.TargetGuid)
+                    if (possibleTarget != null && possibleTarget.Guid != _entityCache.Me.TargetGuid &&
+                        _entityCache.Me.PositionWithoutType.DistanceTo(possibleTarget.PositionWithoutType) <= 40)
                     {
                         newTarget = possibleTarget;
                         Logger.Log($"Slaughering Prio-Target mob: {newTarget.Name}");
