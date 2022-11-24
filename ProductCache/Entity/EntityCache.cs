@@ -156,6 +156,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             }
 
             NpcsToDefend.Clear();
+            LootableUnits.Clear();
             TankUnit = tankUnit;
 
             List<ulong> allTeamGuids = new List<ulong>();
