@@ -61,7 +61,7 @@ namespace WholesomeDungeonCrawler.States
                     GoToTask.ToPosition(player.PositionWithoutType, conditionExit: _ => _entitycache.Me.PositionWithoutType.DistanceTo(player.PositionWithoutType) <= 25);
                 }
 
-                Interact.InteractGameObject(player.GetBaseAdress);
+                Interact.InteractGameObject(player.GetBaseAddress);
                 if (SpellManager.KnowSpell(spell) && SpellManager.SpellUsableLUA(spell))
                 {
                     SpellManager.CastSpellByNameLUA(spell);
