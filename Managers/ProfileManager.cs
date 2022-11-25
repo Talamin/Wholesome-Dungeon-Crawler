@@ -21,11 +21,13 @@ namespace WholesomeDungeonCrawler.Managers
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
+        private readonly IPathManager _pathManager;
 
-        public ProfileManager(IEntityCache entityCache, ICache cache)
+        public ProfileManager(IEntityCache entityCache, ICache cache, IPathManager pathManager)
         {
             _entityCache = entityCache;
             _cache = cache;
+            _pathManager = pathManager;
         }
         public void Initialize()
         {
@@ -115,8 +117,11 @@ namespace WholesomeDungeonCrawler.Managers
                         {
                             PathFinder.OffMeshConnections.AddRange(chosenModel.OffMeshConnections);
                         }
-                        CurrentDungeonProfile = new Profile(chosenModel, _entityCache);
-                        Logger.Log($"Dungeon Profile loaded: {chosenModel.Name} {Environment.NewLine} MapID {chosenModel.MapId}{Environment.NewLine} {chosenModel.StepModels.Count()} steps{Environment.NewLine} {chosenModel.DeathRunPath.Count()} deathrun nodes{Environment.NewLine} {chosenModel.OffMeshConnections.Count()} offmesh connections");
+                        CurrentDungeonProfile = new Profile(chosenModel, _entityCache, _pathManager);
+                        Logger.Log($"Dungeon Profile loaded: {chosenModel.Name} {Environment.NewLine} MapID {chosenModel.MapId}" +
+                            $"{Environment.NewLine} {chosenModel.StepModels.Count()} steps" +
+                            $"{Environment.NewLine} {chosenModel.DeathRunPath.Count()} deathrun nodes" +
+                            $"{Environment.NewLine} {chosenModel.OffMeshConnections.Count()} offmesh connections");
                         CurrentDungeonProfile.SetFirstLaunchStep();
                         return;
                     }

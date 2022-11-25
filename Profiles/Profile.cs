@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles.Steps;
@@ -22,7 +23,7 @@ namespace WholesomeDungeonCrawler.Profiles
         public Dictionary<IStep, List<Vector3>> DungeonPath { get; private set; } = new Dictionary<IStep, List<Vector3>>();
         public FactionType FactionType { get; private set; }
 
-        public Profile(ProfileModel profileModel, IEntityCache entityCache)
+        public Profile(ProfileModel profileModel, IEntityCache entityCache, IPathManager pathManager)
         {
             _entityCache = entityCache;
 
@@ -31,7 +32,7 @@ namespace WholesomeDungeonCrawler.Profiles
                 switch (model)
                 {
                     case MoveAlongPathModel _:
-                        MoveAlongPathStep step = new MoveAlongPathStep((MoveAlongPathModel)model, entityCache);
+                        MoveAlongPathStep step = new MoveAlongPathStep((MoveAlongPathModel)model, entityCache, pathManager);
                         _profileSteps.Add(step);
                         DungeonPath.Add(step, step.GetMoveAlongPath);
                         break;
