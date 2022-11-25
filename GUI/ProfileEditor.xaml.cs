@@ -140,7 +140,7 @@ namespace WholesomeDungeonCrawler.GUI
                         var dungeon = Lists.AllDungeons.FirstOrDefault(x => x.Name == currentProfile.Name);
                         if (dungeon != null)
                         {
-                            var rootpath = System.IO.Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");
+                            var rootpath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");
                             currentProfile.StepModels = currentProfile.StepModels.OrderBy(x => x.Order).ToList();
 
                             var output = JsonConvert.SerializeObject(currentProfile, Formatting.Indented, jsonSettings);

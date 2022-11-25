@@ -21,6 +21,7 @@ namespace WholesomeDungeonCrawler.Bot
         private IPartyChatManager _partyChatManager;
         private ILuaStatusFrameManager _luaStatusFrameManager;
         private CheckPathAhead _checkPathAheadState;
+        private IPathManager _pathManager;
 
         internal bool InitialSetup()
         {
@@ -30,7 +31,9 @@ namespace WholesomeDungeonCrawler.Bot
                 _cache.Initialize();
                 _entityCache = new EntityCache();
                 _entityCache.Initialize();
-                _profileManager = new ProfileManager(_entityCache, _cache);
+                _pathManager = new PathManager();
+                _pathManager.Initialize();
+                _profileManager = new ProfileManager(_entityCache, _cache, _pathManager);
                 _profileManager.Initialize();
                 _partyChatManager = new PartyChatManager(_entityCache, _profileManager);
                 _partyChatManager.Initialize();
@@ -59,7 +62,8 @@ namespace WholesomeDungeonCrawler.Bot
                     new TankCombat(_cache, _entityCache),
                     new Regeneration(),
                     new GroupRevive(_cache, _entityCache),
-                    new Loot(_cache,_entityCache),
+                    new TurboLoot(_entityCache),
+                    //new Loot(_cache,_entityCache),
                     //new Looting(),
                     new OpenSatchel(_cache),
                     new ToTown(),
@@ -113,6 +117,7 @@ namespace WholesomeDungeonCrawler.Bot
                 _fsm?.StopEngine();
                 _cache?.Dispose();
                 _entityCache?.Dispose();
+                _pathManager?.Dispose();
                 _profileManager?.Dispose();
                 _targetingManager?.Dispose();
                 _luaStatusFrameManager?.Dispose();

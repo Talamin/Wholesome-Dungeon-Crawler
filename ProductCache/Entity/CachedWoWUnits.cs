@@ -30,7 +30,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public bool IsAttackingGroup { get; }
         public bool IsAttackingMe { get; }
         public bool IsPartyMember { get; }
-        public uint GetBaseAdress { get; }
+        public uint GetBaseAddress { get; }
         public bool Fleeing { get; }
         public WoWUnit WowUnit { get; }
 
@@ -59,7 +59,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             Fleeing = unit.Fleeing;
             WowUnit = unit;
 
-            GetBaseAdress = unit.GetBaseAddress;
+            GetBaseAddress = unit.GetBaseAddress;
 
 
             var auras = new Dictionary<uint, IAura>();

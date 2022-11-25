@@ -86,6 +86,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
         private List<int> _npcToDefendEntries = new List<int>();
         public List<IWoWUnit> NpcsToDefend { get; private set; } = new List<IWoWUnit>();
+        public List<IWoWUnit> LootableUnits { get; private set; } = new List<IWoWUnit>();
         public void AddNpcIdToDefend(int npcId) => _npcToDefendEntries.Add(npcId);
         public void ClearNpcListIdToDefend() => _npcToDefendEntries.Clear();
 
@@ -155,6 +156,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             }
 
             NpcsToDefend.Clear();
+            LootableUnits.Clear();
             TankUnit = tankUnit;
 
             List<ulong> allTeamGuids = new List<ulong>();
@@ -191,6 +193,11 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 {
                     NpcsToDefend.Add(cachedUnit);
                     continue;
+                }
+
+                if (!unit.IsAlive && unit.IsLootable)
+                {
+                    LootableUnits.Add(cachedUnit);
                 }
 
                 if (!unit.IsAlive || unit.NotSelectable)

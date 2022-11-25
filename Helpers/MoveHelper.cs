@@ -1,19 +1,18 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
-using System.Threading;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeToolbox;
-using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.Helpers
 {
-    internal class MoveHelper : IMoveHelper
+    internal class MoveHelper
     {
+        /*
         public Vector3 CurrentTarget { get; set; } = Empty;
 
         public bool IsMovementThreadRunning { get; set; }/* || MovementManager.CurrentPath.Count > 0*/
-
+        /*
         private static readonly Vector3 Empty = Vector3.Empty;
         private static readonly object Lock = new object();
         private static bool Running = false;
@@ -84,7 +83,7 @@ namespace WholesomeDungeonCrawler.Helpers
                 });
             }
         }
-
+        */
         public static List<(Vector3 a, Vector3 b)> GetLinesToCheckOnCurrentPath(Vector3 myPos)
         {
             List<Vector3> currentPath = MovementManager.CurrentPath;
@@ -157,6 +156,32 @@ namespace WholesomeDungeonCrawler.Helpers
                 }
             }
 
+            return result;
+        }
+
+        // Gets X neighboring nodes on a path
+        public static List<Vector3> GetNodesAround(List<Vector3> path, Vector3 node, int num)
+        {
+            List<Vector3> result = new List<Vector3>();
+            int nodeIndex = path.IndexOf(node);
+            // before node
+            for (int i = -num; i < 0; i++)
+            {
+                if (nodeIndex + i > 0)
+                {
+                    result.Add(path[nodeIndex + i]);
+                }
+            }
+            // node itself
+            result.Add(node);
+            // after node
+            for (int i = 1; i <= num; i++)
+            {
+                if (nodeIndex + i < path.Count)
+                {
+                    result.Add(path[nodeIndex + i]);
+                }
+            }
             return result;
         }
     }

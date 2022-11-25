@@ -15,6 +15,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         IWoWPlayer[] ListGroupMember { get; }
         List<string> ListPartyMemberNames { get; }
         List<IWoWUnit> NpcsToDefend { get; }
+        List<IWoWUnit> LootableUnits { get; }
         IWoWUnit[] GroupPets { get; }
 
         bool IAmTank { get; }
