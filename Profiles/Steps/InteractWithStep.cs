@@ -40,13 +40,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 ? FindClosestObject(gameObject => gameObject.Entry == _objectId, referencePosition)
                 : ObjectManager.GetObjectWoWGameObject().FirstOrDefault(o => o.Entry == _objectId);
 
-            // We reached the object, stop and wait
-            if (_entityCache.Me.PositionWithoutType.DistanceTo(_expectedPosition) <= _interactDistance
-                || foundObject != null && _entityCache.Me.PositionWithoutType.DistanceTo(foundObject.Position) <= _interactDistance + 0.5f)
-            {
-                MovementManager.StopMove();
-            }
-
             // Move close to expected object position
             if (!MovementManager.InMovement && _entityCache.Me.PositionWithoutType.DistanceTo(_expectedPosition) > 20f)
             {
@@ -54,6 +47,19 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 GoToTask.ToPosition(_expectedPosition, _interactDistance);
                 IsCompleted = false;
                 return;
+            }
+
+            // We reached the object, stop and wait
+            if (_entityCache.Me.PositionWithoutType.DistanceTo(_expectedPosition) <= _interactDistance
+                || foundObject != null && _entityCache.Me.PositionWithoutType.DistanceTo(foundObject.Position) <= _interactDistance)
+            {
+                MovementManager.StopMove();
+                if (EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
+                {
+                    Logger.Log($"[{_interactWithModel.Name}] Interaction with object {foundObject.Entry} is complete");
+                    IsCompleted = true;
+                    return;
+                }
             }
 
             // Is it present?
@@ -66,7 +72,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             }
 
             // Move to real object position
-            if (!MovementManager.InMovement && _entityCache.Me.PositionWithoutType.DistanceTo(foundObject.Position) > _interactDistance + 0.5f)
+            if (!MovementManager.InMovement && _entityCache.Me.PositionWithoutType.DistanceTo(foundObject.Position) > _interactDistance)
             {
                 Logger.Log($"[{_interactWithModel.Name}] Interactive object found. Approaching {_objectId} with interact distance {_interactDistance}");
                 GoToTask.ToPosition(_expectedPosition, _interactDistance);
