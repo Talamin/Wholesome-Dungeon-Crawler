@@ -112,13 +112,13 @@ namespace WholesomeDungeonCrawler.Managers
                         }
 
                         ProfileModel chosenModel = profileModels[new Random().Next(0, profileModels.Count)];
-                        Logger.Log($"Randomly selected {chosenModel.Name} from the {dungeon.Name} folder.");
+                        Logger.Log($"Randomly selected {chosenModel.ProfileName.Replace(" ", "_")}_[{chosenModel.Faction}] from the {dungeon.Name} folder.");
                         if (chosenModel.OffMeshConnections.Count > 0)
                         {
                             PathFinder.OffMeshConnections.AddRange(chosenModel.OffMeshConnections);
                         }
                         CurrentDungeonProfile = new Profile(chosenModel, _entityCache, _pathManager);
-                        Logger.Log($"Dungeon Profile loaded: {chosenModel.Name} {Environment.NewLine} MapID {chosenModel.MapId}" +
+                        Logger.Log($"Dungeon Profile loaded: {chosenModel.ProfileName} {Environment.NewLine} MapID {chosenModel.MapId}" +
                             $"{Environment.NewLine} {chosenModel.StepModels.Count()} steps" +
                             $"{Environment.NewLine} {chosenModel.DeathRunPath.Count()} deathrun nodes" +
                             $"{Environment.NewLine} {chosenModel.OffMeshConnections.Count()} offmesh connections");

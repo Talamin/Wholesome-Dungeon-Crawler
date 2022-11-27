@@ -45,7 +45,6 @@ namespace WholesomeDungeonCrawler.GUI
             addVectorTimer.AutoReset = true;
             addVectorTimer.Enabled = true;
             cbConditionType.ItemsSource = Enum.GetValues(typeof(CompleteConditionType));
-
         }
 
         private void AddVectorTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -77,7 +76,6 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-
                 fpsCollection.Add(ObjectManager.Me.Position);
                 ((MoveAlongPathModel)SelectedItem).Path = fpsCollection.ToList();
             }
@@ -265,6 +263,16 @@ namespace WholesomeDungeonCrawler.GUI
             if (target != null)
             {
                 nudCanGossipId.Value = target.Entry;
+            }
+        }
+
+        private void btnRegroupSpotMyPosition_Click(object sender, RoutedEventArgs e)
+        {
+            var currentPos = ObjectManager.Me.Position;
+            if (currentPos != null)
+            {
+                ((RegroupModel)this.SelectedItem).RegroupSpot = currentPos;
+                txtRegroupSpot.Text = $"{currentPos.X},{currentPos.Y},{currentPos.Z}";
             }
         }
     }

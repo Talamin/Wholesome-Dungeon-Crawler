@@ -61,12 +61,11 @@ namespace WholesomeDungeonCrawler.GUI
             InitializeComponent();
 
             cbDungeon.ItemsSource = Lists.AllDungeons;
-            cbDungeon.SelectedValuePath = "MapId";
+            cbDungeon.SelectedValuePath = "Name";
             cbDungeon.DisplayMemberPath = "Name";
-            cbDungeon.SelectedValue = Usefuls.ContinentId;
+            //cbDungeon.SelectedValue = Usefuls.ContinentId;
 
             Setup();
-
         }
 
         private void Setup()
@@ -106,21 +105,20 @@ namespace WholesomeDungeonCrawler.GUI
             addDeathrunVectorTimer.AutoReset = true;
             addDeathrunVectorTimer.Enabled = true;
 
-
             OffMeshCollection = new ObservableCollection<PathFinder.OffMeshConnection>(currentProfile.OffMeshConnections);
             dgOffmeshList.ItemsSource = OffMeshCollection;
             cbOffMeshDirection.ItemsSource = Enum.GetValues(typeof(PathFinder.OffMeshConnectionType));
 
             cbFaction.ItemsSource = Enum.GetValues(typeof(Npc.FactionType));
+            cbFaction.SelectedItem = currentProfile.Faction;
+
+            cbDungeon.SelectedValue = currentProfile.DungeonName;
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
-
-
-
 
         private void btnNewProfile_Click(object sender, RoutedEventArgs e)
         {
@@ -133,39 +131,40 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                if (currentProfile.MapId > 0)
+                if (string.IsNullOrWhiteSpace(currentProfile.DungeonName))
                 {
-                    if (!string.IsNullOrWhiteSpace(currentProfile.Name))
-                    {
-                        var dungeon = Lists.AllDungeons.FirstOrDefault(x => x.Name == currentProfile.Name);
-                        if (dungeon != null)
-                        {
-                            var rootpath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");
-                            currentProfile.StepModels = currentProfile.StepModels.OrderBy(x => x.Order).ToList();
-
-                            var output = JsonConvert.SerializeObject(currentProfile, Formatting.Indented, jsonSettings);
-                            var path = $@"{rootpath.FullName}\{currentProfile.Name}.json";
-                            File.WriteAllText(path, output);
-                            Setup();
-
-
-                            await this.ShowMessageAsync("Profile Saved!", "Saved to " + path, MessageDialogStyle.Affirmative, basicDialogSettings);
-                        }
-                        else
-                        {
-                            await this.ShowMessageAsync("Save Failed.", "Dungeon does not exist.", MessageDialogStyle.Affirmative, basicDialogSettings);
-                        }
-                    }
-                    else
-                    {
-                        await this.ShowMessageAsync("Save Failed.", "Profile Name has not been set.", MessageDialogStyle.Affirmative, basicDialogSettings);
-                    }
-                }
-                else
-                {
-                    await this.ShowMessageAsync("Save Failed.", "Dungeon has not been set.", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    await this.ShowMessageAsync("Save Failed.", "You need to select a dungeon in the list", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    return;
                 }
 
+                if (currentProfile.MapId <= 0)
+                {
+                    await this.ShowMessageAsync("Save Failed.", "Dungeon ID not found", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(currentProfile.ProfileName))
+                {
+                    await this.ShowMessageAsync("Save Failed.", "You need to enter a profile name", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    return;
+                }
+
+                var dungeon = Lists.AllDungeons.FirstOrDefault(x => x.Name == currentProfile.DungeonName);
+
+                if (dungeon == null)
+                {
+                    await this.ShowMessageAsync("Save Failed.", $"Dungeon {currentProfile.DungeonName} has not been found in the list", MessageDialogStyle.Affirmative, basicDialogSettings);
+                }
+
+                var rootpath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");
+                currentProfile.StepModels = currentProfile.StepModels.OrderBy(x => x.Order).ToList();
+
+                var output = JsonConvert.SerializeObject(currentProfile, Formatting.Indented, jsonSettings);
+                var path = $@"{rootpath.FullName}\{currentProfile.ProfileName.Replace(" ", "_")}_[{currentProfile.Faction}].json";
+                File.WriteAllText(path, output);
+                Setup();
+
+                await this.ShowMessageAsync("Profile Saved!", "Saved to " + path, MessageDialogStyle.Affirmative, basicDialogSettings);
             }
             catch (Exception ex)
             {
@@ -285,8 +284,12 @@ namespace WholesomeDungeonCrawler.GUI
 
         private void cbDungeon_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            //System.Windows.MessageBox.Show($"{((Dungeon)cbDungeon.SelectedItem).DungeonId} {((Dungeon)cbDungeon.SelectedItem).Name}");
-
+            if (((DungeonModel)cbDungeon.SelectedItem) != null
+                && Lists.AllDungeons.Exists(dungeon => dungeon.Name == ((DungeonModel)cbDungeon.SelectedItem).Name))
+            {
+                currentProfile.DungeonName = ((DungeonModel)cbDungeon.SelectedItem).Name;
+                currentProfile.MapId = Lists.AllDungeons.Find(dungeon => dungeon.Name == currentProfile.DungeonName).MapId;
+            }
         }
 
         private async void btnLoadProfile_Click(object sender, RoutedEventArgs e)
@@ -370,7 +373,7 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
                 if (x != null)
                 {
-                    var Step = new InteractWithModel() { Name = x, Order = StepCollection.Count, ExpectedPosition = new Vector3() };
+                    var Step = new InteractWithModel() { Name = x, Order = StepCollection.Count, ExpectedPosition = new Vector3(), InteractDistance = 3 };
                     StepCollection.Add(Step);
                     currentProfile.StepModels = StepCollection.ToList();
                 }
@@ -485,6 +488,25 @@ namespace WholesomeDungeonCrawler.GUI
                 if (x != null)
                 {
                     var Step = new FollowUnitModel() { Name = x, Order = StepCollection.Count, ExpectedStartPosition = new Vector3(), ExpectedEndPosition = new Vector3() };
+                    StepCollection.Add(Step);
+                    currentProfile.StepModels = StepCollection.ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+            }
+        }
+
+        private async void regroupStep_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                if (x != null)
+                {
+                    var Step = new RegroupModel() { Name = x, Order = StepCollection.Count, RegroupSpot = new Vector3() };
                     StepCollection.Add(Step);
                     currentProfile.StepModels = StepCollection.ToList();
                 }

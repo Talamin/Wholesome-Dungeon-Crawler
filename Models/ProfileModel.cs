@@ -9,7 +9,8 @@ namespace WholesomeDungeonCrawler.Models
     {
         public List<StepModel> StepModels { get; set; }
         public int MapId { get; set; }
-        public string Name { get; set; }
+        public string ProfileName { get; set; }
+        public string DungeonName { get; set; }
         public Npc.FactionType Faction { get; set; }
         public List<Vector3> DeathRunPath { get; set; }
         public List<PathFinder.OffMeshConnection> OffMeshConnections { get; set; }

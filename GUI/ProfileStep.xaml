@@ -69,7 +69,7 @@
 
                     </GroupBox>
                 </StackPanel>
-
+                
             </StackPanel>
             <!--InteractWith-->
             <StackPanel>
@@ -94,6 +94,9 @@
                         <StackPanel Orientation="Horizontal"  Margin="5">
                             <Controls:NumericUpDown x:Name="txtInteractO" Controls:TextBoxHelper.Watermark="ObjectId" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.ObjectId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <Button x:Name="btnGetNearestGO" Content="Nearest Object ID" Margin="5" Click="btnGetNearestGO_Click"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal"  Margin="5">
+                            <Controls:NumericUpDown x:Name="txtInteractD" Controls:TextBoxHelper.Watermark="Interact distance" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.InteractDistance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal"  Margin="5">
                             <TextBox x:Name="txtInteractPos" Controls:TextBoxHelper.Watermark="Object Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.ExpectedPosition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>
@@ -277,6 +280,35 @@
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
+            <!--Regroup-->
+            <StackPanel>
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem, Converter={StaticResource TypeConverter}}" Value="RegroupModel">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <GroupBox Header="Regroup Step" BorderBrush="{x:Null}">
+                    <GroupBox.Background>
+                        <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                            <GradientStop Color="#FF34e89e" Offset="0"/>
+                            <GradientStop Color="#FF0f3443" Offset="1"/>
+                        </LinearGradientBrush>
+                    </GroupBox.Background>
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal"  Margin="5">
+                            <TextBox x:Name="txtRegroupSpot" Controls:TextBoxHelper.Watermark="Regroup Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.RegroupSpot, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>
+                            <Button x:Name="btnRegroupSpotMyPosition" Content="Get my Position" Margin="5" Click="btnRegroupSpotMyPosition_Click" />
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+            
+            <!--Complete Condition-->
             <Controls:ToggleSwitch x:Name="chkHasCondition" IsChecked="{Binding SelectedItem.CompleteCondition.HasCompleteCondition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Has Complete Condition" OffLabel="Has Complete Condition" Margin="5"/>
             <StackPanel x:Name="spHasCond" Visibility="{Binding ElementName=chkHasCondition, Path=IsChecked, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <ComboBox Name="cbConditionType" SelectedValue="{Binding SelectedItem.CompleteCondition.ConditionType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="5" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Condition Type" />

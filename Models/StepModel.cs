@@ -69,9 +69,9 @@ namespace WholesomeDungeonCrawler.Models
     {
         public int ObjectId { get; set; }
         public Vector3 ExpectedPosition { get; set; }
-
         public bool StrictPosition { get; set; }
         public bool FindClosest { get; set; }
+        public int InteractDistance { get; set; }
     }
 
     public class DefendSpotModel : StepModel
@@ -88,5 +88,10 @@ namespace WholesomeDungeonCrawler.Models
         public bool FindClosest { get; set; }
         public bool SkipIfNotFound { get; set; }
         public int UnitId { get; set; }
+    }
+
+    public class RegroupModel : StepModel
+    {
+        public Vector3 RegroupSpot { get; set; }
     }
 }

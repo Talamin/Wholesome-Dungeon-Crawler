@@ -59,6 +59,9 @@ namespace WholesomeDungeonCrawler.Profiles
                     case DefendSpotModel _:
                         _profileSteps.Add(new DefendSpotStep((DefendSpotModel)model, entityCache));
                         break;
+                    case RegroupModel _:
+                        _profileSteps.Add(new RegroupStep((RegroupModel)model, entityCache));
+                        break;
                 }
             }
 
@@ -105,6 +108,12 @@ namespace WholesomeDungeonCrawler.Profiles
                         .OrderBy(node => node.DistanceTo(_entityCache.Me.PositionWithoutType))
                         .First();
                     stepDistances[i] = closestNodeFromThisPath.DistanceTo(_entityCache.Me.PositionWithoutType);
+                }
+
+                if (_profileSteps[i] is RegroupStep)
+                {
+                    RegroupStep regroupStep = (RegroupStep)_profileSteps[i];
+                    stepDistances[i] = regroupStep.RegroupSpot.DistanceTo(_entityCache.Me.PositionWithoutType);
                 }
             }
 

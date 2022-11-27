@@ -20,8 +20,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
-
-
         }
     }
 }

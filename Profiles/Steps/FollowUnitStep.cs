@@ -94,8 +94,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 }
 
                 IsCompleted = false;
-
-
             }
         }
         private WoWUnit FindClosestUnit(Func<WoWUnit, bool> predicate, Vector3 referencePosition = null)

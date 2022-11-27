@@ -85,7 +85,7 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (!MyTeamIsAround)
                 {
-                    Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Waiting for the team to move their frail asses.");
+                    Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Waiting for the team to regroup.");
                     _logTimer = new Timer(1000 * 10);
                 }
                 else
@@ -98,7 +98,7 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (_entityCache.TankUnit != null)
                 {
-                    Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Waiting for the tank to move his fat ass.");
+                    Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Waiting for the tank to come.");
                     _logTimer = new Timer(1000 * 10);
                 }
                 else
@@ -235,7 +235,7 @@ namespace WholesomeDungeonCrawler.States
         }
 
         private bool MyTeamIsAround => _entityCache.ListGroupMember.Length == _entityCache.ListPartyMemberNames.Count
-                    && _entityCache.ListGroupMember.All(member => member.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) < 40);
+                    && _entityCache.ListGroupMember.All(member => member.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) < 20);
 
         private void Radar3DOnDrawEvent()
         {

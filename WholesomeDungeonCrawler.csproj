@@ -138,6 +138,7 @@
     <Compile Include="Profiles\Steps\FollowUnitStep.cs" />
     <Compile Include="Profiles\Steps\IStep.cs" />
     <Compile Include="Profiles\Profile.cs" />
+    <Compile Include="Profiles\Steps\RegroupStep.cs" />
     <Compile Include="Profiles\Steps\Step.cs" />
     <Compile Include="GUI\ProductSettingsControl.xaml.cs">
       <DependentUpon>ProductSettingsControl.xaml</DependentUpon>

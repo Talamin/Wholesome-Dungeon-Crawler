@@ -1,5 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
+using System.Linq;
 using WholesomeDungeonCrawler.Models;
 
 namespace WholesomeDungeonCrawler.Helpers
@@ -69,7 +70,7 @@ namespace WholesomeDungeonCrawler.Helpers
             new DungeonModel { Name="The Forge of Souls",DungeonId =251, MapId=632,ContinentId=571, EntranceLoc=new Vector3(0, 0, 0, "None") },
             new DungeonModel { Name="Pit of Saron",DungeonId =253, MapId=658,ContinentId=571, EntranceLoc=new Vector3(0, 0,0, "None") },
             new DungeonModel { Name="Halls of Reflection",DungeonId =255, MapId=668,ContinentId=571, EntranceLoc=new Vector3(0, 0,0, "None") },
-        };
+        }.OrderBy(dungeon => dungeon.Name).ToList();
 
         public static readonly HashSet<int> PriorityTargetListInt = new HashSet<int>
         {
