@@ -91,7 +91,9 @@ namespace WholesomeDungeonCrawler.States
             }
             else
             {
+                Thread.Sleep(1000);
                 Logger.Log("Nothing can resurrect me. We will have to walk.");
+                MovementManager.StopMove();
                 Lua.LuaDoString("RepopMe();");
                 Thread.Sleep(5000);
             }

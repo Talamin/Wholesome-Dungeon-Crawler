@@ -54,17 +54,21 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 && _entityCache.ListGroupMember.All(member => member.PositionWithoutType.DistanceTo(RegroupSpot) <= 5f)
                 && _entityCache.Me.PositionWithoutType.DistanceTo(RegroupSpot) <= 5f)
             {
-                Logger.Log($"The team has regrouped. Proceeding.");
                 if (_entityCache.IAmTank)
                 {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(3000);
                 }
                 else
                 {
-                    Thread.Sleep(2000);
+                    Thread.Sleep(4000);
                 }
-                IsCompleted = true;
-                return;
+
+                if (_entityCache.ListGroupMember.All(member => !member.HasDrinkBuff && !member.HasFoodBuff))
+                {
+                    Logger.Log($"The team has regrouped. Proceeding.");
+                    IsCompleted = true;
+                    return;
+                }
             }
 
             IsCompleted = false;
