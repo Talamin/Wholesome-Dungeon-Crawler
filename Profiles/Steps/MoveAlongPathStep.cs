@@ -61,7 +61,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         .OrderBy(node => node.DistanceTo(_entityCache.Me.PositionWithoutType))
                         .ToList();
                     Vector3 nodeToReach;
-                    if (orderedNeighbors.Count > 0 && neighboringNodes.IndexOf(orderedNeighbors[1]) > neighboringNodes.IndexOf(orderedNeighbors[0]))
+                    if (orderedNeighbors.Count > 1 && neighboringNodes.IndexOf(orderedNeighbors[1]) > neighboringNodes.IndexOf(orderedNeighbors[0]))
                     {
                         nodeToReach = orderedNeighbors[1];
                     }
