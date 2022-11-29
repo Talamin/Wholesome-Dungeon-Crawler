@@ -80,22 +80,24 @@ namespace WholesomeDungeonCrawler.States
                     GoToTask.ToPosition(dungeon.EntranceLoc, skipIfCannotMakePath: false);
                 }
             }
-
-            if (_entityCache.ListGroupMember
-                .Any(player => _rezzClasses.Contains(player.WoWClass)
-                    && !player.Dead
-                    && _entityCache.Me.PositionWithoutType.DistanceTo(player.PositionWithoutType) < 50))
-            {
-                Logger.Log("A group member can resurrect me. Waiting.");
-                Thread.Sleep(3000);
-            }
             else
             {
-                Thread.Sleep(1000);
-                Logger.Log("Nothing can resurrect me. We will have to walk.");
-                MovementManager.StopMove();
-                Lua.LuaDoString("RepopMe();");
-                Thread.Sleep(5000);
+                if (_entityCache.ListGroupMember
+                    .Any(player => _rezzClasses.Contains(player.WoWClass)
+                        && !player.Dead
+                        && _entityCache.Me.PositionWithoutType.DistanceTo(player.PositionWithoutType) < 50))
+                {
+                    Logger.Log("A group member can resurrect me. Waiting.");
+                    Thread.Sleep(3000);
+                }
+                else
+                {
+                    Thread.Sleep(1000);
+                    Logger.Log("Nothing can resurrect me. We will have to walk.");
+                    MovementManager.StopMove();
+                    Lua.LuaDoString("RepopMe();");
+                    Thread.Sleep(5000);
+                }
             }
         }
     }
