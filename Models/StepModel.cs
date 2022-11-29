@@ -23,7 +23,8 @@ namespace WholesomeDungeonCrawler.Models
         public int MobPositionId { get; set; }
         public int MobId { get; set; }
         public Vector3 MobPositionVector { get; set; }
-        public Vector3 LOSPositionVector { get; set; }
+        public Vector3 LOSPositionVectorFrom { get; set; }
+        public Vector3 LOSPositionVectorTo { get; set; }
         public int WaitTime { get; set; }
     }
 
@@ -69,8 +70,6 @@ namespace WholesomeDungeonCrawler.Models
     {
         public int ObjectId { get; set; }
         public Vector3 ExpectedPosition { get; set; }
-        public bool StrictPosition { get; set; }
-        public bool FindClosest { get; set; }
         public int InteractDistance { get; set; }
     }
 

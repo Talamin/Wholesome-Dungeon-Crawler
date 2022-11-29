@@ -22,6 +22,8 @@
     <Grid>
         <Grid.Resources>
             <local:TypeConverter x:Key="TypeConverter"/>
+            <local:VectorValidation x:Key="VectorValidation"/>
+            <local:TextBoxVectorConverter x:Key="TextBoxVectorConverter"/>
         </Grid.Resources>
         <StackPanel>
 
@@ -102,8 +104,10 @@
                             <TextBox x:Name="txtInteractPos" Controls:TextBoxHelper.Watermark="Object Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.ExpectedPosition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>
                             <Button x:Name="btnGetNearestGOPos" Content="Nearest Object Position" Margin="5" Click="btnGetNearestGOPos_Click"/>
                         </StackPanel>
+                        <!--
                         <Controls:ToggleSwitch x:Name="chkInteractWithStrictPos" IsChecked="{Binding SelectedItem.StrictPosition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Strict Position" OffLabel="Strict Position" Margin="10 5"/>
                         <Controls:ToggleSwitch x:Name="chkInteractWithFindClosest" IsChecked="{Binding SelectedItem.FindClosest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Find Closest" OffLabel="Find Closest" Margin="10 5"/>
+                        -->
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
@@ -396,8 +400,34 @@
                         </Style>
                     </StackPanel.Style>
                     <StackPanel Orientation="Horizontal"  Margin="5">
-                        <TextBox Name="txtLOSCheckPos" Text="{Binding SelectedItem.CompleteCondition.LOSPositionVector, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="LOS Position" Margin="5"/>
-                        <Button x:Name="btnGetLOSCheckPosVector" Content="Get Position" Margin="5" Click="btnGetLOSCheckPosVector_Click"  />
+                        <TextBox Name="txtLOSCheckPosFrom" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="LOS To" Margin="5">
+                            <TextBox.Text>
+                                <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.CompleteCondition.LOSPositionVectorFrom" >
+                                    <Binding.Converter>
+                                        <local:TextBoxVectorConverter/>
+                                    </Binding.Converter>
+                                    <Binding.ValidationRules>
+                                        <local:VectorValidation/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Button x:Name="btnGetLOSCheckPosVectorFrom" Content="Get Position" Margin="5" Click="btnGetLOSCheckPosVectorFrom_Click"  />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal"  Margin="5">
+                        <TextBox Name="txtLOSCheckPosTo" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="LOS To" Margin="5">
+                            <TextBox.Text>
+                                <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.CompleteCondition.LOSPositionVectorTo" >
+                                    <Binding.Converter>
+                                        <local:TextBoxVectorConverter/>
+                                    </Binding.Converter>
+                                    <Binding.ValidationRules>
+                                        <local:VectorValidation/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Button x:Name="btnGetLOSCheckPosVectorTo" Content="Get Position" Margin="5" Click="btnGetLOSCheckPosVectorTo_Click" />
                     </StackPanel>
                 </StackPanel>
                 <!--CanGossip-->

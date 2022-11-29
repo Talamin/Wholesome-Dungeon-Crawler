@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -717,7 +718,62 @@ namespace WholesomeDungeonCrawler.GUI
         {
             throw new NotSupportedException();
         }
+    }
 
+    public class TextBoxVectorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value != null && value is Vector3)
+            {
+                Vector3 valueVector = (Vector3)value;
+                return valueVector.X + ";" + valueVector.Y + ";" + valueVector.Z;
+            }
+            return "";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            Vector3 position = VectorValidation.GetVector3FromString(value.ToString());
+            if (position != null)
+            {
+                return position;
+            }
+            return new Vector3();
+        }
+    }
+
+    public class VectorValidation : ValidationRule
+    {
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            if (GetVector3FromString(value.ToString()) == null)
+            {
+                return new ValidationResult(false, $"The value must be 3 floating numbers separated by semi-colons");
+            }
+
+            return ValidationResult.ValidResult;
+        }
+
+        public static Vector3 GetVector3FromString(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return null;
+
+            string[] vectorValues = text.ToString().Split(';');
+            if (vectorValues.Length != 3)
+            {
+                return null;
+            }
+
+            foreach (string s in vectorValues)
+            {
+                if (!float.TryParse(s, out _))
+                {
+                    return null;
+                }
+            }
+            return new Vector3(float.Parse(vectorValues[0]), float.Parse(vectorValues[1]), float.Parse(vectorValues[2]));
+        }
     }
     #endregion
 }

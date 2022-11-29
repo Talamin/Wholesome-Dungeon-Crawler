@@ -38,7 +38,11 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     var unit = ObjectManager.GetObjectWoWUnit().Where(x => x.Entry == stepCompleteCondition.MobId).FirstOrDefault();
                     return !unit.UnitNPCFlags.HasFlag(UnitNPCFlags.Gossip);
                 case CompleteConditionType.LOSCheck:
-                    return !TraceLine.TraceLineGo(ObjectManager.Me.Position, stepCompleteCondition.LOSPositionVector, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);
+                    if (stepCompleteCondition.LOSPositionVectorFrom == null || stepCompleteCondition.LOSPositionVectorTo == null)
+                    {
+                        return false;
+                    }
+                    return !TraceLine.TraceLineGo(stepCompleteCondition.LOSPositionVectorFrom, stepCompleteCondition.LOSPositionVectorTo, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);
                 default:
                     return false;
             }

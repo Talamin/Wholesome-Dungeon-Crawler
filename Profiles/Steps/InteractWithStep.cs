@@ -1,6 +1,5 @@
 ﻿using robotManager.Helpful;
 using System;
-using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
@@ -14,7 +13,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
     {
         private InteractWithModel _interactWithModel;
         private readonly IEntityCache _entityCache;
-        private int _interactDistance;
+        private float _interactDistance;
         private int _objectId;
         private Vector3 _expectedPosition;
         public override string Name { get; }
@@ -26,20 +25,20 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _entityCache = entityCache;
             Name = interactWithModel.Name;
             Order = interactWithModel.Order;
-            _interactDistance = interactWithModel.InteractDistance == 0 ? 3 : interactWithModel.InteractDistance;
+            _interactDistance = interactWithModel.InteractDistance < 3.5f ? 3.5f : interactWithModel.InteractDistance;
             _expectedPosition = interactWithModel.ExpectedPosition;
             _objectId = interactWithModel.ObjectId;
         }
         public override void Run()
         {
             // Closest object from me or from its expected position?
-            Vector3 referencePosition = _interactWithModel.StrictPosition && _expectedPosition != null ? _expectedPosition : _entityCache.Me.PositionWithoutType;
+            Vector3 referencePosition = _expectedPosition != null ? _expectedPosition : _entityCache.Me.PositionWithoutType;
             WoWGameObject foundObject = FindClosestObject(gameObject => gameObject.Entry == _objectId, referencePosition);
 
             // Move close if we have an expected object position
             if (!MovementManager.InMovement
                 && _expectedPosition != null
-                && _entityCache.Me.PositionWithoutType.DistanceTo(_expectedPosition) > _interactDistance + 3.5)
+                && _entityCache.Me.PositionWithoutType.DistanceTo(_expectedPosition) > _interactDistance + 5f)
             {
                 Logger.Log($"[{_interactWithModel.Name}] Moving to object {_objectId} expected position {_expectedPosition} with interact distance {_interactDistance}");
                 GoToTask.ToPosition(_expectedPosition, _interactDistance);
@@ -70,9 +69,10 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
             // Move to real object position
             if (!MovementManager.InMovement
+                && !MovementManager.InMoveTo
                 && _entityCache.Me.PositionWithoutType.DistanceTo(foundObject.Position) > _interactDistance)
             {
-                Logger.Log($"[{_interactWithModel.Name}] Interactive object found. Approaching {_objectId} with interact distance {_interactDistance}");
+                Logger.Log($"[{_interactWithModel.Name}] Object found. Approaching {_objectId} with interact distance {_interactDistance}");
                 if (_entityCache.Me.PositionWithoutType.DistanceTo(foundObject.Position) > _interactDistance + 5)
                     GoToTask.ToPosition(_expectedPosition, _interactDistance);
                 else

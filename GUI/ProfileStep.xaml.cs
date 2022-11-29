@@ -1,11 +1,14 @@
-﻿using robotManager.Helpful;
+﻿using Newtonsoft.Json.Linq;
+using robotManager.Helpful;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
 using wManager.Wow.Helpers;
@@ -247,16 +250,6 @@ namespace WholesomeDungeonCrawler.GUI
             }
         }
 
-        private void btnGetLOSCheckPosVector_Click(object sender, RoutedEventArgs e)
-        {
-            var currentPos = ObjectManager.Me.Position;
-            if (currentPos != null)
-            {
-                this.SelectedItem.CompleteCondition.LOSPositionVector = currentPos;
-                txtLOSCheckPos.Text = $"{currentPos.X},{currentPos.Y},{currentPos.Z}";
-            }
-        }
-
         private void btnGetCanGossipEntry_Click(object sender, RoutedEventArgs e)
         {
             var target = ObjectManager.Target;
@@ -273,6 +266,26 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 ((RegroupModel)this.SelectedItem).RegroupSpot = currentPos;
                 txtRegroupSpot.Text = $"{currentPos.X},{currentPos.Y},{currentPos.Z}";
+            }
+        }
+
+        private void btnGetLOSCheckPosVectorFrom_Click(object sender, RoutedEventArgs e)
+        {
+            var currentPos = ObjectManager.Me.Position;
+            if (currentPos != null)
+            {
+                this.SelectedItem.CompleteCondition.LOSPositionVectorFrom = currentPos;
+                txtLOSCheckPosFrom.Text = $"{currentPos.X};{currentPos.Y};{currentPos.Z}";
+            }
+        }
+
+        private void btnGetLOSCheckPosVectorTo_Click(object sender, RoutedEventArgs e)
+        {
+            var currentPos = ObjectManager.Me.Position;
+            if (currentPos != null)
+            {
+                this.SelectedItem.CompleteCondition.LOSPositionVectorTo = currentPos;
+                txtLOSCheckPosTo.Text = $"{currentPos.X};{currentPos.Y};{currentPos.Z}";
             }
         }
     }

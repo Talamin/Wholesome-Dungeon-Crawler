@@ -147,8 +147,8 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                         tankUnit = cachedplayer;
                     }
                 }
-                ListGroupMember = listGroupMember.ToArray();
             }
+            ListGroupMember = listGroupMember.ToArray();
 
             if (TankUnit == null && tankUnit != null)
             {
