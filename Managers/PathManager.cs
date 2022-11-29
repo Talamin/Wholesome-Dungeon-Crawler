@@ -46,7 +46,7 @@ namespace WholesomeDungeonCrawler.Managers
             if (_currentProfilePath != null && NextPathNode != null)
             {
                 Radar3D.DrawCircle(NextPathNode, 0.4f, Color.Blue, true, 200);
-                foreach (Vector3 node in MoveHelper.GetNodesAround(_currentProfilePath, NextPathNode, 2))
+                foreach (Vector3 node in MoveHelper.GetNodesAround(_currentProfilePath, NextPathNode))
                 {
                     Radar3D.DrawCircle(node, 0.5f, Color.GreenYellow, true, 50);
                 }

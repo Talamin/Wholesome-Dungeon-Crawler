@@ -56,7 +56,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 if (_pathManager.NextPathNode != null && GetMoveAlongPath.Contains(_pathManager.NextPathNode))
                 {
                     // Rejoin previous path around last visited node
-                    List<Vector3> neighboringNodes = MoveHelper.GetNodesAround(GetMoveAlongPath, _pathManager.NextPathNode, 2);
+                    List<Vector3> neighboringNodes = MoveHelper.GetNodesAround(GetMoveAlongPath, _pathManager.NextPathNode);
                     List<Vector3> orderedNeighbors = neighboringNodes
                         .OrderBy(node => node.DistanceTo(_entityCache.Me.PositionWithoutType))
                         .ToList();

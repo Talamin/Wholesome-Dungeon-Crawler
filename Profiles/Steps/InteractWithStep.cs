@@ -54,8 +54,10 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 return;
             }
 
+            float realDistanceToObject = _entityCache.Me.PositionWithoutType.DistanceTo(foundObject.Position);
+
             // We reached the object, stop and evaluate completion
-            if (_entityCache.Me.PositionWithoutType.DistanceTo(foundObject.Position) <= _interactDistance)
+            if (realDistanceToObject <= _interactDistance)
             {
                 MovementManager.StopMove();
                 MovementManager.StopMoveTo();
@@ -70,13 +72,18 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             // Move to real object position
             if (!MovementManager.InMovement
                 && !MovementManager.InMoveTo
-                && _entityCache.Me.PositionWithoutType.DistanceTo(foundObject.Position) > _interactDistance)
+                && realDistanceToObject > _interactDistance)
             {
-                Logger.Log($"[{_interactWithModel.Name}] Object found. Approaching {_objectId} with interact distance {_interactDistance}");
-                if (_entityCache.Me.PositionWithoutType.DistanceTo(foundObject.Position) > _interactDistance + 5)
-                    GoToTask.ToPosition(_expectedPosition, _interactDistance);
+                if (realDistanceToObject > _interactDistance + 5)
+                {
+                    Logger.Log($"[{_interactWithModel.Name}] Object found. Long move to {_objectId} ({realDistanceToObject}/{_interactDistance})");
+                    GoToTask.ToPosition(foundObject.Position, _interactDistance);
+                }
                 else
+                {
+                    Logger.Log($"[{_interactWithModel.Name}] Object found. Short move to {_objectId} ({realDistanceToObject}/{_interactDistance})");
                     MovementManager.MoveTo(foundObject.Position);
+                }
                 IsCompleted = false;
                 return;
             }
