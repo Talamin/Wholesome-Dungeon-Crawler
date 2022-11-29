@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -230,7 +231,7 @@ namespace WholesomeDungeonCrawler.GUI
                     foreach (var step in currentProfile.StepModels.Where(x => x is MoveAlongPathModel))
                     {
                         var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(step.Name));
-                        var colour = System.Drawing.Color.FromArgb(hash[0], hash[1], hash[2]);
+                        var colour = Color.FromArgb(hash[0], hash[1], hash[2]);
                         var previousVector = new Vector3();
                         foreach (var vec in ((MoveAlongPathModel)step).Path)
                         {
@@ -244,9 +245,16 @@ namespace WholesomeDungeonCrawler.GUI
                         }
                     }
 
+                    foreach (var step in currentProfile.StepModels)
+                    {
+                        if (step.CompleteCondition.LOSPositionVectorFrom != null
+                            && step.CompleteCondition.LOSPositionVectorTo != null)
+                        {
+                            Radar3D.DrawLine(step.CompleteCondition.LOSPositionVectorFrom, step.CompleteCondition.LOSPositionVectorTo, Color.Magenta, 200);
+                        }
+                    }
 
-
-                    var deadcolour = System.Drawing.Color.Red;
+                    var deadcolour = Color.Red;
                     var deadpreviousVector = new Vector3();
                     foreach (var vec in currentProfile.DeathRunPath)
                     {
@@ -262,7 +270,7 @@ namespace WholesomeDungeonCrawler.GUI
 
                     foreach (var offmesh in currentProfile.OffMeshConnections)
                     {
-                        var offmeshcolour = System.Drawing.Color.Green;
+                        var offmeshcolour = Color.Green;
                         var offmeshcpreviousVector = new Vector3();
                         foreach (var vec in offmesh.Path)
                         {
