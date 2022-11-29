@@ -21,6 +21,7 @@ using WholesomeDungeonCrawler.Models;
 using wManager.Wow.Class;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace WholesomeDungeonCrawler.GUI
 {
@@ -247,10 +248,21 @@ namespace WholesomeDungeonCrawler.GUI
 
                     foreach (var step in currentProfile.StepModels)
                     {
-                        if (step.CompleteCondition.LOSPositionVectorFrom != null
-                            && step.CompleteCondition.LOSPositionVectorTo != null)
+                        if (step.CompleteCondition.ConditionType == CompleteConditionType.LOSCheck)
                         {
-                            Radar3D.DrawLine(step.CompleteCondition.LOSPositionVectorFrom, step.CompleteCondition.LOSPositionVectorTo, Color.Magenta, 200);
+                            if (step.CompleteCondition.LOSPositionVectorFrom != null)
+                            {
+                                Radar3D.DrawCircle(step.CompleteCondition.LOSPositionVectorFrom, 0.3f, Color.Magenta, true, 200);
+                            }
+                            if (step.CompleteCondition.LOSPositionVectorTo != null)
+                            {
+                                Radar3D.DrawCircle(step.CompleteCondition.LOSPositionVectorTo, 0.3f, Color.Magenta, true, 200);
+                            }
+                            if (step.CompleteCondition.LOSPositionVectorTo != null
+                                && step.CompleteCondition.LOSPositionVectorFrom != null)
+                            {
+                                Radar3D.DrawLine(step.CompleteCondition.LOSPositionVectorFrom, step.CompleteCondition.LOSPositionVectorTo, Color.Magenta, 200);
+                            }
                         }
                     }
 
@@ -739,7 +751,7 @@ namespace WholesomeDungeonCrawler.GUI
             }
             return "";
         }
-
+        
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             Vector3 position = VectorValidation.GetVector3FromString(value.ToString());
@@ -747,7 +759,7 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 return position;
             }
-            return new Vector3();
+            return null;
         }
     }
 
@@ -755,11 +767,10 @@ namespace WholesomeDungeonCrawler.GUI
     {
         public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
-            if (GetVector3FromString(value.ToString()) == null)
+            if (GetVector3FromString(value.ToString()) == null && !string.IsNullOrEmpty(value.ToString()))
             {
                 return new ValidationResult(false, $"The value must be 3 floating numbers separated by semi-colons");
             }
-
             return ValidationResult.ValidResult;
         }
 
