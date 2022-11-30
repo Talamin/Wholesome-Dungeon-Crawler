@@ -103,7 +103,7 @@ namespace WholesomeDungeonCrawler.GUI
             var nearestGO = ObjectManager.GetNearestWoWGameObject(ObjectManager.GetObjectWoWGameObject());
             if (nearestGO != null)
             {
-                txtInteractO.Value = nearestGO.Entry;
+                txtInteractO.Text = nearestGO.Entry.ToString();
             }
         }
 
@@ -113,7 +113,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (nearestGO != null)
             {
                 ((InteractWithModel)this.SelectedItem).ExpectedPosition = nearestGO.Position;
-                txtInteractPos.Text = $"{nearestGO.Position.X},{nearestGO.Position.Y},{nearestGO.Position.Z}";
+                txtInteractPos.Text = $"{nearestGO.Position.X};{nearestGO.Position.Y};{nearestGO.Position.Z}";
             }
         }
 

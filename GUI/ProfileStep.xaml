@@ -23,6 +23,7 @@
         <Grid.Resources>
             <local:TypeConverter x:Key="TypeConverter"/>
             <local:VectorValidation x:Key="VectorValidation"/>
+            <local:MultipleEntriesValidation x:Key="MultipleEntriesValidation"/>
             <local:TextBoxVectorConverter x:Key="TextBoxVectorConverter"/>
         </Grid.Resources>
         <StackPanel>
@@ -94,20 +95,38 @@
                     </GroupBox.Background>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal"  Margin="5">
-                            <Controls:NumericUpDown x:Name="txtInteractO" Controls:TextBoxHelper.Watermark="ObjectId" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.ObjectId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            <Button x:Name="btnGetNearestGO" Content="Nearest Object ID" Margin="5" Click="btnGetNearestGO_Click"/>
+                            <!--<Controls:NumericUpDown x:Name="txtInteractO" Controls:TextBoxHelper.Watermark="ObjectId" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.ObjectId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />-->
+                            <StackPanel Orientation="Horizontal"  Margin="5">
+                                <TextBox Name="txtInteractO" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Object Entries" Margin="5">
+                                    <TextBox.Text>
+                                        <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.ObjectId">
+                                            <Binding.ValidationRules>
+                                                <local:MultipleEntriesValidation/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                                <Button x:Name="btnGetNearestGO" Content="Nearest Object ID" Margin="5" Click="btnGetNearestGO_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal"  Margin="5">
+                            <TextBox Name="txtInteractPos" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Object Position" Margin="5">
+                                <TextBox.Text>
+                                    <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.ExpectedPosition">
+                                        <Binding.Converter>
+                                            <local:TextBoxVectorConverter/>
+                                        </Binding.Converter>
+                                        <Binding.ValidationRules>
+                                            <local:VectorValidation/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Button x:Name="btnGetNearestGOPos" Content="Nearest Object Position" Margin="5" Click="btnGetNearestGOPos_Click"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal"  Margin="5">
                             <Controls:NumericUpDown x:Name="txtInteractD" Controls:TextBoxHelper.Watermark="Interact distance" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.InteractDistance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal"  Margin="5">
-                            <TextBox x:Name="txtInteractPos" Controls:TextBoxHelper.Watermark="Object Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.ExpectedPosition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>
-                            <Button x:Name="btnGetNearestGOPos" Content="Nearest Object Position" Margin="5" Click="btnGetNearestGOPos_Click"/>
-                        </StackPanel>
-                        <!--
-                        <Controls:ToggleSwitch x:Name="chkInteractWithStrictPos" IsChecked="{Binding SelectedItem.StrictPosition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Strict Position" OffLabel="Strict Position" Margin="10 5"/>
-                        <Controls:ToggleSwitch x:Name="chkInteractWithFindClosest" IsChecked="{Binding SelectedItem.FindClosest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Find Closest" OffLabel="Find Closest" Margin="10 5"/>
-                        -->
                     </StackPanel>
                 </GroupBox>
             </StackPanel>

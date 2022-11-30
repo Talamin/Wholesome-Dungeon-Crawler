@@ -1,5 +1,7 @@
 ﻿using robotManager.Helpful;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
@@ -14,10 +16,10 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private InteractWithModel _interactWithModel;
         private readonly IEntityCache _entityCache;
         private float _interactDistance;
-        private int _objectId;
         private Vector3 _expectedPosition;
         public override string Name { get; }
         public override int Order { get; }
+        private List<int> _objectIds = new List<int>();
 
         public InteractWithStep(InteractWithModel interactWithModel, IEntityCache entityCache)
         {
@@ -27,20 +29,27 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             Order = interactWithModel.Order;
             _interactDistance = interactWithModel.InteractDistance < 3.5f ? 3.5f : interactWithModel.InteractDistance;
             _expectedPosition = interactWithModel.ExpectedPosition;
-            _objectId = interactWithModel.ObjectId;
+            string[] objectsIds = interactWithModel.ObjectId.Split(';');
+            foreach (string objectId in objectsIds)
+            {
+                _objectIds.Add(int.Parse(objectId));
+            }
         }
         public override void Run()
         {
             // Closest object from me or from its expected position?
             Vector3 referencePosition = _expectedPosition != null ? _expectedPosition : _entityCache.Me.PositionWithoutType;
-            WoWGameObject foundObject = FindClosestObject(gameObject => gameObject.Entry == _objectId, referencePosition);
+            WoWGameObject foundObject = ObjectManager.GetObjectWoWGameObject()
+                .Where(go => _objectIds.Contains(go.Entry))
+                .OrderBy(go => go.Position.DistanceTo(referencePosition))
+                .FirstOrDefault();
 
             // Move close if we have an expected object position
             if (!MovementManager.InMovement
                 && _expectedPosition != null
                 && _entityCache.Me.PositionWithoutType.DistanceTo(_expectedPosition) > _interactDistance + 5f)
             {
-                Logger.Log($"[{_interactWithModel.Name}] Moving to object {_objectId} expected position {_expectedPosition} with interact distance {_interactDistance}");
+                Logger.Log($"[{_interactWithModel.Name}] Moving to object's expected position {_expectedPosition} with interact distance {_interactDistance}");
                 GoToTask.ToPosition(_expectedPosition, _interactDistance);
                 IsCompleted = false;
                 return;
@@ -49,7 +58,17 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             // Object is absent
             if (foundObject == null)
             {
-                Logger.Log($"[{_interactWithModel.Name}] Expected interactive object {_objectId} but it's absent, skipping step");
+                if (_expectedPosition != null)
+                {
+                    WoWGameObject objectAtLocation = ObjectManager.GetObjectWoWGameObject()
+                        .Where(obj => obj.Position == _expectedPosition)
+                        .FirstOrDefault();
+                    if (objectAtLocation != null)
+                    {
+                        Logger.LogError($"Couldn't find object with entry {string.Join(" or ", _objectIds)}, but found {objectAtLocation.Name} ({objectAtLocation.Entry}). If this is the object you're looking for, please add the correct object entry to the list in your profile.");
+                    }
+                }
+                Logger.LogError($"[{_interactWithModel.Name}] Couldn't find interactive object, skipping step");
                 IsCompleted = true;
                 return;
             }
@@ -63,7 +82,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 MovementManager.StopMoveTo();
                 if (EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
                 {
-                    Logger.Log($"[{_interactWithModel.Name}] Interaction with object {_objectId} is complete");
+                    Logger.Log($"[{_interactWithModel.Name}] Interaction with object {foundObject.Name} ({foundObject.Entry}) is complete");
                     IsCompleted = true;
                     return;
                 }
@@ -76,12 +95,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             {
                 if (realDistanceToObject > _interactDistance + 5)
                 {
-                    Logger.Log($"[{_interactWithModel.Name}] Object found. Long move to {_objectId} ({realDistanceToObject}/{_interactDistance})");
+                    Logger.Log($"[{_interactWithModel.Name}] Object found. Long move to {foundObject.Name} ({foundObject.Entry}) - ({realDistanceToObject}/{_interactDistance})");
                     GoToTask.ToPosition(foundObject.Position, _interactDistance);
                 }
                 else
                 {
-                    Logger.Log($"[{_interactWithModel.Name}] Object found. Short move to {_objectId} ({realDistanceToObject}/{_interactDistance})");
+                    Logger.Log($"[{_interactWithModel.Name}] Object found. Short move to {foundObject.Name} ({foundObject.Entry}) - ({realDistanceToObject}/{_interactDistance})");
                     MovementManager.MoveTo(foundObject.Position);
                 }
                 IsCompleted = false;
@@ -91,14 +110,14 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             // Interact with object
             if (!MovementManager.InMovement)
             {
-                Logger.Log($"[{_interactWithModel.Name}] Interacting with {_objectId}");
+                Logger.Log($"[{_interactWithModel.Name}] Interacting with {foundObject.Name} ({foundObject.Entry})");
                 Interact.InteractGameObject(foundObject.GetBaseAddress);
                 Usefuls.WaitIsCasting();
             }
 
             if (!_interactWithModel.CompleteCondition.HasCompleteCondition || EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
             {
-                Logger.Log($"[{_interactWithModel.Name}] Interaction with object {foundObject.Entry} is complete");
+                Logger.Log($"[{_interactWithModel.Name}] Interaction with {foundObject.Name} ({foundObject.Entry}) is complete");
                 IsCompleted = true;
                 return;
             }

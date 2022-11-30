@@ -21,7 +21,7 @@ using WholesomeDungeonCrawler.Models;
 using wManager.Wow.Class;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
-using MessageBox = System.Windows.Forms.MessageBox;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace WholesomeDungeonCrawler.GUI
 {
@@ -163,7 +163,7 @@ namespace WholesomeDungeonCrawler.GUI
                 currentProfile.StepModels = currentProfile.StepModels.OrderBy(x => x.Order).ToList();
 
                 var output = JsonConvert.SerializeObject(currentProfile, Formatting.Indented, jsonSettings);
-                var path = $@"{rootpath.FullName}\{currentProfile.ProfileName.Replace(" ", "_")}_[{currentProfile.Faction}].json";
+                var path = $@"{rootpath.FullName}\{currentProfile.ProfileName.Replace(" ", "_")}_{currentProfile.Faction}.json";
                 File.WriteAllText(path, output);
                 Setup();
 
@@ -751,7 +751,7 @@ namespace WholesomeDungeonCrawler.GUI
             }
             return "";
         }
-        
+
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             Vector3 position = VectorValidation.GetVector3FromString(value.ToString());
@@ -792,6 +792,27 @@ namespace WholesomeDungeonCrawler.GUI
                 }
             }
             return new Vector3(float.Parse(vectorValues[0]), float.Parse(vectorValues[1]), float.Parse(vectorValues[2]));
+        }
+    }
+
+    public class MultipleEntriesValidation : ValidationRule
+    {
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            string text = value.ToString();
+            if (string.IsNullOrEmpty(text))
+            {
+                return ValidationResult.ValidResult;
+            }
+            string[] entryValues = text.ToString().Split(';');
+            foreach (string s in entryValues)
+            {
+                if (!int.TryParse(s, out _))
+                {
+                    return new ValidationResult(false, $"Must be one entry or multiple entries separated by semi-colons");
+                }
+            }
+            return ValidationResult.ValidResult;
         }
     }
     #endregion

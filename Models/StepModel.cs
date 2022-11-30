@@ -68,7 +68,7 @@ namespace WholesomeDungeonCrawler.Models
 
     public class InteractWithModel : StepModel
     {
-        public int ObjectId { get; set; }
+        public string ObjectId { get; set; }
         public Vector3 ExpectedPosition { get; set; }
         public int InteractDistance { get; set; }
     }
