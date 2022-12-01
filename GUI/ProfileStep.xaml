@@ -97,7 +97,7 @@
                         <StackPanel Orientation="Horizontal"  Margin="5">
                             <!--<Controls:NumericUpDown x:Name="txtInteractO" Controls:TextBoxHelper.Watermark="ObjectId" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.ObjectId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />-->
                             <StackPanel Orientation="Horizontal"  Margin="5">
-                                <TextBox Name="txtInteractO" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Object Entries" Margin="5">
+                                <TextBox Name="txtInteractO" MinWidth="170" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Object Entries" Margin="5">
                                     <TextBox.Text>
                                         <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.ObjectId">
                                             <Binding.ValidationRules>
@@ -110,12 +110,9 @@
                             </StackPanel>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal"  Margin="5">
-                            <TextBox Name="txtInteractPos" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Object Position" Margin="5">
+                            <TextBox Name="txtInteractPos" MinWidth="170" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Object Position" Margin="5">
                                 <TextBox.Text>
-                                    <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.ExpectedPosition">
-                                        <Binding.Converter>
-                                            <local:TextBoxVectorConverter/>
-                                        </Binding.Converter>
+                                    <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.ExpectedPosition" Converter="{StaticResource TextBoxVectorConverter}">
                                         <Binding.ValidationRules>
                                             <local:VectorValidation/>
                                         </Binding.ValidationRules>
@@ -152,7 +149,16 @@
                     <StackPanel>
 
                         <StackPanel Orientation="Horizontal"  Margin="5">
-                            <TextBox x:Name="txtGoToTargetPos" Controls:TextBoxHelper.Watermark="GoTo Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.TargetPosition, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>
+                            <!--<TextBox x:Name="txtGoToTargetPos" Controls:TextBoxHelper.Watermark="GoTo Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.TargetPosition, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>-->
+                            <TextBox Name="txtGoToTargetPos" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="GoTo Position" Margin="5">
+                                <TextBox.Text>
+                                    <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.TargetPosition" Converter="{StaticResource TextBoxVectorConverter}">
+                                        <Binding.ValidationRules>
+                                            <local:VectorValidation/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
                             <Button x:Name="btnGotoGetCurrentPos" Content="Get Current Position" Margin="5" Click="btnGotoGetCurrentPos_Click" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal"  Margin="5">
@@ -182,8 +188,17 @@
                     </GroupBox.Background>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal"  Margin="5">
-                            <TextBox x:Name="txtMoveToUnitTargetPos" Controls:TextBoxHelper.Watermark="MoveToUnit Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.ExpectedPosition, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>
-                            <Button x:Name="btnMoveToUnitGetCurrentPos" Content="Get Current Position" Margin="5" Click="btnMoveToUnitGetCurrentPos_Click" />
+                            <!--<TextBox x:Name="txtMoveToUnitTargetPos" Controls:TextBoxHelper.Watermark="MoveToUnit Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.ExpectedPosition, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>-->
+                            <TextBox Name="txtMoveToUnitTargetPos" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="MoveToUnit Position" Margin="5">
+                                <TextBox.Text>
+                                    <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.ExpectedPosition" Converter="{StaticResource TextBoxVectorConverter}">
+                                        <Binding.ValidationRules>
+                                            <local:VectorValidation/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <Button x:Name="btnMoveToUnitGetCurrentPos" Content="Get Target Position" Margin="5" Click="btnMoveToUnitGetCurrentPos_Click" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal"  Margin="5">
                             <Controls:NumericUpDown x:Name="txtMoveToUnitId" Controls:TextBoxHelper.Watermark="Unit ID" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.UnitId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
@@ -223,7 +238,16 @@
                     <StackPanel>
 
                         <StackPanel Orientation="Horizontal"  Margin="5">
-                            <TextBox x:Name="txtDefendSpotTargetPos" Controls:TextBoxHelper.Watermark="Defend Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.DefendPosition, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>
+                            <!--<TextBox x:Name="txtDefendSpotTargetPos" Controls:TextBoxHelper.Watermark="Defend Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.DefendPosition, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>-->
+                            <TextBox Name="txtDefendSpotTargetPos" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Defend Position" Margin="5">
+                                <TextBox.Text>
+                                    <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.DefendPosition" Converter="{StaticResource TextBoxVectorConverter}">
+                                        <Binding.ValidationRules>
+                                            <local:VectorValidation/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
                             <Button x:Name="btnDefendSpotGetCurrentPos" Content="Get Current Position" Margin="5" Click="btnDefendSpotGetCurrentPos_Click" />
                         </StackPanel>
                         <Controls:NumericUpDown x:Name="txtDefendSpotPrecision" Controls:TextBoxHelper.Watermark="Precision" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="10 5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.Precision, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
@@ -257,7 +281,16 @@
                         </StackPanel>
                         
                         <StackPanel Orientation="Horizontal"  Margin="5">
-                            <TextBox x:Name="txtPickupObjectPos" Controls:TextBoxHelper.Watermark="Object Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.ExpectedPosition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>
+                            <!--<TextBox x:Name="txtPickupObjectPos" Controls:TextBoxHelper.Watermark="Object Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.ExpectedPosition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>-->
+                            <TextBox Name="txtPickupObjectPos" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Object Position" Margin="5">
+                                <TextBox.Text>
+                                    <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.ExpectedPosition" Converter="{StaticResource TextBoxVectorConverter}">
+                                        <Binding.ValidationRules>
+                                            <local:VectorValidation/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
                             <Button x:Name="btnPickupObjectGetNearestGOPos" Content="Nearest Object Position" Margin="5" Click="btnPickupObjectGetNearestGOPos_Click" />
                         </StackPanel>
                         <Controls:NumericUpDown x:Name="txtPickupObjectItemId" Controls:TextBoxHelper.Watermark="Item ID" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="10 5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.ObjectId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
@@ -287,11 +320,29 @@
                     </GroupBox.Background>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal"  Margin="5">
-                            <TextBox x:Name="txtFollowUnitStartPos" Controls:TextBoxHelper.Watermark="Start Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.ExpectedStartPosition, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>
+                            <!--<TextBox x:Name="txtFollowUnitStartPos" Controls:TextBoxHelper.Watermark="Start Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.ExpectedStartPosition, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>-->
+                            <TextBox Name="txtFollowUnitStartPos" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Start Position" Margin="5">
+                                <TextBox.Text>
+                                    <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.ExpectedStartPosition" Converter="{StaticResource TextBoxVectorConverter}">
+                                        <Binding.ValidationRules>
+                                            <local:VectorValidation/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
                             <Button x:Name="btnFollowUnitGetCurrentPosStart" Content="Get Target Position" Margin="5" Click="btnFollowUnitGetCurrentPosStart_Click" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal"  Margin="5">
-                            <TextBox x:Name="txtFollowUnitEndPos" Controls:TextBoxHelper.Watermark="End Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.ExpectedEndPosition, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>
+                            <!--<TextBox x:Name="txtFollowUnitEndPos" Controls:TextBoxHelper.Watermark="End Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.ExpectedEndPosition, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>-->
+                            <TextBox Name="txtFollowUnitEndPos" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="End Position" Margin="5">
+                                <TextBox.Text>
+                                    <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.ExpectedEndPosition" Converter="{StaticResource TextBoxVectorConverter}">
+                                        <Binding.ValidationRules>
+                                            <local:VectorValidation/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
                             <Button x:Name="btnFollowUnitGetCurrentPosEnd" Content="Get Target Position" Margin="5" Click="btnFollowUnitGetCurrentPosEnd_Click" />
                         </StackPanel>
                         <StackPanel Orientation="Horizontal"  Margin="5">
@@ -324,7 +375,16 @@
                     </GroupBox.Background>
                     <StackPanel>
                         <StackPanel Orientation="Horizontal"  Margin="5">
-                            <TextBox x:Name="txtRegroupSpot" Controls:TextBoxHelper.Watermark="Regroup Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.RegroupSpot, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>
+                            <!--<TextBox x:Name="txtRegroupSpot" Controls:TextBoxHelper.Watermark="Regroup Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.RegroupSpot, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>-->
+                            <TextBox Name="txtRegroupSpot" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Regroup Position" Margin="5">
+                                <TextBox.Text>
+                                    <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.RegroupSpot" Converter="{StaticResource TextBoxVectorConverter}">
+                                        <Binding.ValidationRules>
+                                            <local:VectorValidation/>
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
                             <Button x:Name="btnRegroupSpotMyPosition" Content="Get my Position" Margin="5" Click="btnRegroupSpotMyPosition_Click" />
                         </StackPanel>
                     </StackPanel>
@@ -373,7 +433,16 @@
                         <Button x:Name="btnGetTargetMobPosEntry" Content="Get Target Mob Id" Margin="5" Click="btnGetTargetMobPosEntry_Click" />
                     </StackPanel>
                     <StackPanel x:Name="spConditionMobPosVector" Orientation="Horizontal"  Margin="5">
-                        <TextBox Name="nudMobPosVector" Text="{Binding SelectedItem.CompleteCondition.MobPositionVector, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Mob Position" Margin="5"/>
+                        <!--<TextBox Name="nudMobPosVector" Text="{Binding SelectedItem.CompleteCondition.MobPositionVector, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Mob Position" Margin="5"/>-->
+                        <TextBox Name="nudMobPosVector" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Mob Position" Margin="5">
+                            <TextBox.Text>
+                                <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.CompleteCondition.MobPositionVector" Converter="{StaticResource TextBoxVectorConverter}">
+                                    <Binding.ValidationRules>
+                                        <local:VectorValidation/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
                         <Button x:Name="btnGetTargetMobPosVector" Content="Get Target Mob Position" Margin="5" Click="btnGetTargetMobPosVector_Click" />
                     </StackPanel>
                 </StackPanel>
@@ -421,10 +490,7 @@
                     <StackPanel Orientation="Horizontal"  Margin="5">
                         <TextBox Name="txtLOSCheckPosFrom" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="LOS From" Margin="5">
                             <TextBox.Text>
-                                <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.CompleteCondition.LOSPositionVectorFrom" >
-                                    <Binding.Converter>
-                                        <local:TextBoxVectorConverter/>
-                                    </Binding.Converter>
+                                <Binding NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.CompleteCondition.LOSPositionVectorFrom" Converter="{StaticResource TextBoxVectorConverter}">
                                     <Binding.ValidationRules>
                                         <local:VectorValidation/>
                                     </Binding.ValidationRules>
@@ -436,10 +502,7 @@
                     <StackPanel Orientation="Horizontal"  Margin="5">
                         <TextBox Name="txtLOSCheckPosTo" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="LOS To" Margin="5">
                             <TextBox.Text>
-                                <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.CompleteCondition.LOSPositionVectorTo" >
-                                    <Binding.Converter>
-                                        <local:TextBoxVectorConverter/>
-                                    </Binding.Converter>
+                                <Binding NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.CompleteCondition.LOSPositionVectorTo" Converter="{StaticResource TextBoxVectorConverter}">
                                     <Binding.ValidationRules>
                                         <local:VectorValidation/>
                                     </Binding.ValidationRules>

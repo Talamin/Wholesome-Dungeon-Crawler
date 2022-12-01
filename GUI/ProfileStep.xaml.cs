@@ -1,14 +1,11 @@
-﻿using Newtonsoft.Json.Linq;
-using robotManager.Helpful;
+﻿using robotManager.Helpful;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
 using wManager.Wow.Helpers;
@@ -103,7 +100,14 @@ namespace WholesomeDungeonCrawler.GUI
             var nearestGO = ObjectManager.GetNearestWoWGameObject(ObjectManager.GetObjectWoWGameObject());
             if (nearestGO != null)
             {
-                txtInteractO.Text = nearestGO.Entry.ToString();
+                if (string.IsNullOrEmpty(txtInteractO.Text))
+                {
+                    txtInteractO.Text = nearestGO.Entry.ToString();
+                }
+                else
+                {
+                    txtInteractO.Text = txtInteractO.Text + ";" + nearestGO.Entry.ToString();
+                }
             }
         }
 
@@ -113,7 +117,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (nearestGO != null)
             {
                 ((InteractWithModel)this.SelectedItem).ExpectedPosition = nearestGO.Position;
-                txtInteractPos.Text = $"{nearestGO.Position.X};{nearestGO.Position.Y};{nearestGO.Position.Z}";
+                txtInteractPos.Text = TextBoxVectorConverter.GetStringFromVector3(nearestGO.Position);
             }
         }
 
@@ -123,7 +127,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (currentPos != null)
             {
                 ((GoToModel)this.SelectedItem).TargetPosition = currentPos;
-                txtGoToTargetPos.Text = $"{currentPos.X},{currentPos.Y},{currentPos.Z}";
+                txtGoToTargetPos.Text = TextBoxVectorConverter.GetStringFromVector3(currentPos);
             }
         }
 
@@ -151,7 +155,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (target != null)
             {
                 this.SelectedItem.CompleteCondition.MobPositionVector = target.Position;
-                nudMobPosVector.Text = $"{target.Position.X},{target.Position.Y},{target.Position.Z}";
+                nudMobPosVector.Text = TextBoxVectorConverter.GetStringFromVector3(target.Position);
             }
         }
 
@@ -179,7 +183,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (targetPos != null)
             {
                 ((MoveToUnitModel)this.SelectedItem).ExpectedPosition = targetPos;
-                txtMoveToUnitTargetPos.Text = $"{targetPos.X},{targetPos.Y},{targetPos.Z}";
+                txtMoveToUnitTargetPos.Text = TextBoxVectorConverter.GetStringFromVector3(targetPos);
             }
         }
 
@@ -198,7 +202,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (currentPos != null)
             {
                 ((DefendSpotModel)this.SelectedItem).DefendPosition = currentPos;
-                txtDefendSpotTargetPos.Text = $"{currentPos.X},{currentPos.Y},{currentPos.Z}";
+                txtDefendSpotTargetPos.Text = TextBoxVectorConverter.GetStringFromVector3(currentPos);
             }
         }
 
@@ -217,7 +221,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (nearestGO != null)
             {
                 ((PickupObjectModel)this.SelectedItem).ExpectedPosition = nearestGO.Position;
-                txtPickupObjectPos.Text = $"{nearestGO.Position.X},{nearestGO.Position.Y},{nearestGO.Position.Z}";
+                txtPickupObjectPos.Text = TextBoxVectorConverter.GetStringFromVector3(nearestGO.Position);
             }
         }
 
@@ -236,7 +240,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (targetPos != null)
             {
                 ((FollowUnitModel)this.SelectedItem).ExpectedStartPosition = targetPos;
-                txtFollowUnitStartPos.Text = $"{targetPos.X},{targetPos.Y},{targetPos.Z}";
+                txtFollowUnitStartPos.Text = TextBoxVectorConverter.GetStringFromVector3(targetPos);
             }
         }
 
@@ -246,7 +250,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (targetPos != null)
             {
                 ((FollowUnitModel)this.SelectedItem).ExpectedEndPosition = targetPos;
-                txtFollowUnitEndPos.Text = $"{targetPos.X},{targetPos.Y},{targetPos.Z}";
+                txtFollowUnitEndPos.Text = TextBoxVectorConverter.GetStringFromVector3(targetPos);
             }
         }
 
@@ -265,7 +269,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (currentPos != null)
             {
                 ((RegroupModel)this.SelectedItem).RegroupSpot = currentPos;
-                txtRegroupSpot.Text = $"{currentPos.X},{currentPos.Y},{currentPos.Z}";
+                txtRegroupSpot.Text = TextBoxVectorConverter.GetStringFromVector3(currentPos);
             }
         }
 
@@ -275,7 +279,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (currentPos != null)
             {
                 this.SelectedItem.CompleteCondition.LOSPositionVectorFrom = currentPos;
-                txtLOSCheckPosFrom.Text = $"{currentPos.X};{currentPos.Y};{currentPos.Z}";
+                txtLOSCheckPosFrom.Text = TextBoxVectorConverter.GetStringFromVector3(currentPos);
             }
         }
 
@@ -285,7 +289,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (currentPos != null)
             {
                 this.SelectedItem.CompleteCondition.LOSPositionVectorTo = currentPos;
-                txtLOSCheckPosTo.Text = $"{currentPos.X};{currentPos.Y};{currentPos.Z}";
+                txtLOSCheckPosTo.Text = TextBoxVectorConverter.GetStringFromVector3(currentPos);
             }
         }
     }

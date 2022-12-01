@@ -68,7 +68,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         Logger.LogError($"Couldn't find object with entry {string.Join(" or ", _objectIds)}, but found {objectAtLocation.Name} ({objectAtLocation.Entry}). If this is the object you're looking for, please add the correct object entry to the list in your profile.");
                     }
                 }
-                Logger.LogError($"[{_interactWithModel.Name}] Couldn't find interactive object, skipping step");
+                Logger.LogError($"[{_interactWithModel.Name}] Couldn't find interactive object {string.Join(" or ", _objectIds)}, skipping step");
                 IsCompleted = true;
                 return;
             }

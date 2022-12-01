@@ -21,7 +21,6 @@ using WholesomeDungeonCrawler.Models;
 using wManager.Wow.Class;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace WholesomeDungeonCrawler.GUI
 {
@@ -394,7 +393,7 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
                 if (x != null)
                 {
-                    var Step = new InteractWithModel() { Name = x, Order = StepCollection.Count, ExpectedPosition = new Vector3(), InteractDistance = 3 };
+                    var Step = new InteractWithModel() { Name = x, Order = StepCollection.Count, ExpectedPosition = null, InteractDistance = 3 };
                     StepCollection.Add(Step);
                     currentProfile.StepModels = StepCollection.ToList();
                 }
@@ -413,7 +412,7 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
                 if (x != null)
                 {
-                    var Step = new GoToModel() { Name = x, Order = StepCollection.Count, TargetPosition = new Vector3() };
+                    var Step = new GoToModel() { Name = x, Order = StepCollection.Count };
                     StepCollection.Add(Step);
                     currentProfile.StepModels = StepCollection.ToList();
                 }
@@ -451,7 +450,7 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
                 if (x != null)
                 {
-                    var Step = new MoveToUnitModel() { Name = x, Order = StepCollection.Count, ExpectedPosition = new Vector3() };
+                    var Step = new MoveToUnitModel() { Name = x, Order = StepCollection.Count };
                     StepCollection.Add(Step);
                     currentProfile.StepModels = StepCollection.ToList();
                 }
@@ -470,7 +469,7 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
                 if (x != null)
                 {
-                    var Step = new PickupObjectModel() { Name = x, Order = StepCollection.Count, ExpectedPosition = new Vector3() };
+                    var Step = new PickupObjectModel() { Name = x, Order = StepCollection.Count };
                     StepCollection.Add(Step);
                     currentProfile.StepModels = StepCollection.ToList();
                 }
@@ -508,7 +507,7 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
                 if (x != null)
                 {
-                    var Step = new FollowUnitModel() { Name = x, Order = StepCollection.Count, ExpectedStartPosition = new Vector3(), ExpectedEndPosition = new Vector3() };
+                    var Step = new FollowUnitModel() { Name = x, Order = StepCollection.Count };
                     StepCollection.Add(Step);
                     currentProfile.StepModels = StepCollection.ToList();
                 }
@@ -527,7 +526,7 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
                 if (x != null)
                 {
-                    var Step = new RegroupModel() { Name = x, Order = StepCollection.Count, RegroupSpot = new Vector3() };
+                    var Step = new RegroupModel() { Name = x, Order = StepCollection.Count };
                     StepCollection.Add(Step);
                     currentProfile.StepModels = StepCollection.ToList();
                 }
@@ -742,43 +741,22 @@ namespace WholesomeDungeonCrawler.GUI
 
     public class TextBoxVectorConverter : IValueConverter
     {
+        public static readonly char Vector3Separator = ';';
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null && value is Vector3)
-            {
-                Vector3 valueVector = (Vector3)value;
-                return valueVector.X + ";" + valueVector.Y + ";" + valueVector.Z;
-            }
-            return "";
+            return GetStringFromVector3((Vector3)value);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Vector3 position = VectorValidation.GetVector3FromString(value.ToString());
-            if (position != null)
-            {
-                return position;
-            }
-            return null;
-        }
-    }
-
-    public class VectorValidation : ValidationRule
-    {
-        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
-        {
-            if (GetVector3FromString(value.ToString()) == null && !string.IsNullOrEmpty(value.ToString()))
-            {
-                return new ValidationResult(false, $"The value must be 3 floating numbers separated by semi-colons");
-            }
-            return ValidationResult.ValidResult;
+            return GetVector3FromString(value.ToString());
         }
 
         public static Vector3 GetVector3FromString(string text)
         {
             if (string.IsNullOrEmpty(text)) return null;
 
-            string[] vectorValues = text.ToString().Split(';');
+            string[] vectorValues = text.ToString().Split(Vector3Separator);
             if (vectorValues.Length != 3)
             {
                 return null;
@@ -793,6 +771,24 @@ namespace WholesomeDungeonCrawler.GUI
             }
             return new Vector3(float.Parse(vectorValues[0]), float.Parse(vectorValues[1]), float.Parse(vectorValues[2]));
         }
+
+        public static string GetStringFromVector3(Vector3 vector3)
+        {
+            if (vector3 == null || !(vector3 is Vector3)) return "";
+            return $"{vector3.X}{Vector3Separator}{vector3.Y}{Vector3Separator}{vector3.Z}";
+        }
+    }
+
+    public class VectorValidation : ValidationRule
+    {
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
+        {
+            if (TextBoxVectorConverter.GetVector3FromString(value.ToString()) == null && !string.IsNullOrEmpty(value.ToString()))
+            {
+                return new ValidationResult(false, $"The value must be 3 floating numbers separated by semi-colons");
+            }
+            return ValidationResult.ValidResult;
+        }
     }
 
     public class MultipleEntriesValidation : ValidationRule
@@ -804,7 +800,7 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 return ValidationResult.ValidResult;
             }
-            string[] entryValues = text.ToString().Split(';');
+            string[] entryValues = text.ToString().Split(TextBoxVectorConverter.Vector3Separator);
             foreach (string s in entryValues)
             {
                 if (!int.TryParse(s, out _))
