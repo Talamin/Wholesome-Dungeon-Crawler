@@ -161,7 +161,7 @@ namespace WholesomeDungeonCrawler.States
                     foreach (IWoWUnit unit in hostileUnits)
                     {
                         if (WTPathFinder.PointDistanceToLine(segmentStart, segmentEnd, unit.PositionWithoutType) > 20
-                            || unit.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) > 40
+                            || unit.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) > 45
                             || ((int)unit.Reaction) > 2
                             || Lists.IgnoreWhenCheckingPathListInt.Contains(unit.UnitID)
                             || unreableMobsGuid.Contains(unit.Guid))
@@ -192,7 +192,7 @@ namespace WholesomeDungeonCrawler.States
                         if (losResult.IsVisibleAndReachable)
                         {
                             distanceToUnit += losResult.PathLength;
-                            if (distanceToUnit < 30)
+                            if (distanceToUnit < 35)
                             {
                                 _dangerTracelines.Add((offset, unit.PositionWithoutType));
                                 return (unit, distanceToUnit);

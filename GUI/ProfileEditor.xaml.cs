@@ -393,7 +393,7 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
                 if (x != null)
                 {
-                    var Step = new InteractWithModel() { Name = x, Order = StepCollection.Count, ExpectedPosition = null, InteractDistance = 3 };
+                    var Step = new InteractWithModel() { Name = x, Order = StepCollection.Count, InteractDistance = 3 };
                     StepCollection.Add(Step);
                     currentProfile.StepModels = StepCollection.ToList();
                 }
@@ -800,7 +800,7 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 return ValidationResult.ValidResult;
             }
-            string[] entryValues = text.ToString().Split(TextBoxVectorConverter.Vector3Separator);
+            string[] entryValues = text.ToString().Split(';');
             foreach (string s in entryValues)
             {
                 if (!int.TryParse(s, out _))
