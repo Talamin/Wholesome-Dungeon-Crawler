@@ -66,8 +66,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             bool imPartyLeader = Lua.LuaDoString<bool>("return IsPartyLeader() == 1;");
             int luaTimeRemaining = Lua.LuaDoString<int>("return GetReadyCheckTimeLeft();");
             bool imReady = Lua.LuaDoString<bool>($"return GetReadyCheckStatus('{_entityCache.Me.Name}') == 'ready';");
-            List<string> partyMemberNames = _entityCache.ListPartyMemberNames.ToList();
-            partyMemberNames.Add(_entityCache.Me.Name);
 
             // If you're the party leader, the LUA timer goes back to 0 when a ready check is finished
             // If you're not the party leader, the countdown continues even after a ready check ends
