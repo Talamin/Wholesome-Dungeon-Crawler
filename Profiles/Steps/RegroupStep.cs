@@ -20,6 +20,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public Vector3 RegroupSpot { get; private set; }
         private Timer _readyCheckTimer = new Timer();
         private string _lastLog;
+        private int _foodMin;
+        private int _drinkMin;
+        private bool _drinkAllowed;
 
         public RegroupStep(RegroupModel regroupModel, IEntityCache entityCache)
         {
@@ -28,6 +31,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             Name = regroupModel.Name;
             Order = regroupModel.Order;
             RegroupSpot = regroupModel.RegroupSpot;
+            _foodMin = wManager.wManagerSetting.CurrentSetting.FoodPercent;
+            _drinkMin = wManager.wManagerSetting.CurrentSetting.DrinkPercent;
+            _drinkAllowed = wManager.wManagerSetting.CurrentSetting.RestingMana;
         }
 
         public override void Run()
@@ -55,10 +61,25 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
             // Check if everyone is here
             if (_entityCache.ListGroupMember.Length != _entityCache.ListPartyMemberNames.Count
-                || _entityCache.ListGroupMember.Any(member => member.PositionWithoutType.DistanceTo(RegroupSpot) > 15f)
-                || _entityCache.Me.PositionWithoutType.DistanceTo(RegroupSpot) > 15f)
+                || _entityCache.ListGroupMember.Any(member => member.PositionWithoutType.DistanceTo(RegroupSpot) > 8f)
+                || _entityCache.Me.PositionWithoutType.DistanceTo(RegroupSpot) > 8f)
             {
                 LogUnique($"Waiting for the team to regroup.");
+                IsCompleted = false;
+                return;
+            }
+
+            // Check for regen conditions
+            if (_drinkAllowed && _entityCache.Me.Mana > 0 && _entityCache.Me.ManaPercent < _drinkMin)
+            {
+                LogUnique($"Skipping ready check vote until mana is restored");
+                IsCompleted = false;
+                return;
+            }
+
+            if (_entityCache.Me.HealthPercent < _foodMin)
+            {
+                LogUnique($"Skipping ready check vote until health is restores");
                 IsCompleted = false;
                 return;
             }
@@ -70,30 +91,33 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             // If you're the party leader, the LUA timer goes back to 0 when a ready check is finished
             // If you're not the party leader, the countdown continues even after a ready check ends
 
+            if (luaTimeRemaining > _readyCheckTimer.TimeLeft() / 1000 + 1)
+            {
+                _readyCheckTimer.Reset(luaTimeRemaining * 1000);
+            }
+
             // Party leader logic
             if (imPartyLeader)
             {
-                // We keep an inner timer for the party leader
-                if (luaTimeRemaining > _readyCheckTimer.TimeLeft() / 1000 + 1)
-                {
-                    _readyCheckTimer.Reset(luaTimeRemaining * 1000);
-                }
-
                 // We need to reinitiate the check
                 if (_readyCheckTimer.TimeLeft() <= 0)
                 {
                     Logger.Log($"No ready check in progress. Initiating.");
                     Lua.LuaDoString("DoReadyCheck();");
+                    Thread.Sleep(1000);
                     return;
                 }
 
                 // No check in progress
-                if (_readyCheckTimer.TimeLeft() > 3 && AllStatusAreNil())
+                if (_readyCheckTimer.TimeLeft() > 5000 
+                    && _readyCheckTimer.TimeLeft() < 27000
+                    && AllStatusAreNil())
                 {
                     if (!_entityCache.IAmTank)
                     {
                         Thread.Sleep(1000);
                     }
+                    Logger.Log("Everyone is ready");
                     IsCompleted = true;
                     return;
                 }
@@ -104,7 +128,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             else
             // Party follower logic
             {
-                if (luaTimeRemaining > 3 && luaTimeRemaining < 25)
+                if (_readyCheckTimer.TimeLeft() > 5000 
+                    && _readyCheckTimer.TimeLeft() < 27000)
                 {
                     if (!imReady)
                     {
@@ -119,6 +144,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         {
                             Thread.Sleep(1000);
                         }
+                        Logger.Log("Everyone is ready");
                         IsCompleted = true;
                         return;
                     }
