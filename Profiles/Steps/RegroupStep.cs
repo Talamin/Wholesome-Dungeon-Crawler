@@ -59,6 +59,14 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 return;
             }
 
+            // Auto complete if running alone
+            if (_entityCache.ListPartyMemberNames.Count == 0)
+            {
+                LogUnique($"Not in a group, skipping");
+                IsCompleted = true;
+                return;
+            }
+
             // Check if everyone is here
             if (_entityCache.ListGroupMember.Length != _entityCache.ListPartyMemberNames.Count
                 || _entityCache.ListGroupMember.Any(member => member.PositionWithoutType.DistanceTo(RegroupSpot) > 8f)

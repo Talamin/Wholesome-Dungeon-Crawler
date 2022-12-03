@@ -47,7 +47,7 @@ namespace WholesomeDungeonCrawler.Bot
 
                 _fsm.States.Clear();
 
-                _checkPathAheadState = new CheckPathAhead(_entityCache, _partyChatManager, _cache);
+                _checkPathAheadState = new CheckPathAhead(_entityCache, _partyChatManager, _cache, _profileManager);
                 _checkPathAheadState.Initialize();
 
                 // List of states, top of the list is highest priority

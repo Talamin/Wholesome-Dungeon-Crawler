@@ -1,11 +1,16 @@
-﻿using robotManager.Helpful;
-using System.Linq;
+﻿using robotManager;
+using robotManager.Helpful;
+using robotManager.MemoryClass;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using WholesomeDungeonCrawler.ProductCache.Entity;
+using wManager;
+using wManager.Wow;
+using wManager.Wow.Bot.States;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
-using wManager.Wow;
 
 namespace WholesomeDungeonCrawler.Helpers
 {
@@ -44,98 +49,93 @@ namespace WholesomeDungeonCrawler.Helpers
 
             return new Vector3(xvec / counter, yvec / counter, zvec / counter);
         }
-
         /*
-        public static (bool, Vector3)[] MassTraceLine(Vector3[] fromArray, Vector3[] toArray,
-            CGWorldFrameHitFlags hitFlags = CGWorldFrameHitFlags.HitTestAllWhitoutLiquid)
+        private static Vector3 _toLast = new Vector3();
+        private static Vector3 _fromLast = new Vector3();
+        private static bool _lastResult = true;
+
+        public static bool CheckLos(Vector3 from, Vector3 to, CGWorldFrameHitFlags hitFlags = CGWorldFrameHitFlags.HitTestAll)
         {
-            if (fromArray.Length != toArray.Length || fromArray.Length <= 0)
+            try
             {
-                Logging.WriteError("MassTraceLine fromArray and toArray differ in length or is zero.");
-                //ErrorOut(fromArray.Length);
+                if (from.X != 0 && from.Y != 0 && to.X != 0 && to.Y != 0)
+                {
+                    // cache:
+                    if (_toLast.DistanceTo(to) < 1.5f && _fromLast.DistanceTo(from) < 1.5f)
+                    {
+                        return _lastResult;
+                    }
+                    _toLast = to;
+                    _fromLast = from;
+
+                    uint end = Memory.WowMemory.Memory.AllocateMemory(0x4 * 3);
+                    uint start = Memory.WowMemory.Memory.AllocateMemory(0x4 * 3);
+                    uint result = Memory.WowMemory.Memory.AllocateMemory(0x4 * 3);
+                    uint distance = Memory.WowMemory.Memory.AllocateMemory(0x4);
+                    uint optional = Memory.WowMemory.Memory.AllocateMemory(0x4 * 3);
+                    uint resultRet = Memory.WowMemory.Memory.AllocateMemory(0x4);
+
+
+                    if (end <= 0 || start <= 0 || result <= 0 || distance <= 0 || optional <= 0)
+                        return false;
+
+                    Memory.WowMemory.Memory.WriteFloat(optional, 0);
+                    Memory.WowMemory.Memory.WriteFloat(optional + 0x4, 0);
+                    Memory.WowMemory.Memory.WriteFloat(optional + 0x8, 0);
+
+                    Memory.WowMemory.Memory.WriteFloat(distance, 0.9f);
+
+                    Memory.WowMemory.Memory.WriteFloat(result, 0);
+                    Memory.WowMemory.Memory.WriteFloat(result + 0x4, 0);
+                    Memory.WowMemory.Memory.WriteFloat(result + 0x8, 0);
+
+                    Memory.WowMemory.Memory.WriteFloat(start, from.X);
+                    Memory.WowMemory.Memory.WriteFloat(start + 0x4, from.Y);
+                    Memory.WowMemory.Memory.WriteFloat(start + 0x8, from.Z + 1.5f);
+
+                    Memory.WowMemory.Memory.WriteFloat(end, to.X);
+                    Memory.WowMemory.Memory.WriteFloat(end + 0x4, to.Y);
+                    Memory.WowMemory.Memory.WriteFloat(end + 0x8, to.Z + 1.5f);
+                    Memory.WowMemory.Memory.WriteInt32(resultRet, 0);
+
+                    string[] asm = new[]
+                    {
+                        "push " + 0,
+                        "push " + (uint) hitFlags,
+                        "push " + distance,
+                        "push " + result,
+                        "push " + start,
+                        "push " + end,
+                        //"call " + (Memory.WowProcess.WowModule + (uint) Addresses.FunctionWow.CGWorldFrame__Intersect),
+                        "call " + (Memory.WowMemory.Memory.GetProcess().MainModule.BaseAddress.ToInt64() + (uint) 0x93BACE),
+                        "mov [" + resultRet + "], al",
+                        "add esp, " + (uint) 0x18,
+                        "@out:",
+                        "retn"
+                    };
+
+                    Memory.WowMemory.InjectAndExecute(asm);
+                    bool ret = Memory.WowMemory.Memory.ReadInt32(resultRet) > 0;
+
+                    Memory.WowMemory.Memory.FreeMemory(resultRet);
+                    Memory.WowMemory.Memory.FreeMemory(end);
+                    Memory.WowMemory.Memory.FreeMemory(start);
+                    Memory.WowMemory.Memory.FreeMemory(result);
+                    Memory.WowMemory.Memory.FreeMemory(distance);
+                    Memory.WowMemory.Memory.FreeMemory(optional);
+
+                    _lastResult = ret;
+                    return ret;
+                }
+                return true;
             }
-
-            int arrayLength = fromArray.Length;
-
-            // Allocate memory
-            uint fromArrayAdr = Memory.WowMemory.AllocData.Get(4 * 3 * arrayLength);
-            uint toArrayAdr = Memory.WowMemory.AllocData.Get(4 * 3 * arrayLength);
-            uint didHitArrayAdr = Memory.WowMemory.AllocData.Get(arrayLength);
-            uint hitArrayAdr = Memory.WowMemory.AllocData.Get(4 * 3 * arrayLength);
-            if (fromArrayAdr <= 0 || toArrayAdr <= 0 || hitArrayAdr <= 0 || didHitArrayAdr <= 0)
+            catch (Exception exception)
             {
-                Logging.WriteError("Failed to allocate memory for MassTraceLine");
-                //ErrorOut(arrayLength);
+                Logging.WriteError(
+                    "TraceLineGo(Point from, Point to, Enums.CGWorldFrameHitFlags hitFlags = Enums.CGWorldFrameHitFlags.HitTestAll): " +
+                    exception);
+                return true;
             }
-
-            // Prepare allocated memory
-            Mem.WriteBytes(fromArrayAdr, Extension.ConcatBytes(
-                fromArray.Select(vector => (vector + new Vector3(0, 0, 1.5f)).ToBytes()).ToArray()));
-            Mem.WriteBytes(toArrayAdr, Extension.ConcatBytes(
-                toArray.Select(vector => (vector + new Vector3(0, 0, 1.5f)).ToBytes()).ToArray()));
-            Mem.WriteByteRepeat(hitArrayAdr, 0, 4 * 3 * arrayLength);
-            // Code injection
-            var asm = new[] {
-                $"cmp byte [{Addresses.InGameAddress}], 0",
-                $"je @out",
-                "push ebx",
-                "push edi",
-                "push esi",
-                "sub esp, 16",
-                "xor esi, esi",
-                "xor edi, edi",
-                "lea ebx, [esp + 12]", // hitFactor
-                "@mainLoop:",
-                $"lea eax, [{fromArrayAdr} + esi]",
-                $"lea ecx, [{toArrayAdr} + esi]",
-                $"lea edx, [{hitArrayAdr} + esi]",
-                "mov dword [ebx], 1065353216", // set hitFactor to 1.0f
-                "sub esp, 8",
-                "push 0",
-                $"push {(int)hitFlags}",
-                "push ebx",
-                "push edx",
-                "push ecx",
-                "push eax",
-                $"call {Addresses.TraceLineAddress}",
-                "add esp, 32",
-                $"mov byte [{didHitArrayAdr} + edi], al",
-                "add edi, 1",
-                "add esi, 12",
-                $"cmp edi, {arrayLength}",
-                "jl @mainLoop",
-                "add esp, 16",
-                "pop esi",
-                "pop edi",
-                "pop ebx",
-                "@out:",
-                "ret"
-            };
-
-            Memory.WowMemory.InjectAndExecute(asm);
-
-            // Get result
-            byte[] readDidHit = Mem.ReadBytes(didHitArrayAdr, (uint)arrayLength);
-            byte[] readHitArray = Mem.ReadBytes(hitArrayAdr, (uint)(arrayLength * 4 * 3));
-
-            // Clean up memory
-            Memory.WowMemory.AllocData.Free(fromArrayAdr);
-            Memory.WowMemory.AllocData.Free(toArrayAdr);
-            Memory.WowMemory.AllocData.Free(didHitArrayAdr);
-            Memory.WowMemory.AllocData.Free(hitArrayAdr);
-
-            var result = new (bool, Vector3)[arrayLength];
-            for (var i = 0; i < arrayLength; i++)
-            {
-                result[i] = (readDidHit[i] != 0, new Vector3(
-                    BitConverter.ToSingle(readHitArray, i * 12 + 0),
-                    BitConverter.ToSingle(readHitArray, i * 12 + 4),
-                    BitConverter.ToSingle(readHitArray, i * 12 + 8)
-                ));
-            }
-
-            return result;
-        }
-        */
+        }*/
     }
 }
