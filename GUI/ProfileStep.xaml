@@ -62,7 +62,7 @@
                         </GroupBox.Background>
 
                         <StackPanel>
-                            <DataGrid x:Name="dgFPS" Margin="5" CanUserAddRows="False" IsReadOnly="True" MaxHeight="150"/>
+                            <DataGrid x:Name="dgFPS" Margin="5" CanUserAddRows="False" IsReadOnly="True" MaxHeight="150" SelectionMode="Single" SelectedCellsChanged="DgFPSSelectionChanged"/>
                             <StackPanel Orientation="Horizontal"  Margin="5">
                                 <Button x:Name="btnAddVector" Content="Add" Margin="0 5 5 5" Click="btnAddVector_Click"/>
                                 <Button x:Name="btnDeleteVector" Content="Delete" Margin="0 5 5 5" Click="btnDeleteVector_Click"/>

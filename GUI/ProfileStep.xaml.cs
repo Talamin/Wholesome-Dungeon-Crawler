@@ -2,6 +2,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -10,7 +11,9 @@ using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
+using MessageBox = System.Windows.Forms.MessageBox;
 using Timer = System.Timers.Timer;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace WholesomeDungeonCrawler.GUI
 {
@@ -21,6 +24,7 @@ namespace WholesomeDungeonCrawler.GUI
     {
         private StepModel selectedItem;
         private static Timer addVectorTimer;
+        private static Vector3 selectedMAPNode;
         public StepModel SelectedItem
         {
             get { return selectedItem; }
@@ -76,7 +80,17 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                fpsCollection.Add(ObjectManager.Me.Position);
+                if (dgFPS.SelectedItem == null || dgFPS.SelectedIndex == fpsCollection.Count)
+                {
+                    fpsCollection.Add(ObjectManager.Me.Position);
+                    dgFPS.SelectedIndex = fpsCollection.Count - 1;
+                }
+                else
+                {
+                    int index = dgFPS.SelectedIndex;
+                    fpsCollection.Insert(index + 1, ObjectManager.Me.Position);
+                    dgFPS.SelectedIndex = index + 1;
+                }
                 ((MoveAlongPathModel)SelectedItem).Path = fpsCollection.ToList();
             }
             catch (Exception ex)
@@ -290,6 +304,20 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 this.SelectedItem.CompleteCondition.LOSPositionVectorTo = currentPos;
                 txtLOSCheckPosTo.Text = TextBoxVectorConverter.GetStringFromVector3(currentPos);
+            }
+        }
+
+        private void DgFPSSelectionChanged(object sender, SelectedCellsChangedEventArgs e)
+        {
+            selectedMAPNode = (Vector3)dgFPS.SelectedItem;
+        }
+
+        public void Monitor()
+        {
+            // Draw selected Move Along Path node
+            if (selectedMAPNode != null)
+            {
+                Radar3D.DrawCircle(selectedMAPNode, 2f, Color.White, false, 200);
             }
         }
     }

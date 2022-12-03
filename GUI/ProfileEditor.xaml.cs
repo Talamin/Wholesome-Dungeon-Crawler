@@ -18,9 +18,11 @@ using System.Windows.Data;
 using System.Windows.Forms;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
+using WholesomeDungeonCrawler.Profiles.Steps;
 using wManager.Wow.Class;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace WholesomeDungeonCrawler.GUI
 {
@@ -213,10 +215,12 @@ namespace WholesomeDungeonCrawler.GUI
                 md5 = MD5.Create();
                 Radar3D.Pulse();
                 Radar3D.OnDrawEvent += new Radar3D.OnDrawHandler(Monitor);
+                Radar3D.OnDrawEvent += new Radar3D.OnDrawHandler(psControl.Monitor);
             }
             else
             {
                 Radar3D.OnDrawEvent -= new Radar3D.OnDrawHandler(Monitor);
+                Radar3D.OnDrawEvent -= new Radar3D.OnDrawHandler(psControl.Monitor);
                 Radar3D.Stop();
             }
 
@@ -228,6 +232,7 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 if (Conditions.InGameAndConnected)
                 {
+                    // Draw Move Along paths
                     foreach (var step in currentProfile.StepModels.Where(x => x is MoveAlongPathModel))
                     {
                         var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(step.Name));
@@ -245,6 +250,7 @@ namespace WholesomeDungeonCrawler.GUI
                         }
                     }
 
+                    // Draw LoS Checks
                     foreach (var step in currentProfile.StepModels)
                     {
                         if (step.CompleteCondition.ConditionType == CompleteConditionType.LOSCheck)
@@ -265,6 +271,7 @@ namespace WholesomeDungeonCrawler.GUI
                         }
                     }
 
+                    // Draw death run paths
                     var deadcolour = Color.Red;
                     var deadpreviousVector = new Vector3();
                     foreach (var vec in currentProfile.DeathRunPath)
@@ -278,7 +285,7 @@ namespace WholesomeDungeonCrawler.GUI
                         deadpreviousVector = vec;
                     }
 
-
+                    // Draw offmesh connections
                     foreach (var offmesh in currentProfile.OffMeshConnections)
                     {
                         var offmeshcolour = Color.Green;
