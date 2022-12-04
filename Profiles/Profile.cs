@@ -11,9 +11,9 @@ using static wManager.Wow.Class.Npc;
 
 namespace WholesomeDungeonCrawler.Profiles
 {
-    public class Profile : IProfile
+    internal class Profile : IProfile
     {
-        private IEntityCache _entityCache;
+        private readonly IEntityCache _entityCache;
         private List<IStep> _profileSteps = new List<IStep>();
         public List<PathFinder.OffMeshConnection> OffMeshConnectionsList = new List<PathFinder.OffMeshConnection>();
 
@@ -23,7 +23,7 @@ namespace WholesomeDungeonCrawler.Profiles
         public Dictionary<IStep, List<Vector3>> DungeonPath { get; private set; } = new Dictionary<IStep, List<Vector3>>();
         public FactionType FactionType { get; private set; }
 
-        public Profile(ProfileModel profileModel, IEntityCache entityCache, IPathManager pathManager)
+        public Profile(ProfileModel profileModel, IEntityCache entityCache, IPathManager pathManager, IPartyChatManager partyChatManager)
         {
             _entityCache = entityCache;
 
@@ -60,7 +60,7 @@ namespace WholesomeDungeonCrawler.Profiles
                         _profileSteps.Add(new DefendSpotStep((DefendSpotModel)model, entityCache));
                         break;
                     case RegroupModel _:
-                        _profileSteps.Add(new RegroupStep((RegroupModel)model, entityCache));
+                        _profileSteps.Add(new RegroupStep((RegroupModel)model, entityCache, partyChatManager));
                         break;
                 }
             }

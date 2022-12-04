@@ -1,8 +1,8 @@
 ﻿using robotManager.Helpful;
-using System;
 using System.Collections.Generic;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache.Entity;
+using WholesomeDungeonCrawler.Profiles.Steps;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.Managers
@@ -10,36 +10,45 @@ namespace WholesomeDungeonCrawler.Managers
     internal class PartyChatManager : IPartyChatManager
     {
         private readonly IEntityCache _entityCache;
-        private readonly IProfileManager _profileManager;
         private readonly char _separator = '$';
         private readonly string _channelName = "CHANNEL_NAME"; // Build channel name from entity cache ?
+        private RegroupStep _regroupStep;
 
         public PlayerStatus TankStatus { get; private set; }
 
-        public PartyChatManager(IEntityCache entityCache, IProfileManager profileManager)
+        public PartyChatManager(IEntityCache entityCache)
         {
-            _profileManager = profileManager;
             _entityCache = entityCache;
         }
 
         public void Initialize()
         {
-            _entityCache.OnTankEnteringOM += ResetTankStatus;
+            //_entityCache.OnTankEnteringOM += ResetTankStatus;
             EventsLuaWithArgs.OnEventsLuaStringWithArgs += OnEventLuaWithArgs;
-            Broadcast(ChatMessageType.WROBOT_START, _entityCache.Me.Name);
+            //Broadcast(ChatMessageType.WROBOT_START, _entityCache.Me.Name);
         }
 
         public void Dispose()
         {
-            _entityCache.OnTankEnteringOM -= ResetTankStatus;
+            //_entityCache.OnTankEnteringOM -= ResetTankStatus;
             EventsLuaWithArgs.OnEventsLuaStringWithArgs -= OnEventLuaWithArgs;
-            Broadcast(ChatMessageType.WROBOT_STOP, _entityCache.Me.Name);
+            //Broadcast(ChatMessageType.WROBOT_STOP, _entityCache.Me.Name);
+        }
+
+        public void SetRegroupStep(RegroupStep regroupStep)
+        {
+            _regroupStep = regroupStep;
         }
 
         private void OnEventLuaWithArgs(string id, List<string> args)
         {
             switch (id)
             {
+                case "CHAT_MSG_SYSTEM":
+                    if (args[0] == "Everyone is Ready")
+                        _regroupStep?.PartyReadyReceived();
+                    break;
+                /*
                 case "CHAT_MSG_PARTY":
                     HandleMessageReceived(args);
                     break;
@@ -54,16 +63,16 @@ namespace WholesomeDungeonCrawler.Managers
                     Logger.LogError("PLAYER_ENTERING_WORLD");
                     Broadcast(ChatMessageType.PLAYER_ENTERING_WORLD, null);
                     break;
+                */
             }
         }
-
-
+        /*
         private void ResetTankStatus()
         {
             Logger.Log("Resetting tank status because he is in sight");
             TankStatus = null;
         }
-
+        
         private void BroadCastTankStatus()
         {
             if (_entityCache.IAmTank)
@@ -81,7 +90,7 @@ namespace WholesomeDungeonCrawler.Managers
                 Broadcast(ChatMessageType.TANK_STATUS, $"{myX}${myY}${myZ}${Usefuls.ContinentId}${stepIndex}${stepName}");
             }
         }
-
+        
         private void HandleMessageReceived(List<string> args)
         {
             string message = args[0];
@@ -139,7 +148,7 @@ namespace WholesomeDungeonCrawler.Managers
                 Logger.LogError($"Message type unknown : {messageParts[1]}");
             }
         }
-
+        */
         public void Broadcast(ChatMessageType messageType, string message)
         {
             Lua.LuaDoString($@"
@@ -163,7 +172,7 @@ namespace WholesomeDungeonCrawler.Managers
             }
         }
 
-        internal enum ChatMessageType
+        public enum ChatMessageType
         {
             TANK_STATUS,
             WROBOT_START,

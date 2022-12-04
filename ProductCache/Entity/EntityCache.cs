@@ -225,7 +225,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
             EnemiesAttackingGroup = enemyAttackingGroup.ToArray();
             EnemyUnitsList = enemyUnits.ToArray();
-            GroupPets = GroupPets.ToArray();
+            GroupPets = groupPets.ToArray();
             /*
             if (watch.ElapsedMilliseconds > 50)
                 Logger.LogError($"Entity cache pulse took {watch.ElapsedMilliseconds}");*/

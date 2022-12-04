@@ -22,12 +22,14 @@ namespace WholesomeDungeonCrawler.Managers
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly IPathManager _pathManager;
+        private readonly IPartyChatManager _partyChatManager;
 
-        public ProfileManager(IEntityCache entityCache, ICache cache, IPathManager pathManager)
+        public ProfileManager(IEntityCache entityCache, ICache cache, IPathManager pathManager, IPartyChatManager partyChatManager)
         {
             _entityCache = entityCache;
             _cache = cache;
             _pathManager = pathManager;
+            _partyChatManager = partyChatManager;
         }
         public void Initialize()
         {
@@ -117,7 +119,7 @@ namespace WholesomeDungeonCrawler.Managers
                         {
                             PathFinder.OffMeshConnections.AddRange(chosenModel.OffMeshConnections);
                         }
-                        CurrentDungeonProfile = new Profile(chosenModel, _entityCache, _pathManager);
+                        CurrentDungeonProfile = new Profile(chosenModel, _entityCache, _pathManager, _partyChatManager);
                         Logger.Log($"Dungeon Profile loaded: {chosenModel.ProfileName} {Environment.NewLine} MapID {chosenModel.MapId}" +
                             $"{Environment.NewLine} {chosenModel.StepModels.Count()} steps" +
                             $"{Environment.NewLine} {chosenModel.DeathRunPath.Count()} deathrun nodes" +

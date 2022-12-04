@@ -33,10 +33,10 @@ namespace WholesomeDungeonCrawler.Bot
                 _entityCache.Initialize();
                 _pathManager = new PathManager();
                 _pathManager.Initialize();
-                _profileManager = new ProfileManager(_entityCache, _cache, _pathManager);
-                _profileManager.Initialize();
-                _partyChatManager = new PartyChatManager(_entityCache, _profileManager);
+                _partyChatManager = new PartyChatManager(_entityCache);
                 _partyChatManager.Initialize();
+                _profileManager = new ProfileManager(_entityCache, _cache, _pathManager, _partyChatManager);
+                _profileManager.Initialize();
                 _targetingManager = new TargetingManager(_entityCache);
                 _targetingManager.Initialize();
                 _luaStatusFrameManager = new LuaStatusFrameManager(_cache, _entityCache, _profileManager);
@@ -76,6 +76,7 @@ namespace WholesomeDungeonCrawler.Bot
                     new WaitRest(_cache, _entityCache),
                     _checkPathAheadState,
                     new LeaveDungeon(_cache, _entityCache, _profileManager),
+                    new LeaveAndReturnDungeon(_cache, _entityCache, _profileManager),
                     new DungeonLogic(_entityCache, _profileManager, _cache),
                     new AntiAfk(),
                     new Idle(),

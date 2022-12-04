@@ -139,8 +139,10 @@ namespace WholesomeDungeonCrawler.States
                 else
                 {
                     Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). I don't know where the tank is.");
+                    /*
                     _partyChatManager.Broadcast(PartyChatManager.ChatMessageType.ASSIST_WITH_ENEMIES_AHEAD, null);
                     _logTimer = new Timer(1000 * 10);
+                    */
                 }
             }
         }

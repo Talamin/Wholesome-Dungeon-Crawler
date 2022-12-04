@@ -1,8 +1,9 @@
 ﻿using robotManager.Helpful;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Bot.Tasks;
@@ -23,8 +24,11 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private int _foodMin;
         private int _drinkMin;
         private bool _drinkAllowed;
+        private readonly int _readyTargetIndex = 1;
+        private bool _imPartyLeader;
+        private bool _receivedChatSystemReady;
 
-        public RegroupStep(RegroupModel regroupModel, IEntityCache entityCache)
+        public RegroupStep(RegroupModel regroupModel, IEntityCache entityCache, IPartyChatManager partyChatManager)
         {
             _regroupModel = regroupModel;
             _entityCache = entityCache;
@@ -34,10 +38,30 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _foodMin = wManager.wManagerSetting.CurrentSetting.FoodPercent;
             _drinkMin = wManager.wManagerSetting.CurrentSetting.DrinkPercent;
             _drinkAllowed = wManager.wManagerSetting.CurrentSetting.RestingMana;
+            partyChatManager.SetRegroupStep(this);
+            Lua.LuaDoString($"SetRaidTarget('player', 0)");
         }
 
         public override void Run()
         {
+            if (_entityCache.Me.Dead || _entityCache.Me.InCombatFlagOnly)
+            {
+                IsCompleted = false;
+                return;
+            }
+
+            // Ensure we interrupt any unwanted move
+            if (MovementManager.InMovement && MovementManager.CurrentPath.Last() != RegroupSpot)
+            {
+                LogUnique($"[{_regroupModel.Name}] Stopping move");
+                MovementManager.StopMove();
+            }
+            if (MovementManager.InMoveTo && MovementManager.CurrentMoveTo != RegroupSpot)
+            {
+                LogUnique($"[{_regroupModel.Name}] Stopping move to");
+                MovementManager.StopMoveTo();
+            }
+
             // Move to regroup spot location
             if (!MovementManager.InMovement
                 && _entityCache.Me.PositionWithoutType.DistanceTo(RegroupSpot) > 5f)
@@ -92,23 +116,38 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 return;
             }
 
-            bool imPartyLeader = Lua.LuaDoString<bool>("return IsPartyLeader() == 1;");
+            _imPartyLeader = Lua.LuaDoString<bool>("return IsPartyLeader() == 1;");
             int luaTimeRemaining = Lua.LuaDoString<int>("return GetReadyCheckTimeLeft();");
             bool imReady = Lua.LuaDoString<bool>($"return GetReadyCheckStatus('{_entityCache.Me.Name}') == 'ready';");
 
             // If you're the party leader, the LUA timer goes back to 0 when a ready check is finished
             // If you're not the party leader, the countdown continues even after a ready check ends
-
-            if (luaTimeRemaining > _readyCheckTimer.TimeLeft() / 1000 + 1)
+            
+            if (luaTimeRemaining > _readyCheckTimer.TimeLeft() / 1000)
             {
                 _readyCheckTimer.Reset(luaTimeRemaining * 1000);
             }
-
+            
+            Thread.Sleep(1000);
             // Party leader logic
-            if (imPartyLeader)
+            if (_imPartyLeader)
             {
-                // We need to reinitiate the check
-                if (_readyCheckTimer.TimeLeft() <= 0)
+                if (_receivedChatSystemReady)
+                {
+                    Lua.LuaDoString($"SetRaidTarget('player', {_readyTargetIndex})");
+                    Task.Run(async delegate
+                    {
+                        await Task.Delay(30000);
+                        Lua.LuaDoString($"SetRaidTarget('player', 0)");
+                    });
+                    _receivedChatSystemReady = false;
+                    CompleteStep();
+                    return;
+                }
+
+                // We need to initiate the check
+                //if (_readyCheckTimer.TimeLeft() <= 0)
+                if (luaTimeRemaining <= 0)
                 {
                     Logger.Log($"No ready check in progress. Initiating.");
                     Lua.LuaDoString("DoReadyCheck();");
@@ -116,74 +155,115 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     return;
                 }
 
-                // No check in progress
-                if (_readyCheckTimer.TimeLeft() > 5000 
+                // Check in progress
+                /*
+                if (_readyCheckTimer.TimeLeft() > 5000
                     && _readyCheckTimer.TimeLeft() < 27000
-                    && AllStatusAreNil())
+                    && MemberHasTarget())
                 {
-                    if (!_entityCache.IAmTank)
-                    {
-                        Thread.Sleep(1000);
-                    }
-                    Logger.Log("Everyone is ready");
-                    IsCompleted = true;
+                    CompleteStep();
                     return;
                 }
-
+                */
                 IsCompleted = false;
                 return;
             }
             else
             // Party follower logic
             {
-                if (_readyCheckTimer.TimeLeft() > 5000 
+                /*
+                if (_readyCheckTimer.TimeLeft() > 5000
                     && _readyCheckTimer.TimeLeft() < 27000)
+                {*/
+                if (!imReady && _readyCheckTimer.TimeLeft() > 3000)
                 {
-                    if (!imReady)
-                    {
-                        Logger.Log($"Answering yes to ready check.");
-                        Lua.LuaDoString("ReadyCheckFrameYesButton:Click();");
-                        Lua.LuaDoString("ConfirmReadyCheck(true);");
-                    }
+                    LogUnique($"Answering yes to ready check.");
+                    Lua.LuaDoString("ReadyCheckFrameYesButton:Click();");
+                    Lua.LuaDoString("ConfirmReadyCheck(true);");
+                }
 
-                    if (AllStatusAreNil())
-                    {
-                        if (!_entityCache.IAmTank)
-                        {
-                            Thread.Sleep(1000);
-                        }
-                        Logger.Log("Everyone is ready");
-                        IsCompleted = true;
-                        return;
-                    }
-
-                    IsCompleted = false;
+                if (MemberHasTarget())
+                {
+                    CompleteStep();
                     return;
                 }
+
+                IsCompleted = false;
+                return;
+                //}
             }
+        }
+
+        public void PartyReadyReceived()
+        {
+            _receivedChatSystemReady = true;
+        }
+
+        private void CompleteStep()
+        {
+            if (!_entityCache.IAmTank)
+            {
+                Thread.Sleep(1000);
+            }
+            Logger.Log("Everyone is ready");
+            IsCompleted = true;
+        }
+
+        private bool MemberHasTarget()
+        {
+            return Lua.LuaDoString<bool>($@"
+                local nbPartyMembers = GetRealNumPartyMembers();
+                local myName, _ = UnitName('player');
+                local members = {{myName}};
+
+                for index = 1, nbPartyMembers do
+                    local playerName, _ = UnitName('party' .. index);
+                    table.insert(members, playerName);
+                end
+
+                for k, v in pairs(members) do
+                    if GetRaidTargetIndex(v) == {_readyTargetIndex} then
+                        return true;
+                    end
+                end
+
+                return false;
+            ");
         }
 
         private bool AllStatusAreNil()
         {
-            List<string> partyMemberNames = _entityCache.ListPartyMemberNames.ToList();
-            partyMemberNames.Add(_entityCache.Me.Name);
-            bool everyoneReady = true;
+            string result = Lua.LuaDoString<string>($@"
+                local errorResult = '';
+                local nbPartyMembers = GetRealNumPartyMembers();
+                local myName, _ = UnitName('player');
+                local members = {{myName}};
 
-            foreach (string partyMemberName in partyMemberNames)
+                for index = 1, nbPartyMembers do
+                    local playerName, _ = UnitName('party' .. index);
+                    table.insert(members, playerName);
+                end
+
+                for k, v in pairs(members) do
+                    local readyStatus = GetReadyCheckStatus(v);
+                    if readyStatus ~= nil then
+                        errorResult = errorResult .. v .. ' is ' .. readyStatus .. ', ';
+                    end
+                end
+
+                if errorResult == '' then
+                    return 'ok';
+                else
+                    return errorResult;
+                end
+            ");
+
+            if (result != "ok")
             {
-                bool memberReady = Lua.LuaDoString<bool>($"return GetReadyCheckStatus('{partyMemberName}') == nil;");
-                if (!memberReady)
-                {
-                    everyoneReady = false;
-                }
+                LogUnique(result);
             }
 
-            if (everyoneReady)
-            {
-                Logger.Log($"Everyone is ready");
-            }
-
-            return everyoneReady;
+            return result == "ok";
         }
 
         private void LogUnique(string text)

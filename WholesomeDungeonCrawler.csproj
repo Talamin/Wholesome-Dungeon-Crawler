@@ -167,6 +167,7 @@
     <Compile Include="States\CheckPathAhead.cs" />
     <Compile Include="States\Dead.cs" />
     <Compile Include="States\DeadDive.cs" />
+    <Compile Include="States\LeaveAndReturnDungeon.cs" />
     <Compile Include="States\TurboLoot.cs" />
     <Compile Include="States\MovementSlaveZero.cs" />
     <Compile Include="States\SlaveCombat.cs" />
