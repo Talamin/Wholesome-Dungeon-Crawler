@@ -14,18 +14,20 @@ namespace WholesomeDungeonCrawler.Profiles
     internal class Profile : IProfile
     {
         private readonly IEntityCache _entityCache;
+        private readonly IPartyChatManager _partyChatManager;
         private List<IStep> _profileSteps = new List<IStep>();
+        private IStep _currentStep;
         public List<PathFinder.OffMeshConnection> OffMeshConnectionsList = new List<PathFinder.OffMeshConnection>();
 
         public int MapId { get; }
         public List<Vector3> DeathRunPathList { get; private set; } = new List<Vector3>();
-        public IStep CurrentStep { get; private set; }
         public Dictionary<IStep, List<Vector3>> DungeonPath { get; private set; } = new Dictionary<IStep, List<Vector3>>();
         public FactionType FactionType { get; private set; }
 
         public Profile(ProfileModel profileModel, IEntityCache entityCache, IPathManager pathManager, IPartyChatManager partyChatManager)
         {
             _entityCache = entityCache;
+            _partyChatManager = partyChatManager;
 
             foreach (StepModel model in profileModel.StepModels)
             {
@@ -33,8 +35,8 @@ namespace WholesomeDungeonCrawler.Profiles
                 {
                     case MoveAlongPathModel _:
                         MoveAlongPathStep step = new MoveAlongPathStep((MoveAlongPathModel)model, entityCache, pathManager);
-                        _profileSteps.Add(step);
                         DungeonPath.Add(step, step.GetMoveAlongPath);
+                        _profileSteps.Add(step);
                         break;
                     case GoToModel _:
                         _profileSteps.Add(new GoToStep((GoToModel)model, entityCache));
@@ -53,8 +55,8 @@ namespace WholesomeDungeonCrawler.Profiles
                         break;
                     case FollowUnitModel _:
                         FollowUnitModel fuModel = model as FollowUnitModel;
-                        _profileSteps.Add(new FollowUnitStep(fuModel, entityCache));
                         _entityCache.AddNpcIdToDefend(fuModel.UnitId);
+                        _profileSteps.Add(new FollowUnitStep(fuModel, entityCache));
                         break;
                     case DefendSpotModel _:
                         _profileSteps.Add(new DefendSpotStep((DefendSpotModel)model, entityCache));
@@ -78,13 +80,22 @@ namespace WholesomeDungeonCrawler.Profiles
 
         public void Initialize()
         {
-
         }
 
         public void Dispose()
         {
             _entityCache.ClearNpcListIdToDefend();
         }
+        
+        public void SetCurrentStep(IStep step)
+        {
+            if (step is RegroupStep)
+            {
+                _partyChatManager.SetRegroupStep((RegroupStep)step);
+            }
+            _currentStep = step;
+        }
+        public IStep CurrentStep => _currentStep;
 
         // A method to set the closest movealong step after a restart
         public void SetFirstLaunchStep()
@@ -147,10 +158,10 @@ namespace WholesomeDungeonCrawler.Profiles
             }
 
             Logger.Log($"Setting {_profileSteps[resultIndex].Name} as current");
-            CurrentStep = _profileSteps[resultIndex];
+            SetCurrentStep(_profileSteps[resultIndex]);
         }
 
-        public void SetCurrentStep()
+        public void AutoSetCurrentStep()
         {
             var totalSteps = _profileSteps.Count();
             if (totalSteps <= 0)
@@ -162,7 +173,7 @@ namespace WholesomeDungeonCrawler.Profiles
             var completedSteps = _profileSteps.Count(s => s.IsCompleted);
             if (CurrentStep == null)
             {
-                CurrentStep = _profileSteps[0];
+                SetCurrentStep(_profileSteps[0]);
             }
 
             if (CurrentStep.IsCompleted)
@@ -175,7 +186,7 @@ namespace WholesomeDungeonCrawler.Profiles
                     return;
                 }
 
-                CurrentStep = _profileSteps.Find(step => !step.IsCompleted);
+                SetCurrentStep(_profileSteps.Find(step => !step.IsCompleted));
             }
         }
 

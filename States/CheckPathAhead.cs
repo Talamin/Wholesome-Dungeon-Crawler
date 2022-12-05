@@ -287,7 +287,7 @@ namespace WholesomeDungeonCrawler.States
         }
 
         private bool MyTeamIsAround => _entityCache.ListGroupMember.Length == _entityCache.ListPartyMemberNames.Count
-                    && _entityCache.ListGroupMember.All(member => member.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) < 20);
+                    && _entityCache.ListGroupMember.All(member => member.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) < 30);
 
         private void Radar3DOnDrawEvent()
         {

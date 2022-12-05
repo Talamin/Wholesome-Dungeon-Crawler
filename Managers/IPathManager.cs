@@ -6,7 +6,7 @@ namespace WholesomeDungeonCrawler.Managers
 {
     public interface IPathManager : ICycleable
     {
-        void SetCurrentProfilePath(List<Vector3> path);
-        Vector3 NextPathNode { get; }
+        void SetNextNode(Vector3 nextNode);
+        void SetNeighboringNodes(List<Vector3> neighboringNodes);
     }
 }

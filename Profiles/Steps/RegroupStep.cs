@@ -127,7 +127,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             {
                 _readyCheckTimer.Reset(luaTimeRemaining * 1000);
             }
-            
+
             Thread.Sleep(1000);
             // Party leader logic
             if (_imPartyLeader)
@@ -155,26 +155,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     return;
                 }
 
-                // Check in progress
-                /*
-                if (_readyCheckTimer.TimeLeft() > 5000
-                    && _readyCheckTimer.TimeLeft() < 27000
-                    && MemberHasTarget())
-                {
-                    CompleteStep();
-                    return;
-                }
-                */
                 IsCompleted = false;
                 return;
             }
             else
             // Party follower logic
             {
-                /*
-                if (_readyCheckTimer.TimeLeft() > 5000
-                    && _readyCheckTimer.TimeLeft() < 27000)
-                {*/
                 if (!imReady && _readyCheckTimer.TimeLeft() > 3000)
                 {
                     LogUnique($"Answering yes to ready check.");
@@ -190,12 +176,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
                 IsCompleted = false;
                 return;
-                //}
             }
         }
 
         public void PartyReadyReceived()
         {
+            Logger.Log($"Received party ready system message");
             _receivedChatSystemReady = true;
         }
 
@@ -230,7 +216,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 return false;
             ");
         }
-
+        /*
         private bool AllStatusAreNil()
         {
             string result = Lua.LuaDoString<string>($@"
@@ -265,7 +251,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
             return result == "ok";
         }
-
+        */
         private void LogUnique(string text)
         {
             if (_lastLog != text)

@@ -8,14 +8,15 @@ namespace WholesomeDungeonCrawler.Profiles
 {
     public interface IProfile : ICycleable
     {
-        IStep CurrentStep { get; }
+
+        public IStep CurrentStep { get; }
         bool ProfileIsCompleted { get; }
         int MapId { get; }
         List<Vector3> DeathRunPathList { get; }
         Dictionary<IStep, List<Vector3>> DungeonPath { get; }
         FactionType FactionType { get; }
 
-        void SetCurrentStep();
+        void AutoSetCurrentStep();
         void SetFirstLaunchStep();
     }
 }

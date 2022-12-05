@@ -45,7 +45,7 @@ namespace WholesomeDungeonCrawler.States
         {
             if (_profileManager.CurrentDungeonProfile.CurrentStep.IsCompleted)
             {
-                _profileManager.CurrentDungeonProfile.SetCurrentStep();
+                _profileManager.CurrentDungeonProfile.AutoSetCurrentStep();
             }
             else
             {

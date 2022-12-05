@@ -1,35 +1,37 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
-using WholesomeDungeonCrawler.Helpers;
-using wManager.Events;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.Managers
 {
     internal class PathManager : IPathManager
     {
-        private List<Vector3> _currentProfilePath;
-        public Vector3 NextPathNode { get; private set; }
+        private Vector3 _nextPathNode;
+        private List<Vector3> _neighboringNodes;
 
         public void Initialize()
         {
-            MovementEvents.OnMoveToPulse += OnMoveToPulse;
+            //MovementEvents.OnMoveToPulse += OnMoveToPulse;
             Radar3D.OnDrawEvent += DrawEvent;
         }
 
         public void Dispose()
         {
-            MovementEvents.OnMoveToPulse -= OnMoveToPulse;
+            //MovementEvents.OnMoveToPulse -= OnMoveToPulse;
             Radar3D.OnDrawEvent -= DrawEvent;
         }
 
-        public void SetCurrentProfilePath(List<Vector3> path)
+        public void SetNextNode(Vector3 nextNode)
         {
-            _currentProfilePath = path;
+            _nextPathNode = nextNode;
         }
 
+        public void SetNeighboringNodes(List<Vector3> neighboringNodes)
+        {
+            _neighboringNodes = neighboringNodes;
+        }
+        /*
         private void OnMoveToPulse(Vector3 point, CancelEventArgs cancelable)
         {
             if (_currentProfilePath != null)
@@ -40,13 +42,17 @@ namespace WholesomeDungeonCrawler.Managers
                 }
             }
         }
-
+        */
         private void DrawEvent()
         {
-            if (_currentProfilePath != null && NextPathNode != null)
+            if (_nextPathNode != null)
             {
-                Radar3D.DrawCircle(NextPathNode, 0.4f, Color.Blue, true, 200);
-                foreach (Vector3 node in MoveHelper.GetNodesAround(_currentProfilePath, NextPathNode))
+                Radar3D.DrawCircle(_nextPathNode, 0.4f, Color.Blue, true, 200);
+            }
+
+            if (_neighboringNodes != null)
+            {
+                foreach (Vector3 node in _neighboringNodes)
                 {
                     Radar3D.DrawCircle(node, 0.5f, Color.GreenYellow, true, 50);
                 }

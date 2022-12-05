@@ -15,6 +15,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private MoveAlongPathModel _moveAlongPathModel;
         private readonly IEntityCache _entityCache;
         private readonly IPathManager _pathManager;
+        private Vector3 _nextNode;
 
         public override string Name { get; }
         public override int Order { get; }
@@ -54,11 +55,11 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
             if (!MovementManager.InMovement && !_entityCache.Me.Dead)
             {
-                _pathManager.SetCurrentProfilePath(GetMoveAlongPath);
-                if (_pathManager.NextPathNode != null && GetMoveAlongPath.Contains(_pathManager.NextPathNode))
+                if (_nextNode != null)
                 {
                     // Rejoin previous path around last visited node
-                    List<Vector3> neighboringNodes = MoveHelper.GetNodesAround(GetMoveAlongPath, _pathManager.NextPathNode);
+                    List<Vector3> neighboringNodes = MoveHelper.GetNodesAround(GetMoveAlongPath, _nextNode);
+                    _pathManager.SetNeighboringNodes(neighboringNodes);
                     List<Vector3> orderedNeighbors = neighboringNodes
                         .OrderBy(node => node.DistanceTo(_entityCache.Me.PositionWithoutType))
                         .ToList();
@@ -80,12 +81,22 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     List<Vector3> finalPath = PathFinder.FindPath(nodeToReach);
                     finalPath.AddRange(adjustedPath);
                     MovementManager.Go(finalPath);
-                } 
+                }
                 else
                 {
                     // Default join path
                     List<Vector3> pathToFollow = WTPathFinder.PathFromClosestPoint(GetMoveAlongPath);
                     MovementManager.Go(pathToFollow);
+                }
+            }
+            else
+            {
+                // We're in movement, Record Next Node
+                Vector3 currentMoveTo = MovementManager.CurrentMoveTo;
+                if (currentMoveTo != _nextNode && GetMoveAlongPath.Contains(currentMoveTo))
+                {
+                    _nextNode = currentMoveTo;
+                    _pathManager.SetNextNode(_nextNode);
                 }
             }
         }
