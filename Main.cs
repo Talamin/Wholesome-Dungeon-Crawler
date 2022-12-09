@@ -7,6 +7,7 @@ using WholesomeDungeonCrawler.Bot;
 using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.GUI;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeToolbox;
 using wManager;
 using wManager.Plugin;
 using wManager.Wow.Helpers;
@@ -47,7 +48,8 @@ public class Main : IProduct
             {
                 Logger.Log("Started");
                 PluginsManager.LoadAllPlugins();
-                wManagerSetting.CurrentSetting.WallDistancePathFinder = 2;
+                WTTransport.AddRecommendedTransportsOffmeshes();
+                wManagerSetting.CurrentSetting.WallDistancePathFinder = 1;
                 wManagerSetting.CurrentSetting.Save();
                 IsStarted = true;
             }
