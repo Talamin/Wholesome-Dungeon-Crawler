@@ -35,41 +35,56 @@ namespace WholesomeDungeonCrawler.Profiles
                 switch (model)
                 {
                     case MoveAlongPathModel _:
-                        MoveAlongPathStep step = new MoveAlongPathStep((MoveAlongPathModel)model, entityCache, pathManager);
-                        DungeonPath.Add(step, step.GetMoveAlongPath);
-                        AllMoveAlongNodes.AddRange(step.GetMoveAlongPath);
-                        _profileSteps.Add(step);
+                        MoveAlongPathStep maStep = new MoveAlongPathStep((MoveAlongPathModel)model, entityCache, pathManager);
+                        DungeonPath.Add(maStep, maStep.GetMoveAlongPath);
+                        AllMoveAlongNodes.AddRange(maStep.GetMoveAlongPath);
+                        _profileSteps.Add(maStep);
                         break;
                     case GoToModel _:
-                        _profileSteps.Add(new GoToStep((GoToModel)model, entityCache));
+                        GoToModel goToModel = model as GoToModel;
+                        GoToStep goToStep = new GoToStep(goToModel, entityCache);
+                        AllMoveAlongNodes.Add(goToModel.TargetPosition);
+                        _profileSteps.Add(goToStep);
                         break;
                     case ExecuteModel _:
                         _profileSteps.Add(new ExecuteStep((ExecuteModel)model, entityCache));
                         break;
                     case InteractWithModel _:
-                        _profileSteps.Add(new InteractWithStep((InteractWithModel)model, entityCache));
+                        InteractWithModel interactWithModel = model as InteractWithModel;
+                        AllMoveAlongNodes.Add(interactWithModel.ExpectedPosition);
+                        _profileSteps.Add(new InteractWithStep(interactWithModel, entityCache));
                         break;
                     case MoveToUnitModel _:
-                        _profileSteps.Add(new MoveToUnitStep((MoveToUnitModel)model, entityCache));
+                        MoveToUnitModel moveToUnitModel = model as MoveToUnitModel;
+                        AllMoveAlongNodes.Add(moveToUnitModel.ExpectedPosition);
+                        _profileSteps.Add(new MoveToUnitStep(moveToUnitModel, entityCache));
                         break;
-                        /*
-                    case PickupObjectModel _:
-                        _profileSteps.Add(new PickupObjectStep((PickupObjectModel)model, entityCache));
-                        break;
-                        */
+                    /*
+                case PickupObjectModel _:
+                    _profileSteps.Add(new PickupObjectStep((PickupObjectModel)model, entityCache));
+                    break;
+                    */
                     case FollowUnitModel _:
                         FollowUnitModel fuModel = model as FollowUnitModel;
+                        AllMoveAlongNodes.Add(fuModel.ExpectedStartPosition);
+                        AllMoveAlongNodes.Add(fuModel.ExpectedEndPosition);
                         _entityCache.AddNpcIdToDefend(fuModel.UnitId);
                         _profileSteps.Add(new FollowUnitStep(fuModel, entityCache));
                         break;
                     case DefendSpotModel _:
-                        _profileSteps.Add(new DefendSpotStep((DefendSpotModel)model, entityCache));
+                        DefendSpotModel defendSpotModel = model as DefendSpotModel;
+                        AllMoveAlongNodes.Add(defendSpotModel.DefendPosition);
+                        _profileSteps.Add(new DefendSpotStep(defendSpotModel, entityCache));
                         break;
                     case RegroupModel _:
+                        RegroupModel regroupModel = model as RegroupModel;
+                        AllMoveAlongNodes.Add(regroupModel.RegroupSpot);
                         _profileSteps.Add(new RegroupStep((RegroupModel)model, entityCache, partyChatManager));
                         break;
                 }
             }
+
+            AllMoveAlongNodes.RemoveAll(node => node == null);
 
             foreach (Vector3 point in profileModel.DeathRunPath)
             {
@@ -90,7 +105,7 @@ namespace WholesomeDungeonCrawler.Profiles
         {
             _entityCache.ClearNpcListIdToDefend();
         }
-        
+
         public void SetCurrentStep(IStep step)
         {
             if (step is RegroupStep)

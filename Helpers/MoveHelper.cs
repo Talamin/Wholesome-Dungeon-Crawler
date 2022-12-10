@@ -161,7 +161,7 @@ namespace WholesomeDungeonCrawler.Helpers
         }
 
         // Gets X neighboring nodes on a path
-        public static List<Vector3> GetNodesAround(List<Vector3> path, Vector3 node, int nodeAmount = 3)
+        public static List<Vector3> GetNodesAround(List<Vector3> path, Vector3 node, int nodeAmount = 5)
         {
             List<Vector3> result = new List<Vector3>();
             int nodeIndex = path.IndexOf(node);

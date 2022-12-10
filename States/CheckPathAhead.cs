@@ -80,6 +80,7 @@ namespace WholesomeDungeonCrawler.States
                     MoveAlongPathStep moveAlongStep = (MoveAlongPathStep)_profileManager.CurrentDungeonProfile.CurrentStep;
                     List<Vector3> moveAlongPath = moveAlongStep.GetMoveAlongPath;
                     Vector3 currentMANode = moveAlongPath.Where(node => node == MovementManager.CurrentMoveTo).FirstOrDefault();
+                    Vector3 myPos = _entityCache.Me.PositionWithoutType;
                     if (currentMANode == null)
                     {
                         // Next node is not a MA path node
@@ -100,7 +101,8 @@ namespace WholesomeDungeonCrawler.States
                     {
                         Vector3 tankPos = _entityCache.TankUnit.PositionWithoutType;
 
-                        if (_entityCache.Me.PositionWithoutType.DistanceTo(tankPos) < 10)
+                        if (_entityCache.Me.PositionWithoutType.DistanceTo(tankPos) < 10 
+                            && moveAlongStep.GetMoveAlongPath.Last().DistanceTo(myPos) > 10)
                         {
                             // We're next to the tank. stop
                             return true;
