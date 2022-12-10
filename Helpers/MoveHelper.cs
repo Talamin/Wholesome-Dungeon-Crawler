@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeToolbox;
 using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Helpers
 {
@@ -84,18 +85,18 @@ namespace WholesomeDungeonCrawler.Helpers
             }
         }
         */
-        public static List<(Vector3 a, Vector3 b)> GetLinesToCheckOnCurrentPath(Vector3 myPos)
+        public static List<(Vector3 a, Vector3 b)> GetLinesOnPath(List<Vector3> path, int maxDistance = 50)
         {
-            List<Vector3> currentPath = MovementManager.CurrentPath;
             List<(Vector3 a, Vector3 b)> result = new List<(Vector3, Vector3)>();
             Vector3 nextNode = MovementManager.CurrentMoveTo;
+            Vector3 myPos = ObjectManager.Me.Position;
             bool nextNodeFound = false;
             float lineToCHeckDistance = 0;
 
-            for (int i = 0; i < currentPath.Count; i++)
+            for (int i = 0; i < path.Count; i++)
             {
                 // break on last node unless it's the only node
-                if (i >= currentPath.Count - 1 && result.Count > 0)
+                if (i >= path.Count - 1 && result.Count > 0)
                 {
                     break;
                 }
@@ -103,7 +104,7 @@ namespace WholesomeDungeonCrawler.Helpers
                 // skip nodes behind me
                 if (!nextNodeFound)
                 {
-                    if (currentPath[i] != nextNode)
+                    if (path[i] != nextNode)
                     {
                         continue;
                     }
@@ -111,7 +112,7 @@ namespace WholesomeDungeonCrawler.Helpers
                 }
 
                 // Ignore if too far
-                if (result.Count > 2 && lineToCHeckDistance > 50)
+                if (result.Count > 2 && lineToCHeckDistance > maxDistance)
                 {
                     break;
                 }
@@ -119,18 +120,18 @@ namespace WholesomeDungeonCrawler.Helpers
                 // Path ahead of me
                 if (result.Count <= 0)
                 {
-                    result.Add((myPos, currentPath[i]));
-                    lineToCHeckDistance += myPos.DistanceTo(currentPath[i]);
-                    if (currentPath.Count > i + 1)
+                    result.Add((myPos, path[i]));
+                    lineToCHeckDistance += myPos.DistanceTo(path[i]);
+                    if (path.Count > i + 1)
                     {
-                        result.Add((currentPath[i], currentPath[i + 1]));
-                        lineToCHeckDistance += currentPath[i].DistanceTo(currentPath[i + 1]);
+                        result.Add((path[i], path[i + 1]));
+                        lineToCHeckDistance += path[i].DistanceTo(path[i + 1]);
                     }
                 }
                 else
                 {
-                    result.Add((currentPath[i], currentPath[i + 1]));
-                    lineToCHeckDistance += currentPath[i].DistanceTo(currentPath[i + 1]);
+                    result.Add((path[i], path[i + 1]));
+                    lineToCHeckDistance += path[i].DistanceTo(path[i + 1]);
                 }
             }
 
@@ -160,12 +161,12 @@ namespace WholesomeDungeonCrawler.Helpers
         }
 
         // Gets X neighboring nodes on a path
-        public static List<Vector3> GetNodesAround(List<Vector3> path, Vector3 node, int num = 2)
+        public static List<Vector3> GetNodesAround(List<Vector3> path, Vector3 node, int nodeAmount = 3)
         {
             List<Vector3> result = new List<Vector3>();
             int nodeIndex = path.IndexOf(node);
             // before node
-            for (int i = -num; i < 0; i++)
+            for (int i = -nodeAmount; i < 0; i++)
             {
                 if (nodeIndex + i > 0)
                 {
@@ -175,7 +176,7 @@ namespace WholesomeDungeonCrawler.Helpers
             // node itself
             result.Add(node);
             // after node
-            for (int i = 1; i <= num; i++)
+            for (int i = 1; i <= nodeAmount; i++)
             {
                 if (nodeIndex + i < path.Count)
                 {

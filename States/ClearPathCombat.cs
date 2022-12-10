@@ -1,4 +1,4 @@
-﻿using robotManager.FiniteStateMachine;
+﻿/*using robotManager.FiniteStateMachine;
 using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Drawing;
@@ -53,7 +53,7 @@ namespace WholesomeDungeonCrawler.States
                 _linesToCheck.Clear();
                 _unitToClear = null;
                 Vector3 myPosition = _entityCache.Me.PositionWithoutType;
-                _linesToCheck = MoveHelper.GetLinesToCheckOnCurrentPath(myPosition);
+                _linesToCheck = MoveHelper.GetLinesOnPath(MovementManager.CurrentPath);
                 _unitsAlongLine = MoveHelper.GetEnemiesAlongLines(_linesToCheck, _entityCache.EnemyUnitsList, true);
 
                 if (_unitsAlongLine.Count > 0)
@@ -104,3 +104,4 @@ namespace WholesomeDungeonCrawler.States
         }
     }
 }
+*/
