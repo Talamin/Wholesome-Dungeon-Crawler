@@ -33,29 +33,22 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
-            if(Precision < 5)
+            if (Precision < 5)
             {
                 Precision = 5;
             }
+
             if (stepTimer == null)
             {
                 stepTimer = new Timer(_defendSpotModel.Timer);
-                //Logger.Log("Set stepTimer to: " + _defendSpotModel.Timer);
             }
-            //Logger.Log("Distance To Point: " + _entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition));
-            if (_entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= Precision && stepTimer.IsReady)
+
+            if (_entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= Precision
+                && stepTimer.IsReady
+                && EvaluateCompleteCondition(_defendSpotModel.CompleteCondition))
             {
-                //Logger.Log("Steptimer Ready? " + stepTimer.IsReady);
-                if (!_defendSpotModel.CompleteCondition.HasCompleteCondition)
-                {
-                    IsCompleted = true;
-                    return;
-                }
-                else if (EvaluateCompleteCondition(_defendSpotModel.CompleteCondition))
-                {
-                    IsCompleted = true;
-                    return;
-                }
+                IsCompleted = true;
+                return;
             }
 
             foreach (var unit in _entityCache.EnemyUnitsList)
@@ -68,15 +61,10 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 }
             }
 
-            //Logger.Log("Steptimer Ready? " + stepTimer.IsReady);
-
             if (!MovementManager.InMovement || _entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) > Precision)
             {
                 GoToTask.ToPosition(_defendSpotModel.DefendPosition);
             }
-
-            IsCompleted = false;
-
         }
     }
 }

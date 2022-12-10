@@ -50,9 +50,11 @@ namespace WholesomeDungeonCrawler.Profiles
                     case MoveToUnitModel _:
                         _profileSteps.Add(new MoveToUnitStep((MoveToUnitModel)model, entityCache));
                         break;
+                        /*
                     case PickupObjectModel _:
                         _profileSteps.Add(new PickupObjectStep((PickupObjectModel)model, entityCache));
                         break;
+                        */
                     case FollowUnitModel _:
                         FollowUnitModel fuModel = model as FollowUnitModel;
                         _entityCache.AddNpcIdToDefend(fuModel.UnitId);

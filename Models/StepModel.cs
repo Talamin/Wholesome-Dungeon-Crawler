@@ -55,7 +55,7 @@ namespace WholesomeDungeonCrawler.Models
         public bool Interactwithunit { get; set; }
         public int GossipIndex { get; set; }
     }
-
+    /*
     public class PickupObjectModel : StepModel
     {
         public int ObjectId { get; set; }
@@ -65,12 +65,13 @@ namespace WholesomeDungeonCrawler.Models
         public bool StrictPosition { get; set; }
         public float InteractDistance { get; set; }
     }
-
+    */
     public class InteractWithModel : StepModel
     {
         public string ObjectId { get; set; }
         public Vector3 ExpectedPosition { get; set; }
         public int InteractDistance { get; set; }
+        public bool SkipIfNotFound { get; set; }
     }
 
     public class DefendSpotModel : StepModel
@@ -84,7 +85,6 @@ namespace WholesomeDungeonCrawler.Models
     {
         public Vector3 ExpectedStartPosition { get; set; }
         public Vector3 ExpectedEndPosition { get; set; }
-        public bool FindClosest { get; set; }
         public bool SkipIfNotFound { get; set; }
         public int UnitId { get; set; }
     }

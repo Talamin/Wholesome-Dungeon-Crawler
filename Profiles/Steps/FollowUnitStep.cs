@@ -1,10 +1,9 @@
 ﻿using robotManager.Helpful;
-using System;
 using System.Linq;
+using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
-using WholesomeToolbox;
 using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
@@ -29,50 +28,41 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public override void Run()
         {
             {
-                WoWUnit foundUnit = _followUnitModel.FindClosest
-                    ? FindClosestUnit(unit => unit.Entry == _followUnitModel.UnitId)
-                    : ObjectManager.GetObjectWoWUnit().FirstOrDefault(unit => unit.Entry == _followUnitModel.UnitId);
-
+                WoWUnit foundUnit = ObjectManager.GetObjectWoWUnit().FirstOrDefault(unit => unit.Entry == _followUnitModel.UnitId);
                 Vector3 myPosition = _entityCache.Me.PositionWithoutType;
 
                 if (foundUnit == null)
                 {
-                    if (myPosition.DistanceTo(_followUnitModel.ExpectedEndPosition) >= 15)
+                    if (myPosition.DistanceTo(_followUnitModel.ExpectedStartPosition) >= 15)
                     {
-                        // Goto expected position
                         GoToTask.ToPosition(_followUnitModel.ExpectedStartPosition, 3.5f, false, context => IsCompleted);
                     }
-                    else if (_followUnitModel.SkipIfNotFound || myPosition.DistanceTo(_followUnitModel.ExpectedEndPosition) < 15)
+                    else
                     {
-                        if (!_followUnitModel.CompleteCondition.HasCompleteCondition)
+                        if (_followUnitModel.SkipIfNotFound && EvaluateCompleteCondition(_followUnitModel.CompleteCondition))
                         {
-                            Logger.LogDebug($"[Step {_followUnitModel.Name}]: Skipping unit {_followUnitModel.UnitId} because he's not here.");
+                            Logger.LogDebug($"[Step {_followUnitModel.Name}]: Skipping. Unit {_followUnitModel.UnitId} is not here or condition is complete.");
                             IsCompleted = true;
                             return;
                         }
-                        else if (EvaluateCompleteCondition(_followUnitModel.CompleteCondition))
+                        else
                         {
-                            IsCompleted = true;
+                            Thread.Sleep(1000);
+                            Logger.LogDebug($"[Step {_followUnitModel.Name}]: Unit {_followUnitModel.UnitId} is not around and SkipIfNotFound is false. Waiting.");
                             return;
                         }
                     }
                 }
                 else
                 {
-                    if (myPosition.DistanceTo(_followUnitModel.ExpectedEndPosition) < 15)
+                    if (foundUnit.Position.DistanceTo(_followUnitModel.ExpectedEndPosition) < 15
+                        && EvaluateCompleteCondition(_followUnitModel.CompleteCondition))
                     {
-                        if (!_followUnitModel.CompleteCondition.HasCompleteCondition)
-                        {
-                            Logger.LogDebug($"[Step {_followUnitModel.Name}]: Skipping Step with {_followUnitModel.UnitId} because we reached our Enddestination.");
-                            IsCompleted = true;
-                            return;
-                        }
-                        else if (EvaluateCompleteCondition(_followUnitModel.CompleteCondition))
-                        {
-                            IsCompleted = true;
-                            return;
-                        };
+                        Logger.LogDebug($"[Step {_followUnitModel.Name}]: {foundUnit} has reached their destination");
+                        IsCompleted = true;
+                        return;
                     }
+
                     Vector3 targetPosition = foundUnit.PositionWithoutType;
                     float followDistance = 20;
 
@@ -80,7 +70,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     {
                         if (unit.TargetGuid == foundUnit.Guid)
                         {
-                            Logger.Log("Defending Follow Unit");
+                            Logger.Log($"Defending Follow Unit against {unit.Name}");
                             ObjectManager.Me.Target = unit.Guid;
                             Fight.StartFight(unit.Guid, false);
                         }
@@ -92,40 +82,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         GoToTask.ToPosition(targetPosition);
                     }
                 }
-
-                IsCompleted = false;
             }
-        }
-        private WoWUnit FindClosestUnit(Func<WoWUnit, bool> predicate, Vector3 referencePosition = null)
-        { //this function calculates the flosest Unit
-            //first clear ol foundUnit
-            WoWUnit foundUnit = null;
-            var distanceToUnit = float.MaxValue;
-            //checks for a given reference position, if not there then use our position
-            Vector3 position = referencePosition != null ? referencePosition : _entityCache.Me.PositionWithoutType;
-            //build a List of each Unit and their Distance
-            foreach (WoWUnit unit in ObjectManager.GetObjectWoWUnit())
-            {
-                if (!predicate(unit)) continue;
-
-                if (foundUnit == null)
-                {
-                    distanceToUnit = position.DistanceTo(unit.Position);
-                    foundUnit = unit;
-                }
-                else
-                {
-                    //float currentDistanceToUnit = myPosition.DistanceTo(unit.PositionWithoutType);
-                    //checks the Distance of the Unit to the given Position
-                    float currentDistanceToUnit = WTPathFinder.CalculatePathTotalDistance(position, unit.PositionWithoutType);
-                    if (currentDistanceToUnit < distanceToUnit)
-                    {
-                        foundUnit = unit;
-                        distanceToUnit = currentDistanceToUnit;
-                    }
-                }
-            }
-            return foundUnit;
         }
     }
 }

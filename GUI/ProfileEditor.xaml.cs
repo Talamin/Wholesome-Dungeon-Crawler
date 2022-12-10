@@ -468,7 +468,7 @@ namespace WholesomeDungeonCrawler.GUI
                     $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
             }
         }
-
+        /*
         private async void miPickupObjectStep_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -487,7 +487,7 @@ namespace WholesomeDungeonCrawler.GUI
                     $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
             }
         }
-
+        */
         private async void miDefendSpotStep_Click(object sender, RoutedEventArgs e)
         {
             try

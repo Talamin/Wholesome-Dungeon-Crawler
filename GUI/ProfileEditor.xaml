@@ -86,7 +86,7 @@
                                             <MenuItem x:Name="miInteractWithStep" Header="InteractWithStep" Click="miInteractWithStep_Click" />
                                             <MenuItem x:Name="miGoToStep" Header="GoToStep" Click="miGoToStep_Click" />
                                             <MenuItem x:Name="miMoveToUnitStep" Header="MoveToUnitStep" Click="miMoveToUnitStep_Click" />
-                                            <MenuItem x:Name="miPickupObjectStep" Header="PickupObjectStep" Click="miPickupObjectStep_Click" />
+                                            <!--<MenuItem x:Name="miPickupObjectStep" Header="PickupObjectStep" Click="miPickupObjectStep_Click" />-->
                                             <MenuItem x:Name="miDefendSpotStep" Header="DefendSpotStep" Click="miDefendSpotStep_Click" />
                                             <MenuItem x:Name="miFollowUnitStep" Header="FollowUnitStep" Click="miFollowUnitStep_Click" />
                                             <MenuItem x:Name="regroupStep" Header="RegroupStep" Click="regroupStep_Click" />

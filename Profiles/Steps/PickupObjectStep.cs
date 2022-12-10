@@ -1,4 +1,4 @@
-﻿using robotManager.Helpful;
+﻿/*using robotManager.Helpful;
 using System;
 using System.Linq;
 using System.Threading;
@@ -15,6 +15,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
     {
         private PickupObjectModel _pickupObjectModel;
         private readonly IEntityCache _entityCache;
+        private float _interactDistance;
+        private Vector3 _expectedPosition;
         public override string Name { get; }
         public override int Order { get; }
 
@@ -24,6 +26,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _entityCache = entityCache;
             Name = pickupObjectModel.Name;
             Order = pickupObjectModel.Order;
+            _interactDistance = pickupObjectModel.InteractDistance < 3.5f ? 3.5f : pickupObjectModel.InteractDistance;
+            _expectedPosition = pickupObjectModel.ExpectedPosition;
         }
         public override void Run()
         {
@@ -82,6 +86,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             {
                 Interact.InteractGameObject(foundObject.GetBaseAddress);
                 Usefuls.WaitIsCasting();
+                Thread.Sleep(1000);
+                // Press yes in case it's a bind on pickup
+                if (Lua.LuaDoString<bool>($"return StaticPopup1 and StaticPopup1:IsVisible();"))
+                {
+                    Lua.LuaDoString<bool>($"StaticPopup1:Click();");
+                }
             }
 
             IsCompleted = false;
@@ -116,3 +126,4 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         }
     }
 }
+*/

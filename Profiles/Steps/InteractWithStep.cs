@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
@@ -58,6 +59,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             // Object is absent
             if (foundObject == null)
             {
+                // Suggest object
                 if (_expectedPosition != null)
                 {
                     WoWGameObject objectAtLocation = ObjectManager.GetObjectWoWGameObject()
@@ -68,9 +70,19 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         Logger.LogError($"Couldn't find object with entry {string.Join(" or ", _objectIds)}, but found {objectAtLocation.Name} ({objectAtLocation.Entry}). If this is the object you're looking for, please add the correct object entry to the list in your profile.");
                     }
                 }
-                Logger.LogError($"[{_interactWithModel.Name}] Couldn't find interactive object {string.Join(" or ", _objectIds)}, skipping step");
-                IsCompleted = true;
-                return;
+
+                if (_interactWithModel.SkipIfNotFound && EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
+                {
+                    Logger.Log($"[{_interactWithModel.Name}] Couldn't find interactive object {string.Join(" or ", _objectIds)}, skipping step");
+                    IsCompleted = true;
+                    return;
+                }
+                else
+                {
+                    Thread.Sleep(1000);
+                    Logger.Log($"[Step {_interactWithModel.Name}]: Couldn't find interactive object {string.Join(" or ", _objectIds)} and SkipIfNotFound is false. Waiting.");
+                    return;
+                }
             }
 
             float realDistanceToObject = _entityCache.Me.PositionWithoutType.DistanceTo(foundObject.Position);
@@ -113,9 +125,15 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 Logger.Log($"[{_interactWithModel.Name}] Interacting with {foundObject.Name} ({foundObject.Entry})");
                 Interact.InteractGameObject(foundObject.GetBaseAddress);
                 Usefuls.WaitIsCasting();
+                Thread.Sleep(1000);
+                // Press yes in case it's a bind on pickup
+                if (Lua.LuaDoString<bool>($"return StaticPopup1Button1 and StaticPopup1Button1:IsVisible();"))
+                {
+                    Lua.LuaDoString<bool>($"StaticPopup1Button1:Click();");
+                }
             }
 
-            if (!_interactWithModel.CompleteCondition.HasCompleteCondition || EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
+            if (EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
             {
                 Logger.Log($"[{_interactWithModel.Name}] Interaction with {foundObject.Name} ({foundObject.Entry}) is complete");
                 IsCompleted = true;

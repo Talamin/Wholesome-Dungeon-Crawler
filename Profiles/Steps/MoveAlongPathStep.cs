@@ -42,15 +42,11 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
             Vector3 lastPointOfPath = GetMoveAlongPath.Last();
 
-            if (_entityCache.Me.PositionWithoutType.DistanceTo(lastPointOfPath) < 5f)
+            if (_entityCache.Me.PositionWithoutType.DistanceTo(lastPointOfPath) < 5f
+                && EvaluateCompleteCondition(_moveAlongPathModel.CompleteCondition))
             {
-                if (_moveAlongPathModel.CompleteCondition == null
-                    || !_moveAlongPathModel.CompleteCondition.HasCompleteCondition
-                    || EvaluateCompleteCondition(_moveAlongPathModel.CompleteCondition))
-                {
-                    IsCompleted = true;
-                    return;
-                }
+                IsCompleted = true;
+                return;
             }
 
             if (!MovementManager.InMovement && !_entityCache.Me.Dead)

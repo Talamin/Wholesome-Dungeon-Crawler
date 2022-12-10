@@ -219,7 +219,7 @@ namespace WholesomeDungeonCrawler.GUI
                 txtDefendSpotTargetPos.Text = TextBoxVectorConverter.GetStringFromVector3(currentPos);
             }
         }
-
+        /*
         private void btnPickupObjectGetNearestGO_Click(object sender, RoutedEventArgs e)
         {
             var nearestGO = ObjectManager.GetNearestWoWGameObject(ObjectManager.GetObjectWoWGameObject());
@@ -228,7 +228,7 @@ namespace WholesomeDungeonCrawler.GUI
                 txtPickupObjectObjectId.Value = nearestGO.Entry;
             }
         }
-
+        
         private void btnPickupObjectGetNearestGOPos_Click(object sender, RoutedEventArgs e)
         {
             var nearestGO = ObjectManager.GetNearestWoWGameObject(ObjectManager.GetObjectWoWGameObject());
@@ -238,7 +238,7 @@ namespace WholesomeDungeonCrawler.GUI
                 txtPickupObjectPos.Text = TextBoxVectorConverter.GetStringFromVector3(nearestGO.Position);
             }
         }
-
+        */
         private void btnGetFollowUnitId_Click(object sender, RoutedEventArgs e)
         {
             var target = ObjectManager.Target;

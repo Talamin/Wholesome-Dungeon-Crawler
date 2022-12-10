@@ -121,8 +121,12 @@
                             </TextBox>
                             <Button x:Name="btnGetNearestGOPos" Content="Nearest Object Position" Margin="5" Click="btnGetNearestGOPos_Click"/>
                         </StackPanel>
+                        <StackPanel>
+                            <Controls:ToggleSwitch x:Name="chkInteractWithSkipIfNotFound" IsChecked="{Binding SelectedItem.SkipIfNotFound, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="SkipIfNotFound" OffLabel="SkipIfNotFound" Margin="10 5"/>
+                        </StackPanel>
                         <StackPanel Orientation="Horizontal"  Margin="5">
                             <Controls:NumericUpDown x:Name="txtInteractD" Controls:TextBoxHelper.Watermark="Interact distance" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.InteractDistance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <!--<Controls:NumericUpDown ToolTip="Item ID to pickup on interact. Leave at 0 if none." x:Name="txtPickupObjectItemId" Controls:TextBoxHelper.Watermark="Loot Item ID" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="10 5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.ItemId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />-->
                         </StackPanel>
                     </StackPanel>
                 </GroupBox>
@@ -212,7 +216,7 @@
                         </StackPanel>
                         <Controls:NumericUpDown Controls:TextBoxHelper.Watermark="Gossip Index" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.GossipIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <Controls:ToggleSwitch x:Name="chkMoveToUnitSkipIfNotFound" IsChecked="{Binding SelectedItem.SkipIfNotFound, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="SkipIfNotFound" OffLabel="SkipIfNotFound" Margin="10 5"/>
-                        <Controls:ToggleSwitch x:Name="chkMoveToUnitFindClosest" IsChecked="{Binding SelectedItem.FindClosest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Find Closest" OffLabel="Find Closest" Margin="10 5"/>
+                        <!--<Controls:ToggleSwitch x:Name="chkMoveToUnitFindClosest" IsChecked="{Binding SelectedItem.FindClosest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Find Closest" OffLabel="Find Closest" Margin="10 5"/>-->
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
@@ -256,6 +260,7 @@
                 </GroupBox>
             </StackPanel>
             <!--PickupObject-->
+            <!--
             <StackPanel>
                 <StackPanel.Style>
                     <Style TargetType="StackPanel">
@@ -281,7 +286,6 @@
                         </StackPanel>
                         
                         <StackPanel Orientation="Horizontal"  Margin="5">
-                            <!--<TextBox x:Name="txtPickupObjectPos" Controls:TextBoxHelper.Watermark="Object Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.ExpectedPosition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>-->
                             <TextBox Name="txtPickupObjectPos" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Object Position" Margin="5">
                                 <TextBox.Text>
                                     <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.ExpectedPosition" Converter="{StaticResource TextBoxVectorConverter}">
@@ -293,12 +297,14 @@
                             </TextBox>
                             <Button x:Name="btnPickupObjectGetNearestGOPos" Content="Nearest Object Position" Margin="5" Click="btnPickupObjectGetNearestGOPos_Click" />
                         </StackPanel>
-                        <Controls:NumericUpDown x:Name="txtPickupObjectItemId" Controls:TextBoxHelper.Watermark="Item ID" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="10 5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.ObjectId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                        <Controls:ToggleSwitch x:Name="chkPickupObjectStrictPos" IsChecked="{Binding SelectedItem.StrictPosition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Strict Position" OffLabel="Strict Position" Margin="10 5"/>
-                        <Controls:ToggleSwitch x:Name="chkPickupObjectFindClosest" IsChecked="{Binding SelectedItem.FindClosest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Find Closest" OffLabel="Find Closest" Margin="10 5"/>
-                    </StackPanel>
+                            <Controls:NumericUpDown x:Name="txtPickupObjectItemId" Controls:TextBoxHelper.Watermark="Item ID" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="10 5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.ItemId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Controls:ToggleSwitch x:Name="chkPickupObjectStrictPos" IsChecked="{Binding SelectedItem.StrictPosition, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Strict Position" OffLabel="Strict Position" Margin="10 5"/>
+                            <Controls:ToggleSwitch x:Name="chkPickupObjectFindClosest" IsChecked="{Binding SelectedItem.FindClosest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Find Closest" OffLabel="Find Closest" Margin="10 5"/>
+                        </StackPanel>
                 </GroupBox>
             </StackPanel>
+            -->
+            
             <!--FollowUnit-->
             <StackPanel>
                 <StackPanel.Style>
@@ -349,7 +355,7 @@
                             <Controls:NumericUpDown x:Name="txtFollowUnitId" Controls:TextBoxHelper.Watermark="Unit ID" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.UnitId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <Button x:Name="btnGetFollowUnitId" Content="Get Target Unit Id" Margin="5" Click="btnGetFollowUnitId_Click" />
                         </StackPanel>
-                        <Controls:ToggleSwitch x:Name="chkFollowUnitFindClosest" IsChecked="{Binding SelectedItem.FindClosest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Find Closest" OffLabel="Find Closest" Margin="10 5"/>
+                        <!--<Controls:ToggleSwitch x:Name="chkFollowUnitFindClosest" IsChecked="{Binding SelectedItem.FindClosest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Find Closest" OffLabel="Find Closest" Margin="10 5"/>-->
                         <Controls:ToggleSwitch x:Name="chkFollowUnitSkipIfNotFound" IsChecked="{Binding SelectedItem.SkipIfNotFound, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Skip If Not Found" OffLabel="Skip If Not Found" Margin="10 5"/>
                     </StackPanel>
                 </GroupBox>

@@ -22,18 +22,11 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public override void Run()
         {
             float precision = _gotoModel.Precision <= 0 ? 5 : _gotoModel.Precision;
-            if (_entityCache.Me.PositionWithoutType.DistanceTo(_gotoModel.TargetPosition) < precision)
+            if (_entityCache.Me.PositionWithoutType.DistanceTo(_gotoModel.TargetPosition) < precision
+                && EvaluateCompleteCondition(_gotoModel.CompleteCondition))
             {
-                if (!_gotoModel.CompleteCondition.HasCompleteCondition)
-                {
-                    IsCompleted = true;
-                    return;
-                }
-                else if (EvaluateCompleteCondition(_gotoModel.CompleteCondition))
-                {
-                    IsCompleted = true;
-                    return;
-                }
+                IsCompleted = true;
+                return;
             }
 
             GoToTask.ToPosition(_gotoModel.TargetPosition);

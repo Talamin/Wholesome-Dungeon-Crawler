@@ -17,6 +17,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public bool EvaluateCompleteCondition(StepCompleteConditionModel stepCompleteCondition)
         {
+            if (stepCompleteCondition == null)
+            {
+                // No step condition
+                return true;
+            }
+
             switch (stepCompleteCondition.ConditionType)
             {
                 case CompleteConditionType.Csharp:
@@ -44,7 +50,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     }
                     return !TraceLine.TraceLineGo(stepCompleteCondition.LOSPositionVectorFrom, stepCompleteCondition.LOSPositionVectorTo, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);
                 default:
-                    return false;
+                    return true;
             }
         }
 
