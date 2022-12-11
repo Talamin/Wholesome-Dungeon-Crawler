@@ -38,6 +38,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         }
         public override void Run()
         {
+            // Keep checking while we cast
+            if (ObjectManager.Me.IsCast && !EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
+            {
+                return;
+            }
+
             // Closest object from me or from its expected position?
             Vector3 referencePosition = _expectedPosition != null ? _expectedPosition : _entityCache.Me.PositionWithoutType;
             WoWGameObject foundObject = ObjectManager.GetObjectWoWGameObject()
@@ -52,7 +58,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             {
                 Logger.Log($"[{_interactWithModel.Name}] Moving to object's expected position {_expectedPosition} with interact distance {_interactDistance}");
                 GoToTask.ToPosition(_expectedPosition, _interactDistance);
-                IsCompleted = false;
                 return;
             }
 
@@ -115,7 +120,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     Logger.Log($"[{_interactWithModel.Name}] Object found. Short move to {foundObject.Name} ({foundObject.Entry}) - ({realDistanceToObject}/{_interactDistance})");
                     MovementManager.MoveTo(foundObject.Position);
                 }
-                IsCompleted = false;
                 return;
             }
 
@@ -124,8 +128,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             {
                 Logger.Log($"[{_interactWithModel.Name}] Interacting with {foundObject.Name} ({foundObject.Entry})");
                 Interact.InteractGameObject(foundObject.GetBaseAddress);
-                Usefuls.WaitIsCasting();
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
                 // Press yes in case it's a bind on pickup
                 if (Lua.LuaDoString<bool>($"return StaticPopup1Button1 and StaticPopup1Button1:IsVisible();"))
                 {

@@ -268,12 +268,12 @@ namespace WholesomeDungeonCrawler.GUI
             }
         }
 
-        private void btnGetCanGossipEntry_Click(object sender, RoutedEventArgs e)
+        private void btnGetCantGossipEntry_Click(object sender, RoutedEventArgs e)
         {
             var target = ObjectManager.Target;
             if (target != null)
             {
-                nudCanGossipId.Value = target.Entry;
+                nudCantGossipId.Value = target.Entry;
             }
         }
 

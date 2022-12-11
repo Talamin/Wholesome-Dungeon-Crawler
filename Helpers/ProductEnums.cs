@@ -28,6 +28,6 @@
         MobPosition,
         LOSCheck,
         //WaitUntil,
-        CanGossip,
+        CantGossip,
     }
 }

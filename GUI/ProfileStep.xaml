@@ -518,20 +518,20 @@
                         <Button x:Name="btnGetLOSCheckPosVectorTo" Content="Get Position" Margin="5" Click="btnGetLOSCheckPosVectorTo_Click" />
                     </StackPanel>
                 </StackPanel>
-                <!--CanGossip-->
+                <!--CantGossip-->
                 <StackPanel Orientation="Horizontal"  Margin="5">
                     <StackPanel.Style>
                         <Style TargetType="StackPanel">
                             <Setter Property="Visibility" Value="Collapsed"/>
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=cbConditionType, Path=SelectedValue}" Value="CanGossip">
+                                <DataTrigger Binding="{Binding ElementName=cbConditionType, Path=SelectedValue}" Value="CantGossip">
                                     <Setter Property="Visibility" Value="Visible"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </StackPanel.Style>
-                    <Controls:NumericUpDown Name="nudCanGossipId" Value="{Binding SelectedItem.CompleteCondition.MobId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Mob Id" Margin="5"/>
-                    <Button x:Name="btnGetCanGossipEntry" Content="Get Target Mob Id" Margin="5" Click="btnGetCanGossipEntry_Click" />
+                    <Controls:NumericUpDown Name="nudCantGossipId" Value="{Binding SelectedItem.CompleteCondition.MobId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Mob Id" Margin="5"/>
+                    <Button x:Name="btnGetCantGossipEntry" Content="Get Target Mob Id" Margin="5" Click="btnGetCantGossipEntry_Click" />
                 </StackPanel>
             </StackPanel>
         </StackPanel>
