@@ -77,7 +77,6 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 return false;
-
             }
         }
 

@@ -74,6 +74,8 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
+                Stopwatch watch = Stopwatch.StartNew();
+
                 // Only check path during move along step
                 if (_profileManager.CurrentDungeonProfile.CurrentStep is MoveAlongPathStep)
                 {
@@ -96,7 +98,29 @@ namespace WholesomeDungeonCrawler.States
                         }
                     }
 
-                    // Check for tank along the line
+                    _linesToCheck = MoveHelper.GetLinesOnPath(MovementManager.CurrentPath);
+                    _unitOnPath = EnemyAlongTheLine(_linesToCheck, _entityCache.EnemyUnitsList);
+
+                    // Check for followers along the line in front
+                    if (_entityCache.IAmTank && _unitOnPath.unit != null)
+                    {
+                        _linesAllPaths = MoveHelper.GetLinesOnPath(_profileManager.CurrentDungeonProfile.AllMoveAlongNodes, 300);
+                        foreach (IWoWPlayer player in _entityCache.ListGroupMember)
+                        {
+                            foreach ((Vector3 a, Vector3 b) line in _linesAllPaths)
+                            {
+                                float playerDistanceFromLine = WTPathFinder.PointDistanceToLine(line.a, line.b, player.PositionWithoutType);
+                                if (playerDistanceFromLine < 3f)
+                                {
+                                    // A follower has been found along the path line in front, force fight
+                                    Logger.Log($"{player.Name} is ahead. Forcing path");
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+
+                    // Check for tank along the line in front
                     if (!_entityCache.IAmTank && _entityCache.TankUnit != null)
                     {
                         Vector3 tankPos = _entityCache.TankUnit.PositionWithoutType;
@@ -108,14 +132,17 @@ namespace WholesomeDungeonCrawler.States
                             return true;
                         }
 
-                        _linesAllPaths = MoveHelper.GetLinesOnPath(_profileManager.CurrentDungeonProfile.AllMoveAlongNodes, 150);
-                        foreach ((Vector3 a, Vector3 b) line in _linesAllPaths)
+                        if (_unitOnPath.unit != null)
                         {
-                            float tankDistanceFromLine = WTPathFinder.PointDistanceToLine(line.a, line.b, tankPos);
-                            if (tankDistanceFromLine < 3f)
+                            _linesAllPaths = MoveHelper.GetLinesOnPath(_profileManager.CurrentDungeonProfile.AllMoveAlongNodes, 150);
+                            foreach ((Vector3 a, Vector3 b) line in _linesAllPaths)
                             {
-                                // The tank has been found along the path line
-                                return false;
+                                float tankDistanceFromLine = WTPathFinder.PointDistanceToLine(line.a, line.b, tankPos);
+                                if (tankDistanceFromLine < 3f)
+                                {
+                                    // The tank has been found along the path line
+                                    return false;
+                                }
                             }
                         }
                     }
@@ -125,11 +152,6 @@ namespace WholesomeDungeonCrawler.States
                     // Not a move along step
                     return false;
                 }
-
-                Stopwatch watch = Stopwatch.StartNew();
-
-                _linesToCheck = MoveHelper.GetLinesOnPath(MovementManager.CurrentPath);
-                _unitOnPath = EnemyAlongTheLine(_linesToCheck, _entityCache.EnemyUnitsList);
 
                 if (watch.ElapsedMilliseconds > 50)
                     Logger.LogError($"Calc took {watch.ElapsedMilliseconds} ms | {_losCache.Count} in cache");
