@@ -126,13 +126,17 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             // Interact with object
             if (!MovementManager.InMovement)
             {
-                Logger.Log($"[{_interactWithModel.Name}] Interacting with {foundObject.Name} ({foundObject.Entry})");
-                Interact.InteractGameObject(foundObject.GetBaseAddress);
-                Thread.Sleep(500);
                 // Press yes in case it's a bind on pickup
                 if (Lua.LuaDoString<bool>($"return StaticPopup1Button1 and StaticPopup1Button1:IsVisible();"))
                 {
                     Lua.LuaDoString<bool>($"StaticPopup1Button1:Click();");
+                    Thread.Sleep(500);
+                }
+                else
+                {
+                    Logger.Log($"[{_interactWithModel.Name}] Interacting with {foundObject.Name} ({foundObject.Entry})");
+                    Interact.InteractGameObject(foundObject.GetBaseAddress);
+                    Thread.Sleep(500);
                 }
             }
 
@@ -144,35 +148,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             }
 
             return;
-        }
-
-        private WoWGameObject FindClosestObject(Func<WoWGameObject, bool> predicate, Vector3 referencePosition = null)
-        { //same like FindClosestUnit
-            WoWGameObject foundObject = null;
-            var distanceToObject = float.MaxValue;
-            Vector3 position = referencePosition != null ? referencePosition : ObjectManager.Me.Position;
-
-            foreach (WoWGameObject gameObject in ObjectManager.GetObjectWoWGameObject())
-            {
-                if (!predicate(gameObject)) continue;
-
-                if (foundObject == null)
-                {
-                    distanceToObject = position.DistanceTo(gameObject.Position);
-                    foundObject = gameObject;
-                }
-                else
-                {
-                    float currentDistanceToObject = position.DistanceTo(gameObject.Position);
-                    //float currentDistanceToObject = CalculatePathTotalDistance(position, gameObject.Position);
-                    if (currentDistanceToObject < distanceToObject)
-                    {
-                        foundObject = gameObject;
-                        distanceToObject = currentDistanceToObject;
-                    }
-                }
-            }
-            return foundObject;
         }
     }
 }

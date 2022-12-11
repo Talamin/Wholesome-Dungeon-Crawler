@@ -1,5 +1,7 @@
 ﻿using robotManager.Helpful;
+using System;
 using System.Linq;
+using System.Web;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
 using wManager.Wow.Enums;
@@ -15,6 +17,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public abstract int Order { get; }
 
         public abstract void Run();
+        private string _lastLog;
 
         public bool EvaluateCompleteCondition(StepCompleteConditionModel stepCompleteCondition)
         {
@@ -31,13 +34,13 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 case CompleteConditionType.FlagsChanged:
                     WoWGameObject obj = ObjectManager.GetWoWGameObjectByEntry(stepCompleteCondition.GameObjectId).OrderBy(x => x.GetDistance).FirstOrDefault();
                     bool resultFlagsChanged = obj.FlagsInt != stepCompleteCondition.InitialFlags;
-                    if (resultFlagsChanged) Logger.Log($"[Condition PASS] {obj.Name}'s flags have changed from {stepCompleteCondition.InitialFlags} to {obj.FlagsInt}");
-                    else Logger.Log($"[Condition FAIL] {obj.Name}'s flags haven't changed ({obj.FlagsInt})");
+                    if (resultFlagsChanged) LogUnique($"[Condition PASS] {obj.Name}'s flags have changed from {stepCompleteCondition.InitialFlags} to {obj.FlagsInt}");
+                    else LogUnique($"[Condition FAIL] {obj.Name}'s flags haven't changed ({obj.FlagsInt})");
                     return resultFlagsChanged;
                 case CompleteConditionType.HaveItem:
                     bool resultHaveItem = ItemsManager.GetItemCountByIdLUA((uint)stepCompleteCondition.ItemId) > 0;
-                    if (resultHaveItem) Logger.Log($"[Condition PASS] You have item {stepCompleteCondition.ItemId} in your bags");
-                    else Logger.Log($"[Condition FAIL] You don't have item {stepCompleteCondition.ItemId} in your bags");
+                    if (resultHaveItem) LogUnique($"[Condition PASS] You have item {stepCompleteCondition.ItemId} in your bags");
+                    else LogUnique($"[Condition FAIL] You don't have item {stepCompleteCondition.ItemId} in your bags");
                     return resultHaveItem;
                 case CompleteConditionType.MobDead:
                     WoWUnit deadmob = ObjectManager.GetObjectWoWUnit()
@@ -45,8 +48,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         .OrderBy(x => x.GetDistance)
                         .FirstOrDefault();
                     bool resultMobDead = deadmob == null || deadmob.IsDead;
-                    if (resultMobDead) Logger.Log($"[Condition PASS] Unit {stepCompleteCondition.DeadMobId} is dead or absent");
-                    else Logger.Log($"[Condition FAIL] Unit {stepCompleteCondition.DeadMobId} is not dead or absent");
+                    if (resultMobDead) LogUnique($"[Condition PASS] Unit {stepCompleteCondition.DeadMobId} is dead or absent");
+                    else LogUnique($"[Condition FAIL] Unit {stepCompleteCondition.DeadMobId} is not dead or absent");
                     return resultMobDead;
                 case CompleteConditionType.MobPosition:
                     WoWUnit unitToCheck = ObjectManager
@@ -55,16 +58,16 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         .FirstOrDefault();
                     Vector3 mobvec = stepCompleteCondition.MobPositionVector;
                     bool resultMobPosition = unitToCheck != null && mobvec.DistanceTo(unitToCheck.Position) < 5;
-                    if (resultMobPosition) Logger.Log($"[Condition PASS] Unit {unitToCheck.Name} is at the expected position");
-                    else Logger.Log($"[Condition FAIL] Unit {stepCompleteCondition.MobPositionId} is not at the expect position or absent");
+                    if (resultMobPosition) LogUnique($"[Condition PASS] Unit {unitToCheck.Name} is at the expected position");
+                    else LogUnique($"[Condition FAIL] Unit {stepCompleteCondition.MobPositionId} is not at the expect position or absent");
                     return resultMobPosition;
                 case CompleteConditionType.CantGossip:
                     WoWUnit gossipUnit = ObjectManager.GetObjectWoWUnit()
                         .Where(x => x.Entry == stepCompleteCondition.MobId)
                         .FirstOrDefault();
                     bool resultGossipUnit = gossipUnit != null && !gossipUnit.UnitNPCFlags.HasFlag(UnitNPCFlags.Gossip);
-                    if (resultGossipUnit) Logger.Log($"[Condition PASS] Unit {stepCompleteCondition.MobId} can gossip");
-                    else Logger.Log($"[Condition FAIL] Unit {stepCompleteCondition.MobId} can't gossip or is absent");
+                    if (resultGossipUnit) LogUnique($"[Condition PASS] Unit {stepCompleteCondition.MobId} can gossip");
+                    else LogUnique($"[Condition FAIL] Unit {stepCompleteCondition.MobId} can't gossip or is absent");
                     return resultGossipUnit;
                 case CompleteConditionType.LOSCheck:
                     if (stepCompleteCondition.LOSPositionVectorFrom == null || stepCompleteCondition.LOSPositionVectorTo == null)
@@ -73,20 +76,22 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         return false;
                     }
                     // We first use a random LoS check (further than 1.5 yards) to reset the LoS cache
+                    Random rnd = new Random();
+                    int offset = rnd.Next(5, 30);                    
                     Vector3 resetLoSFrom = new Vector3(
-                        stepCompleteCondition.LOSPositionVectorFrom.X + 10,
-                        stepCompleteCondition.LOSPositionVectorFrom.Y + 10,
-                        stepCompleteCondition.LOSPositionVectorFrom.Z + 10);
+                        stepCompleteCondition.LOSPositionVectorFrom.X + offset,
+                        stepCompleteCondition.LOSPositionVectorFrom.Y + offset,
+                        stepCompleteCondition.LOSPositionVectorFrom.Z + offset);
                     Vector3 resetLoSTo = new Vector3(
-                        stepCompleteCondition.LOSPositionVectorTo.X + 10,
-                        stepCompleteCondition.LOSPositionVectorTo.Y + 10,
-                        stepCompleteCondition.LOSPositionVectorTo.Z + 10);
-                    bool resetLoS = TraceLine.TraceLineGo(resetLoSFrom, resetLoSTo, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);
+                        stepCompleteCondition.LOSPositionVectorTo.X + offset,
+                        stepCompleteCondition.LOSPositionVectorTo.Y + offset,
+                        stepCompleteCondition.LOSPositionVectorTo.Z + offset);
+                    bool resetLoS = TraceLine.TraceLineGo(resetLoSFrom, resetLoSTo, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);                    
 
                     // Actual check
                     bool losResult = !TraceLine.TraceLineGo(stepCompleteCondition.LOSPositionVectorFrom, stepCompleteCondition.LOSPositionVectorTo, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);
-                    if (losResult) Logger.Log($"[Condition PASS] LoS result is positive");
-                    else Logger.Log($"[Condition FAIL] LoS result is negative");
+                    if (losResult) LogUnique($"[Condition PASS] LoS result is positive");
+                    else LogUnique($"[Condition FAIL] LoS result is negative");
                     return losResult;
                 default:
                     return true;
@@ -94,5 +99,14 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         }
 
         public void MarkAsCompleted() => IsCompleted = true;
+
+        private void LogUnique(string message)
+        {
+            if (_lastLog != message)
+            {
+                _lastLog = message;
+                Logger.Log(message);
+            }
+        }
     }
 }
