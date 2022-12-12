@@ -76,7 +76,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public IWoWUnit[] GroupPets { get; private set; } = new IWoWUnit[0];
         public IWoWLocalPlayer Me { get; private set; } = Cache(new WoWLocalPlayer(0));
         public IWoWUnit[] EnemyUnitsList { get; private set; } = new IWoWUnit[0];
-        public IWoWPlayer[] ListGroupMember { get; private set; } = new IWoWPlayer[0];
+        public IWoWPlayer[] ListGroupMember { get; private set; } = new IWoWPlayer[0]; //contains everyone in the cache, except myself
         public List<string> ListPartyMemberNames { get; private set; } = new List<string>();
         public IWoWUnit[] EnemiesAttackingGroup { get; private set; } = new IWoWUnit[0];
         public IWoWPlayer TankUnit { get; private set; }

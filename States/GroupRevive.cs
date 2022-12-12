@@ -43,6 +43,10 @@ namespace WholesomeDungeonCrawler.States
                 {
                     return false;
                 }
+                if(_rezzClasses.ContainsKey(_entitycache.Me.WoWClass) && !SpellManager.KnowSpell(_rezzClasses[_entitycache.Me.WoWClass]))
+                {
+                    return false;
+                }
 
                 return _entitycache.ListGroupMember.Any(u => u.Dead) && _rezzClasses.ContainsKey(_entitycache.Me.WoWClass);
             }
@@ -58,7 +62,7 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (_entitycache.Me.PositionWithoutType.DistanceTo(player.PositionWithoutType) > 25)
                 {
-                    GoToTask.ToPosition(player.PositionWithoutType, conditionExit: _ => _entitycache.Me.PositionWithoutType.DistanceTo(player.PositionWithoutType) <= 25);
+                    GoToTask.ToPosition(player.PositionWithoutType, conditionExit: _ => _entitycache.Me.PositionWithoutType.DistanceTo(player.PositionWithoutType) <= 25 && !TraceLine.TraceLineGo(player.PositionWithoutType));
                 }
 
                 Interact.InteractGameObject(player.GetBaseAddress);
@@ -66,7 +70,8 @@ namespace WholesomeDungeonCrawler.States
                 {
                     SpellManager.CastSpellByNameLUA(spell);
                     Usefuls.WaitIsCasting();
-                    Thread.Sleep(1000);
+                    Thread.Sleep(2000);
+                    playersToResurrect.Remove(player);
                 }
             }
         }

@@ -9,7 +9,7 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class LeaveAndReturnDungeon : State
+    class ForceTownRun : State
     {
         public override string DisplayName => "Leaving and Returning to Dungeon";
 
@@ -17,7 +17,7 @@ namespace WholesomeDungeonCrawler.States
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
 
-        public LeaveAndReturnDungeon(ICache iCache, IEntityCache EntityCache, IProfileManager profilemanager)
+        public ForceTownRun(ICache iCache, IEntityCache EntityCache, IProfileManager profilemanager)
         {
             _cache = iCache;
             _entityCache = EntityCache;
