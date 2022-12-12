@@ -8,7 +8,6 @@ using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
-using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
@@ -39,17 +38,21 @@ namespace WholesomeDungeonCrawler.States
                     || _entityCache.Me.Dead
                     || Fight.InFight
                     || _cache.LootRollShow
-                    || _profileManager.CurrentDungeonProfile.CurrentStep.Order < 1
-                    //checks if heal is around and near us
-                    || _entityCache.ListGroupMember.Any(player => 
-                    _rezzClasses.Contains(player.WoWClass) 
-                    && _entityCache.Me.PositionWithoutType.DistanceTo(player.PositionWithoutType) <= 50))
+                    || _profileManager.CurrentDungeonProfile == null
+                    || _profileManager.CurrentDungeonProfile.CurrentStep == null
+                    || _profileManager.CurrentDungeonProfile.CurrentStep.Order <= 0
+                    // checks if heal is around and near us, or if I am heal
+                    || _rezzClasses.Contains(_entityCache.Me.WoWClass)
+                    || _entityCache.ListGroupMember.Any(player =>
+                        _rezzClasses.Contains(player.WoWClass)))
                 {
                     return false;
                 }
+
                 //Checks if 1 or more dead + no healer alive or in sight --> teleport out/in and reset the profile
-                return (_entityCache.ListGroupMember.Count() < 4 && _entityCache.ListPartyMemberNames.Count() == 4) || _entityCache.ListGroupMember.Any(member => member.Dead);
-             }
+                return _entityCache.ListGroupMember.Count() != _entityCache.ListPartyMemberNames.Count()
+                    || _entityCache.ListGroupMember.Any(member => member.Dead);
+            }
         }
 
 
