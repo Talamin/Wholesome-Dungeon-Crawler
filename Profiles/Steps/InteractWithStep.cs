@@ -41,6 +41,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             // Keep checking while we cast
             if (ObjectManager.Me.IsCast && !EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
             {
+                Thread.Sleep(500);
                 return;
             }
 
@@ -76,18 +77,26 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     }
                 }
 
-                if (_interactWithModel.SkipIfNotFound && EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
+                if (EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
                 {
-                    Logger.Log($"[{_interactWithModel.Name}] Couldn't find interactive object {string.Join(" or ", _objectIds)}, skipping step");
-                    IsCompleted = true;
-                    return;
+                    if (_interactWithModel.SkipIfNotFound)
+                    {
+                        Logger.Log($"[{_interactWithModel.Name}] Couldn't find interactive object {string.Join(" or ", _objectIds)}. Condition is a PASS and skipping is allowed. Marking step as completed.");
+                        IsCompleted = true;
+                    }
+                    else
+                    {
+                        Logger.Log($"[{_interactWithModel.Name}] Couldn't find interactive object {string.Join(" or ", _objectIds)}. Condition is a PASS but skipping is not allowed. Waiting.");
+                        Thread.Sleep(1000);
+                    }
                 }
                 else
                 {
+                    Logger.Log($"[{_interactWithModel.Name}] Couldn't find interactive object {string.Join(" or ", _objectIds)} and condition is a FAIL. Waiting.");
                     Thread.Sleep(1000);
-                    Logger.Log($"[Step {_interactWithModel.Name}]: Couldn't find interactive object {string.Join(" or ", _objectIds)} and SkipIfNotFound is false. Waiting.");
-                    return;
                 }
+
+                return;
             }
 
             float realDistanceToObject = _entityCache.Me.PositionWithoutType.DistanceTo(foundObject.Position);
@@ -120,6 +129,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     Logger.Log($"[{_interactWithModel.Name}] Object found. Short move to {foundObject.Name} ({foundObject.Entry}) - ({realDistanceToObject}/{_interactDistance})");
                     MovementManager.MoveTo(foundObject.Position);
                 }
+
                 return;
             }
 
@@ -139,15 +149,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     Thread.Sleep(500);
                 }
             }
-
-            if (EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
-            {
-                Logger.Log($"[{_interactWithModel.Name}] Interaction with {foundObject.Name} ({foundObject.Entry}) is complete");
-                IsCompleted = true;
-                return;
-            }
-
-            return;
         }
     }
 }

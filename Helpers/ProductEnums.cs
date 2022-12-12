@@ -18,16 +18,16 @@
         nil = 6 //Not in LFG.
     }
 
+    // The condition type is recorded in the profiles by index. Never reuse an obsolete index
     public enum CompleteConditionType
     {
-        None,
-        Csharp,
-        FlagsChanged,
-        HaveItem,
-        MobDead,
-        MobPosition,
-        LOSCheck,
-        //WaitUntil,
-        CantGossip,
+        None = 0,
+        Csharp = 1,
+        FlagsChanged = 2,
+        HaveItem = 3,
+        MobDead = 4,
+        MobPosition = 5,
+        LOSCheck = 6,
+        CantGossip = 7,
     }
 }
