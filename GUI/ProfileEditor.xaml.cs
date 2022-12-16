@@ -411,7 +411,7 @@ namespace WholesomeDungeonCrawler.GUI
                     $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
             }
         }
-
+        /*
         private async void miGoToStep_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -430,64 +430,26 @@ namespace WholesomeDungeonCrawler.GUI
                     $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
             }
         }
-
-        private async void miExecuteStep_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
-                if (x != null)
-                {
-                    var Step = new ExecuteModel() { Name = x, Order = StepCollection.Count };
-                    StepCollection.Add(Step);
-                    currentProfile.StepModels = StepCollection.ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
-            }
-        }
-
-        private async void miMoveToUnitStep_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
-                if (x != null)
-                {
-                    var Step = new MoveToUnitModel() { Name = x, Order = StepCollection.Count };
-                    StepCollection.Add(Step);
-                    currentProfile.StepModels = StepCollection.ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
-            }
-        }
-        /*
-        private async void miPickupObjectStep_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
-                if (x != null)
-                {
-                    var Step = new PickupObjectModel() { Name = x, Order = StepCollection.Count };
-                    StepCollection.Add(Step);
-                    currentProfile.StepModels = StepCollection.ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
-            }
-        }
         */
+        private async void miTalkToUnitStep_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                if (x != null)
+                {
+                    var Step = new TalkToUnitModel() { Name = x, Order = StepCollection.Count };
+                    StepCollection.Add(Step);
+                    currentProfile.StepModels = StepCollection.ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+            }
+        }
+
         private async void miDefendSpotStep_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -534,6 +496,25 @@ namespace WholesomeDungeonCrawler.GUI
                 if (x != null)
                 {
                     var Step = new RegroupModel() { Name = x, Order = StepCollection.Count };
+                    StepCollection.Add(Step);
+                    currentProfile.StepModels = StepCollection.ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+            }
+        }
+
+        private async void jumpToStep_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                if (x != null)
+                {
+                    var Step = new JumpToStepModel() { Name = x, Order = StepCollection.Count };
                     StepCollection.Add(Step);
                     currentProfile.StepModels = StepCollection.ToList();
                 }

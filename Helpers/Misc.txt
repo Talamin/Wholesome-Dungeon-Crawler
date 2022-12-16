@@ -1,0 +1,3 @@
+﻿powershell Compress-Archive "$(ProjectDir)\DefaultProfiles\WholesomeDungeonCrawler" "$(ProjectDir)\Compiled\default_wdc_profiles.zip" -Force
+echo Writing assembly version in Version.txt: @(VersionNumber)
+echo @(VersionNumber) > $(ProjectDir)\Compiled\Version.txt

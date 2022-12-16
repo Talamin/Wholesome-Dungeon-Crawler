@@ -134,7 +134,7 @@ namespace WholesomeDungeonCrawler.GUI
                 txtInteractPos.Text = TextBoxVectorConverter.GetStringFromVector3(nearestGO.Position);
             }
         }
-
+        /*
         private void btnGotoGetCurrentPos_Click(object sender, RoutedEventArgs e)
         {
             var currentPos = ObjectManager.Me.Position;
@@ -144,7 +144,7 @@ namespace WholesomeDungeonCrawler.GUI
                 txtGoToTargetPos.Text = TextBoxVectorConverter.GetStringFromVector3(currentPos);
             }
         }
-
+        */
         private void btnGetNearestGOFlags_Click(object sender, RoutedEventArgs e)
         {
             var nearestGO = ObjectManager.GetNearestWoWGameObject(ObjectManager.GetObjectWoWGameObject());
@@ -168,7 +168,7 @@ namespace WholesomeDungeonCrawler.GUI
             var target = ObjectManager.Target;
             if (target != null)
             {
-                this.SelectedItem.CompleteCondition.MobPositionVector = target.Position;
+                this.SelectedItem.CompleteCondition.MobAtPositionVector = target.Position;
                 nudMobPosVector.Text = TextBoxVectorConverter.GetStringFromVector3(target.Position);
             }
         }
@@ -191,22 +191,22 @@ namespace WholesomeDungeonCrawler.GUI
             }
         }
 
-        private void btnMoveToUnitGetCurrentPos_Click(object sender, RoutedEventArgs e)
+        private void btnTalkToUnitGetCurrentPos_Click(object sender, RoutedEventArgs e)
         {
             var targetPos = ObjectManager.Target.Position;
             if (targetPos != null)
             {
-                ((MoveToUnitModel)this.SelectedItem).ExpectedPosition = targetPos;
-                txtMoveToUnitTargetPos.Text = TextBoxVectorConverter.GetStringFromVector3(targetPos);
+                ((TalkToUnitModel)this.SelectedItem).ExpectedPosition = targetPos;
+                txtTalkToUnitTargetPos.Text = TextBoxVectorConverter.GetStringFromVector3(targetPos);
             }
         }
 
-        private void btnGetTargetEntry_Click(object sender, RoutedEventArgs e)
+        private void btnGetTalkToUnitTargetEntry_Click(object sender, RoutedEventArgs e)
         {
             var target = ObjectManager.Target;
             if (target != null)
             {
-                txtMoveToUnitId.Value = target.Entry;
+                txtTalkToUnitId.Value = target.Entry;
             }
         }
 
@@ -268,12 +268,12 @@ namespace WholesomeDungeonCrawler.GUI
             }
         }
 
-        private void btnGetCantGossipEntry_Click(object sender, RoutedEventArgs e)
+        private void btnGetCanGossipEntry_Click(object sender, RoutedEventArgs e)
         {
             var target = ObjectManager.Target;
             if (target != null)
             {
-                nudCantGossipId.Value = target.Entry;
+                nudCanGossipId.Value = target.Entry;
             }
         }
 

@@ -9,45 +9,45 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {
-    public class MoveToUnitStep : Step
+    public class TalkToUnitStep : Step
     {
-        private MoveToUnitModel _moveToUnitModel;
+        private TalkToUnitModel _talkToUnitModel;
         private readonly IEntityCache _entityCache;
         public override string Name { get; }
         public override int Order { get; }
 
-        public MoveToUnitStep(MoveToUnitModel moveToUnitModel, IEntityCache entityCache)
+        public TalkToUnitStep(TalkToUnitModel talkToUnitModel, IEntityCache entityCache)
         {
-            _moveToUnitModel = moveToUnitModel;
+            _talkToUnitModel = talkToUnitModel;
             _entityCache = entityCache;
-            Name = moveToUnitModel.Name;
-            Order = moveToUnitModel.Order;
+            Name = talkToUnitModel.Name;
+            Order = talkToUnitModel.Order;
         }
 
         public override void Run()
         {
-            WoWUnit foundUnit = ObjectManager.GetObjectWoWUnit().FirstOrDefault(unit => unit.Entry == _moveToUnitModel.UnitId);
+            WoWUnit foundUnit = ObjectManager.GetObjectWoWUnit().FirstOrDefault(unit => unit.Entry == _talkToUnitModel.UnitId);
             Vector3 myPosition = _entityCache.Me.PositionWithoutType;
 
             if (foundUnit == null)
             {
-                if (myPosition.DistanceTo(_moveToUnitModel.ExpectedPosition) > 10)
+                if (myPosition.DistanceTo(_talkToUnitModel.ExpectedPosition) > 10)
                 {
                     // Goto expected position
-                    GoToTask.ToPosition(_moveToUnitModel.ExpectedPosition);
+                    GoToTask.ToPosition(_talkToUnitModel.ExpectedPosition);
                 }
                 else
                 {
-                    if (_moveToUnitModel.SkipIfNotFound && EvaluateCompleteCondition(_moveToUnitModel.CompleteCondition))
+                    if (_talkToUnitModel.SkipIfNotFound && EvaluateCompleteCondition(_talkToUnitModel.CompleteCondition))
                     {
-                        Logger.LogDebug($"[Step {_moveToUnitModel.Name}]: Skipping unit {_moveToUnitModel.UnitId} because he's not here.");
+                        Logger.LogDebug($"[Step {_talkToUnitModel.Name}]: Skipping unit {_talkToUnitModel.UnitId} because he's not here.");
                         IsCompleted = true;
                         return;
                     }
                     else
                     {
                         Thread.Sleep(1000);
-                        Logger.LogDebug($"[Step {_moveToUnitModel.Name}]: Unit {_moveToUnitModel.UnitId} is not around and SkipIfNotFound is false. Waiting.");
+                        Logger.LogDebug($"[Step {_talkToUnitModel.Name}]: Unit {_talkToUnitModel.UnitId} is not around and SkipIfNotFound is false. Waiting.");
                         return;
                     }
                 }
@@ -56,9 +56,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             {
                 Vector3 targetPosition = foundUnit.PositionWithoutType;
                 float targetInteractDistance = foundUnit.InteractDistance;
-                GoToTask.ToPositionAndIntecractWithNpc(targetPosition, _moveToUnitModel.UnitId, _moveToUnitModel.GossipIndex);
+                GoToTask.ToPositionAndIntecractWithNpc(targetPosition, _talkToUnitModel.UnitId, _talkToUnitModel.GossipIndex);
                 if (myPosition.DistanceTo(targetPosition) < targetInteractDistance
-                    && EvaluateCompleteCondition(_moveToUnitModel.CompleteCondition))
+                    && EvaluateCompleteCondition(_talkToUnitModel.CompleteCondition))
                 {
                     IsCompleted = true;
                     return;

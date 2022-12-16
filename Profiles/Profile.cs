@@ -40,30 +40,24 @@ namespace WholesomeDungeonCrawler.Profiles
                         AllMoveAlongNodes.AddRange(maStep.GetMoveAlongPath);
                         _profileSteps.Add(maStep);
                         break;
+                        /*
                     case GoToModel _:
                         GoToModel goToModel = model as GoToModel;
                         GoToStep goToStep = new GoToStep(goToModel, entityCache);
                         AllMoveAlongNodes.Add(goToModel.TargetPosition);
                         _profileSteps.Add(goToStep);
                         break;
-                    case ExecuteModel _:
-                        _profileSteps.Add(new ExecuteStep((ExecuteModel)model, entityCache));
-                        break;
+                        */
                     case InteractWithModel _:
                         InteractWithModel interactWithModel = model as InteractWithModel;
                         AllMoveAlongNodes.Add(interactWithModel.ExpectedPosition);
                         _profileSteps.Add(new InteractWithStep(interactWithModel, entityCache));
                         break;
-                    case MoveToUnitModel _:
-                        MoveToUnitModel moveToUnitModel = model as MoveToUnitModel;
-                        AllMoveAlongNodes.Add(moveToUnitModel.ExpectedPosition);
-                        _profileSteps.Add(new MoveToUnitStep(moveToUnitModel, entityCache));
+                    case TalkToUnitModel _:
+                        TalkToUnitModel talkToUnitModel = model as TalkToUnitModel;
+                        AllMoveAlongNodes.Add(talkToUnitModel.ExpectedPosition);
+                        _profileSteps.Add(new TalkToUnitStep(talkToUnitModel, entityCache));
                         break;
-                    /*
-                case PickupObjectModel _:
-                    _profileSteps.Add(new PickupObjectStep((PickupObjectModel)model, entityCache));
-                    break;
-                    */
                     case FollowUnitModel _:
                         FollowUnitModel fuModel = model as FollowUnitModel;
                         AllMoveAlongNodes.Add(fuModel.ExpectedStartPosition);
@@ -80,6 +74,10 @@ namespace WholesomeDungeonCrawler.Profiles
                         RegroupModel regroupModel = model as RegroupModel;
                         AllMoveAlongNodes.Add(regroupModel.RegroupSpot);
                         _profileSteps.Add(new RegroupStep((RegroupModel)model, entityCache, partyChatManager));
+                        break;
+                    case JumpToStepModel _:
+                        JumpToStepModel jumpToStepModel = model as JumpToStepModel;
+                        _profileSteps.Add(new JumpToStepStep((JumpToStepModel)model, this));
                         break;
                 }
             }
@@ -112,8 +110,10 @@ namespace WholesomeDungeonCrawler.Profiles
             {
                 _partyChatManager.SetRegroupStep((RegroupStep)step);
             }
+            Logger.Log($"Setting current step to {step.Name}");
             _currentStep = step;
         }
+
         public IStep CurrentStep => _currentStep;
 
         // A method to set the closest movealong step after a restart
@@ -167,13 +167,10 @@ namespace WholesomeDungeonCrawler.Profiles
             {
                 if (i < resultIndex)
                 {
-                    Logger.Log($"Marked {_profileSteps[i].Name} as completed");
                     _profileSteps[i].MarkAsCompleted();
+                    continue;
                 }
-                else
-                {
-                    break;
-                }
+                break;
             }
 
             Logger.Log($"Setting {_profileSteps[resultIndex].Name} as current");
@@ -207,6 +204,49 @@ namespace WholesomeDungeonCrawler.Profiles
 
                 SetCurrentStep(_profileSteps.Find(step => !step.IsCompleted));
             }
+        }
+
+        public bool JumpToStep(string jumpStepName, string stepToJumpTo)
+        {
+            List<IStep> correspondingSteps = _profileSteps
+                .Where(step => step.Name == stepToJumpTo)
+                .ToList();
+
+            if (correspondingSteps.Count == 0)
+            {
+                Logger.LogOnce($"[{jumpStepName}] There is no step in your profile with the name [{stepToJumpTo}]", true);
+                return false;
+            }
+
+            if (correspondingSteps.Count > 1)
+            {
+                Logger.LogOnce($"[{jumpStepName}] There are multiple steps in your profile with the name [{stepToJumpTo}]. Step name must be unique.", true);
+                return false;
+            }
+
+            IStep stepToGo = correspondingSteps[0];
+
+            if (stepToGo.Order < CurrentStep.Order)
+            {
+                Logger.LogOnce($"[{jumpStepName}] You're trying to jump to a previous step [{stepToJumpTo}]. You can only jump to a next step.", true);
+                return false;
+            }
+
+            // mark previous steps as completed
+            for (int i = 0; i < _profileSteps.Count; i++)
+            {
+                if (i < stepToGo.Order)
+                {
+                    _profileSteps[i].MarkAsCompleted();
+                    continue;
+                }
+                break;
+            }
+
+            Logger.Log($"Jumped to {stepToGo.Name}");
+            SetCurrentStep(stepToGo);
+
+            return true;
         }
 
         public bool ProfileIsCompleted => _profileSteps.All(p => p.IsCompleted);

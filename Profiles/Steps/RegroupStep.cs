@@ -20,7 +20,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public override int Order { get; }
         public Vector3 RegroupSpot { get; private set; }
         private Timer _readyCheckTimer = new Timer();
-        private string _lastLog;
         private int _foodMin;
         private int _drinkMin;
         private bool _drinkAllowed;
@@ -53,12 +52,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             // Ensure we interrupt any unwanted move
             if (MovementManager.InMovement && MovementManager.CurrentPath.Last() != RegroupSpot)
             {
-                LogUnique($"[{_regroupModel.Name}] Stopping move");
+                Logger.LogOnce($"[{_regroupModel.Name}] Stopping move");
                 MovementManager.StopMove();
             }
             if (MovementManager.InMoveTo && MovementManager.CurrentMoveTo != RegroupSpot)
             {
-                LogUnique($"[{_regroupModel.Name}] Stopping move to");
+                Logger.LogOnce($"[{_regroupModel.Name}] Stopping move to");
                 MovementManager.StopMoveTo();
             }
 
@@ -66,7 +65,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             if (!MovementManager.InMovement
                 && _entityCache.Me.PositionWithoutType.DistanceTo(RegroupSpot) > 5f)
             {
-                LogUnique($"[{_regroupModel.Name}] Moving to regroup spot location");
+                Logger.LogOnce($"[{_regroupModel.Name}] Moving to regroup spot location");
                 GoToTask.ToPosition(RegroupSpot, 0.5f);
                 IsCompleted = false;
                 return;
@@ -77,7 +76,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 && !MovementManager.InMoveTo
                 && _entityCache.Me.PositionWithoutType.DistanceTo(RegroupSpot) > 1f)
             {
-                LogUnique($"[{_regroupModel.Name}] Moving precisely to regroup spot");
+                Logger.LogOnce($"[{_regroupModel.Name}] Moving precisely to regroup spot");
                 MovementManager.MoveTo(RegroupSpot);
                 IsCompleted = false;
                 return;
@@ -86,7 +85,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             // Auto complete if running alone
             if (_entityCache.ListPartyMemberNames.Count == 0)
             {
-                LogUnique($"Not in a group, skipping");
+                Logger.LogOnce($"Not in a group, skipping");
                 IsCompleted = true;
                 return;
             }
@@ -96,7 +95,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 || _entityCache.ListGroupMember.Any(member => member.PositionWithoutType.DistanceTo(RegroupSpot) > 8f)
                 || _entityCache.Me.PositionWithoutType.DistanceTo(RegroupSpot) > 8f)
             {
-                LogUnique($"Waiting for the team to regroup.");
+                Logger.LogOnce($"Waiting for the team to regroup.");
                 IsCompleted = false;
                 return;
             }
@@ -104,14 +103,14 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             // Check for regen conditions
             if (_drinkAllowed && _entityCache.Me.Mana > 0 && _entityCache.Me.ManaPercent < _drinkMin)
             {
-                LogUnique($"Skipping ready check vote until mana is restored");
+                Logger.LogOnce($"Skipping ready check vote until mana is restored");
                 IsCompleted = false;
                 return;
             }
 
             if (_entityCache.Me.HealthPercent < _foodMin)
             {
-                LogUnique($"Skipping ready check vote until health is restores");
+                Logger.LogOnce($"Skipping ready check vote until health is restores");
                 IsCompleted = false;
                 return;
             }
@@ -163,7 +162,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             {
                 if (!imReady && _readyCheckTimer.TimeLeft() > 3000)
                 {
-                    LogUnique($"Answering yes to ready check.");
+                    Logger.LogOnce($"Answering yes to ready check.");
                     Lua.LuaDoString("ReadyCheckFrameYesButton:Click();");
                     Lua.LuaDoString("ConfirmReadyCheck(true);");
                 }
@@ -215,50 +214,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
                 return false;
             ");
-        }
-        /*
-        private bool AllStatusAreNil()
-        {
-            string result = Lua.LuaDoString<string>($@"
-                local errorResult = '';
-                local nbPartyMembers = GetRealNumPartyMembers();
-                local myName, _ = UnitName('player');
-                local members = {{myName}};
-
-                for index = 1, nbPartyMembers do
-                    local playerName, _ = UnitName('party' .. index);
-                    table.insert(members, playerName);
-                end
-
-                for k, v in pairs(members) do
-                    local readyStatus = GetReadyCheckStatus(v);
-                    if readyStatus ~= nil then
-                        errorResult = errorResult .. v .. ' is ' .. readyStatus .. ', ';
-                    end
-                end
-
-                if errorResult == '' then
-                    return 'ok';
-                else
-                    return errorResult;
-                end
-            ");
-
-            if (result != "ok")
-            {
-                LogUnique(result);
-            }
-
-            return result == "ok";
-        }
-        */
-        private void LogUnique(string text)
-        {
-            if (_lastLog != text)
-            {
-                _lastLog = text;
-                Logger.Log(text);
-            }
         }
     }
 }

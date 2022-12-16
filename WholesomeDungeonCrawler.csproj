@@ -138,6 +138,7 @@
     <Compile Include="Profiles\Steps\FollowUnitStep.cs" />
     <Compile Include="Profiles\Steps\IStep.cs" />
     <Compile Include="Profiles\Profile.cs" />
+    <Compile Include="Profiles\Steps\JumpToStepStep.cs" />
     <Compile Include="Profiles\Steps\RegroupStep.cs" />
     <Compile Include="Profiles\Steps\Step.cs" />
     <Compile Include="GUI\ProductSettingsControl.xaml.cs">
@@ -153,12 +154,10 @@
     <Compile Include="Helpers\MoveHelper.cs" />
     <Compile Include="Managers\IProfileManager.cs" />
     <Compile Include="Managers\ProfileManager.cs" />
-    <Compile Include="Profiles\Steps\ExecuteStep.cs" />
     <Compile Include="Profiles\Steps\GoToStep.cs" />
     <Compile Include="Profiles\Steps\InteractWithStep.cs" />
     <Compile Include="Profiles\Steps\MoveAlongPathStep.cs" />
-    <Compile Include="Profiles\Steps\MoveToUnitStep.cs" />
-    <Compile Include="Profiles\Steps\PickupObjectStep.cs" />
+    <Compile Include="Profiles\Steps\TalkToUnitStep.cs" />
     <Compile Include="Settings\Settings.cs" />
     <Compile Include="Bot\WholesomeDungeonCrawler.cs" />
     <Compile Include="Helpers\Logger.cs" />
@@ -170,7 +169,6 @@
     <Compile Include="States\ForceTownRun.cs" />
     <Compile Include="States\ForceRegroup.cs" />
     <Compile Include="States\TurboLoot.cs" />
-    <Compile Include="States\MovementSlaveZero.cs" />
     <Compile Include="States\SlaveCombat.cs" />
     <Compile Include="States\TankCombat.cs" />
     <Compile Include="States\DungeonLogic.cs" />
@@ -182,11 +180,7 @@
     <Compile Include="States\GroupRevive.cs" />
     <Compile Include="States\IState.cs" />
     <Compile Include="States\LeaveDungeon.cs" />
-    <Compile Include="States\Loot.cs" />
-    <Compile Include="States\MovementSlave.cs" />
     <Compile Include="States\OpenSatchel.cs" />
-    <Compile Include="States\MovementSlaveBETA.cs" />
-    <Compile Include="States\ClearPathCombat.cs" />
     <Compile Include="States\WaitRest.cs" />
     <Compile Include="Wholesome-Toolbox\WTCombat.cs" />
     <Compile Include="Wholesome-Toolbox\WTEffects.cs" />
@@ -216,6 +210,7 @@
     <Content Include="Dependencies\robotManager.dll" />
     <Content Include="Dependencies\wManager.dll" />
     <Resource Include="GUI\WholesomeDCrawlerIcon.png" />
+    <Content Include="Helpers\Misc.txt" />
     <Content Include="Wholesome-Toolbox\.gitignore" />
     <Content Include="Wholesome-Toolbox\Wholesome_Toolbox.shproj.user" />
     <Content Include="Wholesome-Toolbox\Wholesome_Toolbox.sln" />
@@ -245,39 +240,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Compiled\default_profiles.zip" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Auchenai Crypts\Auchenai Crypts %28Alliance%29.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Blackfathom Deeps\Blackfathom Deeps.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Blackrock Depths - Prison\Blackrock Depths - Upper City and Prison %28Alliance%29.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Blackrock Depths - Upper City\Blackrock Depths - Upper City and Prison %28Alliance%29.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Dire Maul East\Dire Maul East %28Alliance%29.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Dire Maul West\Dire Maul West %28Alliance%29.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Gnomeregan\Gnome_Ally.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Gnomeregan\Gnome_Horde.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Hellfire Ramparts\Hellfire Ramparts %28Alliance%29.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Mana Tombs\Mana Tombs %28Alliance%29.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Ragefire Chasm\RagefireChasm.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Razorfen Downs\RazorfenDowns_Neutral.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Razorfen Kraul\RazorfenKraul_Neutral.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Scarlet Monastery - Armory\SM Arm_Ally.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Scarlet Monastery - Armory\SM Arm_Horde.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Scarlet Monastery - Cathedral\SM Cath_Ally.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Scarlet Monastery - Cathedral\SM Cath_Horde.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Scarlet Monastery - Graveyard\SM GY_Ally.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Scarlet Monastery - Graveyard\SM GY_Horde.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Scarlet Monastery - Library\SM Library_Ally.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Scarlet Monastery - Library\SM Library_Horde.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Shadow Labyrinth\Shadow Labyrinth %28Alliance%29.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Shadowfang Keep\ShadowfangKeep_Ally.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Shadowfang Keep\ShadowfangKeep_Horde.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Stormwind Stockade\Stockades_Neutral.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\The Blood Furnace\The Blood Furnace %28Alliance%29.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\The Deadmines\The Deadmines %28Neutral%29.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\The Slave Pens\The Slave Pens %28Alliance%29.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\The Temple of Atal%27Hakkar\The Temple of Atal%27Hakkar_Ally.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\The Underbog\The Underbog %28Alliance%29.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Uldaman Echomok Door, second Entrance\Uldaman_Neutral.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Wailing Caverns\WailingCaverns.json" />
-    <None Include="DefaultProfiles\WholesomeDungeonCrawler\Zul%27Farrak\Zul%27Farrak %28Alliance%29.json" />
     <None Include="Wholesome-Toolbox\Wholesome_Toolbox.projitems" />
     <None Include="Wholesome-Toolbox\Wholesome_Toolbox.shproj" />
   </ItemGroup>
@@ -295,11 +257,6 @@
 			$(PostBuildEventDependsOn);
 			PostBuildMacros;
 		</PostBuildEventDependsOn>
-    <PostBuildEvent>
-			xcopy /Y/F "$(TargetDir)\WholesomeDungeonCrawler.dll" "$(ProjectDir)\Compiled"
-			powershell Compress-Archive "$(ProjectDir)\DefaultProfiles\WholesomeDungeonCrawler" "$(ProjectDir)\Compiled\default_wdc_profiles.zip" -Force
-			echo Writing assembly version in Version.txt: @(VersionNumber)
-			echo @(VersionNumber) &gt; $(ProjectDir)\Compiled\Version.txt
-		</PostBuildEvent>
+    <PostBuildEvent>xcopy /Y/F "$(TargetDir)\WholesomeDungeonCrawler.dll" "$(ProjectDir)\Compiled"</PostBuildEvent>
   </PropertyGroup>
 </Project>

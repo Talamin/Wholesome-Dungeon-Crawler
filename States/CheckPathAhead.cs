@@ -168,12 +168,12 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (!MyTeamIsAround)
                 {
-                    Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Waiting for the team to regroup.");
+                    Logger.LogOnce($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Waiting for the team to regroup.");
                     _logTimer = new Timer(1000 * 10);
                 }
                 else
                 {
-                    Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Engaging fight.");
+                    Logger.LogOnce($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Engaging fight.");
                     Fight.StartFight(_unitOnPath.unit.Guid);
                 }
             }
@@ -182,23 +182,15 @@ namespace WholesomeDungeonCrawler.States
                 if (_entityCache.TankUnit != null)
                 {
                     if (_unitOnPath.unit != null)
-                        Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Waiting for the tank.");
+                        Logger.LogOnce($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Waiting for the tank.");
                     else
-                        Log($"Waiting for the tank to be along the path line.");
+                        Logger.LogOnce($"Waiting for the tank to be along the path line.");
                     _logTimer = new Timer(1000 * 10);
                 }
                 else
                 {
-                    Log($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). I don't know where the tank is.");
+                    Logger.LogOnce($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). I don't know where the tank is.");
                 }
-            }
-        }
-
-        private void Log(string message)
-        {
-            if (_logTimer.IsReady)
-            {
-                Logger.Log(message);
             }
         }
 

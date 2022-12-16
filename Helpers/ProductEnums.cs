@@ -22,12 +22,11 @@
     public enum CompleteConditionType
     {
         None = 0,
-        Csharp = 1,
         FlagsChanged = 2,
         HaveItem = 3,
         MobDead = 4,
-        MobPosition = 5,
+        MobAtPosition = 5,
         LOSCheck = 6,
-        CantGossip = 7,
+        CanGossip = 7,
     }
 }

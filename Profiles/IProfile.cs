@@ -18,5 +18,6 @@ namespace WholesomeDungeonCrawler.Profiles
 
         void AutoSetCurrentStep();
         void SetFirstLaunchStep();
+        bool JumpToStep(string jumpStepName, string stepToJumpTo);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using robotManager.Helpful;
+using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
@@ -12,58 +13,55 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
     {
         private DefendSpotModel _defendSpotModel;
         private readonly IEntityCache _entityCache;
-
+        private float _precision;
+        private Timer _stepTimer;
         public override string Name { get; }
         public override int Order { get; }
-
-        private Timer stepTimer;
-
-        private float Precision;
 
         public DefendSpotStep(DefendSpotModel defendSpotModel, IEntityCache entityCache)
         {
             _defendSpotModel = defendSpotModel;
             _entityCache = entityCache;
+            _precision = _defendSpotModel.Precision;
             Name = _defendSpotModel.Name;
             Order = _defendSpotModel.Order;
-            Precision = _defendSpotModel.Precision;
         }
-
-
 
         public override void Run()
         {
-            if (Precision < 5)
+            if (_precision < 5)
             {
-                Precision = 5;
+                _precision = 5;
             }
 
-            if (stepTimer == null)
+            if (_stepTimer == null)
             {
-                stepTimer = new Timer(_defendSpotModel.Timer);
+                _stepTimer = new Timer(_defendSpotModel.Timer);
             }
 
-            if (_entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= Precision
-                && stepTimer.IsReady
+            if (!MovementManager.InMovement && _entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) > _precision)
+            {
+                GoToTask.ToPosition(_defendSpotModel.DefendPosition);
+            }
+
+            IWoWUnit unitToAttack = _entityCache.EnemyUnitsList
+                .Where(unit => unit.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= 30)
+                .FirstOrDefault();
+
+            if (unitToAttack != null)
+            {
+                Logger.Log($"Defending spot against {unitToAttack.Name}");
+                ObjectManager.Me.Target = unitToAttack.Guid;
+                Fight.StartFight(unitToAttack.Guid, false);
+                return;
+            }
+
+            if (_entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= _precision
+                && _stepTimer.IsReady
                 && EvaluateCompleteCondition(_defendSpotModel.CompleteCondition))
             {
                 IsCompleted = true;
                 return;
-            }
-
-            foreach (var unit in _entityCache.EnemyUnitsList)
-            {
-                if (unit.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= 20)
-                {
-                    Logger.Log("Defending my Spot");
-                    ObjectManager.Me.Target = unit.Guid;
-                    Fight.StartFight(unit.Guid, false);
-                }
-            }
-
-            if (!MovementManager.InMovement || _entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) > Precision)
-            {
-                GoToTask.ToPosition(_defendSpotModel.DefendPosition);
             }
         }
     }

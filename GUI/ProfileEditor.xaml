@@ -82,15 +82,14 @@
                                 <Button x:Name="btnAddStep" Content="Add" Margin="0 0 5 0" Click="btnAddStep_Click" >
                                     <Button.ContextMenu>
                                         <ContextMenu>
-                                            <MenuItem x:Name="miMoveAlongPathStep" Header="MoveAlongPathStep" Click="miMoveAlongPathStep_Click" />
-                                            <MenuItem x:Name="miInteractWithStep" Header="InteractWithStep" Click="miInteractWithStep_Click" />
-                                            <MenuItem x:Name="miGoToStep" Header="GoToStep" Click="miGoToStep_Click" />
-                                            <MenuItem x:Name="miMoveToUnitStep" Header="MoveToUnitStep" Click="miMoveToUnitStep_Click" />
-                                            <!--<MenuItem x:Name="miPickupObjectStep" Header="PickupObjectStep" Click="miPickupObjectStep_Click" />-->
-                                            <MenuItem x:Name="miDefendSpotStep" Header="DefendSpotStep" Click="miDefendSpotStep_Click" />
-                                            <MenuItem x:Name="miFollowUnitStep" Header="FollowUnitStep" Click="miFollowUnitStep_Click" />
-                                            <MenuItem x:Name="regroupStep" Header="RegroupStep" Click="regroupStep_Click" />
-                                            <!--<MenuItem x:Name="miExecuteStep" Header="ExecuteStep" Click="miExecuteStep_Click" />-->
+                                            <MenuItem x:Name="miMoveAlongPathStep" Header="Move along path" Click="miMoveAlongPathStep_Click" />
+                                            <MenuItem x:Name="miInteractWithStep" Header="Interact with" Click="miInteractWithStep_Click" />
+                                            <!--<MenuItem x:Name="miGoToStep" Header="GoToStep" Click="miGoToStep_Click" />-->
+                                            <MenuItem x:Name="miTalkToUnitStep" Header="Talk to unit" Click="miTalkToUnitStep_Click" />
+                                            <MenuItem x:Name="miDefendSpotStep" Header="Defend spot" Click="miDefendSpotStep_Click" />
+                                            <MenuItem x:Name="miFollowUnitStep" Header="Follow and defend unit" Click="miFollowUnitStep_Click" />
+                                            <MenuItem x:Name="regroupStep" Header="Regroup" Click="regroupStep_Click" />
+                                            <MenuItem x:Name="jumpToStep" Header="Jump to step" Click="jumpToStep_Click" />
                                         </ContextMenu>
                                     </Button.ContextMenu>
                                 </Button>

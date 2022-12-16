@@ -86,14 +86,22 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     }
                     else
                     {
-                        Logger.Log($"[{_interactWithModel.Name}] Couldn't find interactive object {string.Join(" or ", _objectIds)}. Condition is a PASS but skipping is not allowed. Waiting.");
+                        Logger.LogOnce($"[{_interactWithModel.Name}] Couldn't find interactive object {string.Join(" or ", _objectIds)}. Condition is a PASS but skipping is not allowed. Waiting.");
                         Thread.Sleep(1000);
                     }
                 }
                 else
                 {
-                    Logger.Log($"[{_interactWithModel.Name}] Couldn't find interactive object {string.Join(" or ", _objectIds)} and condition is a FAIL. Waiting.");
-                    Thread.Sleep(1000);
+                    if (_interactWithModel.SkipIfNotFound)
+                    {
+                        Logger.Log($"[{_interactWithModel.Name}] Couldn't find interactive object {string.Join(" or ", _objectIds)} and condition is a FAIL but skipping is allowed. Marking step as completed.");
+                        IsCompleted = true;
+                    }
+                    else
+                    {
+                        Logger.LogOnce($"[{_interactWithModel.Name}] Couldn't find interactive object {string.Join(" or ", _objectIds)} and condition is a FAIL. Waiting.");
+                        Thread.Sleep(1000);
+                    }
                 }
 
                 return;
@@ -144,7 +152,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 }
                 else
                 {
-                    Logger.Log($"[{_interactWithModel.Name}] Interacting with {foundObject.Name} ({foundObject.Entry})");
+                    Logger.LogOnce($"[{_interactWithModel.Name}] Interacting with {foundObject.Name} ({foundObject.Entry})");
                     Interact.InteractGameObject(foundObject.GetBaseAddress);
                     Thread.Sleep(500);
                 }
