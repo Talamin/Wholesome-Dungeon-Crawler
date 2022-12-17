@@ -10,16 +10,16 @@ using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class TurboLoot : State, IState
+    class CombatTurboLoot : State, IState
     {
-        public override string DisplayName => "Turbo Looting";
-        private readonly int _lootRange = 20;
+        public override string DisplayName => "Combat Turbo Looting";
+        private readonly int _lootRange = 8;
 
         private readonly IEntityCache _entitycache;
         private IWoWUnit _unitToLoot;
         private List<ulong> _unitsLooted = new List<ulong>();
 
-        public TurboLoot(IEntityCache entityCache)
+        public CombatTurboLoot(IEntityCache entityCache)
         {
             _entitycache = entityCache;
         }
@@ -30,8 +30,7 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (!Conditions.InGameAndConnected
                     || !wManagerSetting.CurrentSetting.LootMobs
-                    || !_entitycache.Me.Valid
-                    || Fight.InFight)
+                    || !_entitycache.Me.Valid)
                 {
                     return false;
                 }

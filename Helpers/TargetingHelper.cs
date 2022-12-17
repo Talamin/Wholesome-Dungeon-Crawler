@@ -1,7 +1,5 @@
-﻿using robotManager.Helpful;
-using System;
+﻿using System.ComponentModel;
 using WholesomeDungeonCrawler.ProductCache.Entity;
-using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -9,6 +7,7 @@ namespace WholesomeDungeonCrawler.Helpers
 {
     class TargetingHelper
     {
+        /*
         public static IWoWUnit FindClosestUnit(Func<IWoWUnit, bool> predicate, Vector3 referencePosition, IWoWUnit[] list)
         {
             IWoWUnit foundUnit = null;
@@ -38,14 +37,31 @@ namespace WholesomeDungeonCrawler.Helpers
             }
             return foundUnit;
         }
+        */
 
-        public static bool IHaveLineOfSightOn(WoWObject wowObject)
+        public static void SwitchTargetAndFight(IWoWUnit unit, CancelEventArgs canceable)
         {
-            Vector3 myPos = ObjectManager.Me.Position;
-            Vector3 objectPos = (wowObject is WoWUnit) ? new Vector3(wowObject.Position.X, wowObject.Position.Y, wowObject.Position.Z + 2) : wowObject.Position;
-            return !TraceLine.TraceLineGo(new Vector3(myPos.X, myPos.Y, myPos.Z + 2),
-                objectPos,
-                CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);
+            canceable.Cancel = true;
+            ObjectManager.Me.Target = unit.Guid;
+            Fight.StartFight(unit.Guid, false);
+        }
+
+        public enum TargetPriority
+        {
+            High,
+            Normal,
+            Low
+        }
+
+        public static TargetPriority GetTargetPriority(IWoWUnit unit)
+        {
+            switch (unit.UnitID)
+            {
+                case 8996: return TargetPriority.Low; // RFC - Voidwalker minion
+                case 598: return TargetPriority.High; // Deadmines - Defias Miner
+                case 2520: return TargetPriority.Low; // Deadmines - Remote-Controlled Golem
+                default: return TargetPriority.Normal;
+            }
         }
     }
 }

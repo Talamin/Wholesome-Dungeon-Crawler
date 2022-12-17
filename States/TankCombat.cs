@@ -1,5 +1,6 @@
 ﻿using robotManager.FiniteStateMachine;
 using robotManager.Helpful;
+using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
@@ -13,15 +14,13 @@ namespace WholesomeDungeonCrawler.States
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
-        private string _status;
+        private IWoWUnit _foundtarget;
 
         public TankCombat(ICache iCache, IEntityCache EntityCache)
         {
             _cache = iCache;
             _entityCache = EntityCache;
         }
-
-        private IWoWUnit foundtarget;
 
         public override bool NeedToRun
         {
@@ -39,40 +38,41 @@ namespace WholesomeDungeonCrawler.States
                 {                    
                     Interact.ClearTarget();
                 }
+
                 if (_entityCache.Target.Fleeing)
                 {
-                    Logger.Log($"{foundtarget.Name} is fleeing, switching");
-                    _status = foundtarget.Name + " currently fleeing";
+                    Logger.Log($"{_entityCache.Target.Name} is fleeing, switching");
                     Interact.ClearTarget();
                 }
 
-                IWoWUnit attackerGroupMember = TargetingHelper.FindClosestUnit(unit =>
-                    _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-                    && unit.TargetGuid != _entityCache.Me.Guid
-                    && !unit.Fleeing,
-                    Toolbox.PointInMidOfGroup(_entityCache.ListGroupMember),
-                    _entityCache.EnemiesAttackingGroup);
-                if (attackerGroupMember != null)
+                _foundtarget = null;
+
+                IWoWUnit attackingGroupMember = _entityCache.EnemiesAttackingGroup
+                    .Where(unit => _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
+                        && unit.TargetGuid != _entityCache.Me.Guid
+                        && !unit.Fleeing)
+                    .OrderBy(unit => unit.PositionWithoutType.DistanceTo(Toolbox.PointInMidOfGroup(_entityCache.ListGroupMember)))
+                    .OrderBy(unit => TargetingHelper.GetTargetPriority(unit))
+                    .FirstOrDefault();
+                if (attackingGroupMember != null)
                 {
-                    foundtarget = attackerGroupMember;
-                    _status = "Tanking :"+foundtarget.Name;
-                    Logger.Log($"Attacking: {foundtarget.Name} is attacking Groupmember, switching");
+                    _foundtarget = attackingGroupMember;
+                    Logger.Log($"TankCombat: {_foundtarget.Name} is attacking groupmember, defending");
                     return true;
                 }
 
                 // defend against enemy attacking me
-                IWoWUnit attackerMe = TargetingHelper.FindClosestUnit(unit =>
-                    unit.TargetGuid == _entityCache.Me.Guid
-                    && !unit.Fleeing
-                    && _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
-                    && unit.TargetGuid == _entityCache.Me.Guid,
-                    _entityCache.Me.PositionWithoutType,
-                    _entityCache.EnemiesAttackingGroup);
+                IWoWUnit attackerMe = _entityCache.EnemiesAttackingGroup
+                    .Where(unit => _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
+                        && unit.TargetGuid == _entityCache.Me.Guid
+                        && !unit.Fleeing)
+                    .OrderBy(unit => unit.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType))
+                    .OrderBy(unit => TargetingHelper.GetTargetPriority(unit))
+                    .FirstOrDefault();
                 if (attackerMe != null)
                 {
-                    foundtarget = attackerMe;
-                    _status = "Defending :" + foundtarget.Name;
-                    Logger.Log($"Attacking: {foundtarget.Name} is attacking Me, switching");
+                    _foundtarget = attackerMe;
+                    Logger.Log($"Attacking: {_foundtarget.Name} is attacking Me, switching");
                     return true;
                 }
 
@@ -82,10 +82,9 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            Logging.Status = _status;
             MovementManager.StopMove();
             Fight.StopFight();
-            Fight.StartFight(foundtarget.Guid, false);
+            Fight.StartFight(_foundtarget.Guid, false);
         }
     }
 }

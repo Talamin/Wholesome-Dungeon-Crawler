@@ -40,6 +40,9 @@ namespace WholesomeDungeonCrawler.ProductCache
                 CachePartyMemberChanged();
             }
             CacheHaveResurretion();
+            GetLFGModes();
+            CacheLFGProposalShown();
+            CacheLootRollShow();
 
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             robotManager.Events.FiniteStateMachineEvents.OnRunState += FiniteStateMachineEvents_OnRunState;
@@ -69,13 +72,13 @@ namespace WholesomeDungeonCrawler.ProductCache
                     GetLFGModes();
                     break;
                 case "LFG_PROPOSAL_SHOW":
-                    CacheLFGProposalShow();
+                    CacheLFGProposalShown();
                     break;
                 case "LFG_PROPOSAL_FAILED":
-                    CacheLFGProposalFailed();
+                    CacheLFGProposalShown();
                     break;
                 case "LFG_PROPOSAL_SUCCEEDED":
-                    CacheLFGProposalSucceeded();
+                    CacheLFGProposalShown();
                     break;
                 case "LFG_ROLE_CHECK_SHOW":
                     CacheRoleCheckShow();
@@ -146,34 +149,7 @@ namespace WholesomeDungeonCrawler.ProductCache
             MiniMapLFGFrameIcon = Lua.LuaDoString<bool>("return MiniMapLFGFrameIcon: IsVisible()");
         }
 
-        //private void CachePlayerSpec()
-        //{
-        //    lock(cacheLock)
-        //    {
-        //        var Talents = new Dictionary<string, int>();
-        //        for (int i = 1; i <= 3; i++)
-        //        {
-        //            Talents.Add(
-        //                Lua.LuaDoString<string>($"local name, iconTexture, pointsSpent = GetTalentTabInfo({i}); return name"),
-        //                Lua.LuaDoString<int>($"local name, iconTexture, pointsSpent = GetTalentTabInfo({i}); return pointsSpent")
-        //            );
-        //        }
-        //        var highestTalents = Talents.Max(x => x.Value);
-        //        GetPlayerSpec = Talents.FirstOrDefault(t => t.Value == highestTalents).Key.Replace(" ", "");
-        //    }
-        //}
-
-        private void CacheLFGProposalShow()
-        {
-            LFGProposalShown = Lua.LuaDoString<bool>("return LFDDungeonReadyDialogEnterDungeonButton:IsVisible()");
-        }
-
-        private void CacheLFGProposalFailed()
-        {
-            LFGProposalShown = Lua.LuaDoString<bool>("return LFDDungeonReadyDialogEnterDungeonButton:IsVisible()");
-        }
-
-        private void CacheLFGProposalSucceeded()
+        private void CacheLFGProposalShown()
         {
             LFGProposalShown = Lua.LuaDoString<bool>("return LFDDungeonReadyDialogEnterDungeonButton:IsVisible()");
         }

@@ -167,7 +167,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             foreach (var unit in units)
             {
                 // Ignore hostile statues in Uldaman until they become animated.
-                if (Lists.PriorityTargetListInt.Contains(unit.Entry)                    
+                if (Lists.ForceTargetListInt.Contains(unit.Entry)                    
                     && ((unit.UnitFlags & UnitFlags.NotAttackable) != 0))
                 {
                     continue;

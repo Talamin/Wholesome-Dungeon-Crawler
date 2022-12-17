@@ -59,6 +59,7 @@ namespace WholesomeDungeonCrawler.Bot
                     new Dead(_entityCache, _profileManager),
                     new ForceRegroup(_cache, _entityCache, _profileManager),
                     new MyMacro(),
+                    new CombatTurboLoot(_entityCache),
                     new SlaveCombat(_cache, _entityCache),
                     new TankCombat(_cache, _entityCache),
                     new Regeneration(),

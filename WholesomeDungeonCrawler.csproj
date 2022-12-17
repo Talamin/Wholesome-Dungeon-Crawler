@@ -168,6 +168,7 @@
     <Compile Include="States\DeadDive.cs" />
     <Compile Include="States\ForceTownRun.cs" />
     <Compile Include="States\ForceRegroup.cs" />
+    <Compile Include="States\CombatTurboLoot.cs" />
     <Compile Include="States\TurboLoot.cs" />
     <Compile Include="States\SlaveCombat.cs" />
     <Compile Include="States\TankCombat.cs" />

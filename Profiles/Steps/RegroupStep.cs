@@ -180,7 +180,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public void PartyReadyReceived()
         {
-            Logger.Log($"Received party ready system message");
+            Logger.LogOnce($"Received party ready system message");
             _receivedChatSystemReady = true;
         }
 

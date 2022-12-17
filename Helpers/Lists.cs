@@ -72,7 +72,7 @@ namespace WholesomeDungeonCrawler.Helpers
             new DungeonModel { Name="Halls of Reflection",DungeonId =255, MapId=668,ContinentId=571, EntranceLoc=new Vector3(0, 0,0, "None") },
         }.OrderBy(dungeon => dungeon.Name).ToList();
 
-        public static readonly HashSet<int> PriorityTargetListInt = new HashSet<int>
+        public static readonly HashSet<int> ForceTargetListInt = new HashSet<int>
         {
             4625, // Neutral mobs (RFK)
             18176,  // Tainted Earthgrab Totem (Mennu, Slave Pens)
@@ -86,7 +86,6 @@ namespace WholesomeDungeonCrawler.Helpers
             28734, // Anubar Skirmisher (Krik'thier, Azjol Nerub)
             42672, // Frost Tomb(Prince Kelesth, Utgard Keep)
             23775, // Head of the Horseman (Haloween Event)
-
         };
 
         public static readonly HashSet<int> IgnoreWhenUnattackableListInt = new HashSet<int>

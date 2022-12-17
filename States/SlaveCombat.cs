@@ -46,15 +46,15 @@ namespace WholesomeDungeonCrawler.States
                 // Defend tank
                 if (_entityCache.TankUnit != null)
                 {
-                    IWoWUnit attackingTank = TargetingHelper.FindClosestUnit(unit =>
-                        unit.TargetGuid == _entityCache.TankUnit.Guid,
-                        _entityCache.TankUnit.PositionWithoutType,
-                        _entityCache.EnemiesAttackingGroup);
-
+                    IWoWUnit attackingTank = _entityCache.EnemiesAttackingGroup
+                        .Where(unit => unit.TargetGuid == _entityCache.TankUnit.Guid)
+                        .OrderBy(unit => unit.PositionWithoutType.DistanceTo(_entityCache.TankUnit.PositionWithoutType))
+                        .OrderBy(unit => TargetingHelper.GetTargetPriority(unit))
+                        .FirstOrDefault();
                     if (attackingTank != null)
                     {
                         Target = attackingTank;
-                        Logger.Log($"SlaveCombat: Target attacking Tank: {Target.Name} , start defending");
+                        Logger.Log($"SlaveCombat: Target attacking tank {Target.Name}, start defending");
                         return true;
                     }
                 }
@@ -62,12 +62,12 @@ namespace WholesomeDungeonCrawler.States
                 // Defend players when the tank is dead, out of OM, or has no target
                 IWoWUnit attackingGroup = _entityCache.EnemiesAttackingGroup
                     .OrderBy(unit => unit.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType))
+                    .OrderBy(unit => TargetingHelper.GetTargetPriority(unit))
                     .FirstOrDefault();
-
                 if (attackingGroup != null)
                 {
                     Target = attackingGroup;
-                    Logger.Log($"SlaveCombat: Target attacking Player: {Target.Name} , start defending");
+                    Logger.Log($"SlaveCombat: Target attacking player {Target.Name}, start defending");
                     return true;
                 }
 

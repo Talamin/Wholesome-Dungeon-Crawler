@@ -1,7 +1,5 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
-using WholesomeDungeonCrawler.ProductCache.Entity;
-using WholesomeToolbox;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -132,28 +130,6 @@ namespace WholesomeDungeonCrawler.Helpers
                 {
                     result.Add((path[i], path[i + 1]));
                     lineToCHeckDistance += path[i].DistanceTo(path[i + 1]);
-                }
-            }
-
-            return result;
-        }
-
-        public static List<IWoWUnit> GetEnemiesAlongLines(List<(Vector3 a, Vector3 b)> lines, IWoWUnit[] hostileUnits, bool withLos)
-        {
-            List<IWoWUnit> result = new List<IWoWUnit>();
-
-            foreach ((Vector3 a, Vector3 b) line in lines)
-            {
-                foreach (IWoWUnit unit in hostileUnits)
-                {
-                    if (WTLocation.GetZDifferential(unit.PositionWithoutType) > 5
-                        || WTPathFinder.PointDistanceToLine(line.a, line.b, unit.PositionWithoutType) > 20
-                        || withLos && !TargetingHelper.IHaveLineOfSightOn(unit.WowUnit))
-                    {
-                        continue;
-                    }
-
-                    result.Add(unit);
                 }
             }
 

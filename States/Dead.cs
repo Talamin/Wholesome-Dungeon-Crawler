@@ -45,14 +45,14 @@ namespace WholesomeDungeonCrawler.States
         {
             if (WTLuaFrames.GetStaticPopup1Text().Contains("wants to resurrect you"))
             {
-                Logger.Log("Accepting resurrection from a player");
+                Logger.LogOnce("Accepting resurrection from a player");
                 Lua.LuaDoString("StaticPopup1Button1:Click()");
                 return;
             }
 
             if (_entityCache.Me.Auras.ContainsKey(20762)) // Soulstone
             {
-                Logger.Log("Accepting soulstone resurrection");
+                Logger.LogOnce("Accepting soulstone resurrection");
                 Lua.LuaDoString("StaticPopup1Button1:Click()");
                 return;
             }
@@ -87,7 +87,7 @@ namespace WholesomeDungeonCrawler.States
                         && !player.Dead
                         && _entityCache.Me.PositionWithoutType.DistanceTo(player.PositionWithoutType) < 50))
                 {
-                    Logger.Log("A group member can resurrect me. Waiting.");
+                    Logger.LogOnce("A group member can resurrect me. Waiting.");
                     Thread.Sleep(3000);
                 }
                 else
