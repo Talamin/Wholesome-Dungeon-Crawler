@@ -3,6 +3,7 @@ using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager;
 using wManager.Wow.Bot.Tasks;
@@ -58,19 +59,40 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            MovementManager.StopMove();
+            Vector3 myPos = _entitycache.Me.PositionWithoutType;
+            Vector3 corpsePos = _unitToLoot.PositionWithoutType;
 
-            if (GoToTask.ToPosition(_unitToLoot.PositionWithoutType, 3f))
-            {
-                Interact.InteractGameObject(_unitToLoot.GetBaseAddress);
-                Thread.Sleep(100);
-            }
-
-            _unitsLooted.Add(_unitToLoot.Guid);
-
+            // Purge cache
             if (_unitsLooted.Count > 100)
             {
                 _unitsLooted.RemoveRange(0, 10);
+            }
+
+            // Loot
+            if (myPos.DistanceTo(corpsePos) <= 3.5)
+            {
+                Logger.Log($"[TurboLoot] Looting {_unitToLoot.Name}");
+                MovementManager.StopMove();
+                Interact.InteractGameObject(_unitToLoot.GetBaseAddress);
+                Thread.Sleep(100);
+                _unitsLooted.Add(_unitToLoot.Guid);
+                return;
+            }
+
+            // Approach corpse
+            if (!MovementManager.InMovement || MovementManager.CurrentPath.Last() != corpsePos)
+            {
+                MovementManager.StopMove();
+                List<Vector3> pathToCorpse = PathFinder.FindPath(myPos, corpsePos, out bool resultSuccess);
+                if (resultSuccess)
+                {
+                    MovementManager.Go(pathToCorpse);
+                }
+                else
+                {
+                    Logger.LogError($"[TurboLoot] {_unitToLoot.Name}'s corpse seems unreachable. Skipping loot.");
+                    _unitsLooted.Add(_unitToLoot.Guid);
+                }
             }
         }
     }

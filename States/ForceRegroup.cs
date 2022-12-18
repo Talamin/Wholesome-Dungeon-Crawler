@@ -55,7 +55,6 @@ namespace WholesomeDungeonCrawler.States
             }
         }
 
-
         public override void Run()
         {
             Logger.Log($"Group died, need to Regroup, leaving Dungeon");

@@ -1,15 +1,6 @@
-﻿using robotManager;
-using robotManager.Helpful;
-using robotManager.MemoryClass;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using robotManager.Helpful;
 using System.Threading;
 using WholesomeDungeonCrawler.ProductCache.Entity;
-using wManager;
-using wManager.Wow;
-using wManager.Wow.Bot.States;
-using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.Helpers
@@ -18,9 +9,9 @@ namespace WholesomeDungeonCrawler.Helpers
     {
         public static void LeaveDungeonAndGroup()
         {
-            Lua.LuaDoString("LFGTeleport(true);");
-            Thread.Sleep(3000);
             Lua.LuaDoString("LeaveParty();");
+            Thread.Sleep(3000);
+            Lua.LuaDoString("LFGTeleport(true);");
             Thread.Sleep(3000);
         }
 

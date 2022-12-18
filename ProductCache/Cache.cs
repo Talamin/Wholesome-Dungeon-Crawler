@@ -12,7 +12,7 @@ namespace WholesomeDungeonCrawler.ProductCache
         private object cacheLock = new object();
 
         public bool IsInInstance { get; private set; }
-        public bool IsPartyInviteRequest { get; private set; }
+        public bool PartyInviteShown { get; private set; }
         public bool HaveSatchel { get; private set; }
         public string CurrentState { get; set; }
         public string GetLFGMode { get; private set; }
@@ -32,8 +32,6 @@ namespace WholesomeDungeonCrawler.ProductCache
         {
             IAmAlliance = ObjectManager.Me.IsAlliance;
             CacheIsInInstance();
-            CachePartyInviteRequest();
-            //CachePlayerSpec();
             CacheRoleCheckShow();
             if (ObjectManager.Me.IsInGroup)
             {
@@ -61,9 +59,6 @@ namespace WholesomeDungeonCrawler.ProductCache
             {
                 case "WORLD_MAP_UPDATE":
                     CacheIsInInstance();
-                    break;
-                case "PARTY_INVITE_REQUEST":
-                    CachePartyInviteRequest();
                     break;
                 case "PARTY_MEMBERS_CHANGED":
                     CachePartyMemberChanged();
@@ -95,6 +90,9 @@ namespace WholesomeDungeonCrawler.ProductCache
                 case "START_LOOT_ROLL":
                     CacheLootRollShow();
                     break;
+                case "CANCEL_LOOT_ROLL":
+                    CacheLootRollShow();
+                    break;
                 case "RESURRECT_REQUEST":
                     CacheHaveResurretion();
                     break;
@@ -124,29 +122,15 @@ namespace WholesomeDungeonCrawler.ProductCache
             }
         }
 
-        private void CachePartyInviteRequest()
-        {
-            string StaticPopupText = Lua.LuaDoString<string>("return StaticPopup1Text:GetText()");
-            bool isvisible = Lua.LuaDoString<bool>("return StaticPopup1 and StaticPopup1:IsVisible();");
-            if (isvisible && StaticPopupText.Contains("invites you to a group"))
-            {
-                IsPartyInviteRequest = true;
-                return;
-            }
-            IsPartyInviteRequest = false;
-        }
-
         private void CachePartyMemberChanged()
         {
-            //Debugger.Break();
-            CachePartyInviteRequest();
             GetLFGModes();
         }
 
         private void GetLFGModes()
         {
             GetLFGMode = Lua.LuaDoString<string>("local mode, submode= GetLFGMode(); if mode == nil then return 'nil' else return mode end;");
-            MiniMapLFGFrameIcon = Lua.LuaDoString<bool>("return MiniMapLFGFrameIcon: IsVisible()");
+            MiniMapLFGFrameIcon = Lua.LuaDoString<bool>("return MiniMapLFGFrameIcon:IsVisible()");
         }
 
         private void CacheLFGProposalShown()

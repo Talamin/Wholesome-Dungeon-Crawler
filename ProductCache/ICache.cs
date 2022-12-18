@@ -3,7 +3,7 @@
     interface ICache : ICycleable
     {
         bool IsInInstance { get; }
-        bool IsPartyInviteRequest { get; }
+        bool PartyInviteShown { get; }
         bool HaveSatchel { get; }
         string CurrentState { get; }
         string GetLFGMode { get; }

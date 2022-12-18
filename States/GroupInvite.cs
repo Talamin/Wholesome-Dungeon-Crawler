@@ -46,16 +46,17 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            foreach (var player in WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers)
+            string[] playersToInvite = WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers
+                .Where(playerName => !_entityCache.ListPartyMemberNames.Contains(playerName))
+                .ToArray();
+            Logger.LogOnce($"Inviting: {string.Join(", ", playersToInvite)}");
+
+            foreach (string player in playersToInvite)
             {
-                if (!_entityCache.ListPartyMemberNames.Contains(player))
-                {
-                    Logger.Log($"Inviting {player} to Group");
-                    Lua.LuaDoString(Usefuls.WowVersion > 5875
-                        ? $@"InviteUnit('{player}');"
-                        : $@"InviteByName('{player}');");
-                }
-                Thread.Sleep(1000);
+                Lua.LuaDoString(Usefuls.WowVersion > 5875
+                    ? $@"InviteUnit('{player}');"
+                    : $@"InviteByName('{player}');");
+                Thread.Sleep(500);
             }
         }
     }

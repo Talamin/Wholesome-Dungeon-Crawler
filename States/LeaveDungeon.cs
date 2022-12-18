@@ -1,10 +1,10 @@
 ﻿using robotManager.FiniteStateMachine;
-using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
+using Timer = robotManager.Helpful.Timer;
 
 namespace WholesomeDungeonCrawler.States
 {
@@ -15,6 +15,8 @@ namespace WholesomeDungeonCrawler.States
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
+        private Timer _leaveTimer = null;
+        private readonly int _timerLength = 10000;
 
         public LeaveDungeon(ICache iCache, IEntityCache EntityCache, IProfileManager profilemanager)
         {
@@ -38,17 +40,25 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                return _profileManager.CurrentDungeonProfile.ProfileIsCompleted;
+                if (_profileManager.CurrentDungeonProfile.ProfileIsCompleted
+                    && _leaveTimer == null)
+                {
+                    Logger.Log($"Leaving dungeon in {_timerLength/1000} seconds");
+                    _leaveTimer = new Timer(_timerLength);
+                }
+
+                return _leaveTimer != null;
             }
         }
 
 
         public override void Run()
         {
-            Logger.Log($"Leaving dungeon in 10 seconds.");
-            Thread.Sleep(10 * 1000);
-            //Lua.LuaDoString("LFGTeleport(true);");
-            Toolbox.LeaveDungeonAndGroup();
+            if (_leaveTimer.IsReady)
+            {
+                Toolbox.LeaveDungeonAndGroup();
+                _leaveTimer = null;
+            }
         }
     }
 }

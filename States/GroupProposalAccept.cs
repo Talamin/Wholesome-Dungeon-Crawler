@@ -14,6 +14,7 @@ namespace WholesomeDungeonCrawler.States
         public override string DisplayName => "GroupProposal Accept";
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
+        private Timer _timer = new Timer();
 
         public GroupProposal(ICache iCache, IEntityCache iEntityCache)
         {
@@ -21,31 +22,29 @@ namespace WholesomeDungeonCrawler.States
             _entityCache = iEntityCache;
         }
 
-        private Timer timer = new Timer();
-
         public override bool NeedToRun
         {
             get
             {
-                if (!timer.IsReady
+                if (!_timer.IsReady
                     || !Conditions.InGameAndConnected
                     || !ObjectManager.Me.IsValid
                     || Fight.InFight
-                    || _entityCache.ListPartyMemberNames.Count() < 4) //changed from 5
+                    || _entityCache.ListPartyMemberNames.Count() < 4)
                 {
                     return false;
                 }
-                timer = new Timer(1000);
+
+                _timer = new Timer(1000);
 
                 return _cache.LFGProposalShown;
-
             }
 
         }
 
         public override void Run()
         {
-            Logger.Log("Accept Dungeon Proposal!");
+            Logger.Log("Accept dungeon proposal");
             Lua.LuaDoString("AcceptProposal()");
         }
 

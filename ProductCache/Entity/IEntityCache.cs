@@ -20,7 +20,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
         bool IAmTank { get; }
 
-        event TankOMHandler OnTankEnteringOM;
+        //event TankOMHandler OnTankEnteringOM;
 
         void AddNpcIdToDefend(int npcId);
         void ClearNpcListIdToDefend();

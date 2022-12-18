@@ -69,7 +69,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             }
         }
 
-        public event TankOMHandler OnTankEnteringOM;
+        //public event TankOMHandler OnTankEnteringOM;
 
         public IWoWUnit Target { get; private set; } = Cache(new WoWUnit(0));
         public IWoWUnit Pet { get; private set; } = Cache(new WoWUnit(0));
@@ -149,12 +149,12 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 }
             }
             ListGroupMember = listGroupMember.ToArray();
-
+            /*
             if (TankUnit == null && tankUnit != null)
             {
                 OnTankEnteringOM?.Invoke();
             }
-
+            */
             NpcsToDefend.Clear();
             LootableUnits.Clear();
             TankUnit = tankUnit;

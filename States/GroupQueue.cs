@@ -28,13 +28,12 @@ namespace WholesomeDungeonCrawler.States
                     || Fight.InFight
                     || _entityCache.Me.Auras.Any(y => y.Key == 71041)
                     || _cache.IsInInstance
-                    || _entityCache.ListPartyMemberNames.Count() < 4 //changed from 4 for testing
+                    || _entityCache.ListPartyMemberNames.Count() < 4
                     || !_entityCache.IAmTank)
                 {
                     return false;
                 }
 
-                //return Lua.LuaDoString<bool>("local mode, submode = GetLFGMode(); return mode == nil;");
                 return !Lua.LuaDoString<bool>("return MiniMapLFGFrameIcon:IsVisible()");
             }
         }

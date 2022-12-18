@@ -166,6 +166,7 @@
     <Compile Include="States\CheckPathAhead.cs" />
     <Compile Include="States\Dead.cs" />
     <Compile Include="States\DeadDive.cs" />
+    <Compile Include="States\RejoinDungeon.cs" />
     <Compile Include="States\ForceTownRun.cs" />
     <Compile Include="States\ForceRegroup.cs" />
     <Compile Include="States\CombatTurboLoot.cs" />

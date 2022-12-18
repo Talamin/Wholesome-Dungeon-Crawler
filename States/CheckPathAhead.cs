@@ -113,7 +113,7 @@ namespace WholesomeDungeonCrawler.States
                                 if (playerDistanceFromLine < 3f)
                                 {
                                     // A follower has been found along the path line in front, force fight
-                                    Logger.Log($"{player.Name} is ahead. Forcing path");
+                                    Logger.LogOnce($"{player.Name} is ahead. Forcing path");
                                     return false;
                                 }
                             }

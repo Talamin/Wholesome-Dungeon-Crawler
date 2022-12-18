@@ -77,6 +77,7 @@ namespace WholesomeDungeonCrawler.Bot
                     _checkPathAheadState,
                     new LeaveDungeon(_cache, _entityCache, _profileManager),
                     new ForceTownRun(_cache, _entityCache, _profileManager),
+                    new RejoinDungeon(_cache, _entityCache, _profileManager),
                     new DungeonLogic(_entityCache, _profileManager, _cache),
                     new AntiAfk(),
                     new Idle(),
@@ -107,7 +108,6 @@ namespace WholesomeDungeonCrawler.Bot
                 return false;
             }
         }
-
         internal void Dispose()
         {
             try

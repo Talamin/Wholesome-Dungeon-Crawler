@@ -30,7 +30,7 @@ namespace WholesomeDungeonCrawler.States
                     || !_entityCache.Me.Valid
                     || Fight.InFight
                     || _cache.IsInInstance
-                    || _entityCache.ListPartyMemberNames.Count() < 4) //changed from 4
+                    || _entityCache.ListPartyMemberNames.Count() < 4)
                 {
                     return false;
                 }
@@ -38,13 +38,12 @@ namespace WholesomeDungeonCrawler.States
                 timer = new Timer(1000);
 
                 return _cache.LFGRoleCheckShown;
-
             }
         }
 
         public override void Run()
         {
-            Logger.Log("Accept Role Queue Check!");
+            Logger.Log("Accepting role queue check");
             Lua.LuaDoString("LFDRoleCheckPopupAcceptButton:Click()");
         }
     }
