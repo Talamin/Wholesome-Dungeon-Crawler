@@ -55,7 +55,7 @@ namespace WholesomeDungeonCrawler.States
                 }
                 else
                 {
-                    Logger.Log($"Launching dungeon search");
+                    Logger.LogOnce($"Launching dungeon search");
                     Lua.LuaDoString("LFDQueueFrameFindGroupButton:Click()");
                 }
             }

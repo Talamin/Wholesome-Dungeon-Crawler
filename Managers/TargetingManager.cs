@@ -52,7 +52,9 @@ namespace WholesomeDungeonCrawler.Managers
             if (_entityCache.IAmTank)
             {
                 // Don't chase fleers
-                if (_entityCache.Target != null && _entityCache.Target.Fleeing)
+                if (_entityCache.Target != null 
+                    && _entityCache.Target.Fleeing 
+                    && _entityCache.EnemiesAttackingGroup.Count() > 0)
                 {
                     canceable.Cancel = true;
                     Interact.ClearTarget();
@@ -129,7 +131,9 @@ namespace WholesomeDungeonCrawler.Managers
             {
                 // Melee DPS - Don't chase fleers
                 if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.MDPS
-                    && _entityCache.Target != null && _entityCache.Target.Fleeing)
+                    && _entityCache.Target != null 
+                    && _entityCache.Target.Fleeing
+                    && _entityCache.EnemiesAttackingGroup.Count() > 0)
                 {
                     canceable.Cancel = true;
                     Interact.ClearTarget();
