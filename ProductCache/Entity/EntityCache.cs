@@ -69,8 +69,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             }
         }
 
-        //public event TankOMHandler OnTankEnteringOM;
-
         public IWoWUnit Target { get; private set; } = Cache(new WoWUnit(0));
         public IWoWUnit Pet { get; private set; } = Cache(new WoWUnit(0));
         public IWoWUnit[] GroupPets { get; private set; } = new IWoWUnit[0];

@@ -20,8 +20,8 @@ namespace WholesomeDungeonCrawler.Bot
         private ITargetingManager _targetingManager;
         private IPartyChatManager _partyChatManager;
         private ILuaStatusFrameManager _luaStatusFrameManager;
-        private CheckPathAhead _checkPathAheadState;
         private IPathManager _pathManager;
+        private CheckPathAhead _checkPathAheadState;
 
         internal bool InitialSetup()
         {
@@ -77,7 +77,7 @@ namespace WholesomeDungeonCrawler.Bot
                     _checkPathAheadState,
                     new LeaveDungeon(_cache, _entityCache, _profileManager),
                     new ForceTownRun(_cache, _entityCache, _profileManager),
-                    new RejoinDungeon(_cache, _entityCache, _profileManager),
+                    new RejoinDungeonAfterForcedTownRun(_cache, _entityCache, _profileManager),
                     new DungeonLogic(_entityCache, _profileManager, _cache),
                     new AntiAfk(),
                     new Idle(),

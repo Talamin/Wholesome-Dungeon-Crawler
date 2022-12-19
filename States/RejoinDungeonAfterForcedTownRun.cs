@@ -5,21 +5,22 @@ using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
-using wManager.Wow.ObjectManager;
 using Timer = robotManager.Helpful.Timer;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class RejoinDungeon : State
+    class RejoinDungeonAfterForcedTownRun : State
     {
-        public override string DisplayName => "Rejoining Dungeon";
+        public override string DisplayName => "Rejoining Dungeon after forced town run";
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
         private Timer _stateTimer = new Timer();
 
-        public RejoinDungeon(ICache iCache, IEntityCache EntityCache, IProfileManager profilemanager)
+        public bool TownRunIsFinished { get; private set; }
+
+        public RejoinDungeonAfterForcedTownRun(ICache iCache, IEntityCache EntityCache, IProfileManager profilemanager)
         {
             _cache = iCache;
             _entityCache = EntityCache;
@@ -31,6 +32,7 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!Conditions.InGameAndConnected
+                    || !_cache.IsRunningForcedTownRun
                     || !_stateTimer.IsReady
                     || !_entityCache.Me.Valid
                     || _entityCache.Me.Dead
@@ -54,6 +56,7 @@ namespace WholesomeDungeonCrawler.States
             MovementManager.StopMove();
             Thread.Sleep(1000);
             Lua.LuaDoString("LFGTeleport(false);");
+            _cache.IsRunningForcedTownRun = false;
             Thread.Sleep(5000);
         }
     }

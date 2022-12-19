@@ -8,21 +8,16 @@ namespace WholesomeDungeonCrawler.ProductCache
 {
     internal class Cache : ICache
     {
-
         private object cacheLock = new object();
 
         public bool IsInInstance { get; private set; }
-        public bool PartyInviteShown { get; private set; }
-        public bool HaveSatchel { get; private set; }
         public string CurrentState { get; set; }
-        public string GetLFGMode { get; private set; }
-        public bool MiniMapLFGFrameIcon { get; private set; }
-        public string GetPlayerSpec { get; private set; }
         public bool LFGProposalShown { get; private set; }
         public bool LFGRoleCheckShown { get; private set; }
         public bool LootRollShow { get; private set; }
         public bool IAmAlliance { get; private set; }
-        public bool HaveResurrection { get; private set; }
+
+        public bool IsRunningForcedTownRun { get; set; }
 
         public Cache()
         {
@@ -33,12 +28,6 @@ namespace WholesomeDungeonCrawler.ProductCache
             IAmAlliance = ObjectManager.Me.IsAlliance;
             CacheIsInInstance();
             CacheRoleCheckShow();
-            if (ObjectManager.Me.IsInGroup)
-            {
-                CachePartyMemberChanged();
-            }
-            CacheHaveResurretion();
-            GetLFGModes();
             CacheLFGProposalShown();
             CacheLootRollShow();
 
@@ -60,12 +49,8 @@ namespace WholesomeDungeonCrawler.ProductCache
                 case "WORLD_MAP_UPDATE":
                     CacheIsInInstance();
                     break;
-                case "PARTY_MEMBERS_CHANGED":
-                    CachePartyMemberChanged();
-                    break;
-                case "LFG_QUEUE_STATUS_UPDATE":
-                    GetLFGModes();
-                    break;
+
+                // LFG_PROPOSAL
                 case "LFG_PROPOSAL_SHOW":
                     CacheLFGProposalShown();
                     break;
@@ -75,6 +60,11 @@ namespace WholesomeDungeonCrawler.ProductCache
                 case "LFG_PROPOSAL_SUCCEEDED":
                     CacheLFGProposalShown();
                     break;
+                case "LFG_PROPOSAL_UPDATE":
+                    CacheLFGProposalShown();
+                    break;
+
+                // LFG_ROLE_CHECK
                 case "LFG_ROLE_CHECK_SHOW":
                     CacheRoleCheckShow();
                     break;
@@ -87,14 +77,16 @@ namespace WholesomeDungeonCrawler.ProductCache
                 case "LFG_ROLE_CHECK_UPDATE":
                     CacheRoleCheckShow();
                     break;
+
+                // LOOT_ROLL
                 case "START_LOOT_ROLL":
                     CacheLootRollShow();
                     break;
                 case "CANCEL_LOOT_ROLL":
                     CacheLootRollShow();
                     break;
-                case "RESURRECT_REQUEST":
-                    CacheHaveResurretion();
+                case "CONFIRM_LOOT_ROLL":
+                    CacheLootRollShow();
                     break;
             }
         }
@@ -121,18 +113,13 @@ namespace WholesomeDungeonCrawler.ProductCache
                 IsInInstance = WTLocation.IsInInstance();
             }
         }
-
-        private void CachePartyMemberChanged()
-        {
-            GetLFGModes();
-        }
-
+        /*
         private void GetLFGModes()
         {
             GetLFGMode = Lua.LuaDoString<string>("local mode, submode= GetLFGMode(); if mode == nil then return 'nil' else return mode end;");
             MiniMapLFGFrameIcon = Lua.LuaDoString<bool>("return MiniMapLFGFrameIcon:IsVisible()");
         }
-
+        */
         private void CacheLFGProposalShown()
         {
             LFGProposalShown = Lua.LuaDoString<bool>("return LFDDungeonReadyDialogEnterDungeonButton:IsVisible()");
@@ -146,11 +133,6 @@ namespace WholesomeDungeonCrawler.ProductCache
         private void CacheLootRollShow()
         {
             LootRollShow = Lua.LuaDoString<bool>("for i = 1, 4 do local b = ['GroupLootFrame'..i] if b and b:IsVisible() then return true end end return false");
-        }
-
-        private void CacheHaveResurretion()
-        {
-            HaveResurrection = Lua.LuaDoString<bool>("return StaticPopup1 and StaticPopup1:IsVisible();");
         }
     }
 }

@@ -17,7 +17,9 @@ namespace WholesomeDungeonCrawler.States
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
 
-        public ForceTownRun(ICache iCache, IEntityCache EntityCache, IProfileManager profilemanager)
+        public ForceTownRun(ICache iCache, 
+            IEntityCache EntityCache, 
+            IProfileManager profilemanager)
         {
             _cache = iCache;
             _entityCache = EntityCache;
@@ -52,6 +54,7 @@ namespace WholesomeDungeonCrawler.States
             MovementManager.StopMove();
             Thread.Sleep(1000);
             Lua.LuaDoString("LFGTeleport(true);");
+            _cache.IsRunningForcedTownRun = true;
             Thread.Sleep(5000);
         }
     }

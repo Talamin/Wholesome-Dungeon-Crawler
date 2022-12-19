@@ -39,7 +39,6 @@ namespace WholesomeDungeonCrawler.States
 
                 return _cache.LFGProposalShown;
             }
-
         }
 
         public override void Run()
