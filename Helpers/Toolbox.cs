@@ -9,8 +9,9 @@ namespace WholesomeDungeonCrawler.Helpers
     {
         public static void LeaveDungeonAndGroup()
         {
+            Logger.Log($"Leaving party and teleporting out of dungeon");
             Lua.LuaDoString("LeaveParty();");
-            Thread.Sleep(3000);
+            Thread.Sleep(500);
             Lua.LuaDoString("LFGTeleport(true);");
             Thread.Sleep(3000);
         }

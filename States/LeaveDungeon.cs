@@ -43,7 +43,7 @@ namespace WholesomeDungeonCrawler.States
                 if (_profileManager.CurrentDungeonProfile.ProfileIsCompleted
                     && _leaveTimer == null)
                 {
-                    Logger.Log($"Leaving dungeon in {_timerLength/1000} seconds");
+                    Logger.Log($"Leaving dungeon in {_timerLength / 1000} seconds");
                     _leaveTimer = new Timer(_timerLength);
                 }
 
@@ -56,6 +56,7 @@ namespace WholesomeDungeonCrawler.States
         {
             if (_leaveTimer.IsReady)
             {
+                _profileManager.UnloadCurrentProfile();
                 Toolbox.LeaveDungeonAndGroup();
                 _leaveTimer = null;
             }

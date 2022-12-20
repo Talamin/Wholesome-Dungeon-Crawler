@@ -61,13 +61,12 @@ namespace WholesomeDungeonCrawler.Managers
                     return;
                 }
                 */
-                CurrentDungeonProfile?.Dispose();
-                CurrentDungeonProfile = null;
+                UnloadCurrentProfile();
 
                 DungeonModel dungeon = CheckandChooseactualDungeon();
                 if (dungeon != null)
                 {
-                    DirectoryInfo profilePath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/{ProfileManager.ProfilesDirectoryName}/{dungeon.Name}");
+                    DirectoryInfo profilePath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/{ProfilesDirectoryName}/{dungeon.Name}");
                     int profilecount = profilePath.GetFiles().Count();
                     if (profilecount > 0)
                     {
@@ -112,6 +111,7 @@ namespace WholesomeDungeonCrawler.Managers
                         {
                             Logger.LogError($"No profile found for your faction in folder {profilePath}, leaving dungeon");
                             Toolbox.LeaveDungeonAndGroup();
+                            return;
                         }
 
                         ProfileModel chosenModel = profileModels[new Random().Next(0, profileModels.Count)];
@@ -138,6 +138,12 @@ namespace WholesomeDungeonCrawler.Managers
 
                 Logger.Log($"You're not in a dungeon. Map ID {Usefuls.ContinentId}.");
             });
+        }
+
+        public void UnloadCurrentProfile()
+        {
+            CurrentDungeonProfile?.Dispose();
+            CurrentDungeonProfile = null;
         }
 
         private DungeonModel CheckandChooseactualDungeon()

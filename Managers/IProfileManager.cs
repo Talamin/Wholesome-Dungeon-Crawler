@@ -7,5 +7,6 @@ namespace WholesomeDungeonCrawler.Managers
     {
         public IProfile CurrentDungeonProfile { get; }
         void LoadProfile(bool safeWait);
+        void UnloadCurrentProfile();
     }
 }

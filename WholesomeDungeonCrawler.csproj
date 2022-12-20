@@ -259,6 +259,8 @@
 			$(PostBuildEventDependsOn);
 			PostBuildMacros;
 		</PostBuildEventDependsOn>
-    <PostBuildEvent>xcopy /Y/F "$(TargetDir)\WholesomeDungeonCrawler.dll" "$(ProjectDir)\Compiled"</PostBuildEvent>
+    <PostBuildEvent>xcopy /Y/F "$(TargetDir)\WholesomeDungeonCrawler.dll" "$(ProjectDir)\Compiled"
+echo Writing assembly version in Version.txt: @(VersionNumber)
+echo @(VersionNumber) &gt; $(ProjectDir)\Compiled\Version.txt</PostBuildEvent>
   </PropertyGroup>
 </Project>

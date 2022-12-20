@@ -6,6 +6,7 @@ using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
+using WholesomeDungeonCrawler.Profiles.Steps;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 
@@ -13,7 +14,7 @@ namespace WholesomeDungeonCrawler.States
 {
     class ForceRegroup : State
     {
-        public override string DisplayName => "Leaving and Returning to Dungeon for Regroup";
+        public override string DisplayName => "Forcing regroup at entrance";
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
@@ -40,29 +41,36 @@ namespace WholesomeDungeonCrawler.States
                     || _cache.LootRollShow
                     || _profileManager.CurrentDungeonProfile == null
                     || _profileManager.CurrentDungeonProfile.CurrentStep == null
-                    || _profileManager.CurrentDungeonProfile.CurrentStep.Order <= 0
-                    // checks if heal is around and near us, or if I am heal
-                    || _rezzClasses.Contains(_entityCache.Me.WoWClass)
-                    || _entityCache.ListGroupMember.Any(player =>
-                        _rezzClasses.Contains(player.WoWClass)))
+                    || _profileManager.CurrentDungeonProfile.CurrentStep is RegroupStep)
                 {
                     return false;
                 }
 
-                //Checks if 1 or more dead + no healer alive or in sight --> teleport out/in and reset the profile
-                return _entityCache.ListGroupMember.Count() != _entityCache.ListPartyMemberNames.Count()
-                    || _entityCache.ListGroupMember.Any(member => member.Dead);
+                if (_entityCache.ListGroupMember.Count() != _entityCache.ListPartyMemberNames.Count())
+                {
+                    Logger.Log($"A group member is missing. Teleporting out and back in to regroup.");
+                    return true;
+                }
+
+                if (!_entityCache.ListGroupMember.Any(player => _rezzClasses.Contains(player.WoWClass) && !player.Dead)
+                    && !_rezzClasses.Contains(_entityCache.Me.WoWClass))
+                {
+                    Logger.Log($"No healer alive. Teleporting out and back in to regroup.");
+                    return true;
+                }
+
+                return true;
             }
         }
 
         public override void Run()
         {
-            Logger.Log($"Group died, need to Regroup, leaving Dungeon");
+            Thread.Sleep(3000);
+            _profileManager.UnloadCurrentProfile();
             Lua.LuaDoString("LFGTeleport(true);");
-            Thread.Sleep(10000);
-            Logger.Log($"Returning to dungeon");
+            Thread.Sleep(5000);
             Lua.LuaDoString("LFGTeleport(false);");
-            Thread.Sleep(10000);
+            Thread.Sleep(5000);
         }
     }
 }
