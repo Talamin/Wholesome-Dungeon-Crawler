@@ -59,7 +59,7 @@ namespace WholesomeDungeonCrawler.States
                     return true;
                 }
 
-                return true;
+                return false;
             }
         }
 
