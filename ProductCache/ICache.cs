@@ -10,5 +10,10 @@
         public bool IAmAlliance { get; }
 
         bool IsRunningForcedTownRun { get; set; }
+
+        void CacheIsInInstance();
+        void CacheLFGProposalShown();
+        void CacheRoleCheckShow();
+        void CacheLootRollShow();
     }
 }

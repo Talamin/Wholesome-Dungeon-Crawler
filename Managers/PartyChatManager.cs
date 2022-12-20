@@ -1,6 +1,4 @@
 ﻿using robotManager.Helpful;
-using System.Collections.Generic;
-using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles.Steps;
 using wManager.Wow.Helpers;
@@ -23,16 +21,10 @@ namespace WholesomeDungeonCrawler.Managers
 
         public void Initialize()
         {
-            //_entityCache.OnTankEnteringOM += ResetTankStatus;
-            EventsLuaWithArgs.OnEventsLuaStringWithArgs += OnEventLuaWithArgs;
-            //Broadcast(ChatMessageType.WROBOT_START, _entityCache.Me.Name);
         }
 
         public void Dispose()
         {
-            //_entityCache.OnTankEnteringOM -= ResetTankStatus;
-            EventsLuaWithArgs.OnEventsLuaStringWithArgs -= OnEventLuaWithArgs;
-            //Broadcast(ChatMessageType.WROBOT_STOP, _entityCache.Me.Name);
         }
 
         public void SetRegroupStep(RegroupStep regroupStep)
@@ -40,31 +32,9 @@ namespace WholesomeDungeonCrawler.Managers
             _regroupStep = regroupStep;
         }
 
-        private void OnEventLuaWithArgs(string id, List<string> args)
+        public void PartyReadyReceived()
         {
-            switch (id)
-            {
-                case "CHAT_MSG_SYSTEM":
-                    if (args[0] == "Everyone is Ready")
-                        _regroupStep?.PartyReadyReceived();
-                    break;
-                /*
-                case "CHAT_MSG_PARTY":
-                    HandleMessageReceived(args);
-                    break;
-                case "CHAT_MSG_PARTY_LEADER":
-                    HandleMessageReceived(args);
-                    break;
-                case "PARTY_MEMBER_DISABLE":
-                    Logger.LogError("PARTY_MEMBER_DISABLE");
-                    BroadCastTankStatus();
-                    break;
-                case "PLAYER_ENTERING_WORLD":
-                    Logger.LogError("PLAYER_ENTERING_WORLD");
-                    Broadcast(ChatMessageType.PLAYER_ENTERING_WORLD, null);
-                    break;
-                */
-            }
+            _regroupStep?.PartyReadyReceived();
         }
         /*
         private void ResetTankStatus()

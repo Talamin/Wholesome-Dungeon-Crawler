@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Security.RightsManagement;
 using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
@@ -24,6 +24,7 @@ namespace WholesomeDungeonCrawler.Managers
         private readonly IEntityCache _entityCache;
         private readonly IPathManager _pathManager;
         private readonly IPartyChatManager _partyChatManager;
+        public static readonly string ProfilesDirectoryName = "Wholesome-Dungeon-Crawler-Profiles";
 
         public ProfileManager(IEntityCache entityCache, ICache cache, IPathManager pathManager, IPartyChatManager partyChatManager)
         {
@@ -35,30 +36,13 @@ namespace WholesomeDungeonCrawler.Managers
         public void Initialize()
         {
             LoadProfile(false);
-            EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaStringWithArgs;
         }
 
         public void Dispose()
         {
-            EventsLuaWithArgs.OnEventsLuaStringWithArgs -= EventsLuaWithArgs_OnEventsLuaStringWithArgs;
         }
 
-        private void EventsLuaWithArgs_OnEventsLuaStringWithArgs(string id, List<string> args)
-        {
-            switch (id)
-            {
-                case "PLAYER_ENTERING_WORLD":
-                    MovementManager.StopMove();
-                    Thread.Sleep(2000);
-                    LoadProfile(true);
-                    break;
-                case "PLAYER_LEAVING_WORLD":
-                    MovementManager.StopMove();
-                    break;
-            }
-        }
-
-        private void LoadProfile(bool safeWait)
+        public void LoadProfile(bool safeWait)
         {
             int waitTime = safeWait ? 3000 : 0;
 
@@ -83,7 +67,7 @@ namespace WholesomeDungeonCrawler.Managers
                 DungeonModel dungeon = CheckandChooseactualDungeon();
                 if (dungeon != null)
                 {
-                    DirectoryInfo profilePath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");
+                    DirectoryInfo profilePath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/{ProfileManager.ProfilesDirectoryName}/{dungeon.Name}");
                     int profilecount = profilePath.GetFiles().Count();
                     if (profilecount > 0)
                     {
@@ -94,9 +78,19 @@ namespace WholesomeDungeonCrawler.Managers
                         // Deserialize and filter json files
                         foreach (FileInfo file in files)
                         {
-                            ProfileModel deserializedProfile = JsonConvert.DeserializeObject<ProfileModel>(
-                                File.ReadAllText(file.FullName),
-                                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+                            ProfileModel deserializedProfile = null;
+                            try
+                            {
+                                deserializedProfile = JsonConvert.DeserializeObject<ProfileModel>(
+                                    File.ReadAllText(file.FullName),
+                                    new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+                            }
+                            catch (JsonSerializationException ex)
+                            {
+                                Logger.LogError($"There was an error when trying to deserialize the profile {file.FullName}.");
+                                Logger.LogError($"{ex}");
+                                return;
+                            }
 
                             // wrong map id
                             if (deserializedProfile.MapId != dungeon.MapId)

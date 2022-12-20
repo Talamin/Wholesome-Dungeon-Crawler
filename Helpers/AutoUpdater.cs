@@ -6,6 +6,7 @@ using System.IO.Compression;
 using System.Text;
 using System.Threading;
 using WholesomeDungeonCrawler.CrawlerSettings;
+using WholesomeDungeonCrawler.Managers;
 
 namespace WholesomeDungeonCrawler.Helpers
 {
@@ -61,7 +62,7 @@ namespace WholesomeDungeonCrawler.Helpers
                 WholesomeDungeonCrawlerSettings.CurrentSetting.LastUpdateDate = elapsedTicks;
                 WholesomeDungeonCrawlerSettings.CurrentSetting.Save();
 
-                bool updatedProfiles = !Directory.Exists(@$"{_profilesFolder}\WholesomeDungeonCrawler") && UpdateProfiles();
+                bool updatedProfiles = !Directory.Exists(@$"{_profilesFolder}\{ProfileManager.ProfilesDirectoryName}") && UpdateProfiles();
 
                 string onlineDllLink = "https://github.com/Talamin/Wholesome-Dungeon-Crawler/raw/master/Compiled/WholesomeDungeonCrawler.dll";
                 string onlineVersionLink = "https://raw.githubusercontent.com/Talamin/Wholesome-Dungeon-Crawler/master/Compiled/Version.txt";
@@ -114,15 +115,15 @@ namespace WholesomeDungeonCrawler.Helpers
             try
             {
                 string onlineZip = "https://github.com/Talamin/Wholesome-Dungeon-Crawler/raw/master/Compiled/default_wdc_profiles.zip";
-                string currentZip = $@"{_profilesFolder}\WholesomeDungeonCrawler\{_zipFileName}.zip";
+                string currentZip = $@"{_profilesFolder}\{ProfileManager.ProfilesDirectoryName}\{_zipFileName}.zip";
                 byte[] onlineZipContent = new System.Net.WebClient { Encoding = Encoding.UTF8 }.DownloadData(onlineZip);
 
                 if (onlineZipContent != null && onlineZipContent.Length > 0)
                 {
                     Logger.Log("Downloading default profiles");
-                    if (!Directory.Exists(@$"{_profilesFolder}\WholesomeDungeonCrawler"))
+                    if (!Directory.Exists(@$"{_profilesFolder}\{ProfileManager.ProfilesDirectoryName}"))
                     {
-                        Directory.CreateDirectory(@$"{_profilesFolder}\WholesomeDungeonCrawler");
+                        Directory.CreateDirectory(@$"{_profilesFolder}\{ProfileManager.ProfilesDirectoryName}");
                     }
 
                     File.WriteAllBytes(currentZip, onlineZipContent);
@@ -147,7 +148,7 @@ namespace WholesomeDungeonCrawler.Helpers
                         }
                     }
 
-                    Logger.Log(@$"Profiles extracted to {_profilesFolder}\WholesomeDungeonCrawler");
+                    Logger.Log(@$"Profiles extracted to {_profilesFolder}\{ProfileManager.ProfilesDirectoryName}");
                     return true;
                 }
                 return false;

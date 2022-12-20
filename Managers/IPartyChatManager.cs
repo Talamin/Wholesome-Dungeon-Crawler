@@ -10,5 +10,6 @@ namespace WholesomeDungeonCrawler.Managers
 
         void Broadcast(ChatMessageType messageType, string message);
         void SetRegroupStep(RegroupStep regroupStep);
+        void PartyReadyReceived();
     }
 }

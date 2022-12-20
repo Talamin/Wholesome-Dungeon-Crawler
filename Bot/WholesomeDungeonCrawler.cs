@@ -1,5 +1,6 @@
 ﻿using robotManager.FiniteStateMachine;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
@@ -50,6 +51,8 @@ namespace WholesomeDungeonCrawler.Bot
                 _checkPathAheadState = new CheckPathAhead(_entityCache, _partyChatManager, _cache, _profileManager);
                 _checkPathAheadState.Initialize();
 
+                EventsLuaWithArgs.OnEventsLuaStringWithArgs += OnEventsLuaStringWithArgs;
+
                 // List of states, top of the list is highest priority
                 State[] states = new State[]
                 {
@@ -85,7 +88,7 @@ namespace WholesomeDungeonCrawler.Bot
 
                 // Reverse the array so highest prio states have the highest index
                 states = states.Reverse().ToArray();
-                
+
                 // Add the states with correct priority
                 for (int i = 0; i < states.Length; i++)
                 {
@@ -108,10 +111,61 @@ namespace WholesomeDungeonCrawler.Bot
                 return false;
             }
         }
+
+        private void OnEventsLuaStringWithArgs(string id, List<string> args)
+        {
+            switch (id)
+            {
+                case "PLAYER_ENTERING_WORLD":
+                    MovementManager.StopMove();
+                    _entityCache.CacheGroupMembers();
+                    _profileManager.LoadProfile(true);
+                    break;
+                case "PLAYER_LEAVING_WORLD":
+                    MovementManager.StopMove();
+                    break;
+                case "CHAT_MSG_SYSTEM":
+                    if (args[0] == "Everyone is Ready")
+                        _partyChatManager.PartyReadyReceived();
+                    break;
+                case "WORLD_MAP_UPDATE":
+                    _cache.CacheIsInInstance();
+                    _entityCache.CacheGroupMembers();
+                    break;
+                case "LFG_PROPOSAL_SHOW":
+                case "LFG_PROPOSAL_FAILED":
+                case "LFG_PROPOSAL_SUCCEEDED":
+                case "LFG_PROPOSAL_UPDATE":
+                    _cache.CacheLFGProposalShown();
+                    break;
+                case "LFG_ROLE_CHECK_SHOW":
+                case "LFG_ROLE_CHECK_HIDE":
+                case "LFG_ROLE_CHECK_ROLE_CHOSEN":
+                case "LFG_ROLE_CHECK_UPDATE":
+                    _cache.CacheRoleCheckShow();
+                    break;
+                case "START_LOOT_ROLL":
+                case "CANCEL_LOOT_ROLL":
+                case "CONFIRM_LOOT_ROLL":
+                    _cache.CacheLootRollShow();
+                    break;
+                case "PARTY_MEMBERS_CHANGED":
+                case "PARTY_MEMBER_DISABLE":
+                case "PARTY_MEMBER_ENABLE":
+                case "RAID_ROSTER_UPDATE":
+                case "GROUP_ROSTER_CHANGED":
+                case "PARTY_CONVERTED_TO_RAID":
+                case "RAID_TARGET_UPDATE":
+                    _entityCache.CacheGroupMembers();
+                    break;
+            }
+        }
+
         internal void Dispose()
         {
             try
             {
+                EventsLuaWithArgs.OnEventsLuaStringWithArgs -= OnEventsLuaStringWithArgs;
                 CustomClass.DisposeCustomClass();
                 _checkPathAheadState.Dispose();
                 _partyChatManager?.Dispose();

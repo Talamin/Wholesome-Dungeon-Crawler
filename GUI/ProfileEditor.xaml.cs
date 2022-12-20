@@ -17,6 +17,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Forms;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.Profiles.Steps;
 using wManager.Wow.Class;
@@ -95,7 +96,7 @@ namespace WholesomeDungeonCrawler.GUI
                 FileName = "Select a profile",
                 Filter = "JSON files (*.json)|*.json",
                 Title = "Open profile",
-                InitialDirectory = Others.GetCurrentDirectory + @"/Profiles/WholesomeDungeonCrawler"
+                InitialDirectory = Others.GetCurrentDirectory + @$"/Profiles/{ProfileManager.ProfilesDirectoryName}"
             };
             #endregion
 
@@ -160,7 +161,7 @@ namespace WholesomeDungeonCrawler.GUI
                     await this.ShowMessageAsync("Save Failed.", $"Dungeon {currentProfile.DungeonName} has not been found in the list", MessageDialogStyle.Affirmative, basicDialogSettings);
                 }
 
-                var rootpath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/WholesomeDungeonCrawler/{dungeon.Name}");
+                var rootpath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/{ProfileManager.ProfilesDirectoryName}/{dungeon.Name}");
                 currentProfile.StepModels = currentProfile.StepModels.OrderBy(x => x.Order).ToList();
 
                 var output = JsonConvert.SerializeObject(currentProfile, Formatting.Indented, jsonSettings);

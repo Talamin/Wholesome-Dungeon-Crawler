@@ -24,5 +24,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
         void AddNpcIdToDefend(int npcId);
         void ClearNpcListIdToDefend();
+        void CacheGroupMembers();
     }
 }

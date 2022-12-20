@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using WholesomeToolbox;
-using wManager.Events;
+﻿using WholesomeToolbox;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -31,9 +29,14 @@ namespace WholesomeDungeonCrawler.ProductCache
             CacheLFGProposalShown();
             CacheLootRollShow();
 
-            ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             robotManager.Events.FiniteStateMachineEvents.OnRunState += FiniteStateMachineEvents_OnRunState;
-            EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaWithArgs;
+            //EventsLuaWithArgs.OnEventsLuaStringWithArgs += OnEventsLuaStringWithArgs;
+        }
+
+        public void Dispose()
+        {
+            robotManager.Events.FiniteStateMachineEvents.OnRunState -= FiniteStateMachineEvents_OnRunState;
+            //EventsLuaWithArgs.OnEventsLuaStringWithArgs -= OnEventsLuaStringWithArgs;
         }
 
         private void FiniteStateMachineEvents_OnRunState(robotManager.FiniteStateMachine.Engine engine, robotManager.FiniteStateMachine.State state, System.ComponentModel.CancelEventArgs cancelable)
@@ -41,72 +44,35 @@ namespace WholesomeDungeonCrawler.ProductCache
             if (!state.DisplayName.Contains("Security"))
                 CurrentState = state.DisplayName;
         }
-
-        private void EventsLuaWithArgs_OnEventsLuaWithArgs(string id, List<string> args)
+        /*
+        private void OnEventsLuaStringWithArgs(string id, List<string> args)
         {
             switch (id)
             {
                 case "WORLD_MAP_UPDATE":
                     CacheIsInInstance();
                     break;
-
-                // LFG_PROPOSAL
                 case "LFG_PROPOSAL_SHOW":
-                    CacheLFGProposalShown();
-                    break;
                 case "LFG_PROPOSAL_FAILED":
-                    CacheLFGProposalShown();
-                    break;
                 case "LFG_PROPOSAL_SUCCEEDED":
-                    CacheLFGProposalShown();
-                    break;
                 case "LFG_PROPOSAL_UPDATE":
                     CacheLFGProposalShown();
                     break;
-
-                // LFG_ROLE_CHECK
                 case "LFG_ROLE_CHECK_SHOW":
-                    CacheRoleCheckShow();
-                    break;
                 case "LFG_ROLE_CHECK_HIDE":
-                    CacheRoleCheckShow();
-                    break;
                 case "LFG_ROLE_CHECK_ROLE_CHOSEN":
-                    CacheRoleCheckShow();
-                    break;
                 case "LFG_ROLE_CHECK_UPDATE":
                     CacheRoleCheckShow();
                     break;
-
-                // LOOT_ROLL
                 case "START_LOOT_ROLL":
-                    CacheLootRollShow();
-                    break;
                 case "CANCEL_LOOT_ROLL":
-                    CacheLootRollShow();
-                    break;
                 case "CONFIRM_LOOT_ROLL":
                     CacheLootRollShow();
                     break;
             }
         }
-
-        public void Dispose()
-        {
-            ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
-            robotManager.Events.FiniteStateMachineEvents.OnRunState -= FiniteStateMachineEvents_OnRunState;
-            EventsLuaWithArgs.OnEventsLuaStringWithArgs -= EventsLuaWithArgs_OnEventsLuaWithArgs;
-        }
-
-        private void OnObjectManagerPulse()
-        {
-            lock (cacheLock)
-            {
-
-            }
-        }
-
-        private void CacheIsInInstance()
+        */
+        public void CacheIsInInstance()
         {
             lock (cacheLock)
             {
@@ -120,17 +86,17 @@ namespace WholesomeDungeonCrawler.ProductCache
             MiniMapLFGFrameIcon = Lua.LuaDoString<bool>("return MiniMapLFGFrameIcon:IsVisible()");
         }
         */
-        private void CacheLFGProposalShown()
+        public void CacheLFGProposalShown()
         {
             LFGProposalShown = Lua.LuaDoString<bool>("return LFDDungeonReadyDialogEnterDungeonButton:IsVisible()");
         }
 
-        private void CacheRoleCheckShow()
+        public void CacheRoleCheckShow()
         {
             LFGRoleCheckShown = Lua.LuaDoString<bool>("return LFDRoleCheckPopupAcceptButton:IsVisible()");
         }
 
-        private void CacheLootRollShow()
+        public void CacheLootRollShow()
         {
             LootRollShow = Lua.LuaDoString<bool>("for i = 1, 4 do local b = ['GroupLootFrame'..i] if b and b:IsVisible() then return true end end return false");
         }

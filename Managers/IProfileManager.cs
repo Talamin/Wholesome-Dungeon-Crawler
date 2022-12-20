@@ -6,5 +6,6 @@ namespace WholesomeDungeonCrawler.Managers
     interface IProfileManager : ICycleable
     {
         public IProfile CurrentDungeonProfile { get; }
+        void LoadProfile(bool safeWait);
     }
 }

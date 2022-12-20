@@ -20,7 +20,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
         public void Dispose()
         {
-            EventsLuaWithArgs.OnEventsLuaStringWithArgs -= OnEventsLuaStringWithArgs;
+            //EventsLuaWithArgs.OnEventsLuaStringWithArgs -= OnEventsLuaStringWithArgs;
             ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
         }
         public void Initialize()
@@ -28,11 +28,11 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             CachePartyMemberChanged();
             CacheListPartyMemberGuid();
             OnObjectManagerPulse();
-            EventsLuaWithArgs.OnEventsLuaStringWithArgs += OnEventsLuaStringWithArgs;
+            //EventsLuaWithArgs.OnEventsLuaStringWithArgs += OnEventsLuaStringWithArgs;
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             IAmTank = ObjectManager.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName;
         }
-
+        /*
         private void OnEventsLuaStringWithArgs(string id, List<string> args)
         {
             switch (id)
@@ -68,7 +68,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                     break;
             }
         }
-
+        */
         public IWoWUnit Target { get; private set; } = Cache(new WoWUnit(0));
         public IWoWUnit Pet { get; private set; } = Cache(new WoWUnit(0));
         public IWoWUnit[] GroupPets { get; private set; } = new IWoWUnit[0];
@@ -270,7 +270,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             }
         }
 
-        private void CacheGroupMembers()
+        public void CacheGroupMembers()
         {
             CacheListPartyMemberGuid();
             CachePartyMemberChanged();

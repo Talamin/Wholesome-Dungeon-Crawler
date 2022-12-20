@@ -1,7 +1,5 @@
 ﻿using robotManager.Helpful;
-using System.Diagnostics;
 using System.Timers;
-using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
@@ -30,18 +28,6 @@ namespace WholesomeDungeonCrawler.Managers
             LuaFrameUpdateTimer.Elapsed += LuaFrameUpdateTimer_Elapsed;
             LuaFrameUpdateTimer.Interval = 500;
             LuaFrameUpdateTimer.Start();
-            // Commented out until a better solution is found
-            //EventsLuaWithArgs.OnEventsLuaStringWithArgs += EventsLuaWithArgs_OnEventsLuaStringWithArgs;
-        }
-
-        private void EventsLuaWithArgs_OnEventsLuaStringWithArgs(string eventid, System.Collections.Generic.List<string> args)
-        {
-            if (eventid == "CHAT_MSG_ADDON" && args[0] == "WDC" && args[1] == "Skip" && args[3] == _entityCache.Me.Name)
-            {
-                Debugger.Break();
-                _profileManager.CurrentDungeonProfile.CurrentStep.MarkAsCompleted();
-                Logger.Log("User skipped current step.");
-            }
         }
 
         private void LuaFrameUpdateTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -52,7 +38,6 @@ namespace WholesomeDungeonCrawler.Managers
         public void Dispose()
         {
             LuaFrameUpdateTimer.Dispose();
-            EventsLuaWithArgs.OnEventsLuaStringWithArgs -= EventsLuaWithArgs_OnEventsLuaStringWithArgs;
             HideFrame();
         }
 
@@ -201,7 +186,7 @@ namespace WholesomeDungeonCrawler.Managers
             }
             var follow = _entityCache.TankUnit != null ? _entityCache.TankUnit.Name : "N/A";
             //var healer = _entityCache. != null ? Bot.lfgHealer.Name : "N/A";
-            
+
             Lua.LuaDoString($@"
                 if wdcrawler then
                     wdcrawler.statustext:SetText(""{Logging.Status}"")
