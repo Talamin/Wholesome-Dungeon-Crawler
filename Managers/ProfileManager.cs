@@ -46,6 +46,8 @@ namespace WholesomeDungeonCrawler.Managers
         {
             int waitTime = safeWait ? 3000 : 0;
 
+            Logger.Log($"Launching profile check in {waitTime/1000} seconds");
+
             Task.Delay(waitTime).ContinueWith(t =>
             {
                 // We died while in a dungeon
