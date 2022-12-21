@@ -88,23 +88,19 @@ namespace WholesomeDungeonCrawler.Helpers
             23775, // Head of the Horseman (Haloween Event)
         };
 
-        public static readonly HashSet<int> IgnoreWhenUnattackableListInt = new HashSet<int>
+        public static readonly HashSet<int> IgnoreWhenCheckingPathListInt = new HashSet<int>
         {
+            26793, // Crystalline Frayer (Nexus)
+            191016, // Seed Pod (Nexus)
+            32593, // Skittering Swarmer Anub'arak            
             2748, // Archaedas
             10120, // Vault Warder
             4857, // Stone Keeper
             7309, // Earthen Custodian
             7077, // Earthen Hallshaper
             7076, // Earthen Guardian
-            26793, // Crystalline Frayer (Nexus)
-            191016, // Seed Pod (Nexus)
         };
-        public static readonly HashSet<int> IgnoreWhenCheckingPathListInt = new HashSet<int>
-        {
-            26793, // Crystalline Frayer (Nexus)
-            191016, // Seed Pod (Nexus)
-            32593, // Skittering Swarmer Anub'arak
-        };
+
         public static readonly HashSet<int> IgnoreTargetListInt = new HashSet<int>
         {
              26793, // Crystalline Frayer (Nexus) [TODO Remove]
