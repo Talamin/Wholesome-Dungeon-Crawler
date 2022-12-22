@@ -11,6 +11,7 @@ using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles;
 using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
 using static wManager.Wow.Class.Npc;
 
 namespace WholesomeDungeonCrawler.Managers
@@ -146,7 +147,7 @@ namespace WholesomeDungeonCrawler.Managers
             {
                 if (Lists.AllDungeons.Count(d => d.MapId == Usefuls.ContinentId) > 1)
                 {
-                    return Lists.AllDungeons.Where(d => d.MapId == Usefuls.ContinentId).OrderBy(o => o.Start.DistanceTo(_entityCache.Me.PositionWithoutType)).FirstOrDefault();
+                    return Lists.AllDungeons.Where(d => d.MapId == Usefuls.ContinentId).OrderBy(o => o.Start.DistanceTo(ObjectManager.Me.Position)).FirstOrDefault();
                 }
                 if (Lists.AllDungeons.Count(d => d.MapId == Usefuls.ContinentId) == 1)
                 {
