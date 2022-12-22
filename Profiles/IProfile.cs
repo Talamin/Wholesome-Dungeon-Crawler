@@ -10,11 +10,13 @@ namespace WholesomeDungeonCrawler.Profiles
     {
         public IStep CurrentStep { get; }
         bool ProfileIsCompleted { get; }
+        string FileName { get; }
         int MapId { get; }
-        List<Vector3> DeathRunPathList { get; }
+        List<Vector3> DeathRunPath { get; }
         Dictionary<IStep, List<Vector3>> DungeonPath { get; }
         List<Vector3> AllMoveAlongNodes { get; }
         FactionType FactionType { get; }
+        List<IStep> GetAllSteps { get; }
 
         void AutoSetCurrentStep();
         void SetFirstLaunchStep();

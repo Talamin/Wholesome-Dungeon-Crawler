@@ -64,11 +64,11 @@ namespace WholesomeDungeonCrawler.States
                     return;
                 }
 
-                if (_profileManager.CurrentDungeonProfile?.DeathRunPathList != null
-                    && _profileManager.CurrentDungeonProfile.DeathRunPathList.Count > 0)
+                if (_profileManager.CurrentDungeonProfile?.DeathRunPath != null
+                    && _profileManager.CurrentDungeonProfile.DeathRunPath.Count > 0)
                 {
                     Logger.Log("Running profile's death run");
-                    List<Vector3> adjustedDeathPath = WTPathFinder.PathFromClosestPoint(_profileManager.CurrentDungeonProfile.DeathRunPathList);
+                    List<Vector3> adjustedDeathPath = WTPathFinder.PathFromClosestPoint(_profileManager.CurrentDungeonProfile.DeathRunPath);
                     MovementManager.Go(adjustedDeathPath);
                 }
                 else

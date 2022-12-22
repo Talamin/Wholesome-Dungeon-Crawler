@@ -41,6 +41,28 @@ namespace WholesomeDungeonCrawler.Helpers
 
             return new Vector3(xvec / counter, yvec / counter, zvec / counter);
         }
+
+        public static bool MemberHasRaidTarget(int targetIndex)
+        {
+            return Lua.LuaDoString<bool>($@"
+                local nbPartyMembers = GetRealNumPartyMembers();
+                local myName, _ = UnitName('player');
+                local members = {{myName}};
+
+                for index = 1, nbPartyMembers do
+                    local playerName, _ = UnitName('party' .. index);
+                    table.insert(members, playerName);
+                end
+
+                for k, v in pairs(members) do
+                    if GetRaidTargetIndex(v) == {targetIndex} then
+                        return true;
+                    end
+                end
+
+                return false;
+            ");
+        }
         /*
         private static Vector3 _toLast = new Vector3();
         private static Vector3 _fromLast = new Vector3();

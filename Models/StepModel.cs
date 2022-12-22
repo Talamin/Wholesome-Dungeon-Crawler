@@ -89,6 +89,11 @@ namespace WholesomeDungeonCrawler.Models
         public Vector3 RegroupSpot { get; set; }
     }
 
+    public class LeaveDungeonModel : StepModel
+    {
+
+    }
+
     public class JumpToStepModel : StepModel
     {
         public string StepToJumpTo { get; set; }

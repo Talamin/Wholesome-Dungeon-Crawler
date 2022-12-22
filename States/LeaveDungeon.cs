@@ -1,4 +1,4 @@
-﻿using robotManager.FiniteStateMachine;
+﻿/*using robotManager.FiniteStateMachine;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
@@ -56,6 +56,7 @@ namespace WholesomeDungeonCrawler.States
         {
             if (_leaveTimer.IsReady)
             {
+                Logger.Log($"Profile is finished, leaving.");
                 _profileManager.UnloadCurrentProfile();
                 Toolbox.LeaveDungeonAndGroup();
                 _leaveTimer = null;
@@ -63,3 +64,4 @@ namespace WholesomeDungeonCrawler.States
         }
     }
 }
+*/

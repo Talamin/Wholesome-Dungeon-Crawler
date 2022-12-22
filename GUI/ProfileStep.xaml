@@ -345,6 +345,27 @@
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
+                <!--LeaveDungeon-->
+                <StackPanel>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem, Converter={StaticResource TypeConverter}}" Value="LeaveDungeonModel">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <GroupBox Header="Regroup Step" BorderBrush="{x:Null}">
+                        <GroupBox.Background>
+                            <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                                <GradientStop Color="#FF34e89e" Offset="0"/>
+                                <GradientStop Color="#FF0f3443" Offset="1"/>
+                            </LinearGradientBrush>
+                        </GroupBox.Background>
+                    </GroupBox>
+                </StackPanel>
                 <!-- JumpToStep -->
                 <StackPanel>
                     <StackPanel.Style>

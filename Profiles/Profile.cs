@@ -1,6 +1,7 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms.VisualStyles;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.Models;
@@ -15,20 +16,29 @@ namespace WholesomeDungeonCrawler.Profiles
     {
         private readonly IEntityCache _entityCache;
         private readonly IPartyChatManager _partyChatManager;
+        private readonly IProfileManager _profileManager;
         private List<IStep> _profileSteps = new List<IStep>();
         private IStep _currentStep;
         public List<PathFinder.OffMeshConnection> OffMeshConnectionsList = new List<PathFinder.OffMeshConnection>();
 
         public int MapId { get; }
-        public List<Vector3> DeathRunPathList { get; private set; } = new List<Vector3>();
+        public List<Vector3> DeathRunPath { get; private set; } = new List<Vector3>();
         public Dictionary<IStep, List<Vector3>> DungeonPath { get; private set; } = new Dictionary<IStep, List<Vector3>>();
         public List<Vector3> AllMoveAlongNodes { get; private set; } = new List<Vector3>();
         public FactionType FactionType { get; private set; }
+        public string FileName { get; private set; }
 
-        public Profile(ProfileModel profileModel, IEntityCache entityCache, IPathManager pathManager, IPartyChatManager partyChatManager)
+    public Profile(ProfileModel profileModel, 
+            IEntityCache entityCache, 
+            IPathManager pathManager, 
+            IPartyChatManager partyChatManager,
+            IProfileManager profileManager,
+            string fileName)
         {
             _entityCache = entityCache;
             _partyChatManager = partyChatManager;
+            _profileManager = profileManager;
+            FileName = fileName;
 
             foreach (StepModel model in profileModel.StepModels)
             {
@@ -79,14 +89,24 @@ namespace WholesomeDungeonCrawler.Profiles
                         JumpToStepModel jumpToStepModel = model as JumpToStepModel;
                         _profileSteps.Add(new JumpToStepStep((JumpToStepModel)model, this));
                         break;
+                    case LeaveDungeonModel _:
+                        LeaveDungeonModel leaveDungeonModel = model as LeaveDungeonModel;
+                        _profileSteps.Add(new LeaveDungeonStep((LeaveDungeonModel)model, entityCache, partyChatManager, profileManager));
+                        break;
                 }
             }
-
+            
+            // Add default leave dungeon step at the end if it doesn't exist
+            if (!(_profileSteps.Last() is LeaveDungeonStep))
+            {
+                _profileSteps.Add(new LeaveDungeonStep(new LeaveDungeonModel() { Name = "Leave dungeon (default)" }, entityCache, partyChatManager, profileManager));
+            }
+            
             AllMoveAlongNodes.RemoveAll(node => node == null);
 
             foreach (Vector3 point in profileModel.DeathRunPath)
             {
-                DeathRunPathList.Add(point);
+                DeathRunPath.Add(point);
             }
 
             PathFinder.OffMeshConnections.AddRange(profileModel.OffMeshConnections);
@@ -250,5 +270,6 @@ namespace WholesomeDungeonCrawler.Profiles
         }
 
         public bool ProfileIsCompleted => _profileSteps.All(p => p.IsCompleted);
+        public List<IStep> GetAllSteps => _profileSteps;
     }
 }

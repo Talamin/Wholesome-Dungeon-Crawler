@@ -41,7 +41,8 @@ namespace WholesomeDungeonCrawler.States
                     || _cache.LootRollShow
                     || _profileManager.CurrentDungeonProfile == null
                     || _profileManager.CurrentDungeonProfile.CurrentStep == null
-                    || _profileManager.CurrentDungeonProfile.CurrentStep is RegroupStep)
+                    || _profileManager.CurrentDungeonProfile.CurrentStep is RegroupStep
+                    || _profileManager.CurrentDungeonProfile.CurrentStep is LeaveDungeonStep)
                 {
                     return false;
                 }
@@ -71,6 +72,7 @@ namespace WholesomeDungeonCrawler.States
             Thread.Sleep(5000);
             Lua.LuaDoString("LFGTeleport(false);");
             Thread.Sleep(5000);
+            _profileManager.LoadProfile(true);
         }
     }
 }

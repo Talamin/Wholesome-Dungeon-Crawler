@@ -33,6 +33,19 @@ namespace WholesomeDungeonCrawler.States
         private List<(Vector3 a, Vector3 b)> _linesToCheck = new List<(Vector3 a, Vector3 b)>();
         private List<(Vector3 a, Vector3 b)> _linesAllPaths = new List<(Vector3 a, Vector3 b)>();
 
+        private readonly HashSet<int> _mobIdsToIgnoreDuringPathCheck = new HashSet<int>
+        {
+            26793, // Crystalline Frayer (Nexus)
+            191016, // Seed Pod (Nexus)
+            32593, // Skittering Swarmer Anub'arak            
+            2748, // Archaedas
+            10120, // Vault Warder
+            4857, // Stone Keeper
+            7309, // Earthen Custodian
+            7077, // Earthen Hallshaper
+            7076, // Earthen Guardian
+        };
+
         public CheckPathAhead(IEntityCache EntityCache, IPartyChatManager partyChatManager, ICache cache, IProfileManager profileManager)
         {
             _entityCache = EntityCache;
@@ -126,7 +139,7 @@ namespace WholesomeDungeonCrawler.States
                         Vector3 tankPos = _entityCache.TankUnit.PositionWithoutType;
 
                         if (_entityCache.Me.PositionWithoutType.DistanceTo(tankPos) < 10 
-                            && moveAlongStep.GetMoveAlongPath.Last().DistanceTo(myPos) > 10)
+                            && moveAlongStep.GetMoveAlongPath.Last().DistanceTo(myPos) > 15)
                         {
                             // We're next to the tank. stop
                             return true;
@@ -237,7 +250,7 @@ namespace WholesomeDungeonCrawler.States
                     foreach (IWoWUnit unit in hostileUnits)
                     {
                         if (((int)unit.Reaction) > 2
-                            || Lists.IgnoreWhenCheckingPathListInt.Contains(unit.UnitID)
+                            || _mobIdsToIgnoreDuringPathCheck.Contains(unit.UnitID)
                             || unreachableMobsGuid.Contains(unit.Guid)
                             || unit.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) > _detectionRadius // in radius?
                             || pathToUnitLength + offset.DistanceTo(unit.PositionWithoutType) > _detecttionPathDistance // not too far?

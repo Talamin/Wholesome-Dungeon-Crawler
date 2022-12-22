@@ -6,10 +6,11 @@ namespace WholesomeDungeonCrawler.Managers
 {
     internal interface IPartyChatManager : ICycleable
     {
-        PlayerStatus TankStatus { get; }
+        //PlayerStatus TankStatus { get; }
 
-        void Broadcast(ChatMessageType messageType, string message);
+        //void Broadcast(ChatMessageType messageType, string message);
         void SetRegroupStep(RegroupStep regroupStep);
+        void SetLeaveDungeonStep(LeaveDungeonStep regroupStep);
         void PartyReadyReceived();
     }
 }

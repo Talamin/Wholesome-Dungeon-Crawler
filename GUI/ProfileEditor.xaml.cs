@@ -489,6 +489,25 @@ namespace WholesomeDungeonCrawler.GUI
             }
         }
 
+        private async void miLeaveDungeonStep_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                if (x != null)
+                {
+                    var Step = new LeaveDungeonModel() { Name = x, Order = StepCollection.Count };
+                    StepCollection.Add(Step);
+                    currentProfile.StepModels = StepCollection.ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+            }
+        }
+
         private async void regroupStep_Click(object sender, RoutedEventArgs e)
         {
             try

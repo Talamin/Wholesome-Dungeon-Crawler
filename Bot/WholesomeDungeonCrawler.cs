@@ -59,6 +59,7 @@ namespace WholesomeDungeonCrawler.Bot
                     new Relogger(),
                     new Pause(),
                     new DeadDive(_entityCache),
+                    new LoadUnloadProfile(_cache, _entityCache, _profileManager),
                     new Dead(_entityCache, _profileManager),
                     new ForceRegroup(_cache, _entityCache, _profileManager),
                     new MyMacro(),
@@ -78,7 +79,7 @@ namespace WholesomeDungeonCrawler.Bot
                     new GroupQueueAccept(_cache, _entityCache),
                     new GroupQueue(_cache, _entityCache),
                     _checkPathAheadState,
-                    new LeaveDungeon(_cache, _entityCache, _profileManager),
+                    //new LeaveDungeon(_cache, _entityCache, _profileManager),
                     new ForceTownRun(_cache, _entityCache, _profileManager),
                     new RejoinDungeonAfterForcedTownRun(_cache, _entityCache, _profileManager),
                     new DungeonLogic(_entityCache, _profileManager, _cache),
@@ -119,7 +120,7 @@ namespace WholesomeDungeonCrawler.Bot
                 case "PLAYER_ENTERING_WORLD":
                     MovementManager.StopMove();
                     _entityCache.CacheGroupMembers();
-                    _profileManager.LoadProfile(true);
+                    //_profileManager.LoadProfile(true);
                     break;
                 case "PLAYER_LEAVING_WORLD":
                     MovementManager.StopMove();
@@ -167,7 +168,7 @@ namespace WholesomeDungeonCrawler.Bot
             {
                 EventsLuaWithArgs.OnEventsLuaStringWithArgs -= OnEventsLuaStringWithArgs;
                 CustomClass.DisposeCustomClass();
-                _checkPathAheadState.Dispose();
+                _checkPathAheadState?.Dispose();
                 _partyChatManager?.Dispose();
                 _fsm?.StopEngine();
                 _cache?.Dispose();

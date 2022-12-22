@@ -1,41 +1,41 @@
-﻿using robotManager.Helpful;
-using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
-using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
 using Timer = robotManager.Helpful.Timer;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {
-    internal class RegroupStep : Step
+    internal class LeaveDungeonStep : Step
     {
-        private RegroupModel _regroupModel;
+        private LeaveDungeonModel _leaveDungeonModel;
         private readonly IEntityCache _entityCache;
         private readonly IPartyChatManager _partyChatManager;
+        private readonly IProfileManager _profileManager;
         public override string Name { get; }
         public override int Order { get; }
-        public Vector3 RegroupSpot { get; private set; }
         private Timer _readyCheckTimer = new Timer();
         private int _foodMin;
         private int _drinkMin;
         private bool _drinkAllowed;
-        private readonly int _readyTargetIndex = 1;
+        private readonly int _readyTargetIndex = 2;
         private bool _imPartyLeader;
         private bool _receivedChatSystemReady;
 
-        public RegroupStep(RegroupModel regroupModel, IEntityCache entityCache, IPartyChatManager partyChatManager)
+        public LeaveDungeonStep(LeaveDungeonModel leaveDungeonModel, 
+            IEntityCache entityCache,
+            IPartyChatManager partyChatManager,
+            IProfileManager profileManager)
         {
+            _profileManager = profileManager;
             _partyChatManager = partyChatManager;
-            _regroupModel = regroupModel;
+            _leaveDungeonModel = leaveDungeonModel;
             _entityCache = entityCache;
-            Name = regroupModel.Name;
-            Order = regroupModel.Order;
-            RegroupSpot = regroupModel.RegroupSpot;
+            Name = leaveDungeonModel.Name;
+            Order = leaveDungeonModel.Order;
             _foodMin = wManager.wManagerSetting.CurrentSetting.FoodPercent;
             _drinkMin = wManager.wManagerSetting.CurrentSetting.DrinkPercent;
             _drinkAllowed = wManager.wManagerSetting.CurrentSetting.RestingMana;
@@ -44,64 +44,14 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
-            _partyChatManager.SetRegroupStep(this);
-
             if (_entityCache.Me.Dead || _entityCache.Me.InCombatFlagOnly)
             {
                 IsCompleted = false;
                 return;
             }
 
-            // Ensure we interrupt any unwanted move
-            if (MovementManager.InMovement && MovementManager.CurrentPath.Last() != RegroupSpot)
-            {
-                Logger.LogOnce($"[{_regroupModel.Name}] Stopping move");
-                MovementManager.StopMove();
-            }
-            if (MovementManager.InMoveTo && MovementManager.CurrentMoveTo != RegroupSpot)
-            {
-                Logger.LogOnce($"[{_regroupModel.Name}] Stopping move to");
-                MovementManager.StopMoveTo();
-            }
-
-            // Move to regroup spot location
-            if (!MovementManager.InMovement
-                && _entityCache.Me.PositionWithoutType.DistanceTo(RegroupSpot) > 5f)
-            {
-                Logger.LogOnce($"[{_regroupModel.Name}] Moving to regroup spot location");
-                GoToTask.ToPosition(RegroupSpot, 0.5f);
-                IsCompleted = false;
-                return;
-            }
-
-            // Move to the exact regroup spot
-            if (!MovementManager.InMovement
-                && !MovementManager.InMoveTo
-                && _entityCache.Me.PositionWithoutType.DistanceTo(RegroupSpot) > 1f)
-            {
-                Logger.LogOnce($"[{_regroupModel.Name}] Moving precisely to regroup spot");
-                MovementManager.MoveTo(RegroupSpot);
-                IsCompleted = false;
-                return;
-            }
-
-            // Auto complete if running alone
-            if (_entityCache.ListPartyMemberNames.Count == 0)
-            {
-                Logger.LogOnce($"Not in a group, skipping");
-                IsCompleted = true;
-                return;
-            }
-
-            // Check if everyone is here
-            if (_entityCache.ListGroupMember.Length != _entityCache.ListPartyMemberNames.Count
-                || _entityCache.ListGroupMember.Any(member => member.PositionWithoutType.DistanceTo(RegroupSpot) > 8f)
-                || _entityCache.Me.PositionWithoutType.DistanceTo(RegroupSpot) > 8f)
-            {
-                Logger.LogOnce($"Waiting for the team to regroup.");
-                IsCompleted = false;
-                return;
-            }
+            MovementManager.StopMove();
+            _partyChatManager.SetLeaveDungeonStep(this);
 
             // Check for regen conditions
             if (_drinkAllowed && _entityCache.Me.Mana > 0 && _entityCache.Me.ManaPercent < _drinkMin)
@@ -118,9 +68,17 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 return;
             }
 
-            if (!EvaluateCompleteCondition(_regroupModel.CompleteCondition))
+            if (!EvaluateCompleteCondition(_leaveDungeonModel.CompleteCondition))
             {
                 IsCompleted = false;
+                return;
+            }
+
+            // Auto complete if running alone
+            if (_entityCache.ListPartyMemberNames.Count == 0)
+            {
+                Logger.LogOnce($"Not in a group, leaving");
+                CompleteStep();
                 return;
             }
 
@@ -195,13 +153,11 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         private void CompleteStep()
         {
-            if (!_entityCache.IAmTank)
-            {
-                Thread.Sleep(1000);
-            }
-            Logger.Log("Everyone is ready");
-            _partyChatManager.SetRegroupStep(null);
-            IsCompleted = true;
+            Logger.Log("Everyone is ready. Leaving dungeon.");
+            _partyChatManager.SetLeaveDungeonStep(null);
+            _profileManager.UnloadCurrentProfile();
+            Thread.Sleep(5000);
+            Toolbox.LeaveDungeonAndGroup();
         }
     }
 }

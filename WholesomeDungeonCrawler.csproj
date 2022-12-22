@@ -139,6 +139,7 @@
     <Compile Include="Profiles\Steps\IStep.cs" />
     <Compile Include="Profiles\Profile.cs" />
     <Compile Include="Profiles\Steps\JumpToStepStep.cs" />
+    <Compile Include="Profiles\Steps\LeaveDungeonStep.cs" />
     <Compile Include="Profiles\Steps\RegroupStep.cs" />
     <Compile Include="Profiles\Steps\Step.cs" />
     <Compile Include="GUI\ProductSettingsControl.xaml.cs">
@@ -166,6 +167,7 @@
     <Compile Include="States\CheckPathAhead.cs" />
     <Compile Include="States\Dead.cs" />
     <Compile Include="States\DeadDive.cs" />
+    <Compile Include="States\LoadUnloadProfile.cs" />
     <Compile Include="States\RejoinDungeonAfterForcedTownRun.cs" />
     <Compile Include="States\ForceTownRun.cs" />
     <Compile Include="States\ForceRegroup.cs" />

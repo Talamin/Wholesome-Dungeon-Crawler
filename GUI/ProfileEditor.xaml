@@ -90,6 +90,7 @@
                                             <MenuItem x:Name="miFollowUnitStep" Header="Follow and defend unit" Click="miFollowUnitStep_Click" />
                                             <MenuItem x:Name="regroupStep" Header="Regroup" Click="regroupStep_Click" />
                                             <MenuItem x:Name="jumpToStep" Header="Jump to step" Click="jumpToStep_Click" />
+                                            <MenuItem x:Name="miLeaveDungeonStep" Header="Leave dungeon" Click="miLeaveDungeonStep_Click" />
                                         </ContextMenu>
                                     </Button.ContextMenu>
                                 </Button>

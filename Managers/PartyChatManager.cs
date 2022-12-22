@@ -1,18 +1,18 @@
 ﻿using robotManager.Helpful;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles.Steps;
-using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.Managers
 {
     internal class PartyChatManager : IPartyChatManager
     {
         private readonly IEntityCache _entityCache;
-        private readonly char _separator = '$';
-        private readonly string _channelName = "CHANNEL_NAME"; // Build channel name from entity cache ?
+        //private readonly char _separator = '$';
+        //private readonly string _channelName = "CHANNEL_NAME"; // Build channel name from entity cache ?
         private RegroupStep _regroupStep;
+        private LeaveDungeonStep _leaveDungeonStep;
 
-        public PlayerStatus TankStatus { get; private set; }
+        //public PlayerStatus TankStatus { get; private set; }
 
         public PartyChatManager(IEntityCache entityCache)
         {
@@ -32,9 +32,15 @@ namespace WholesomeDungeonCrawler.Managers
             _regroupStep = regroupStep;
         }
 
+        public void SetLeaveDungeonStep(LeaveDungeonStep leaveDungeonStep)
+        {
+            _leaveDungeonStep = leaveDungeonStep;
+        }
+
         public void PartyReadyReceived()
         {
             _regroupStep?.PartyReadyReceived();
+            _leaveDungeonStep?.PartyReadyReceived();
         }
         /*
         private void ResetTankStatus()
@@ -118,14 +124,14 @@ namespace WholesomeDungeonCrawler.Managers
                 Logger.LogError($"Message type unknown : {messageParts[1]}");
             }
         }
-        */
+        
         public void Broadcast(ChatMessageType messageType, string message)
         {
             Lua.LuaDoString($@"
                     SendChatMessage(""{_channelName}{_separator}{messageType}{_separator}{message}"", ""PARTY"");
                 ");
         }
-
+        
         internal class PlayerStatus
         {
             public Vector3 Position { get; }
@@ -150,5 +156,6 @@ namespace WholesomeDungeonCrawler.Managers
             PLAYER_ENTERING_WORLD,
             ASSIST_WITH_ENEMIES_AHEAD
         }
+        */
     }
 }
