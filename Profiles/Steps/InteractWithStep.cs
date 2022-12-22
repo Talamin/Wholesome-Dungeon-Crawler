@@ -47,13 +47,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 return;
             }
 
-            if (ObjectManager.Me.IsCast
-                && _interactWithModel.CompleteCondition.ConditionType == CompleteConditionType.None)
-            {
-                Thread.Sleep(500);
-                return;
-            }
-
             // Closest object from me or from its expected position?
             Vector3 referencePosition = _expectedPosition != null ? _expectedPosition : _entityCache.Me.PositionWithoutType;
             WoWGameObject foundObject = ObjectManager.GetObjectWoWGameObject()
@@ -152,7 +145,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             }
 
             // Interact with object
-            if (!MovementManager.InMovement)
+            if (!MovementManager.InMovement && !ObjectManager.Me.IsCast)
             {
                 // Press yes in case it's a bind on pickup
                 if (Lua.LuaDoString<bool>($"return StaticPopup1Button1 and StaticPopup1Button1:IsVisible();"))
@@ -165,12 +158,14 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     Logger.LogOnce($"[{_interactWithModel.Name}] Interacting with {foundObject.Name} ({foundObject.Entry})");
                     Interact.InteractGameObject(foundObject.GetBaseAddress);
                     Thread.Sleep(500);
-                    if (_interactWithModel.CompleteCondition.ConditionType == CompleteConditionType.None)
-                    {
-                        Logger.Log($"[{_interactWithModel.Name}] Interaction with object {foundObject.Name} ({foundObject.Entry}) is complete (no conditions)");
-                        IsCompleted = true;
-                        return;
-                    }
+                }
+
+                if (_interactWithModel.CompleteCondition.ConditionType == CompleteConditionType.None
+                    && !ObjectManager.Me.IsCast)
+                {
+                    Logger.Log($"[{_interactWithModel.Name}] Interaction with object {foundObject.Name} ({foundObject.Entry}) is complete (no conditions)");
+                    IsCompleted = true;
+                    return;
                 }
             }
         }
