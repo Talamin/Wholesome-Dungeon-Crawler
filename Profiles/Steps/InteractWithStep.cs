@@ -39,7 +39,16 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public override void Run()
         {
             // Keep checking while we cast
-            if (ObjectManager.Me.IsCast && !EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
+            if (ObjectManager.Me.IsCast 
+                && _interactWithModel.CompleteCondition.ConditionType != CompleteConditionType.None
+                && !EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
+            {
+                Thread.Sleep(500);
+                return;
+            }
+
+            if (ObjectManager.Me.IsCast
+                && _interactWithModel.CompleteCondition.ConditionType == CompleteConditionType.None)
             {
                 Thread.Sleep(500);
                 return;
@@ -114,7 +123,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             {
                 MovementManager.StopMove();
                 MovementManager.StopMoveTo();
-                if (EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
+                if (_interactWithModel.CompleteCondition.ConditionType != CompleteConditionType.None
+                    && EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
                 {
                     Logger.Log($"[{_interactWithModel.Name}] Interaction with object {foundObject.Name} ({foundObject.Entry}) is complete");
                     IsCompleted = true;
@@ -155,6 +165,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     Logger.LogOnce($"[{_interactWithModel.Name}] Interacting with {foundObject.Name} ({foundObject.Entry})");
                     Interact.InteractGameObject(foundObject.GetBaseAddress);
                     Thread.Sleep(500);
+                    if (_interactWithModel.CompleteCondition.ConditionType == CompleteConditionType.None)
+                    {
+                        Logger.Log($"[{_interactWithModel.Name}] Interaction with object {foundObject.Name} ({foundObject.Entry}) is complete (no conditions)");
+                        IsCompleted = true;
+                        return;
+                    }
                 }
             }
         }
