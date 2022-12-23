@@ -120,7 +120,7 @@ namespace WholesomeDungeonCrawler.Bot
             {
                 case "PLAYER_ENTERING_WORLD":
                     MovementManager.StopMove();
-                    _entityCache.CacheGroupMembers();
+                    _entityCache.CacheGroupMembers(id);
                     _cache.CacheIsInInstance();
                     _cache.CacheInLoadingScreen(id);
                     break;
@@ -135,7 +135,7 @@ namespace WholesomeDungeonCrawler.Bot
                     break;
                 case "WORLD_MAP_UPDATE":
                     _cache.CacheIsInInstance();
-                    _entityCache.CacheGroupMembers();
+                    _entityCache.CacheGroupMembers(id);
                     _cache.CacheInLoadingScreen(id);
                     break;
                 case "LFG_PROPOSAL_SHOW":
@@ -162,7 +162,7 @@ namespace WholesomeDungeonCrawler.Bot
                 case "GROUP_ROSTER_CHANGED":
                 case "PARTY_CONVERTED_TO_RAID":
                 case "RAID_TARGET_UPDATE":
-                    _entityCache.CacheGroupMembers();
+                    _entityCache.CacheGroupMembers(id);
                     break;
                 case "INSTANCE_LOCK_STOP":
                 case "INSTANCE_LOCK_START":

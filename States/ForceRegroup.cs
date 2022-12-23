@@ -49,7 +49,10 @@ namespace WholesomeDungeonCrawler.States
 
                 if (_entityCache.ListGroupMember.Count() != _entityCache.ListPartyMemberNames.Count())
                 {
-                    Logger.Log($"A group member is missing. Teleporting out and back in to regroup.");
+                    foreach (string playerName in _entityCache.ListPartyMemberNames.Where(p => !_entityCache.ListGroupMember.Any(lgm => lgm.Name == p)))
+                    {
+                        Logger.Log($"{playerName} is missing! Teleporting out and back in to regroup.");
+                    }
                     return true;
                 }
 

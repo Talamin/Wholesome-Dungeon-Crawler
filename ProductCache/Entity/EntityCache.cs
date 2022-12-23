@@ -74,7 +74,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public IWoWUnit[] GroupPets { get; private set; } = new IWoWUnit[0];
         public IWoWLocalPlayer Me { get; private set; } = Cache(new WoWLocalPlayer(0));
         public IWoWUnit[] EnemyUnitsList { get; private set; } = new IWoWUnit[0];
-        public IWoWPlayer[] ListGroupMember { get; private set; } = new IWoWPlayer[0]; //contains everyone in the cache, except myself
+        public IWoWPlayer[] ListGroupMember { get; private set; } = new IWoWPlayer[0];
         public List<string> ListPartyMemberNames { get; private set; } = new List<string>();
         public IWoWUnit[] EnemiesAttackingGroup { get; private set; } = new IWoWUnit[0];
         public IWoWPlayer TankUnit { get; private set; }
@@ -259,7 +259,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                         end
                     end", "plist");
 
-                if (plist != null && plist.Length > 0)
+                if (!string.IsNullOrEmpty(plist))
                 {
                     ListPartyMemberNames = plist.Remove(plist.Length - 1, 1).Split(',').ToList();
                 }
@@ -270,8 +270,9 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             }
         }
 
-        public void CacheGroupMembers()
+        public void CacheGroupMembers(string trigger)
         {
+            Logger.Log($"PARTY UPDATE TRIGGERED BY {trigger}");
             CacheListPartyMemberGuid();
             CachePartyMemberChanged();
             Task.Delay(5000).ContinueWith(x =>
