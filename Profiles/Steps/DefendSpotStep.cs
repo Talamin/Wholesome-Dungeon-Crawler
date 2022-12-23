@@ -1,9 +1,9 @@
 ﻿using robotManager.Helpful;
+using System.Collections.Generic;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
-using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -13,8 +13,10 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
     {
         private DefendSpotModel _defendSpotModel;
         private readonly IEntityCache _entityCache;
-        private float _precision;
         private Timer _stepTimer;
+        private int _defendSpotRadius;
+        private int _timeToWaitInMilliseconds;
+
         public override string Name { get; }
         public override int Order { get; }
 
@@ -22,30 +24,29 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         {
             _defendSpotModel = defendSpotModel;
             _entityCache = entityCache;
-            _precision = _defendSpotModel.Precision;
+            _defendSpotRadius = _defendSpotModel.DefendSpotRadius;
+            _defendSpotRadius = _defendSpotRadius < 5 ? 5 : _defendSpotRadius;
+            _timeToWaitInMilliseconds = _defendSpotModel.Timer * 1000;
             Name = _defendSpotModel.Name;
             Order = _defendSpotModel.Order;
         }
 
         public override void Run()
         {
-            if (_precision < 5)
-            {
-                _precision = 5;
-            }
-
             if (_stepTimer == null)
             {
-                _stepTimer = new Timer(_defendSpotModel.Timer);
+                _stepTimer = new Timer(_timeToWaitInMilliseconds);
             }
 
-            if (!MovementManager.InMovement && _entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) > _precision)
+            if (!MovementManager.InMovement 
+                && _entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) > _defendSpotRadius)
             {
-                GoToTask.ToPosition(_defendSpotModel.DefendPosition);
+                List<Vector3> pathToCenter = PathFinder.FindPath(_entityCache.Me.PositionWithoutType, _defendSpotModel.DefendPosition);
+                MovementManager.Go(pathToCenter);
             }
 
             IWoWUnit unitToAttack = _entityCache.EnemyUnitsList
-                .Where(unit => unit.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= 30)
+                .Where(unit => unit.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= _defendSpotRadius)
                 .FirstOrDefault();
 
             if (unitToAttack != null)
@@ -56,7 +57,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 return;
             }
 
-            if (_entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= _precision
+            if (_entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= _defendSpotRadius
                 && _stepTimer.IsReady
                 && EvaluateCompleteCondition(_defendSpotModel.CompleteCondition))
             {

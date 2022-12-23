@@ -9,6 +9,7 @@ namespace WholesomeDungeonCrawler.Models
         public string Name { get; set; }
         public int Order { get; set; }
         public StepCompleteConditionModel CompleteCondition { get; set; }
+        public bool HasCompleteCondition => CompleteCondition.ConditionType != CompleteConditionType.None;
     }
 
     public class StepCompleteConditionModel
@@ -73,7 +74,7 @@ namespace WholesomeDungeonCrawler.Models
     {
         public Vector3 DefendPosition { get; set; }
         public int Timer { get; set; }
-        public float Precision { get; set; }
+        public int DefendSpotRadius { get; set; } = 30;
     }
 
     public class FollowUnitModel : StepModel
