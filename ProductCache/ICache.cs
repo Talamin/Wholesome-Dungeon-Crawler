@@ -7,7 +7,8 @@
         bool LFGProposalShown { get; }
         bool LFGRoleCheckShown { get; }
         bool LootRollShow { get; }
-        public bool IAmAlliance { get; }
+        bool IAmAlliance { get; }
+        bool InLoadingScreen { get; }
 
         bool IsRunningForcedTownRun { get; set; }
 
@@ -15,5 +16,6 @@
         void CacheLFGProposalShown();
         void CacheRoleCheckShow();
         void CacheLootRollShow();
+        void CacheInLoadingScreen(string eventName);
     }
 }

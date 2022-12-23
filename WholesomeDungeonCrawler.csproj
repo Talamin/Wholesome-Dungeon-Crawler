@@ -167,6 +167,7 @@
     <Compile Include="States\CheckPathAhead.cs" />
     <Compile Include="States\Dead.cs" />
     <Compile Include="States\DeadDive.cs" />
+    <Compile Include="States\LoadingScreenLock.cs" />
     <Compile Include="States\LoadUnloadProfile.cs" />
     <Compile Include="States\RejoinDungeonAfterForcedTownRun.cs" />
     <Compile Include="States\ForceTownRun.cs" />

@@ -350,7 +350,8 @@ namespace WholesomeDungeonCrawler.States
             
             foreach ((Vector3 a, Vector3 b) line in _linesToCheck)
             {
-                Radar3D.DrawLine(line.a, line.b, Color.PaleTurquoise, 150);
+                if (line.a != null && line.b != null)
+                    Radar3D.DrawLine(line.a, line.b, Color.PaleTurquoise, 150);
             }
             
             /*

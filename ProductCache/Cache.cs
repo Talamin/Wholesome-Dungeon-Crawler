@@ -1,4 +1,6 @@
-﻿using WholesomeToolbox;
+﻿using System.Threading.Tasks;
+using WholesomeDungeonCrawler.Helpers;
+using WholesomeToolbox;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -14,6 +16,7 @@ namespace WholesomeDungeonCrawler.ProductCache
         public bool LFGRoleCheckShown { get; private set; }
         public bool LootRollShow { get; private set; }
         public bool IAmAlliance { get; private set; }
+        public bool InLoadingScreen { get; private set; }
 
         public bool IsRunningForcedTownRun { get; set; }
 
@@ -78,6 +81,17 @@ namespace WholesomeDungeonCrawler.ProductCache
             {
                 IsInInstance = WTLocation.IsInInstance();
             }
+        }
+
+        public void CacheInLoadingScreen(string eventName)
+        {
+            Logger.Log($"LOAD SCREEN LOCK TRIGGERED BY {eventName}");
+            InLoadingScreen = true;
+            Task.Run(async delegate
+            {
+                await Task.Delay(5000);
+                InLoadingScreen = false;
+            });
         }
         /*
         private void GetLFGModes()

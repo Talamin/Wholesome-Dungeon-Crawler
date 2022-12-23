@@ -1,4 +1,5 @@
 ﻿using robotManager.FiniteStateMachine;
+using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
@@ -73,6 +74,7 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
+            Thread.Sleep(1000); // Make sure position is updated before loading profile
             _profileManager.LoadProfile(true);
         }
     }

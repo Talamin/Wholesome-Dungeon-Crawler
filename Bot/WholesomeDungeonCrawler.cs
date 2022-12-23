@@ -58,6 +58,7 @@ namespace WholesomeDungeonCrawler.Bot
                 {
                     new Relogger(),
                     new Pause(),
+                    new LoadingScreenLock(_cache),
                     new DeadDive(_entityCache),
                     new LoadUnloadProfile(_cache, _entityCache, _profileManager),
                     new Dead(_entityCache, _profileManager),
@@ -120,10 +121,13 @@ namespace WholesomeDungeonCrawler.Bot
                 case "PLAYER_ENTERING_WORLD":
                     MovementManager.StopMove();
                     _entityCache.CacheGroupMembers();
-                    //_profileManager.LoadProfile(true);
+                    _cache.CacheIsInInstance();
+                    _cache.CacheInLoadingScreen(id);
                     break;
                 case "PLAYER_LEAVING_WORLD":
                     MovementManager.StopMove();
+                    _cache.CacheIsInInstance();
+                    _cache.CacheInLoadingScreen(id);
                     break;
                 case "CHAT_MSG_SYSTEM":
                     if (args[0] == "Everyone is Ready")
@@ -132,6 +136,7 @@ namespace WholesomeDungeonCrawler.Bot
                 case "WORLD_MAP_UPDATE":
                     _cache.CacheIsInInstance();
                     _entityCache.CacheGroupMembers();
+                    _cache.CacheInLoadingScreen(id);
                     break;
                 case "LFG_PROPOSAL_SHOW":
                 case "LFG_PROPOSAL_FAILED":
@@ -158,6 +163,10 @@ namespace WholesomeDungeonCrawler.Bot
                 case "PARTY_CONVERTED_TO_RAID":
                 case "RAID_TARGET_UPDATE":
                     _entityCache.CacheGroupMembers();
+                    break;
+                case "INSTANCE_LOCK_STOP":
+                case "INSTANCE_LOCK_START":
+                    _cache.CacheInLoadingScreen(id);
                     break;
             }
         }

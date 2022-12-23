@@ -44,11 +44,12 @@ namespace WholesomeDungeonCrawler.Managers
 
         public void LoadProfile(bool safeWait)
         {
-            int waitTime = safeWait ? 3000 : 0;
+            int waitTime = safeWait ? 2000 : 0;
 
             UnloadCurrentProfile();
 
             DungeonModel dungeon = CheckandChooseactualDungeon();
+
             if (dungeon != null)
             {
                 DirectoryInfo profilePath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/{ProfilesDirectoryName}/{dungeon.Name}");
