@@ -9,7 +9,7 @@ namespace WholesomeDungeonCrawler.Models
         public string Name { get; set; }
         public int Order { get; set; }
         public StepCompleteConditionModel CompleteCondition { get; set; }
-        public bool HasCompleteCondition => CompleteCondition.ConditionType != CompleteConditionType.None;
+        public bool HasCompleteCondition => CompleteCondition != null && CompleteCondition.ConditionType != CompleteConditionType.None;
     }
 
     public class StepCompleteConditionModel

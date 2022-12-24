@@ -37,6 +37,9 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
+                bool continentChanged = _currentContinent != Usefuls.ContinentId;
+                _currentContinent = Usefuls.ContinentId;
+
                 if (ObjectManager.Me.Position.DistanceTo(new robotManager.Helpful.Vector3(0, 0, 0)) < 5)
                 {
                     Logger.LogError($"In void. Delaying profile load/unload.");
@@ -44,11 +47,18 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 // Alive to dead, keep loaded profile for death run
-                if (!_recordDead && _entityCache.Me.Dead)
+                if (_entityCache.Me.Dead)
                 {
-                    Logger.Log($"We died, keeping profile loaded for death run");
-                    _recordDead = true;
-                    return false;
+                    if (_profileManager.CurrentDungeonProfile != null)
+                    {
+                        _recordDead = true;
+                        return false;
+                    }
+                    else
+                    {
+                        _recordDead = true;
+                        return true;
+                    }
                 }
 
                 // Dead to alive, reload profile to restart from step 0
@@ -59,8 +69,8 @@ namespace WholesomeDungeonCrawler.States
                     return true;
                 }
 
-                // Continent change
-                if (_currentContinent != Usefuls.ContinentId && !_recordDead)
+                // Continent change (works on 1st launch)
+                if (continentChanged)
                 {
                     _currentContinent = Usefuls.ContinentId;
                     Logger.Log($"Continent change detected: {_currentContinent}");
