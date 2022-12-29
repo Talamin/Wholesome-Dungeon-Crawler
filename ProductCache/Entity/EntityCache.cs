@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using robotManager.Helpful;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,55 +21,17 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
         public void Dispose()
         {
-            //EventsLuaWithArgs.OnEventsLuaStringWithArgs -= OnEventsLuaStringWithArgs;
             ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
         }
         public void Initialize()
         {
-            CachePartyMemberChanged();
-            CacheListPartyMemberGuid();
+            CachePartyMemberNames();
+            CachePartyMemberGuids();
             OnObjectManagerPulse();
-            //EventsLuaWithArgs.OnEventsLuaStringWithArgs += OnEventsLuaStringWithArgs;
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             IAmTank = ObjectManager.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName;
         }
-        /*
-        private void OnEventsLuaStringWithArgs(string id, List<string> args)
-        {
-            switch (id)
-            {
-                case "WORLD_MAP_UPDATE":
-                    CacheGroupMembers();
-                    Toolbox.StopAllMoves();
-                    break;
-                case "PLAYER_ENTERING_WORLD":
-                    CacheGroupMembers();
-                    Toolbox.StopAllMoves();
-                    break;
-                case "PARTY_MEMBERS_CHANGED":
-                    CacheGroupMembers();
-                    break;
-                case "PARTY_MEMBER_DISABLE":
-                    CacheGroupMembers();
-                    break;
-                case "PARTY_MEMBER_ENABLE":
-                    CacheGroupMembers();
-                    break;
-                case "RAID_ROSTER_UPDATE":
-                    CacheGroupMembers();
-                    break;
-                case "GROUP_ROSTER_CHANGED":
-                    CacheGroupMembers();
-                    break;
-                case "PARTY_CONVERTED_TO_RAID":
-                    CacheGroupMembers();
-                    break;
-                case "RAID_TARGET_UPDATE":
-                    CacheGroupMembers();
-                    break;
-            }
-        }
-        */
+
         public IWoWUnit Target { get; private set; } = Cache(new WoWUnit(0));
         public IWoWUnit Pet { get; private set; } = Cache(new WoWUnit(0));
         public IWoWUnit[] GroupPets { get; private set; } = new IWoWUnit[0];
@@ -78,8 +41,8 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public List<string> ListPartyMemberNames { get; private set; } = new List<string>();
         public IWoWUnit[] EnemiesAttackingGroup { get; private set; } = new IWoWUnit[0];
         public IWoWPlayer TankUnit { get; private set; }
-        private List<ulong> ListPartyMemberGuid { get; set; } = new List<ulong>();
-        private ulong TankGuid { get; set; }
+        private List<ulong> _listPartyMemberGuid { get; set; } = new List<ulong>();
+        private ulong _tankGuid { get; set; }
         public bool IAmTank { get; private set; }
 
         private List<int> _npcToDefendEntries = new List<int>();
@@ -137,22 +100,42 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             foreach (WoWPlayer play in playerUnits)
             {
                 IWoWPlayer cachedplayer = Cache(play);
-                if (ListPartyMemberGuid.Contains(cachedplayer.Guid))
+                if (_listPartyMemberGuid.Contains(cachedplayer.Guid))
                 {
                     listGroupMember.Add(cachedplayer);
-                    if (cachedplayer.Guid == TankGuid)
+                    if (cachedplayer.Guid == _tankGuid)
                     {
                         tankUnit = cachedplayer;
                     }
                 }
             }
-            ListGroupMember = listGroupMember.ToArray();
-            /*
-            if (TankUnit == null && tankUnit != null)
+
+            // REMOVE AFTER DEBUG
+            if (listGroupMember.Count() != ListGroupMember.Count())
             {
-                OnTankEnteringOM?.Invoke();
+                Logger.LogError($"GROUP MEMBER CHANGED");
+                if (ListPartyMemberNames.Count() != listGroupMember.Count())
+                {
+                    Logger.LogError($"--- ListGroupMember ---");
+                    foreach (IWoWPlayer unit in ListGroupMember)
+                        Logger.Log($"{unit.Name}");
+
+                    Logger.LogError($"--- ListPartyMemberNames ---");
+                    foreach (string name in ListPartyMemberNames)
+                        Logger.Log($"{name}");
+
+                    Logger.LogError($"--- ListPartyMemberGuid ---");
+                    foreach (ulong guid in _listPartyMemberGuid)
+                        Logger.Log($"{guid}");
+                }
+                else
+                {
+                    Logger.LogError($"OK");
+                }
             }
-            */
+
+            ListGroupMember = listGroupMember.ToArray();
+
             NpcsToDefend.Clear();
             LootableUnits.Clear();
             TankUnit = tankUnit;
@@ -162,7 +145,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             allTeamGuids.AddRange(GroupPets.Select(gp => gp.Guid));
             allTeamGuids.AddRange(ListGroupMember.Select(lgm => lgm.Guid));
 
-            foreach (var unit in units)
+            foreach (WoWUnit unit in units)
             {
                 // Ignore hostile statues in Uldaman until they become animated.
                 if (Lists.ForceTargetListInt.Contains(unit.Entry)                    
@@ -176,12 +159,12 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                     continue;
                 }
 
-                var unitGuid = unit.Guid;
+                ulong unitGuid = unit.Guid;
                 IWoWUnit cachedUnit = unitGuid == targetGuid ? cachedTarget : Cache(unit);
                 bool? cachedReachable = unitGuid == targetGuid ? true : (bool?)null;
-                var unitPosition = unit.PositionWithoutType;
+                Vector3 unitPosition = unit.PositionWithoutType;
 
-                if (ListPartyMemberGuid.Contains(unit.PetOwnerGuid) || unit.IsMyPet)
+                if (_listPartyMemberGuid.Contains(unit.PetOwnerGuid) || unit.IsMyPet)
                 {
                     groupPets.Add(cachedUnit);
                     continue;
@@ -224,30 +207,33 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             EnemiesAttackingGroup = enemyAttackingGroup.ToArray();
             EnemyUnitsList = enemyUnits.ToArray();
             GroupPets = groupPets.ToArray();
-            /*
+            
             if (watch.ElapsedMilliseconds > 50)
-                Logger.LogError($"Entity cache pulse took {watch.ElapsedMilliseconds}");*/
+            {
+                Logger.LogError($"Entity cache pulse took {watch.ElapsedMilliseconds}");
+            }
 
         }
 
         // Records guid of players other than me in object manager
-        private void CacheListPartyMemberGuid()
+        private void CachePartyMemberGuids()
         {
             List<ulong> partyMembersGuids = new List<ulong>();
-            TankGuid = 0;
+            ulong tankGuid = 0;
             foreach (WoWPlayer p in Party.GetParty())
             {
                 partyMembersGuids.Add(p.Guid);
                 if (p.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
                 {
-                    TankGuid = p.Guid;
+                    tankGuid = p.Guid;
                 }
             }
-            ListPartyMemberGuid = partyMembersGuids;
+            _tankGuid = tankGuid;
+            _listPartyMemberGuid = partyMembersGuids;
         }
 
         // Records name of other players even if outside object manager
-        private void CachePartyMemberChanged()
+        private void CachePartyMemberNames()
         {
             lock (cacheLock)
             {
@@ -259,27 +245,42 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                         end
                     end", "plist");
 
-                if (!string.IsNullOrEmpty(plist))
+                List<string> result = !string.IsNullOrEmpty(plist) ?
+                    plist.Remove(plist.Length - 1, 1).Split(',').ToList()
+                    : new List<string>();
+
+                // REMOVE AFTER DEBUG
+                if (ListPartyMemberNames.Count() != result.Count())
                 {
-                    ListPartyMemberNames = plist.Remove(plist.Length - 1, 1).Split(',').ToList();
+                    Logger.LogError($"MEMBER NAMES CHANGED");
+                    if (result.Count() != ListGroupMember.Count())
+                    {
+                        Logger.LogError($"--- ListGroupMember ---");
+                        foreach (IWoWPlayer unit in ListGroupMember)
+                            Logger.Log($"{unit.Name}");
+
+                        Logger.LogError($"--- ListPartyMemberNames ---");
+                        foreach (string name in ListPartyMemberNames)
+                            Logger.Log($"{name}");
+
+                        Logger.LogError($"--- ListPartyMemberGuid ---");
+                        foreach (ulong guid in _listPartyMemberGuid)
+                            Logger.Log($"{guid}");
+                    }
+                    else
+                    {
+                        Logger.LogError($"OK");
+                    }
                 }
-                else
-                {
-                    ListPartyMemberNames = new List<string>();
-                }
+
+                ListPartyMemberNames = result;
             }
         }
 
         public void CacheGroupMembers(string trigger)
         {
-            Logger.Log($"PARTY UPDATE TRIGGERED BY {trigger}");
-            CacheListPartyMemberGuid();
-            CachePartyMemberChanged();
-            Task.Delay(5000).ContinueWith(x =>
-            {
-                CacheListPartyMemberGuid();
-                CachePartyMemberChanged();
-            });
+            CachePartyMemberGuids();
+            CachePartyMemberNames();
         }
     }
 }

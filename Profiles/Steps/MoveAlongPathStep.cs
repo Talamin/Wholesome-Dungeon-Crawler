@@ -43,7 +43,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             Vector3 lastPointOfPath = GetMoveAlongPath.Last();
 
             if ((MovementManager.CurrentMoveTo == null || MovementManager.CurrentMoveTo == lastPointOfPath) 
-                && _entityCache.Me.PositionWithoutType.DistanceTo(lastPointOfPath) < 5f
+                && _entityCache.Me.PositionWithoutType.DistanceTo(lastPointOfPath) < 2f
                 && EvaluateCompleteCondition(_moveAlongPathModel.CompleteCondition))
             {
                 IsCompleted = true;

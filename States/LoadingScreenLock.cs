@@ -1,6 +1,7 @@
 ﻿using robotManager.FiniteStateMachine;
-using System.Threading;
+using robotManager.Helpful;
 using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
@@ -9,10 +10,13 @@ namespace WholesomeDungeonCrawler.States
     {
         public override string DisplayName => "Loading screen lock";
         private readonly ICache _cache;
+        private readonly IEntityCache _entityCache;
+        private Timer _lockTimer = null;
 
-        public LoadingScreenLock(ICache iCache)
+        public LoadingScreenLock(ICache iCache, IEntityCache entityCache)
         {
             _cache = iCache;
+            _entityCache = entityCache;
         }
 
         public override bool NeedToRun
@@ -30,7 +34,19 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            Thread.Sleep(500);
+            MovementManager.StopMove();
+
+            if (_lockTimer == null)
+            {
+                _lockTimer = new Timer(5000);
+            }
+
+            if (_lockTimer.IsReady)
+            {
+                _entityCache.CacheGroupMembers("Loading screen lock end");
+                _cache.ResetLoadingScreenLock();
+                _lockTimer = null;
+            }
         }
     }
 }

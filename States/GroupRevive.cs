@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Enums;
@@ -29,7 +30,9 @@ namespace WholesomeDungeonCrawler.States
 
         private Dictionary<string, Timer> _cacheTimer = new Dictionary<string, Timer>(); // player name -> associated Timer
 
-        public GroupRevive(ICache iCache, IEntityCache entityCache)
+        public GroupRevive(
+            ICache iCache, 
+            IEntityCache entityCache)
         {
             _cache = iCache;
             _entitycache = entityCache;

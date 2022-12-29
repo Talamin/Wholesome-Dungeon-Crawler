@@ -103,6 +103,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\Toolbox.cs" />
+    <Compile Include="Managers\AvoidAOEManager.cs" />
+    <Compile Include="Managers\IAvoidAOEManager.cs" />
     <Compile Include="Managers\ILuaStatusFrameManager.cs" />
     <Compile Include="Managers\IPathManager.cs" />
     <Compile Include="Managers\LuaStatusFrameManager.cs" />
@@ -155,7 +157,6 @@
     <Compile Include="Helpers\MoveHelper.cs" />
     <Compile Include="Managers\IProfileManager.cs" />
     <Compile Include="Managers\ProfileManager.cs" />
-    <Compile Include="Profiles\Steps\GoToStep.cs" />
     <Compile Include="Profiles\Steps\InteractWithStep.cs" />
     <Compile Include="Profiles\Steps\MoveAlongPathStep.cs" />
     <Compile Include="Profiles\Steps\TalkToUnitStep.cs" />
@@ -167,6 +168,7 @@
     <Compile Include="States\CheckPathAhead.cs" />
     <Compile Include="States\Dead.cs" />
     <Compile Include="States\DeadDive.cs" />
+    <Compile Include="States\AvoidAOE.cs" />
     <Compile Include="States\LoadingScreenLock.cs" />
     <Compile Include="States\LoadUnloadProfile.cs" />
     <Compile Include="States\RejoinDungeonAfterForcedTownRun.cs" />
@@ -184,7 +186,6 @@
     <Compile Include="States\GroupQueueAccept.cs" />
     <Compile Include="States\GroupRevive.cs" />
     <Compile Include="States\IState.cs" />
-    <Compile Include="States\LeaveDungeon.cs" />
     <Compile Include="States\OpenSatchel.cs" />
     <Compile Include="States\WaitRest.cs" />
     <Compile Include="Wholesome-Toolbox\WTCombat.cs" />

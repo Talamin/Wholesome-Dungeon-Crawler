@@ -81,7 +81,6 @@ namespace WholesomeDungeonCrawler.States
             }
         }
 
-
         public override void Run()
         {
             Thread.Sleep(1000); // Make sure position is updated before loading profile

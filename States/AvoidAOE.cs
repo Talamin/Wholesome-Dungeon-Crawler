@@ -1,0 +1,50 @@
+﻿using robotManager.FiniteStateMachine;
+using WholesomeDungeonCrawler.Managers;
+using WholesomeDungeonCrawler.ProductCache;
+using WholesomeDungeonCrawler.ProductCache.Entity;
+using wManager.Wow.Helpers;
+
+namespace WholesomeDungeonCrawler.States
+{
+    class AvoidAOE : State
+    {
+        public override string DisplayName => "Escaping from AOE damage";
+
+        private readonly IAvoidAOEManager _avoidAOEManager;
+        private readonly IEntityCache _entityCache;
+        private readonly ICache _cache;
+
+        public AvoidAOE(
+            IEntityCache entityCache,
+            IAvoidAOEManager avoidAOEManager,
+            ICache cache)
+        {
+            _entityCache = entityCache;
+            _avoidAOEManager = avoidAOEManager;
+            _cache = cache;
+        }
+
+        public override bool NeedToRun
+        {
+            get
+            {
+                if (!Conditions.InGameAndConnected
+                    || !_cache.IsInInstance
+                    || _entityCache.Me.Dead
+                    || !_entityCache.Me.Valid
+                    || !_avoidAOEManager.MustEscapeAOE
+                    || _avoidAOEManager.GetEscapePath == null)
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
+        public override void Run()
+        {
+            MovementManager.Go(_avoidAOEManager.GetEscapePath, false);
+        }
+    }
+}

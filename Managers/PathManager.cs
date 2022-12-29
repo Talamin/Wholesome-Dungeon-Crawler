@@ -12,13 +12,11 @@ namespace WholesomeDungeonCrawler.Managers
 
         public void Initialize()
         {
-            //MovementEvents.OnMoveToPulse += OnMoveToPulse;
             Radar3D.OnDrawEvent += DrawEvent;
         }
 
         public void Dispose()
         {
-            //MovementEvents.OnMoveToPulse -= OnMoveToPulse;
             Radar3D.OnDrawEvent -= DrawEvent;
         }
 
@@ -31,18 +29,7 @@ namespace WholesomeDungeonCrawler.Managers
         {
             _neighboringNodes = neighboringNodes;
         }
-        /*
-        private void OnMoveToPulse(Vector3 point, CancelEventArgs cancelable)
-        {
-            if (_currentProfilePath != null)
-            {
-                if (point != NextPathNode && _currentProfilePath.Contains(point))
-                {
-                    NextPathNode = point;
-                }
-            }
-        }
-        */
+
         private void DrawEvent()
         {
             if (_nextPathNode != null)

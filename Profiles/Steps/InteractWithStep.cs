@@ -1,5 +1,4 @@
 ﻿using robotManager.Helpful;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -39,7 +38,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public override void Run()
         {
             // Keep checking while we cast
-            if (ObjectManager.Me.IsCast 
+            if (ObjectManager.Me.IsCast
                 && _interactWithModel.CompleteCondition.ConditionType != CompleteConditionType.None
                 && !EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
             {

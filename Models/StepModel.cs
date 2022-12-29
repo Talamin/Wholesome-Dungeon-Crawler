@@ -42,13 +42,7 @@ namespace WholesomeDungeonCrawler.Models
         public Vector3 LOSPositionVectorTo { get; set; }
         public bool LOSMustReturnTrue { get; set; } = true;
     }
-    /*
-    public class GoToModel : StepModel
-    {
-        public float Precision { get; set; }
-        public Vector3 TargetPosition { get; set; }
-    }
-    */
+
     public class MoveAlongPathModel : StepModel
     {
         public List<Vector3> Path { get; set; }
@@ -92,7 +86,6 @@ namespace WholesomeDungeonCrawler.Models
 
     public class LeaveDungeonModel : StepModel
     {
-
     }
 
     public class JumpToStepModel : StepModel

@@ -20,7 +20,10 @@ namespace WholesomeDungeonCrawler.States
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
 
-        public ForceRegroup(ICache iCache, IEntityCache EntityCache, IProfileManager profilemanager)
+        public ForceRegroup(
+            ICache iCache, 
+            IEntityCache EntityCache, 
+            IProfileManager profilemanager)
         {
             _cache = iCache;
             _entityCache = EntityCache;
@@ -53,6 +56,7 @@ namespace WholesomeDungeonCrawler.States
                     {
                         Logger.Log($"{playerName} is missing! Teleporting out and back in to regroup.");
                     }
+
                     return true;
                 }
 
@@ -69,6 +73,7 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
+            MovementManager.StopMove();
             Thread.Sleep(3000);
             _profileManager.UnloadCurrentProfile();
             Lua.LuaDoString("LFGTeleport(true);");

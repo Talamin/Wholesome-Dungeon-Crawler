@@ -1,7 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms.VisualStyles;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.Models;
@@ -28,12 +27,12 @@ namespace WholesomeDungeonCrawler.Profiles
         public FactionType FactionType { get; private set; }
         public string FileName { get; private set; }
 
-    public Profile(ProfileModel profileModel, 
-            IEntityCache entityCache, 
-            IPathManager pathManager, 
-            IPartyChatManager partyChatManager,
-            IProfileManager profileManager,
-            string fileName)
+        public Profile(ProfileModel profileModel,
+                IEntityCache entityCache,
+                IPathManager pathManager,
+                IPartyChatManager partyChatManager,
+                IProfileManager profileManager,
+                string fileName)
         {
             _entityCache = entityCache;
             _partyChatManager = partyChatManager;
@@ -50,14 +49,6 @@ namespace WholesomeDungeonCrawler.Profiles
                         AllMoveAlongNodes.AddRange(maStep.GetMoveAlongPath);
                         _profileSteps.Add(maStep);
                         break;
-                        /*
-                    case GoToModel _:
-                        GoToModel goToModel = model as GoToModel;
-                        GoToStep goToStep = new GoToStep(goToModel, entityCache);
-                        AllMoveAlongNodes.Add(goToModel.TargetPosition);
-                        _profileSteps.Add(goToStep);
-                        break;
-                        */
                     case InteractWithModel _:
                         InteractWithModel interactWithModel = model as InteractWithModel;
                         AllMoveAlongNodes.Add(interactWithModel.ExpectedPosition);
@@ -95,13 +86,13 @@ namespace WholesomeDungeonCrawler.Profiles
                         break;
                 }
             }
-            
+
             // Add default leave dungeon step at the end if it doesn't exist
             if (!(_profileSteps.Last() is LeaveDungeonStep))
             {
                 _profileSteps.Add(new LeaveDungeonStep(new LeaveDungeonModel() { Name = "Leave dungeon (default)" }, entityCache, partyChatManager, profileManager));
             }
-            
+
             AllMoveAlongNodes.RemoveAll(node => node == null);
 
             foreach (Vector3 point in profileModel.DeathRunPath)

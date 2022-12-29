@@ -17,5 +17,6 @@
         void CacheRoleCheckShow();
         void CacheLootRollShow();
         void CacheInLoadingScreen(string eventName);
+        void ResetLoadingScreenLock();
     }
 }

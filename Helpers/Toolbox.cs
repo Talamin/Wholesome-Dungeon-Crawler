@@ -63,6 +63,7 @@ namespace WholesomeDungeonCrawler.Helpers
                 return false;
             ");
         }
+
         /*
         private static Vector3 _toLast = new Vector3();
         private static Vector3 _fromLast = new Vector3();

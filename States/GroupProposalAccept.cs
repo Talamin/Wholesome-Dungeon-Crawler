@@ -1,5 +1,6 @@
 ﻿using robotManager.FiniteStateMachine;
 using System.Linq;
+using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
@@ -43,9 +44,9 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            Logger.Log("Accept dungeon proposal");
+            Logger.Log("Accepting dungeon proposal");
             Lua.LuaDoString("AcceptProposal()");
+            Thread.Sleep(3000);
         }
-
     }
 }

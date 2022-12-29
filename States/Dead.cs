@@ -69,7 +69,7 @@ namespace WholesomeDungeonCrawler.States
                 {
                     Logger.Log("Running profile's death run");
                     List<Vector3> adjustedDeathPath = WTPathFinder.PathFromClosestPoint(_profileManager.CurrentDungeonProfile.DeathRunPath);
-                    MovementManager.Go(adjustedDeathPath);
+                    MovementManager.Go(adjustedDeathPath, false);
                 }
                 else
                 {

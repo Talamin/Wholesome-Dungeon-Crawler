@@ -38,31 +38,24 @@ namespace WholesomeDungeonCrawler.States
                 {
                     if (!player.IsConnected)
                     {
-                        Log($"We wait because Member {player.Name} is not logged into game");
+                        Log($"Waiting for {player.Name} to log into game");
                         _logTimer = new Timer(1000 * 10);
                         return true;
                     }
 
                     if (player.Dead || player.Auras.ContainsKey(8326))
                     {
-                        Log($"We wait because Member {player.Name} is being dead/spooky");
+                        Log($"Waiting because {player.Name} is dead");
                         _logTimer = new Timer(1000 * 10);
                         return true;
                     }
 
                     if (player.HasDrinkBuff || player.HasFoodBuff)
                     {
-                        Log($"We wait because Member {player.Name} is being thirsty or hungry");
+                        Log($"Waiting for {player.Name} to regenerate");
                         _logTimer = new Timer(1000 * 10);
                         return true;
                     }
-                    /*
-                    if (player.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) >= 40)
-                    {
-                        Logger.Log($"We wait because Member {player.Name} is being lazy");
-                        return true;
-                    }
-                    */
                 }
 
                 return false;

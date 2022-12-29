@@ -7,6 +7,7 @@ namespace WholesomeDungeonCrawler.Helpers
     static class Logger
     {
         private static string _lastMessage;
+
         public static void LogError(string message)
         {
             Logging.Write($"[{WholesomeDungeonCrawlerSettings.CurrentSetting.ProductName}]: {message}", Logging.LogType.Error, Color.DarkRed);

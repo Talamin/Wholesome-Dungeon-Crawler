@@ -39,8 +39,8 @@ namespace WholesomeDungeonCrawler.States
                 _unitToLoot = null;
                 Vector3 myPosition = _entitycache.Me.PositionWithoutType;
                 List<IWoWUnit> lootableCorpses = _entitycache.LootableUnits
-                    .Where(corpse => corpse.PositionWithoutType.DistanceTo(myPosition) <= _lootRange)
-                    .OrderBy(corpse => corpse.PositionWithoutType.DistanceTo(myPosition))
+                    .Where(corpse => corpse?.PositionWithoutType.DistanceTo(myPosition) <= _lootRange)
+                    .OrderBy(corpse => corpse?.PositionWithoutType.DistanceTo(myPosition))
                     .ToList();
                 foreach (IWoWUnit lootableCorpse in lootableCorpses)
                 {
@@ -79,7 +79,8 @@ namespace WholesomeDungeonCrawler.States
             }
 
             // Approach corpse
-            if (!MovementManager.InMovement || MovementManager.CurrentPath.Last() != corpsePos)
+            if (!MovementManager.InMovement
+                || MovementManager.CurrentPath.Count > 0 && MovementManager.CurrentPath.Last() != corpsePos)
             {
                 MovementManager.StopMove();
                 List<Vector3> pathToCorpse = PathFinder.FindPath(myPos, corpsePos, out bool resultSuccess);

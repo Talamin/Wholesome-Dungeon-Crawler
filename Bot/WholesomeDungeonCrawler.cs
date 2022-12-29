@@ -22,6 +22,7 @@ namespace WholesomeDungeonCrawler.Bot
         private IPartyChatManager _partyChatManager;
         private ILuaStatusFrameManager _luaStatusFrameManager;
         private IPathManager _pathManager;
+        private IAvoidAOEManager _avoidAOEManager;
         private CheckPathAhead _checkPathAheadState;
 
         internal bool InitialSetup()
@@ -32,9 +33,11 @@ namespace WholesomeDungeonCrawler.Bot
                 _cache.Initialize();
                 _entityCache = new EntityCache();
                 _entityCache.Initialize();
+                _avoidAOEManager = new AvoidAOEManager(_entityCache, _cache);
+                _avoidAOEManager.Initialize();
                 _pathManager = new PathManager();
                 _pathManager.Initialize();
-                _partyChatManager = new PartyChatManager(_entityCache);
+                _partyChatManager = new PartyChatManager();
                 _partyChatManager.Initialize();
                 _profileManager = new ProfileManager(_entityCache, _cache, _pathManager, _partyChatManager);
                 _profileManager.Initialize();
@@ -58,7 +61,8 @@ namespace WholesomeDungeonCrawler.Bot
                 {
                     new Relogger(),
                     new Pause(),
-                    new LoadingScreenLock(_cache),
+                    new LoadingScreenLock(_cache, _entityCache),
+                    new AvoidAOE(_entityCache, _avoidAOEManager, _cache),
                     new LoadUnloadProfile(_cache, _entityCache, _profileManager),
                     new DeadDive(_entityCache),
                     new Dead(_entityCache, _profileManager),
@@ -80,7 +84,6 @@ namespace WholesomeDungeonCrawler.Bot
                     new GroupQueueAccept(_cache, _entityCache),
                     new GroupQueue(_cache, _entityCache),
                     _checkPathAheadState,
-                    //new LeaveDungeon(_cache, _entityCache, _profileManager),
                     new ForceTownRun(_cache, _entityCache, _profileManager),
                     new RejoinDungeonAfterForcedTownRun(_cache, _entityCache, _profileManager),
                     new DungeonLogic(_entityCache, _profileManager, _cache),
@@ -116,6 +119,13 @@ namespace WholesomeDungeonCrawler.Bot
 
         private void OnEventsLuaStringWithArgs(string id, List<string> args)
         {
+            /*
+            Logger.LogError($"{id}");
+            for (int i = 0; i < args.Count; i++)
+            {
+                Logger.LogError($"{i} -> {args[i]}");
+            }
+            */
             switch (id)
             {
                 case "PLAYER_ENTERING_WORLD":
@@ -177,6 +187,7 @@ namespace WholesomeDungeonCrawler.Bot
             {
                 EventsLuaWithArgs.OnEventsLuaStringWithArgs -= OnEventsLuaStringWithArgs;
                 CustomClass.DisposeCustomClass();
+                _avoidAOEManager?.Dispose();
                 _checkPathAheadState?.Dispose();
                 _partyChatManager?.Dispose();
                 _fsm?.StopEngine();

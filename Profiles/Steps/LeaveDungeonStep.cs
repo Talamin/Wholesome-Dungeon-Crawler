@@ -156,7 +156,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             Logger.Log("Everyone is ready. Leaving dungeon.");
             _partyChatManager.SetLeaveDungeonStep(null);
             _profileManager.UnloadCurrentProfile();
-            Thread.Sleep(5000);
+            Thread.Sleep(8000);
             Toolbox.LeaveDungeonAndGroup();
         }
     }

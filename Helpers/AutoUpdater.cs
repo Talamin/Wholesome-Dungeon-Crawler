@@ -77,7 +77,7 @@ namespace WholesomeDungeonCrawler.Helpers
                 }
 
                 byte[] onlineDllContent = new System.Net.WebClient { Encoding = Encoding.UTF8 }.DownloadData(onlineDllLink);
-                
+
                 // dll
                 if (onlineDllContent != null && onlineDllContent.Length > 0)
                 {

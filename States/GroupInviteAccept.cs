@@ -52,6 +52,5 @@ namespace WholesomeDungeonCrawler.States
             Lua.LuaDoString("StaticPopup1Button2:Click()");
             Logger.LogOnce("Denied invite. Make sure the tank name is correctly set in the product settings.");
         }
-
     }
 }

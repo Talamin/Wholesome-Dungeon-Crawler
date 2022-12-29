@@ -47,7 +47,6 @@ namespace WholesomeDungeonCrawler.States
             }
         }
 
-
         public override void Run()
         {
             Logger.LogOnce($"We need a town run, leaving dungeon");

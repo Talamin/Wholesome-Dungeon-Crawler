@@ -46,7 +46,11 @@ namespace WholesomeDungeonCrawler.States
             7076, // Earthen Guardian
         };
 
-        public CheckPathAhead(IEntityCache EntityCache, IPartyChatManager partyChatManager, ICache cache, IProfileManager profileManager)
+        public CheckPathAhead(
+            IEntityCache EntityCache, 
+            IPartyChatManager partyChatManager, 
+            ICache cache, 
+            IProfileManager profileManager)
         {
             _entityCache = EntityCache;
             _partyChatManager = partyChatManager;
@@ -167,7 +171,7 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 if (watch.ElapsedMilliseconds > 50)
-                    Logger.LogError($"Calc took {watch.ElapsedMilliseconds} ms | {_losCache.Count} in cache");
+                    Logger.LogError($"Check path ahead took {watch.ElapsedMilliseconds} ms");
 
                 return _unitOnPath.unit != null;
             }

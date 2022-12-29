@@ -1,5 +1,4 @@
 ﻿using robotManager.FiniteStateMachine;
-using robotManager.Helpful;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache;
@@ -16,10 +15,10 @@ namespace WholesomeDungeonCrawler.States
         private readonly IEntityCache _entityCache;
         private IWoWUnit _foundtarget;
 
-        public TankCombat(ICache iCache, IEntityCache EntityCache)
+        public TankCombat(ICache iCache, IEntityCache entityCache)
         {
             _cache = iCache;
-            _entityCache = EntityCache;
+            _entityCache = entityCache;
         }
 
         public override bool NeedToRun
@@ -35,7 +34,7 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 if (_entityCache.Target.Dead)
-                {                    
+                {
                     Interact.ClearTarget();
                 }
 
