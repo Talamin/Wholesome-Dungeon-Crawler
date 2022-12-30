@@ -170,7 +170,7 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                if (watch.ElapsedMilliseconds > 50)
+                if (watch.ElapsedMilliseconds > 100)
                     Logger.LogError($"Check path ahead took {watch.ElapsedMilliseconds} ms");
 
                 return _unitOnPath.unit != null;

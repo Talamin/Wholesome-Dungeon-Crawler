@@ -19,11 +19,9 @@ using System.Windows.Forms;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.Models;
-using WholesomeDungeonCrawler.Profiles.Steps;
 using wManager.Wow.Class;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
-using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace WholesomeDungeonCrawler.GUI
 {
@@ -233,27 +231,122 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 if (Conditions.InGameAndConnected)
                 {
-                    // Draw Move Along paths
-                    foreach (var step in currentProfile.StepModels.Where(x => x is MoveAlongPathModel))
+                    foreach (StepModel step in currentProfile.StepModels)
                     {
-                        var hash = md5.ComputeHash(Encoding.UTF8.GetBytes(step.Name));
-                        var colour = Color.FromArgb(hash[0], hash[1], hash[2]);
-                        var previousVector = new Vector3();
-                        foreach (var vec in ((MoveAlongPathModel)step).Path)
-                        {
-                            if (previousVector == new Vector3())
-                            {
-                                previousVector = vec;
-                            }
-                            Radar3D.DrawCircle(vec, 1f, colour, true, 200);
-                            Radar3D.DrawLine(vec, previousVector, colour, 200);
-                            previousVector = vec;
-                        }
-                    }
+                        byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(step.Name));
+                        Color randomColor = Color.FromArgb(hash[0], hash[1], hash[2]);
 
-                    // Draw LoS Checks
-                    foreach (var step in currentProfile.StepModels)
-                    {
+                        // Draw pull to safespot
+                        if (step is PullToSafeSpotModel)
+                        {
+                            PullToSafeSpotModel model = (PullToSafeSpotModel)step;
+                            if (model.SafeSpotPosition != null)
+                            {
+                                Radar3D.DrawCircle(model.SafeSpotPosition, model.SafeSpotRadius, Color.DarkBlue, true, 100);
+                                Radar3D.DrawCircle(model.SafeSpotPosition, model.SafeSpotRadius + model.DEFAULT_MELEE_FIGHT_RANGE, Color.MediumBlue, false, 100);
+                                Radar3D.DrawCircle(model.SafeSpotPosition, model.SafeSpotRadius + model.DEFAULT_RANGED_FIGHT_RANGE, Color.LightSteelBlue, false, 100);
+                            }
+                            if (model.ZoneToClearPosition != null)
+                            {
+                                Radar3D.DrawCircle(model.ZoneToClearPosition, 2f, Color.Red, true, 100);
+                                Radar3D.DrawCircle(model.ZoneToClearPosition, model.ZoneToClearRadius, Color.Red, false, 100);
+                            }
+                            if (model.SafeSpotPosition != null
+                                && model.ZoneToClearPosition != null)
+                            {
+                                Radar3D.DrawLine(model.SafeSpotPosition, model.ZoneToClearPosition, Color.MediumBlue, 100);
+                            }
+                            foreach (WoWUnit unit in ObjectManager.GetWoWUnitAttackables())
+                            {
+                                if (unit.Position.DistanceTo(model.ZoneToClearPosition) <= model.ZoneToClearRadius)
+                                {
+                                    Radar3D.DrawCircle(unit.Position, 1f, Color.Red, true, 100);
+                                    Radar3D.DrawLine(model.ZoneToClearPosition, unit.Position, Color.Red, 100);
+                                }
+                            }
+                        }
+
+                        // Draw talk to
+                        if (step is TalkToUnitModel)
+                        {
+                            TalkToUnitModel model = (TalkToUnitModel)step;
+                            if (model.ExpectedPosition != null)
+                            {
+                                Radar3D.DrawCircle(model.ExpectedPosition, 3f, randomColor, false, 200);
+                            }
+                        }
+
+                        // Draw interact
+                        if (step is InteractWithModel)
+                        {
+                            InteractWithModel model = (InteractWithModel)step;
+                            if (model.ExpectedPosition != null)
+                            {
+                                Radar3D.DrawCircle(model.ExpectedPosition, model.InteractDistance, randomColor, false, 200);
+                            }
+                        }
+
+                        // Draw defend spot
+                        if (step is DefendSpotModel)
+                        {
+                            DefendSpotModel model = (DefendSpotModel)step;
+                            if (model.DefendPosition != null)
+                            {
+                                Radar3D.DrawCircle(model.DefendPosition, model.DefendSpotRadius, Color.MediumVioletRed, false, 200);
+                            }
+                        }
+
+                        // Draw regroup spots
+                        if (step is RegroupModel)
+                        {
+                            RegroupModel model = (RegroupModel)step;
+                            if (model.RegroupSpot != null)
+                            {
+                                Radar3D.DrawCircle(model.RegroupSpot, 4f, Color.White, false, 200);
+                            }
+                        }
+
+                        // Draw follow unit
+                        if (step is FollowUnitModel)
+                        {
+                            FollowUnitModel model = (FollowUnitModel)step;
+                            if (model.ExpectedStartPosition != null)
+                            {
+                                Radar3D.DrawCircle(model.ExpectedStartPosition, 2f, Color.LawnGreen, false, 200);
+                            }
+                            if (model.ExpectedEndPosition != null)
+                            {
+                                Radar3D.DrawCircle(model.ExpectedEndPosition, 2f, Color.LawnGreen, false, 200);
+                            }
+                            if (model.ExpectedStartPosition != null
+                                && model.ExpectedEndPosition != null)
+                            {
+                                Radar3D.DrawLine(model.ExpectedStartPosition, model.ExpectedEndPosition, Color.LawnGreen, 50);
+                            }
+                            WoWUnit unitToEscort = ObjectManager.GetObjectWoWUnit().Find(unit => unit.Entry == model.UnitId);
+                            if (unitToEscort != null)
+                            {
+                                Radar3D.DrawCircle(model.ExpectedEndPosition, 3f, Color.LawnGreen, true, 200);
+                            }
+                        }
+
+                        // Draw moveAlong paths
+                        if (step is MoveAlongPathModel)
+                        {
+                            var previousVector = new Vector3();
+                            foreach (Vector3 node in ((MoveAlongPathModel)step).Path)
+                            {
+                                if (previousVector == new Vector3())
+                                {
+                                    previousVector = node;
+                                }
+                                Radar3D.DrawCircle(node, 1f, randomColor, true, 200);
+                                Radar3D.DrawLine(node, previousVector, randomColor, 200);
+                                previousVector = node;
+                            }
+                        }
+
+                        // Draw LOS checks
                         if (step.CompleteCondition.ConditionType == CompleteConditionType.LOSCheck)
                         {
                             if (step.CompleteCondition.LOSPositionVectorFrom != null)
@@ -273,24 +366,24 @@ namespace WholesomeDungeonCrawler.GUI
                     }
 
                     // Draw death run paths
-                    var deadcolour = Color.Red;
-                    var deadpreviousVector = new Vector3();
-                    foreach (var vec in currentProfile.DeathRunPath)
+                    Color deadcolour = Color.Red;
+                    Vector3 deadpreviousVector = new Vector3();
+                    foreach (Vector3 node in currentProfile.DeathRunPath)
                     {
                         if (deadpreviousVector == new Vector3())
                         {
-                            deadpreviousVector = vec;
+                            deadpreviousVector = node;
                         }
-                        Radar3D.DrawCircle(vec, 1f, deadcolour, true, 200);
-                        Radar3D.DrawLine(vec, deadpreviousVector, deadcolour, 200);
-                        deadpreviousVector = vec;
+                        Radar3D.DrawCircle(node, 1f, deadcolour, true, 200);
+                        Radar3D.DrawLine(node, deadpreviousVector, deadcolour, 200);
+                        deadpreviousVector = node;
                     }
 
                     // Draw offmesh connections
                     foreach (var offmesh in currentProfile.OffMeshConnections)
                     {
-                        var offmeshcolour = Color.Green;
-                        var offmeshcpreviousVector = new Vector3();
+                        Color offmeshcolour = Color.Green;
+                        Vector3 offmeshcpreviousVector = new Vector3();
                         foreach (var vec in offmesh.Path)
                         {
                             if (offmeshcpreviousVector == new Vector3())
@@ -382,8 +475,8 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
                 if (x != null)
                 {
-                    var pathStep = new MoveAlongPathModel() { Name = x, Order = StepCollection.Count, Path = new List<Vector3>() };
-                    StepCollection.Add(pathStep);
+                    MoveAlongPathModel stepModel = new MoveAlongPathModel() { Name = x, Order = StepCollection.Count, Path = new List<Vector3>() };
+                    StepCollection.Add(stepModel);
                     currentProfile.StepModels = StepCollection.ToList();
                 }
             }
@@ -401,8 +494,8 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
                 if (x != null)
                 {
-                    var Step = new InteractWithModel() { Name = x, Order = StepCollection.Count, InteractDistance = 3 };
-                    StepCollection.Add(Step);
+                    InteractWithModel stepModel = new InteractWithModel() { Name = x, Order = StepCollection.Count, InteractDistance = 3 };
+                    StepCollection.Add(stepModel);
                     currentProfile.StepModels = StepCollection.ToList();
                 }
             }
@@ -412,26 +505,7 @@ namespace WholesomeDungeonCrawler.GUI
                     $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
             }
         }
-        /*
-        private async void miGoToStep_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
-                if (x != null)
-                {
-                    var Step = new GoToModel() { Name = x, Order = StepCollection.Count };
-                    StepCollection.Add(Step);
-                    currentProfile.StepModels = StepCollection.ToList();
-                }
-            }
-            catch (Exception ex)
-            {
-                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
-            }
-        }
-        */
+
         private async void miTalkToUnitStep_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -439,8 +513,8 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
                 if (x != null)
                 {
-                    var Step = new TalkToUnitModel() { Name = x, Order = StepCollection.Count };
-                    StepCollection.Add(Step);
+                    TalkToUnitModel stepModel = new TalkToUnitModel() { Name = x, Order = StepCollection.Count };
+                    StepCollection.Add(stepModel);
                     currentProfile.StepModels = StepCollection.ToList();
                 }
             }
@@ -458,8 +532,8 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
                 if (x != null)
                 {
-                    var Step = new DefendSpotModel() { Name = x, Order = StepCollection.Count };
-                    StepCollection.Add(Step);
+                    DefendSpotModel stepModel = new DefendSpotModel() { Name = x, Order = StepCollection.Count };
+                    StepCollection.Add(stepModel);
                     currentProfile.StepModels = StepCollection.ToList();
                 }
             }
@@ -477,8 +551,27 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
                 if (x != null)
                 {
-                    var Step = new FollowUnitModel() { Name = x, Order = StepCollection.Count };
-                    StepCollection.Add(Step);
+                    FollowUnitModel stepModel = new FollowUnitModel() { Name = x, Order = StepCollection.Count };
+                    StepCollection.Add(stepModel);
+                    currentProfile.StepModels = StepCollection.ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+            }
+        }
+
+        private async void miPullToSafeSpotStep_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                if (x != null)
+                {
+                    PullToSafeSpotModel stepModel = new PullToSafeSpotModel() { Name = x, Order = StepCollection.Count };
+                    StepCollection.Add(stepModel);
                     currentProfile.StepModels = StepCollection.ToList();
                 }
             }
@@ -496,8 +589,8 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
                 if (x != null)
                 {
-                    var Step = new LeaveDungeonModel() { Name = x, Order = StepCollection.Count };
-                    StepCollection.Add(Step);
+                    LeaveDungeonModel stepModel = new LeaveDungeonModel() { Name = x, Order = StepCollection.Count };
+                    StepCollection.Add(stepModel);
                     currentProfile.StepModels = StepCollection.ToList();
                 }
             }
@@ -515,8 +608,8 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
                 if (x != null)
                 {
-                    var Step = new RegroupModel() { Name = x, Order = StepCollection.Count };
-                    StepCollection.Add(Step);
+                    RegroupModel stepModel = new RegroupModel() { Name = x, Order = StepCollection.Count };
+                    StepCollection.Add(stepModel);
                     currentProfile.StepModels = StepCollection.ToList();
                 }
             }
@@ -534,8 +627,8 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
                 if (x != null)
                 {
-                    var Step = new JumpToStepModel() { Name = x, Order = StepCollection.Count };
-                    StepCollection.Add(Step);
+                    JumpToStepModel stepModel = new JumpToStepModel() { Name = x, Order = StepCollection.Count };
+                    StepCollection.Add(stepModel);
                     currentProfile.StepModels = StepCollection.ToList();
                 }
             }

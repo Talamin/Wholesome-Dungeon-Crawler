@@ -4,6 +4,7 @@ using System.Linq;
 using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache.Entity;
+using WholesomeDungeonCrawler.Profiles.Steps;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -11,13 +12,16 @@ namespace WholesomeDungeonCrawler.Managers
 {
     class TargetingManager : ITargetingManager
     {
-
+        private readonly IProfileManager _profileManager;
         private readonly IEntityCache _entityCache;
         private static long MIN_TARGET_SWAP_HP = 1000;
         private static readonly long MIN_TARGET_SWAP_RATIO = 2;
 
-        public TargetingManager(IEntityCache entityCache)
+        public TargetingManager(
+            IEntityCache entityCache,
+            IProfileManager profileManager)
         {
+            _profileManager = profileManager;
             _entityCache = entityCache;
             MIN_TARGET_SWAP_HP = _entityCache.Me.Health / 4;
         }
@@ -51,6 +55,22 @@ namespace WholesomeDungeonCrawler.Managers
 
             if (_entityCache.IAmTank)
             {
+                // Cancel fight if we need to run back to safe spot
+                if (_profileManager.CurrentDungeonProfile?.CurrentStep != null
+                    && _profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep
+                    && currentTarget != null)
+                {
+                    PullToSafeSpotStep pullStep = _profileManager.CurrentDungeonProfile.CurrentStep as PullToSafeSpotStep;
+                    if (currentTarget.Target >= 0
+                        && _entityCache.Me.InCombatFlagOnly
+                        && !pullStep.IamInSafeSpot 
+                        && !pullStep.PositionInSafeSpotFightRange(currentTarget.Position))
+                    {
+                        canceable.Cancel = true;
+                        return;
+                    }
+                }
+
                 // Don't chase fleers
                 if (_entityCache.Target != null 
                     && _entityCache.Target.Fleeing 

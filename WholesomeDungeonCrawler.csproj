@@ -142,6 +142,7 @@
     <Compile Include="Profiles\Profile.cs" />
     <Compile Include="Profiles\Steps\JumpToStepStep.cs" />
     <Compile Include="Profiles\Steps\LeaveDungeonStep.cs" />
+    <Compile Include="Profiles\Steps\PullToSafeSpotStep.cs" />
     <Compile Include="Profiles\Steps\RegroupStep.cs" />
     <Compile Include="Profiles\Steps\Step.cs" />
     <Compile Include="GUI\ProductSettingsControl.xaml.cs">

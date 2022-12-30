@@ -84,6 +84,10 @@ namespace WholesomeDungeonCrawler.Profiles
                         LeaveDungeonModel leaveDungeonModel = model as LeaveDungeonModel;
                         _profileSteps.Add(new LeaveDungeonStep((LeaveDungeonModel)model, entityCache, partyChatManager, profileManager));
                         break;
+                    case PullToSafeSpotModel _:
+                        PullToSafeSpotModel pullToSafeSpotModel = model as PullToSafeSpotModel;
+                        _profileSteps.Add(new PullToSafeSpotStep((PullToSafeSpotModel)model, entityCache));
+                        break;
                 }
             }
 

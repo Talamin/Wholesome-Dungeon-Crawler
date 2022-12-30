@@ -82,6 +82,7 @@ namespace WholesomeDungeonCrawler.States
             }
             else
             {
+                MovementManager.StopMove();
                 if (_entityCache.ListGroupMember
                     .Any(player => _rezzClasses.Contains(player.WoWClass)
                         && !player.Dead
@@ -94,7 +95,6 @@ namespace WholesomeDungeonCrawler.States
                 {
                     Thread.Sleep(1000);
                     Logger.Log("Nothing can resurrect me. We will have to walk.");
-                    MovementManager.StopMove();
                     Lua.LuaDoString("RepopMe();");
                     Thread.Sleep(5000);
                 }

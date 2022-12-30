@@ -274,7 +274,6 @@
                         </GroupBox.Background>
                         <StackPanel>
                             <StackPanel Orientation="Horizontal"  Margin="5">
-                                <!--<TextBox x:Name="txtFollowUnitStartPos" Controls:TextBoxHelper.Watermark="Start Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.ExpectedStartPosition, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>-->
                                 <TextBox Name="txtFollowUnitStartPos" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Start Position" Margin="5">
                                     <TextBox.Text>
                                         <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.ExpectedStartPosition" Converter="{StaticResource TextBoxVectorConverter}">
@@ -287,7 +286,6 @@
                                 <Button x:Name="btnFollowUnitGetCurrentPosStart" Content="Get Target Position" Margin="5" Click="btnFollowUnitGetCurrentPosStart_Click" />
                             </StackPanel>
                             <StackPanel Orientation="Horizontal"  Margin="5">
-                                <!--<TextBox x:Name="txtFollowUnitEndPos" Controls:TextBoxHelper.Watermark="End Position" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding SelectedItem.ExpectedEndPosition, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"  IsReadOnly="True"/>-->
                                 <TextBox Name="txtFollowUnitEndPos" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="End Position" Margin="5">
                                     <TextBox.Text>
                                         <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.ExpectedEndPosition" Converter="{StaticResource TextBoxVectorConverter}">
@@ -303,11 +301,69 @@
                                 <Controls:NumericUpDown x:Name="txtFollowUnitId" Controls:TextBoxHelper.Watermark="Unit ID" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.UnitId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                 <Button x:Name="btnGetFollowUnitId" Content="Get Target Unit Id" Margin="5" Click="btnGetFollowUnitId_Click" />
                             </StackPanel>
-                            <!--<Controls:ToggleSwitch x:Name="chkFollowUnitFindClosest" IsChecked="{Binding SelectedItem.FindClosest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Find Closest" OffLabel="Find Closest" Margin="10 5"/>-->
                             <Controls:ToggleSwitch x:Name="chkFollowUnitSkipIfNotFound" IsChecked="{Binding SelectedItem.SkipIfNotFound, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Skip If Not Found" OffLabel="Skip If Not Found" Margin="10 5"/>
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
+
+                <!--PullToSafeSpot-->
+                <StackPanel>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem, Converter={StaticResource TypeConverter}}" Value="PullToSafeSpotModel">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <GroupBox Header="PullToSafeSpot Step" BorderBrush="{x:Null}">
+                        <GroupBox.Background>
+                            <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                                <GradientStop Color="#FF34e89e" Offset="0"/>
+                                <GradientStop Color="#FF0f3443" Offset="1"/>
+                            </LinearGradientBrush>
+                        </GroupBox.Background>
+                        <StackPanel>
+                            <!-- Safe spot position -->
+                            <StackPanel Orientation="Horizontal"  Margin="5">
+                                <TextBox Name="txtPullToSafeSpotSafePosition" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Safe spot" Margin="5">
+                                    <TextBox.Text>
+                                        <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.SafeSpotPosition" Converter="{StaticResource TextBoxVectorConverter}">
+                                            <Binding.ValidationRules>
+                                                <local:VectorValidation/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                                <Button x:Name="btnPullToSafeSpotGetCurrentPosSafeSpot" Content="Get Current Position" Margin="5" Click="btnPullToSafeSpotGetCurrentPosSafeSpot_Click" />
+                            </StackPanel>
+                            <!-- Safe spot radius -->
+                            <StackPanel Orientation="Horizontal"  Margin="5">
+                                <Controls:NumericUpDown x:Name="txtSafeSpotRadius" Controls:TextBoxHelper.Watermark="Safe spot radius" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.SafeSpotRadius, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <!-- Zone to clear position -->
+                            <StackPanel Orientation="Horizontal"  Margin="5">
+                                <TextBox Name="txtPullToSafeSpotZoneToClear" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Zone to clear" Margin="5">
+                                    <TextBox.Text>
+                                        <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.ZoneToClearPosition" Converter="{StaticResource TextBoxVectorConverter}">
+                                            <Binding.ValidationRules>
+                                                <local:VectorValidation/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                                <Button x:Name="btnPullToSafeSpotGetCurrentPosZoneToClear" Content="Get Current Position" Margin="5" Click="btnPullToSafeSpotGetCurrentPosZoneToClear_Click" />
+                            </StackPanel>
+                            <!-- Zone to clear radius -->
+                            <StackPanel Orientation="Horizontal"  Margin="5">
+                                <Controls:NumericUpDown x:Name="txtZoneToClearRadius" Controls:TextBoxHelper.Watermark="Zone to clear radius" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.ZoneToClearRadius, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+
                 <!--Regroup-->
                 <StackPanel>
                     <StackPanel.Style>

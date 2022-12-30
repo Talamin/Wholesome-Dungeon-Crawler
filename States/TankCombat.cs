@@ -1,8 +1,10 @@
 ﻿using robotManager.FiniteStateMachine;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
+using WholesomeDungeonCrawler.Profiles.Steps;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
@@ -13,12 +15,17 @@ namespace WholesomeDungeonCrawler.States
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
+        private readonly IProfileManager _profileManager;
         private IWoWUnit _foundtarget;
 
-        public TankCombat(ICache iCache, IEntityCache entityCache)
+        public TankCombat(
+            ICache iCache, 
+            IEntityCache entityCache,
+            IProfileManager profileManager)
         {
             _cache = iCache;
             _entityCache = entityCache;
+            _profileManager = profileManager;
         }
 
         public override bool NeedToRun
@@ -31,6 +38,17 @@ namespace WholesomeDungeonCrawler.States
                     || !_entityCache.IAmTank)
                 {
                     return false;
+                }
+
+                // Block state if pulling to safe spot
+                if (_profileManager.CurrentDungeonProfile?.CurrentStep != null
+                    && _profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep)
+                {
+                    PullToSafeSpotStep step = _profileManager.CurrentDungeonProfile.CurrentStep as PullToSafeSpotStep;
+                    if (!step.IamInSafeSpot)
+                    {
+                        return false;
+                    }
                 }
 
                 if (_entityCache.Target.Dead)

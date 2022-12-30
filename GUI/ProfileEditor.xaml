@@ -91,6 +91,7 @@
                                             <MenuItem x:Name="regroupStep" Header="Regroup" Click="regroupStep_Click" />
                                             <MenuItem x:Name="jumpToStep" Header="Jump to step" Click="jumpToStep_Click" />
                                             <MenuItem x:Name="miLeaveDungeonStep" Header="Leave dungeon" Click="miLeaveDungeonStep_Click" />
+                                            <MenuItem x:Name="miPullToSafeSpotStep" Header="Pull to safe spot" Click="miPullToSafeSpotStep_Click" />
                                         </ContextMenu>
                                     </Button.ContextMenu>
                                 </Button>

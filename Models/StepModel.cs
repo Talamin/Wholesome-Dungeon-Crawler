@@ -92,4 +92,14 @@ namespace WholesomeDungeonCrawler.Models
     {
         public string StepToJumpTo { get; set; }
     }
+    public class PullToSafeSpotModel : StepModel
+    {
+        public readonly float DEFAULT_MELEE_FIGHT_RANGE = 7f;
+        public readonly float DEFAULT_RANGED_FIGHT_RANGE = 15f;
+
+        public Vector3 SafeSpotPosition { get; set; }
+        public int SafeSpotRadius { get; set; } = 10;
+        public Vector3 ZoneToClearPosition { get; set; }
+        public int ZoneToClearRadius { get; set; } = 30;
+    }
 }

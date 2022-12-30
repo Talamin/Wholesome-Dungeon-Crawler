@@ -47,7 +47,7 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 // Alive to dead, keep loaded profile for death run
-                if (_entityCache.Me.Dead)
+                if (_entityCache.Me.Dead && _entityCache.Me.Auras.ContainsKey(8326))
                 {
                     if (_profileManager.CurrentDungeonProfile != null)
                     {

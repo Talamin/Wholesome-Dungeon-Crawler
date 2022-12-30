@@ -41,7 +41,7 @@ namespace WholesomeDungeonCrawler.Bot
                 _partyChatManager.Initialize();
                 _profileManager = new ProfileManager(_entityCache, _cache, _pathManager, _partyChatManager);
                 _profileManager.Initialize();
-                _targetingManager = new TargetingManager(_entityCache);
+                _targetingManager = new TargetingManager(_entityCache, _profileManager);
                 _targetingManager.Initialize();
                 _luaStatusFrameManager = new LuaStatusFrameManager(_cache, _entityCache, _profileManager);
                 _luaStatusFrameManager.Initialize();
@@ -69,8 +69,8 @@ namespace WholesomeDungeonCrawler.Bot
                     new ForceRegroup(_cache, _entityCache, _profileManager),
                     new MyMacro(),
                     new CombatTurboLoot(_entityCache),
-                    new SlaveCombat(_cache, _entityCache),
-                    new TankCombat(_cache, _entityCache),
+                    new SlaveCombat(_cache, _entityCache, _profileManager),
+                    new TankCombat(_cache, _entityCache, _profileManager),
                     new Regeneration(),
                     new GroupRevive(_cache, _entityCache),
                     new WaitRest(_cache, _entityCache),

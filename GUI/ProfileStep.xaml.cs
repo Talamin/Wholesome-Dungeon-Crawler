@@ -268,6 +268,26 @@ namespace WholesomeDungeonCrawler.GUI
             }
         }
 
+        private void btnPullToSafeSpotGetCurrentPosSafeSpot_Click(object sender, RoutedEventArgs e)
+        {
+            Vector3 myPos = ObjectManager.Me.Position;
+            if (myPos != null)
+            {
+                ((PullToSafeSpotModel)this.SelectedItem).SafeSpotPosition = myPos;
+                txtPullToSafeSpotSafePosition.Text = TextBoxVectorConverter.GetStringFromVector3(myPos);
+            }
+        }
+
+        private void btnPullToSafeSpotGetCurrentPosZoneToClear_Click(object sender, RoutedEventArgs e)
+        {
+            Vector3 myPos = ObjectManager.Me.Position;
+            if (myPos != null)
+            {
+                ((PullToSafeSpotModel)this.SelectedItem).ZoneToClearPosition = myPos;
+                txtPullToSafeSpotZoneToClear.Text = TextBoxVectorConverter.GetStringFromVector3(myPos);
+            }
+        }
+
         private void btnGetCanGossipEntry_Click(object sender, RoutedEventArgs e)
         {
             var target = ObjectManager.Target;

@@ -1,5 +1,4 @@
-﻿using WholesomeDungeonCrawler.Helpers;
-using WholesomeToolbox;
+﻿using WholesomeToolbox;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
