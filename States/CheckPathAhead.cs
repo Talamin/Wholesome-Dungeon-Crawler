@@ -79,7 +79,7 @@ namespace WholesomeDungeonCrawler.States
                 _unitOnPath = (null, 0);
 
                 if (!_entityCache.Me.Valid
-                    || _entityCache.Me.InCombatFlagOnly
+                    || _entityCache.EnemiesAttackingGroup.Length > 0
                     || Fight.InFight
                     || !_cache.IsInInstance
                     || _profileManager.CurrentDungeonProfile == null

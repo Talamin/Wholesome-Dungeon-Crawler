@@ -146,7 +146,7 @@ namespace WholesomeDungeonCrawler.Bot
                 case "WORLD_MAP_UPDATE":
                     _cache.CacheIsInInstance();
                     _entityCache.CacheGroupMembers(id);
-                    _cache.CacheInLoadingScreen(id);
+                    //_cache.CacheInLoadingScreen(id);
                     break;
                 case "LFG_PROPOSAL_SHOW":
                 case "LFG_PROPOSAL_FAILED":

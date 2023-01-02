@@ -41,6 +41,7 @@ namespace WholesomeDungeonCrawler.States
                     || !_entityCache.Me.Valid
                     || _entityCache.Me.Dead
                     || Fight.InFight
+                    || _entityCache.EnemiesAttackingGroup.Length > 0
                     || _cache.LootRollShow
                     || _profileManager.CurrentDungeonProfile == null
                     || _profileManager.CurrentDungeonProfile.CurrentStep == null

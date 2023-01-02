@@ -46,7 +46,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         {
             _partyChatManager.SetRegroupStep(this);
 
-            if (_entityCache.Me.Dead || _entityCache.Me.InCombatFlagOnly)
+            if (_entityCache.Me.Dead || _entityCache.EnemiesAttackingGroup.Length > 0)
             {
                 IsCompleted = false;
                 return;

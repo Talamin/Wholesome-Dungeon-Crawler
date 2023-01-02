@@ -44,7 +44,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
-            if (_entityCache.Me.Dead || _entityCache.Me.InCombatFlagOnly)
+            if (_entityCache.Me.Dead || _entityCache.EnemiesAttackingGroup.Length > 0)
             {
                 IsCompleted = false;
                 return;

@@ -28,7 +28,7 @@ namespace WholesomeDungeonCrawler.States
                 if (!Conditions.InGameAndConnected
                     || !_entityCache.Me.Valid
                     || Fight.InFight
-                    || _entityCache.Me.InCombatFlagOnly
+                    || _entityCache.EnemiesAttackingGroup.Length > 0
                     || !_cache.IsInInstance)
                 {
                     return false;

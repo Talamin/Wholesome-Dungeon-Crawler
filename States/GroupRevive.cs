@@ -18,7 +18,7 @@ namespace WholesomeDungeonCrawler.States
         public override string DisplayName => "Group Revive";
 
         private readonly ICache _cache;
-        private readonly IEntityCache _entitycache;
+        private readonly IEntityCache _entityCache;
 
         private Dictionary<WoWClass, string> _rezzClasses = new Dictionary<WoWClass, string>
         {
@@ -35,7 +35,7 @@ namespace WholesomeDungeonCrawler.States
             IEntityCache entityCache)
         {
             _cache = iCache;
-            _entitycache = entityCache;
+            _entityCache = entityCache;
         }
 
         public override bool NeedToRun
@@ -43,14 +43,14 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!Conditions.InGameAndConnected
-                    || !_entitycache.Me.Valid
+                    || !_entityCache.Me.Valid
                     || Fight.InFight
-                    || _entitycache.Me.InCombatFlagOnly
+                    || _entityCache.EnemiesAttackingGroup.Length > 0
                     || !_cache.IsInInstance
-                    || !_rezzClasses.ContainsKey(_entitycache.Me.WoWClass)
-                    || !SpellManager.KnowSpell(_rezzClasses[_entitycache.Me.WoWClass])
-                    || !SpellManager.SpellUsableLUA(_rezzClasses[_entitycache.Me.WoWClass])
-                    || !_entitycache.ListGroupMember.Any(unit => unit.Dead))
+                    || !_rezzClasses.ContainsKey(_entityCache.Me.WoWClass)
+                    || !SpellManager.KnowSpell(_rezzClasses[_entityCache.Me.WoWClass])
+                    || !SpellManager.SpellUsableLUA(_rezzClasses[_entityCache.Me.WoWClass])
+                    || !_entityCache.ListGroupMember.Any(unit => unit.Dead))
                 {
                     return false;
                 }
@@ -61,7 +61,7 @@ namespace WholesomeDungeonCrawler.States
                     _cacheTimer.Remove(entry.Key);
                 }
 
-                if (!_entitycache.ListGroupMember.Any(unit => unit.Dead && !_cacheTimer.ContainsKey(unit.Name)))
+                if (!_entityCache.ListGroupMember.Any(unit => unit.Dead && !_cacheTimer.ContainsKey(unit.Name)))
                 {
                     // Everyone is on a timer
                     return false;
@@ -74,9 +74,9 @@ namespace WholesomeDungeonCrawler.States
         public override void Run()
         {
 
-            string spell = _rezzClasses[_entitycache.Me.WoWClass];
-            Vector3 myPos = _entitycache.Me.PositionWithoutType;
-            IWoWPlayer playerToResurrect = _entitycache.ListGroupMember
+            string spell = _rezzClasses[_entityCache.Me.WoWClass];
+            Vector3 myPos = _entityCache.Me.PositionWithoutType;
+            IWoWPlayer playerToResurrect = _entityCache.ListGroupMember
                 .Where(unit => unit.Dead && !_cacheTimer.ContainsKey(unit.Name))
                 .OrderBy(unit => unit.PositionWithoutType.DistanceTo(myPos))
                 .FirstOrDefault();

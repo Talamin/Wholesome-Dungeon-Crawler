@@ -15,13 +15,13 @@ namespace WholesomeDungeonCrawler.States
         public override string DisplayName => "Combat Turbo Looting";
         private readonly int _lootRange = 8;
 
-        private readonly IEntityCache _entitycache;
+        private readonly IEntityCache _entityCache;
         private IWoWUnit _unitToLoot;
         private List<ulong> _unitsLooted = new List<ulong>();
 
         public CombatTurboLoot(IEntityCache entityCache)
         {
-            _entitycache = entityCache;
+            _entityCache = entityCache;
         }
 
         public override bool NeedToRun
@@ -30,15 +30,15 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (!Conditions.InGameAndConnected
                     || !wManagerSetting.CurrentSetting.LootMobs
-                    || !_entitycache.Me.Valid
-                    || !_entitycache.Me.InCombatFlagOnly)
+                    || !_entityCache.Me.Valid
+                    || _entityCache.EnemiesAttackingGroup.Length <= 0)
                 {
                     return false;
                 }
 
                 _unitToLoot = null;
-                Vector3 myPosition = _entitycache.Me.PositionWithoutType;
-                List<IWoWUnit> lootableCorpses = _entitycache.LootableUnits
+                Vector3 myPosition = _entityCache.Me.PositionWithoutType;
+                List<IWoWUnit> lootableCorpses = _entityCache.LootableUnits
                     .Where(corpse => corpse?.PositionWithoutType.DistanceTo(myPosition) <= _lootRange)
                     .OrderBy(corpse => corpse?.PositionWithoutType.DistanceTo(myPosition))
                     .ToList();
@@ -58,7 +58,7 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            Vector3 myPos = _entitycache.Me.PositionWithoutType;
+            Vector3 myPos = _entityCache.Me.PositionWithoutType;
             Vector3 corpsePos = _unitToLoot.PositionWithoutType;
 
             // Purge cache

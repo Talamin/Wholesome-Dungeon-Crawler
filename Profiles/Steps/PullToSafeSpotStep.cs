@@ -125,9 +125,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                             // Run back to safe spot
                             if (!MovementManager.InMovement || MovementManager.CurrentPath.Last() != _safeSpot)
                             {
+                                MovementManager.StopMove();
                                 Logger.Log($"{_entityCache.EnemiesAttackingGroup.Count()} enemies attacking, returning to safe spot");
-                                List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, _safeSpot);
-                                MovementManager.Go(pathToSafeSpot);
+                                //List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, _safeSpot);
+                                List<Vector3> pathToSafeSpot = new List<Vector3>(closestEntry.Value);
+                                pathToSafeSpot.Reverse();
+                                MovementManager.Go(WTPathFinder.PathFromClosestPoint(WTPathFinder.PathFromClosestPoint(pathToSafeSpot)));
                             }
                         }
                     }
