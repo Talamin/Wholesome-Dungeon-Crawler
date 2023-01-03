@@ -124,7 +124,7 @@ namespace WholesomeDungeonCrawler.States
                         foreach (IWoWPlayer player in _entityCache.ListGroupMember)
                         {
                             if (MoveHelper.PositionIsAlongPath(player.PositionWithoutType, _linesAllPathsInfront)
-                                && myPos.DistanceTo(player.PositionWithoutType) > 20)
+                                && myPos.DistanceTo(player.PositionWithoutType) >= 10)
                             {
                                 Logger.LogOnce($"{player.Name} is ahead. Forcing path");
                                 return false;
