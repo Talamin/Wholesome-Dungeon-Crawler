@@ -9,7 +9,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private IProfile _profile;
 
         public override string Name { get; }
-        public override int Order { get; }
 
         public JumpToStepStep(JumpToStepModel jumpToStepModel, IProfile profile)
         {
@@ -17,7 +16,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _stepToJumpTo = _jumpToStepModel.StepToJumpTo;
             _profile = profile;
             Name = _jumpToStepModel.Name;
-            Order = _jumpToStepModel.Order;
         }
 
         public override void Run()

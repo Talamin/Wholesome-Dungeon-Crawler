@@ -34,9 +34,8 @@ namespace WholesomeDungeonCrawler.States
                     || !_entityCache.Me.IsValid
                     || _entityCache.Me.IsDead
                     || Fight.InFight
-                    || _profileManager.CurrentDungeonProfile == null
-                    || _profileManager.CurrentDungeonProfile.CurrentStep == null
-                    || _profileManager.CurrentDungeonProfile.CurrentStep.Order > 0
+                    || !_profileManager.ProfileIsRunning
+                    || _profileManager.CurrentDungeonProfile.GetCurrentStepIndex > 0
                     || !_cache.IsInInstance
                     || _cache.LootRollShow)
                 {

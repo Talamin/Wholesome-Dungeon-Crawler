@@ -7,7 +7,6 @@ namespace WholesomeDungeonCrawler.Models
     public abstract class StepModel
     {
         public string Name { get; set; }
-        public int Order { get; set; }
         public StepCompleteConditionModel CompleteCondition { get; set; }
         public bool HasCompleteCondition => CompleteCondition != null && CompleteCondition.ConditionType != CompleteConditionType.None;
     }

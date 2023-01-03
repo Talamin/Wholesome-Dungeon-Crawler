@@ -23,7 +23,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private readonly float _myFightRange;
 
         public override string Name { get; }
-        public override int Order { get; }
         public bool IamInSafeSpot => _safeSpot != null && _safeSpot.DistanceTo(_entityCache.Me.PositionWithoutType) < _safeSpotRadius;
         public bool PositionInSafeSpotFightRange(Vector3 position) => position.DistanceTo(_safeSpot) < _safeSpotRadius + _myFightRange;
 
@@ -32,7 +31,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             IEntityCache entityCache)
         {
             Name = pullToSafeSpotModel.Name;
-            Order = pullToSafeSpotModel.Order;
             _pullToSafeSpotModel = pullToSafeSpotModel;
             _entityCache = entityCache;
             _safeSpotRadius = pullToSafeSpotModel.SafeSpotRadius;

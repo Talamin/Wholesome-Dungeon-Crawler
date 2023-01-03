@@ -17,6 +17,7 @@ namespace WholesomeDungeonCrawler.Profiles
         List<Vector3> AllMoveAlongNodes { get; }
         FactionType FactionType { get; }
         List<IStep> GetAllSteps { get; }
+        int GetCurrentStepIndex { get; }
 
         void AutoSetCurrentStep();
         void SetFirstLaunchStep();

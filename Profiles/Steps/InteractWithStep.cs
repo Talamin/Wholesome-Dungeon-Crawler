@@ -18,7 +18,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private float _interactDistance;
         private Vector3 _expectedPosition;
         public override string Name { get; }
-        public override int Order { get; }
         private List<int> _objectIds = new List<int>();
 
         public InteractWithStep(InteractWithModel interactWithModel, IEntityCache entityCache)
@@ -26,7 +25,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _interactWithModel = interactWithModel;
             _entityCache = entityCache;
             Name = interactWithModel.Name;
-            Order = interactWithModel.Order;
             _interactDistance = interactWithModel.InteractDistance < 3.5f ? 3.5f : interactWithModel.InteractDistance;
             _expectedPosition = interactWithModel.ExpectedPosition;
             string[] objectsIds = interactWithModel.ObjectId.Split(';');

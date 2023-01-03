@@ -16,13 +16,15 @@ namespace WholesomeDungeonCrawler.Managers
 {
     class ProfileManager : IProfileManager
     {
-        public IProfile CurrentDungeonProfile { get; private set; }
-
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly IPathManager _pathManager;
         private readonly IPartyChatManager _partyChatManager;
+        private IProfile _currentProfile = null;
         public static readonly string ProfilesDirectoryName = "Wholesome-Dungeon-Crawler-Profiles";
+
+        public IProfile CurrentDungeonProfile => _currentProfile;
+        public bool ProfileIsRunning => _currentProfile != null && _currentProfile.CurrentStep != null;
 
         public ProfileManager(IEntityCache entityCache, ICache cache, IPathManager pathManager, IPartyChatManager partyChatManager)
         {
@@ -182,7 +184,7 @@ namespace WholesomeDungeonCrawler.Managers
                 {
                     PathFinder.OffMeshConnections.AddRange(chosenModel.OffMeshConnections);
                 }
-                CurrentDungeonProfile = new Profile(chosenModel, _entityCache, _pathManager, _partyChatManager, this, fileName);
+                _currentProfile = new Profile(chosenModel, _entityCache, _pathManager, _partyChatManager, this, fileName);
                 string log = $"Dungeon Profile loaded: {chosenModel.ProfileName}, ";
                 log += $"MapID {chosenModel.MapId}, ";
                 log += $"{chosenModel.StepModels.Count()} steps, ";
@@ -191,19 +193,19 @@ namespace WholesomeDungeonCrawler.Managers
                 Logger.Log(log);
                 Thread.Sleep(waitTime);
                 Logger.Log($"-----------------------------------------");
-                CurrentDungeonProfile.SetFirstLaunchStep();
+                _currentProfile.SetFirstLaunchStep();
                 return;
             }
         }
 
         public void UnloadCurrentProfile()
         {
-            if (CurrentDungeonProfile != null)
+            if (_currentProfile != null)
             {
-                Logger.Log($"Unloading profile {CurrentDungeonProfile.FileName}");
-                CurrentDungeonProfile.Dispose();
+                Logger.Log($"Unloading profile {_currentProfile.FileName}");
+                _currentProfile.Dispose();
             }
-            CurrentDungeonProfile = null;
+            _currentProfile = null;
         }
     }
 }

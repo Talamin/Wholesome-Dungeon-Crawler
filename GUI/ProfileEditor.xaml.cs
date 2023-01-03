@@ -30,21 +30,21 @@ namespace WholesomeDungeonCrawler.GUI
     /// </summary>
     public partial class ProfileEditor : INotifyPropertyChanged
     {
-        public OpenFileDialog openFileDialog1;
+        public OpenFileDialog OpenFileDialog1;
         private static ProfileModel _currentProfile;
         public event PropertyChangedEventHandler PropertyChanged;
         public ObservableCollection<StepModel> StepCollection { get; set; }
         public ObservableCollection<Vector3> DeathrunCollection { get; set; }
-        private static System.Timers.Timer addDeathrunVectorTimer;
+        private static System.Timers.Timer _addDeathrunVectorTimer;
         public ObservableCollection<PathFinder.OffMeshConnection> OffMeshCollection { get; set; }
         public ObservableCollection<Vector3> OffMeshPathCollection { get; set; }
 
-        private JsonSerializerSettings jsonSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+        private JsonSerializerSettings _jsonSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
 
-        private MetroDialogSettings basicDialogSettings;
-        private MetroDialogSettings addDialogSettings;
+        private MetroDialogSettings _basicDialogSettings;
+        private MetroDialogSettings _addDialogSettings;
 
-        public ProfileModel currentProfile
+        public ProfileModel CurrentProfile
         {
             get { return _currentProfile; }
             set
@@ -57,10 +57,10 @@ namespace WholesomeDungeonCrawler.GUI
         public ProfileEditor()
         {
             this.DataContext = this;
-            currentProfile = new ProfileModel();
-            currentProfile.StepModels = new List<StepModel>();
-            currentProfile.DeathRunPath = new List<Vector3>();
-            currentProfile.OffMeshConnections = new List<PathFinder.OffMeshConnection>();
+            CurrentProfile = new ProfileModel();
+            CurrentProfile.StepModels = new List<StepModel>();
+            CurrentProfile.DeathRunPath = new List<Vector3>();
+            CurrentProfile.OffMeshConnections = new List<PathFinder.OffMeshConnection>();
             InitializeComponent();
 
             cbDungeon.ItemsSource = Lists.AllDungeons;
@@ -75,13 +75,13 @@ namespace WholesomeDungeonCrawler.GUI
         {
             //Debugger.Launch();
             #region DialogSetup
-            basicDialogSettings = new MetroDialogSettings()
+            _basicDialogSettings = new MetroDialogSettings()
             {
                 AnimateHide = true,
                 AnimateShow = true,
                 ColorScheme = MetroDialogColorScheme.Theme
             };
-            addDialogSettings = new MetroDialogSettings()
+            _addDialogSettings = new MetroDialogSettings()
             {
                 AffirmativeButtonText = "Add",
                 NegativeButtonText = "Cancel",
@@ -89,7 +89,7 @@ namespace WholesomeDungeonCrawler.GUI
                 AnimateShow = true,
                 ColorScheme = MetroDialogColorScheme.Theme
             };
-            openFileDialog1 = new OpenFileDialog()
+            OpenFileDialog1 = new OpenFileDialog()
             {
                 FileName = "Select a profile",
                 Filter = "JSON files (*.json)|*.json",
@@ -98,24 +98,24 @@ namespace WholesomeDungeonCrawler.GUI
             };
             #endregion
 
-            StepCollection = new ObservableCollection<StepModel>(currentProfile.StepModels);
+            StepCollection = new ObservableCollection<StepModel>(CurrentProfile.StepModels);
             dgProfileSteps.ItemsSource = StepCollection;
 
-            DeathrunCollection = new ObservableCollection<Vector3>(currentProfile.DeathRunPath);
+            DeathrunCollection = new ObservableCollection<Vector3>(CurrentProfile.DeathRunPath);
             dgDeathrun.ItemsSource = DeathrunCollection;
-            addDeathrunVectorTimer = new System.Timers.Timer(200);
-            addDeathrunVectorTimer.Elapsed += AddDeathrunVectorTimer_Elapsed;
-            addDeathrunVectorTimer.AutoReset = true;
-            addDeathrunVectorTimer.Enabled = true;
+            _addDeathrunVectorTimer = new System.Timers.Timer(200);
+            _addDeathrunVectorTimer.Elapsed += AddDeathrunVectorTimer_Elapsed;
+            _addDeathrunVectorTimer.AutoReset = true;
+            _addDeathrunVectorTimer.Enabled = true;
 
-            OffMeshCollection = new ObservableCollection<PathFinder.OffMeshConnection>(currentProfile.OffMeshConnections);
+            OffMeshCollection = new ObservableCollection<PathFinder.OffMeshConnection>(CurrentProfile.OffMeshConnections);
             dgOffmeshList.ItemsSource = OffMeshCollection;
             cbOffMeshDirection.ItemsSource = Enum.GetValues(typeof(PathFinder.OffMeshConnectionType));
 
             cbFaction.ItemsSource = Enum.GetValues(typeof(Npc.FactionType));
-            cbFaction.SelectedItem = currentProfile.Faction;
+            cbFaction.SelectedItem = CurrentProfile.Faction;
 
-            cbDungeon.SelectedValue = currentProfile.DungeonName;
+            cbDungeon.SelectedValue = CurrentProfile.DungeonName;
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)
@@ -125,8 +125,8 @@ namespace WholesomeDungeonCrawler.GUI
 
         private void btnNewProfile_Click(object sender, RoutedEventArgs e)
         {
-            currentProfile = new ProfileModel();
-            currentProfile.StepModels = new List<StepModel>();
+            CurrentProfile = new ProfileModel();
+            CurrentProfile.StepModels = new List<StepModel>();
             Setup();
         }
 
@@ -134,45 +134,44 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(currentProfile.DungeonName))
+                if (string.IsNullOrWhiteSpace(CurrentProfile.DungeonName))
                 {
-                    await this.ShowMessageAsync("Save Failed.", "You need to select a dungeon in the list", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    await this.ShowMessageAsync("Save Failed.", "You need to select a dungeon in the list", MessageDialogStyle.Affirmative, _basicDialogSettings);
                     return;
                 }
 
-                if (currentProfile.MapId <= 0)
+                if (CurrentProfile.MapId <= 0)
                 {
-                    await this.ShowMessageAsync("Save Failed.", "Dungeon ID not found", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    await this.ShowMessageAsync("Save Failed.", "Dungeon ID not found", MessageDialogStyle.Affirmative, _basicDialogSettings);
                     return;
                 }
 
-                if (string.IsNullOrWhiteSpace(currentProfile.ProfileName))
+                if (string.IsNullOrWhiteSpace(CurrentProfile.ProfileName))
                 {
-                    await this.ShowMessageAsync("Save Failed.", "You need to enter a profile name", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    await this.ShowMessageAsync("Save Failed.", "You need to enter a profile name", MessageDialogStyle.Affirmative, _basicDialogSettings);
                     return;
                 }
 
-                var dungeon = Lists.AllDungeons.FirstOrDefault(x => x.Name == currentProfile.DungeonName);
+                var dungeon = Lists.AllDungeons.FirstOrDefault(x => x.Name == CurrentProfile.DungeonName);
 
                 if (dungeon == null)
                 {
-                    await this.ShowMessageAsync("Save Failed.", $"Dungeon {currentProfile.DungeonName} has not been found in the list", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    await this.ShowMessageAsync("Save Failed.", $"Dungeon {CurrentProfile.DungeonName} has not been found in the list", MessageDialogStyle.Affirmative, _basicDialogSettings);
                 }
 
                 var rootpath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/{ProfileManager.ProfilesDirectoryName}/{dungeon.Name}");
-                currentProfile.StepModels = currentProfile.StepModels.OrderBy(x => x.Order).ToList();
 
-                var output = JsonConvert.SerializeObject(currentProfile, Formatting.Indented, jsonSettings);
-                var path = $@"{rootpath.FullName}\{currentProfile.ProfileName.Replace(" ", "_")}_{currentProfile.Faction}.json";
+                var output = JsonConvert.SerializeObject(CurrentProfile, Formatting.Indented, _jsonSettings);
+                var path = $@"{rootpath.FullName}\{CurrentProfile.ProfileName.Replace(" ", "_")}_{CurrentProfile.Faction}.json";
                 File.WriteAllText(path, output);
                 Setup();
 
-                await this.ShowMessageAsync("Profile Saved!", "Saved to " + path, MessageDialogStyle.Affirmative, basicDialogSettings);
+                await this.ShowMessageAsync("Profile Saved!", "Saved to " + path, MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
             catch (Exception ex)
             {
                 await this.ShowMessageAsync("Save Failed.", $"Error message: {ex.Message}\n\n" +
-                $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+                $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
 
@@ -198,7 +197,7 @@ namespace WholesomeDungeonCrawler.GUI
             catch (Exception ex)
             {
                 await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+                $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
 
         }
@@ -231,7 +230,7 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 if (Conditions.InGameAndConnected)
                 {
-                    foreach (StepModel step in currentProfile.StepModels)
+                    foreach (StepModel step in CurrentProfile.StepModels)
                     {
                         byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(step.Name));
                         Color randomColor = Color.FromArgb(hash[0], hash[1], hash[2]);
@@ -368,7 +367,7 @@ namespace WholesomeDungeonCrawler.GUI
                     // Draw death run paths
                     Color deadcolour = Color.Red;
                     Vector3 deadpreviousVector = new Vector3();
-                    foreach (Vector3 node in currentProfile.DeathRunPath)
+                    foreach (Vector3 node in CurrentProfile.DeathRunPath)
                     {
                         if (deadpreviousVector == new Vector3())
                         {
@@ -380,7 +379,7 @@ namespace WholesomeDungeonCrawler.GUI
                     }
 
                     // Draw offmesh connections
-                    foreach (var offmesh in currentProfile.OffMeshConnections)
+                    foreach (var offmesh in CurrentProfile.OffMeshConnections)
                     {
                         Color offmeshcolour = Color.Green;
                         Vector3 offmeshcpreviousVector = new Vector3();
@@ -408,26 +407,26 @@ namespace WholesomeDungeonCrawler.GUI
             if (((DungeonModel)cbDungeon.SelectedItem) != null
                 && Lists.AllDungeons.Exists(dungeon => dungeon.Name == ((DungeonModel)cbDungeon.SelectedItem).Name))
             {
-                currentProfile.DungeonName = ((DungeonModel)cbDungeon.SelectedItem).Name;
-                currentProfile.MapId = Lists.AllDungeons.Find(dungeon => dungeon.Name == currentProfile.DungeonName).MapId;
+                CurrentProfile.DungeonName = ((DungeonModel)cbDungeon.SelectedItem).Name;
+                CurrentProfile.MapId = Lists.AllDungeons.Find(dungeon => dungeon.Name == CurrentProfile.DungeonName).MapId;
             }
         }
 
         private async void btnLoadProfile_Click(object sender, RoutedEventArgs e)
         {
-            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (OpenFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 try
                 {
                     //Debugger.Launch();
-                    var filePath = openFileDialog1.FileName;
-                    currentProfile = JsonConvert.DeserializeObject<ProfileModel>(File.ReadAllText(filePath), jsonSettings);
+                    var filePath = OpenFileDialog1.FileName;
+                    CurrentProfile = JsonConvert.DeserializeObject<ProfileModel>(File.ReadAllText(filePath), _jsonSettings);
                     Setup();
                 }
                 catch (Exception ex)
                 {
                     await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                        $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+                        $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
                 }
             }
         }
@@ -454,36 +453,25 @@ namespace WholesomeDungeonCrawler.GUI
                 //    currentProfile.StepModels = StepCollection.ToList();
                 //}
                 StepCollection.Remove((StepModel)dgProfileSteps.SelectedItem);
-                RefreshStepOrder();
             }
-        }
-
-        private void RefreshStepOrder()
-        {
-            for (int i = 0; i < StepCollection.Count; i++)
-            {
-                StepCollection[i].Order = i;
-            }
-            currentProfile.StepModels = StepCollection.ToList();
-            dgProfileSteps.ItemsSource = StepCollection;
         }
 
         private async void miMoveAlongPathStep_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                var x = await this.ShowInputAsync("Add", "Step", _addDialogSettings);
                 if (x != null)
                 {
-                    MoveAlongPathModel stepModel = new MoveAlongPathModel() { Name = x, Order = StepCollection.Count, Path = new List<Vector3>() };
+                    MoveAlongPathModel stepModel = new MoveAlongPathModel() { Name = x, Path = new List<Vector3>() };
                     StepCollection.Add(stepModel);
-                    currentProfile.StepModels = StepCollection.ToList();
+                    CurrentProfile.StepModels = StepCollection.ToList();
                 }
             }
             catch (Exception ex)
             {
                 await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
 
@@ -491,18 +479,18 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                var x = await this.ShowInputAsync("Add", "Step", _addDialogSettings);
                 if (x != null)
                 {
-                    InteractWithModel stepModel = new InteractWithModel() { Name = x, Order = StepCollection.Count, InteractDistance = 3 };
+                    InteractWithModel stepModel = new InteractWithModel() { Name = x, InteractDistance = 3 };
                     StepCollection.Add(stepModel);
-                    currentProfile.StepModels = StepCollection.ToList();
+                    CurrentProfile.StepModels = StepCollection.ToList();
                 }
             }
             catch (Exception ex)
             {
                 await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
 
@@ -510,18 +498,18 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                var x = await this.ShowInputAsync("Add", "Step", _addDialogSettings);
                 if (x != null)
                 {
-                    TalkToUnitModel stepModel = new TalkToUnitModel() { Name = x, Order = StepCollection.Count };
+                    TalkToUnitModel stepModel = new TalkToUnitModel() { Name = x };
                     StepCollection.Add(stepModel);
-                    currentProfile.StepModels = StepCollection.ToList();
+                    CurrentProfile.StepModels = StepCollection.ToList();
                 }
             }
             catch (Exception ex)
             {
                 await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
 
@@ -529,18 +517,18 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                var x = await this.ShowInputAsync("Add", "Step", _addDialogSettings);
                 if (x != null)
                 {
-                    DefendSpotModel stepModel = new DefendSpotModel() { Name = x, Order = StepCollection.Count };
+                    DefendSpotModel stepModel = new DefendSpotModel() { Name = x };
                     StepCollection.Add(stepModel);
-                    currentProfile.StepModels = StepCollection.ToList();
+                    CurrentProfile.StepModels = StepCollection.ToList();
                 }
             }
             catch (Exception ex)
             {
                 await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
 
@@ -548,18 +536,18 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                var x = await this.ShowInputAsync("Add", "Step", _addDialogSettings);
                 if (x != null)
                 {
-                    FollowUnitModel stepModel = new FollowUnitModel() { Name = x, Order = StepCollection.Count };
+                    FollowUnitModel stepModel = new FollowUnitModel() { Name = x };
                     StepCollection.Add(stepModel);
-                    currentProfile.StepModels = StepCollection.ToList();
+                    CurrentProfile.StepModels = StepCollection.ToList();
                 }
             }
             catch (Exception ex)
             {
                 await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
 
@@ -567,18 +555,18 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                var x = await this.ShowInputAsync("Add", "Step", _addDialogSettings);
                 if (x != null)
                 {
-                    PullToSafeSpotModel stepModel = new PullToSafeSpotModel() { Name = x, Order = StepCollection.Count };
+                    PullToSafeSpotModel stepModel = new PullToSafeSpotModel() { Name = x };
                     StepCollection.Add(stepModel);
-                    currentProfile.StepModels = StepCollection.ToList();
+                    CurrentProfile.StepModels = StepCollection.ToList();
                 }
             }
             catch (Exception ex)
             {
                 await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
 
@@ -586,18 +574,18 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                var x = await this.ShowInputAsync("Add", "Step", _addDialogSettings);
                 if (x != null)
                 {
-                    LeaveDungeonModel stepModel = new LeaveDungeonModel() { Name = x, Order = StepCollection.Count };
+                    LeaveDungeonModel stepModel = new LeaveDungeonModel() { Name = x };
                     StepCollection.Add(stepModel);
-                    currentProfile.StepModels = StepCollection.ToList();
+                    CurrentProfile.StepModels = StepCollection.ToList();
                 }
             }
             catch (Exception ex)
             {
                 await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
 
@@ -605,18 +593,18 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                var x = await this.ShowInputAsync("Add", "Step", _addDialogSettings);
                 if (x != null)
                 {
-                    RegroupModel stepModel = new RegroupModel() { Name = x, Order = StepCollection.Count };
+                    RegroupModel stepModel = new RegroupModel() { Name = x };
                     StepCollection.Add(stepModel);
-                    currentProfile.StepModels = StepCollection.ToList();
+                    CurrentProfile.StepModels = StepCollection.ToList();
                 }
             }
             catch (Exception ex)
             {
                 await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
 
@@ -624,18 +612,18 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                var x = await this.ShowInputAsync("Add", "Step", addDialogSettings);
+                var x = await this.ShowInputAsync("Add", "Step", _addDialogSettings);
                 if (x != null)
                 {
-                    JumpToStepModel stepModel = new JumpToStepModel() { Name = x, Order = StepCollection.Count };
+                    JumpToStepModel stepModel = new JumpToStepModel() { Name = x };
                     StepCollection.Add(stepModel);
-                    currentProfile.StepModels = StepCollection.ToList();
+                    CurrentProfile.StepModels = StepCollection.ToList();
                 }
             }
             catch (Exception ex)
             {
                 await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
 
@@ -645,7 +633,7 @@ namespace WholesomeDungeonCrawler.GUI
         private void btnAddDeathRunVector_Click(object sender, RoutedEventArgs e)
         {
             DeathrunCollection.Add(ObjectManager.Me.Position);
-            currentProfile.DeathRunPath = DeathrunCollection.ToList();
+            CurrentProfile.DeathRunPath = DeathrunCollection.ToList();
         }
 
         private void btnDeleteDeathRunVector_Click(object sender, RoutedEventArgs e)
@@ -653,7 +641,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (dgDeathrun.SelectedItem != null)
             {
                 DeathrunCollection.Remove((Vector3)dgDeathrun.SelectedItem);
-                currentProfile.DeathRunPath = DeathrunCollection.ToList();
+                CurrentProfile.DeathRunPath = DeathrunCollection.ToList();
             }
         }
 
@@ -666,14 +654,14 @@ namespace WholesomeDungeonCrawler.GUI
                     if (gbDeathRun.IsVisible && (bool)chkRecordDeathRunPath.IsChecked && (DeathrunCollection.Count == 0 || DeathrunCollection.LastOrDefault().DistanceTo(ObjectManager.Me.Position) > 8))
                     {
                         DeathrunCollection.Add(ObjectManager.Me.Position);
-                        currentProfile.DeathRunPath = DeathrunCollection.ToList();
+                        CurrentProfile.DeathRunPath = DeathrunCollection.ToList();
                     }
                 });
             }
             catch (Exception ex)
             {
                 await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                        $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+                        $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
         #endregion
@@ -681,8 +669,8 @@ namespace WholesomeDungeonCrawler.GUI
         #region Add Offmesh
         private void btnOcAdd_Click(object sender, RoutedEventArgs e)
         {
-            OffMeshCollection.Add(new PathFinder.OffMeshConnection() { Name = Usefuls.SubMapZoneName ?? Usefuls.MapZoneName, ContinentId = currentProfile.MapId, TryToUseEvenIfCanFindPathSuccess = true, Type = PathFinder.OffMeshConnectionType.Unidirectional });
-            currentProfile.OffMeshConnections = OffMeshCollection.ToList();
+            OffMeshCollection.Add(new PathFinder.OffMeshConnection() { Name = Usefuls.SubMapZoneName ?? Usefuls.MapZoneName, ContinentId = CurrentProfile.MapId, TryToUseEvenIfCanFindPathSuccess = true, Type = PathFinder.OffMeshConnectionType.Unidirectional });
+            CurrentProfile.OffMeshConnections = OffMeshCollection.ToList();
         }
 
         private void btnOcDelete_Click(object sender, RoutedEventArgs e)
@@ -690,21 +678,21 @@ namespace WholesomeDungeonCrawler.GUI
             if (dgOffmeshList.SelectedItem != null)
             {
                 OffMeshCollection.Remove((PathFinder.OffMeshConnection)dgOffmeshList.SelectedItem);
-                currentProfile.OffMeshConnections = OffMeshCollection.ToList();
+                CurrentProfile.OffMeshConnections = OffMeshCollection.ToList();
             }
         }
 
         private void btnOCPAdd_Click(object sender, RoutedEventArgs e)
         {
             OffMeshPathCollection.Add(ObjectManager.Me.Position);
-            currentProfile.OffMeshConnections.FirstOrDefault(x => x == dgOffmeshList.SelectedItem).Path = OffMeshPathCollection.ToList();
+            CurrentProfile.OffMeshConnections.FirstOrDefault(x => x == dgOffmeshList.SelectedItem).Path = OffMeshPathCollection.ToList();
         }
         private void btnOCPDelete_Click(object sender, RoutedEventArgs e)
         {
             if (dgOffmeshPath.SelectedItem != null)
             {
                 OffMeshPathCollection.Remove((Vector3)dgOffmeshPath.SelectedItem);
-                currentProfile.OffMeshConnections.FirstOrDefault(x => x == dgOffmeshList.SelectedItem).Path = OffMeshPathCollection.ToList();
+                CurrentProfile.OffMeshConnections.FirstOrDefault(x => x == dgOffmeshList.SelectedItem).Path = OffMeshPathCollection.ToList();
             }
         }
 
@@ -721,7 +709,7 @@ namespace WholesomeDungeonCrawler.GUI
             catch (Exception ex)
             {
                 await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                        $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+                        $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
         #endregion
@@ -731,7 +719,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (e.Cancel) return;
             e.Cancel = !this.closeMe;
             if (this.closeMe) return;
-            var result = await this.ShowMessageAsync("", "Are you sure you want to close?", MessageDialogStyle.AffirmativeAndNegative, basicDialogSettings);
+            var result = await this.ShowMessageAsync("", "Are you sure you want to close?", MessageDialogStyle.AffirmativeAndNegative, _basicDialogSettings);
             this.closeMe = result == MessageDialogResult.Affirmative;
 
             if (this.closeMe) this.Close();
@@ -741,25 +729,22 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                if (dgProfileSteps.SelectedItem != null)
+                StepModel currentStep = (StepModel)dgProfileSteps.SelectedItem;
+                if (currentStep != null)
                 {
-                    RefreshStepOrder();
-                    var currentOrder = ((StepModel)dgProfileSteps.SelectedItem).Order;
-                    var closestStep = currentProfile.StepModels.OrderByDescending(x => x.Order).FirstOrDefault(y => y.Order < currentOrder);
-                    if (closestStep != null)
+                    ObservableCollection<StepModel> allSteps = (ObservableCollection<StepModel>)dgProfileSteps.ItemsSource;
+                    int currentStepIndex = allSteps.IndexOf(currentStep);
+                    if (currentStepIndex > 0)
                     {
-                        var newOrder = closestStep.Order;
-                        closestStep.Order = currentOrder;
-                        ((StepModel)dgProfileSteps.SelectedItem).Order = newOrder;
-                        StepCollection = new ObservableCollection<StepModel>(currentProfile.StepModels.OrderBy(x => x.Order));
-                        dgProfileSteps.ItemsSource = StepCollection;
+                        allSteps.Move(currentStepIndex, currentStepIndex - 1);
+                        CurrentProfile.StepModels = allSteps.ToList();
                     }
                 }
             }
             catch (Exception ex)
             {
                 await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
 
@@ -767,25 +752,22 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                if (dgProfileSteps.SelectedItem != null)
+                StepModel currentStep = (StepModel)dgProfileSteps.SelectedItem;
+                if (currentStep != null)
                 {
-                    RefreshStepOrder();
-                    var currentOrder = ((StepModel)dgProfileSteps.SelectedItem).Order;
-                    var closestStep = currentProfile.StepModels.OrderBy(x => x.Order).FirstOrDefault(y => y.Order > currentOrder);
-                    if (closestStep != null)
+                    ObservableCollection<StepModel> allSteps = (ObservableCollection<StepModel>)dgProfileSteps.ItemsSource;
+                    int currentStepIndex = allSteps.IndexOf(currentStep);
+                    if (currentStepIndex < allSteps.Count - 1)
                     {
-                        var newOrder = closestStep.Order;
-                        closestStep.Order = currentOrder;
-                        ((StepModel)dgProfileSteps.SelectedItem).Order = newOrder;
-                        StepCollection = new ObservableCollection<StepModel>(currentProfile.StepModels.OrderBy(x => x.Order));
-                        dgProfileSteps.ItemsSource = StepCollection;
+                        allSteps.Move(currentStepIndex, currentStepIndex + 1);
+                        CurrentProfile.StepModels = allSteps.ToList();
                     }
                 }
             }
             catch (Exception ex)
             {
                 await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
 

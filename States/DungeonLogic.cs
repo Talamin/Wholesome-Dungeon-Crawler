@@ -31,8 +31,7 @@ namespace WholesomeDungeonCrawler.States
                     || !_entityCache.Me.IsValid
                     || Fight.InFight
                     || !_cache.IsInInstance
-                    || _profileManager.CurrentDungeonProfile == null
-                    || _profileManager.CurrentDungeonProfile.CurrentStep == null)
+                    || !_profileManager.ProfileIsRunning)
                 {
                     return false;
                 }

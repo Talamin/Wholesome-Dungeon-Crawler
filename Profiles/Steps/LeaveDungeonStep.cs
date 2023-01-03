@@ -16,7 +16,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private readonly IPartyChatManager _partyChatManager;
         private readonly IProfileManager _profileManager;
         public override string Name { get; }
-        public override int Order { get; }
         private Timer _readyCheckTimer = new Timer();
         private int _foodMin;
         private int _drinkMin;
@@ -35,7 +34,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _leaveDungeonModel = leaveDungeonModel;
             _entityCache = entityCache;
             Name = leaveDungeonModel.Name;
-            Order = leaveDungeonModel.Order;
             _foodMin = wManager.wManagerSetting.CurrentSetting.FoodPercent;
             _drinkMin = wManager.wManagerSetting.CurrentSetting.DrinkPercent;
             _drinkAllowed = wManager.wManagerSetting.CurrentSetting.RestingMana;

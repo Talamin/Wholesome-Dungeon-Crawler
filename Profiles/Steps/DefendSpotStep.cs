@@ -18,7 +18,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private int _timeToWaitInMilliseconds;
 
         public override string Name { get; }
-        public override int Order { get; }
 
         public DefendSpotStep(DefendSpotModel defendSpotModel, IEntityCache entityCache)
         {
@@ -28,7 +27,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _defendSpotRadius = _defendSpotRadius < 5 ? 5 : _defendSpotRadius;
             _timeToWaitInMilliseconds = _defendSpotModel.Timer * 1000;
             Name = _defendSpotModel.Name;
-            Order = _defendSpotModel.Order;
         }
 
         public override void Run()

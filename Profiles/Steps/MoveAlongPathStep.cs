@@ -18,7 +18,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private Vector3 _nextNode;
 
         public override string Name { get; }
-        public override int Order { get; }
 
         public List<Vector3> GetMoveAlongPath => _moveAlongPathModel.Path;
 
@@ -28,7 +27,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _entityCache = entityCache;
             _pathManager = pathManager;
             Name = stepModel.Name;
-            Order = stepModel.Order;
         }
 
         public override void Run()

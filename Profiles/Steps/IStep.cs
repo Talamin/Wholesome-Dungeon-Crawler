@@ -4,7 +4,6 @@
     {
         bool IsCompleted { get; }
         abstract string Name { get; }
-        abstract int Order { get; }
 
         void Run();
         void MarkAsCompleted();

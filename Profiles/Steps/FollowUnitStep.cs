@@ -15,14 +15,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private FollowUnitModel _followUnitModel;
         private readonly IEntityCache _entityCache;
         public override string Name { get; }
-        public override int Order { get; }
 
         public FollowUnitStep(FollowUnitModel followUnitModel, IEntityCache entityCache)
         {
             _followUnitModel = followUnitModel;
             _entityCache = entityCache;
             Name = followUnitModel.Name;
-            Order = followUnitModel.Order;
         }
 
         public override void Run()

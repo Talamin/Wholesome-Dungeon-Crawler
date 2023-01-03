@@ -82,8 +82,7 @@ namespace WholesomeDungeonCrawler.States
                     || _entityCache.EnemiesAttackingGroup.Length > 0
                     || Fight.InFight
                     || !_cache.IsInInstance
-                    || _profileManager.CurrentDungeonProfile == null
-                    || _profileManager.CurrentDungeonProfile.CurrentStep == null
+                    || !_profileManager.ProfileIsRunning
                     || MovementManager.CurrentPath == null
                     || MovementManager.CurrentPath.Count <= 0
                     || !Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause)

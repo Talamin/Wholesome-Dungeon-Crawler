@@ -26,6 +26,10 @@ namespace WholesomeDungeonCrawler.Profiles
         public List<Vector3> AllMoveAlongNodes { get; private set; } = new List<Vector3>();
         public FactionType FactionType { get; private set; }
         public string FileName { get; private set; }
+        public int GetCurrentStepIndex => _profileSteps.IndexOf(_currentStep);
+        public bool ProfileIsCompleted => _profileSteps.All(p => p.IsCompleted);
+        public List<IStep> GetAllSteps => _profileSteps;
+        public IStep CurrentStep => _currentStep;
 
         public Profile(ProfileModel profileModel,
                 IEntityCache entityCache,
@@ -94,7 +98,7 @@ namespace WholesomeDungeonCrawler.Profiles
             // Add default leave dungeon step at the end if it doesn't exist
             if (!(_profileSteps.Last() is LeaveDungeonStep))
             {
-                _profileSteps.Add(new LeaveDungeonStep(new LeaveDungeonModel() { Name = "Leave dungeon (default)", Order = _profileSteps.Count + 1 }, entityCache, partyChatManager, profileManager));
+                _profileSteps.Add(new LeaveDungeonStep(new LeaveDungeonModel() { Name = "Leave dungeon (default)" }, entityCache, partyChatManager, profileManager));
             }
 
             AllMoveAlongNodes.RemoveAll(node => node == null);
@@ -128,8 +132,6 @@ namespace WholesomeDungeonCrawler.Profiles
             Logger.Log($"Setting current step to {step.Name}");
             _currentStep = step;
         }
-
-        public IStep CurrentStep => _currentStep;
 
         // A method to set the closest movealong step after a restart
         public void SetFirstLaunchStep()
@@ -240,8 +242,10 @@ namespace WholesomeDungeonCrawler.Profiles
             }
 
             IStep stepToGo = correspondingSteps[0];
+            int currentStepIndex = _profileSteps.IndexOf(CurrentStep);
+            int stepToGoIndex = _profileSteps.IndexOf(stepToGo);
 
-            if (stepToGo.Order < CurrentStep.Order)
+            if (stepToGoIndex < currentStepIndex)
             {
                 Logger.LogOnce($"[{jumpStepName}] You're trying to jump to a previous step [{stepToJumpTo}]. You can only jump to a next step.", true);
                 return false;
@@ -250,7 +254,7 @@ namespace WholesomeDungeonCrawler.Profiles
             // mark previous steps as completed
             for (int i = 0; i < _profileSteps.Count; i++)
             {
-                if (i < stepToGo.Order)
+                if (i < stepToGoIndex)
                 {
                     _profileSteps[i].MarkAsCompleted();
                     continue;
@@ -263,8 +267,5 @@ namespace WholesomeDungeonCrawler.Profiles
 
             return true;
         }
-
-        public bool ProfileIsCompleted => _profileSteps.All(p => p.IsCompleted);
-        public List<IStep> GetAllSteps => _profileSteps;
     }
 }

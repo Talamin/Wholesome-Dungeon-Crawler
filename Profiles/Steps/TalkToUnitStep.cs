@@ -14,14 +14,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private TalkToUnitModel _talkToUnitModel;
         private readonly IEntityCache _entityCache;
         public override string Name { get; }
-        public override int Order { get; }
 
         public TalkToUnitStep(TalkToUnitModel talkToUnitModel, IEntityCache entityCache)
         {
             _talkToUnitModel = talkToUnitModel;
             _entityCache = entityCache;
             Name = talkToUnitModel.Name;
-            Order = talkToUnitModel.Order;
         }
 
         public override void Run()

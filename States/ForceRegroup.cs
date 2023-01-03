@@ -43,8 +43,7 @@ namespace WholesomeDungeonCrawler.States
                     || Fight.InFight
                     || _entityCache.EnemiesAttackingGroup.Length > 0
                     || _cache.LootRollShow
-                    || _profileManager.CurrentDungeonProfile == null
-                    || _profileManager.CurrentDungeonProfile.CurrentStep == null
+                    || !_profileManager.ProfileIsRunning
                     || _profileManager.CurrentDungeonProfile.CurrentStep is RegroupStep
                     || _profileManager.CurrentDungeonProfile.CurrentStep is LeaveDungeonStep)
                 {

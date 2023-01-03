@@ -18,7 +18,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private readonly IEntityCache _entityCache;
         private readonly IPartyChatManager _partyChatManager;
         public override string Name { get; }
-        public override int Order { get; }
         public Vector3 RegroupSpot { get; private set; }
         private Timer _readyCheckTimer = new Timer();
         private int _foodMin;
@@ -34,7 +33,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _regroupModel = regroupModel;
             _entityCache = entityCache;
             Name = regroupModel.Name;
-            Order = regroupModel.Order;
             RegroupSpot = regroupModel.RegroupSpot;
             _foodMin = wManager.wManagerSetting.CurrentSetting.FoodPercent;
             _drinkMin = wManager.wManagerSetting.CurrentSetting.DrinkPercent;

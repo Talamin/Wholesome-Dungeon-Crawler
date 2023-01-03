@@ -13,7 +13,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
     {
         public bool IsCompleted { get; protected set; }
         public abstract string Name { get; }
-        public abstract int Order { get; }
 
         public abstract void Run();
 
