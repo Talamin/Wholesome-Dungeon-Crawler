@@ -7,6 +7,7 @@ using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeToolbox;
 using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {
@@ -35,6 +36,13 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             {
                 Logger.LogError($"Step {Name} path is empty, skipping.");
                 IsCompleted = true;
+                return;
+            }
+
+            if (ObjectManager.Me.Rooted || !ObjectManager.Me.CanMove || ObjectManager.Me.IsStunned)
+            {
+                MovementManager.StopMove();
+                Logger.LogOnce($"We're rooted or stunned, waiting");
                 return;
             }
 

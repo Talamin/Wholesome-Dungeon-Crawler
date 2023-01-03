@@ -25,13 +25,13 @@ namespace WholesomeDungeonCrawler.States
         private readonly IPartyChatManager _partyChatManager;
         private readonly ICache _cache;
         private readonly IProfileManager _profileManager;
-        private Timer _logTimer = new Timer();
         private (IWoWUnit unit, float pathDistance) _unitOnPath = (null, 0);
         private List<Vector3> _pointsAlongPathSegments = new List<Vector3>();
         private (Vector3 a, Vector3 b) _dangerTraceline = (null, null);
         private List<TraceLineResult> _losCache = new List<TraceLineResult>();
         private List<(Vector3 a, Vector3 b)> _linesToCheck = new List<(Vector3 a, Vector3 b)>();
-        private List<(Vector3 a, Vector3 b)> _linesAllPaths = new List<(Vector3 a, Vector3 b)>();
+        private List<(Vector3 a, Vector3 b)> _linesAllPathsInfront = new List<(Vector3 a, Vector3 b)>();
+        private List<(Vector3 a, Vector3 b)> _linesAllPathsBehind = new List<(Vector3 a, Vector3 b)>();
 
         private readonly HashSet<int> _mobIdsToIgnoreDuringPathCheck = new HashSet<int>
         {
@@ -47,9 +47,9 @@ namespace WholesomeDungeonCrawler.States
         };
 
         public CheckPathAhead(
-            IEntityCache EntityCache, 
-            IPartyChatManager partyChatManager, 
-            ICache cache, 
+            IEntityCache EntityCache,
+            IPartyChatManager partyChatManager,
+            ICache cache,
             IProfileManager profileManager)
         {
             _entityCache = EntityCache;
@@ -114,34 +114,30 @@ namespace WholesomeDungeonCrawler.States
                         }
                     }
 
-                    _linesToCheck = MoveHelper.GetLinesOnPath(MovementManager.CurrentPath);
+                    _linesToCheck = MoveHelper.GetFrontLinesOnPath(MovementManager.CurrentPath);
                     _unitOnPath = EnemyAlongTheLine(_linesToCheck, _entityCache.EnemyUnitsList);
 
-                    // Check for followers along the line in front
+                    // TANK - Check for followers along the line in front
                     if (_entityCache.IAmTank && _unitOnPath.unit != null)
                     {
-                        _linesAllPaths = MoveHelper.GetLinesOnPath(_profileManager.CurrentDungeonProfile.AllMoveAlongNodes, 300);
+                        _linesAllPathsInfront = MoveHelper.GetFrontLinesOnPath(_profileManager.CurrentDungeonProfile.AllMoveAlongNodes, int.MaxValue);
                         foreach (IWoWPlayer player in _entityCache.ListGroupMember)
                         {
-                            foreach ((Vector3 a, Vector3 b) line in _linesAllPaths)
+                            if (MoveHelper.PositionIsAlongPath(player.PositionWithoutType, _linesAllPathsInfront)
+                                && myPos.DistanceTo(player.PositionWithoutType) > 20)
                             {
-                                float playerDistanceFromLine = WTPathFinder.PointDistanceToLine(line.a, line.b, player.PositionWithoutType);
-                                if (playerDistanceFromLine < 3f)
-                                {
-                                    // A follower has been found along the path line in front, force fight
-                                    Logger.LogOnce($"{player.Name} is ahead. Forcing path");
-                                    return false;
-                                }
+                                Logger.LogOnce($"{player.Name} is ahead. Forcing path");
+                                return false;
                             }
                         }
                     }
 
-                    // Check for tank along the line in front
+                    // FOLLOWER - Check for tank along the line in front
                     if (!_entityCache.IAmTank && _entityCache.TankUnit != null)
                     {
                         Vector3 tankPos = _entityCache.TankUnit.PositionWithoutType;
 
-                        if (_entityCache.Me.PositionWithoutType.DistanceTo(tankPos) < 10 
+                        if (_entityCache.Me.PositionWithoutType.DistanceTo(tankPos) < 10
                             && moveAlongStep.GetMoveAlongPath.Last().DistanceTo(myPos) > 15)
                         {
                             // We're next to the tank. stop
@@ -150,15 +146,12 @@ namespace WholesomeDungeonCrawler.States
 
                         if (_unitOnPath.unit != null)
                         {
-                            _linesAllPaths = MoveHelper.GetLinesOnPath(_profileManager.CurrentDungeonProfile.AllMoveAlongNodes, 150);
-                            foreach ((Vector3 a, Vector3 b) line in _linesAllPaths)
+                            _linesAllPathsInfront = MoveHelper.GetFrontLinesOnPath(_profileManager.CurrentDungeonProfile.AllMoveAlongNodes, int.MaxValue);
+                            if (MoveHelper.PositionIsAlongPath(tankPos, _linesAllPathsInfront))
                             {
-                                float tankDistanceFromLine = WTPathFinder.PointDistanceToLine(line.a, line.b, tankPos);
-                                if (tankDistanceFromLine < 3f)
-                                {
-                                    // The tank has been found along the path line
-                                    return false;
-                                }
+                                // Tank is along the front line, forcing path
+                                Logger.LogOnce($"The tank is along the front path, forcing my way");
+                                return false;
                             }
                         }
                     }
@@ -185,7 +178,6 @@ namespace WholesomeDungeonCrawler.States
                 if (!MyTeamIsAround)
                 {
                     Logger.LogOnce($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Waiting for the team to regroup.");
-                    _logTimer = new Timer(1000 * 10);
                 }
                 else
                 {
@@ -201,7 +193,6 @@ namespace WholesomeDungeonCrawler.States
                         Logger.LogOnce($"{_unitOnPath.unit.Name} is on the way ({_unitOnPath.pathDistance} path distance). Waiting for the tank.");
                     else
                         Logger.LogOnce($"Waiting for the tank to be along the path line.");
-                    _logTimer = new Timer(1000 * 10);
                 }
                 else
                 {
@@ -350,17 +341,20 @@ namespace WholesomeDungeonCrawler.States
             {
                 Radar3D.DrawCircle(_unitOnPath.unit.PositionWithoutType, 0.4f, Color.Red, true, 200);
             }
-            
+
             foreach ((Vector3 a, Vector3 b) line in _linesToCheck)
             {
                 if (line.a != null && line.b != null)
                     Radar3D.DrawLine(line.a, line.b, Color.PaleTurquoise, 150);
             }
-            
             /*
-            foreach ((Vector3 a, Vector3 b) line in _linesAllPaths)
+            foreach ((Vector3 a, Vector3 b) line in _linesAllPathsInfront)
             {
                 Radar3D.DrawLine(line.a, line.b, Color.GreenYellow, 255);
+            }
+            foreach ((Vector3 a, Vector3 b) line in _linesAllPathsBehind)
+            {
+                Radar3D.DrawLine(line.a, line.b, Color.IndianRed, 255);
             }
             */
             foreach (Vector3 point in _pointsAlongPathSegments)
