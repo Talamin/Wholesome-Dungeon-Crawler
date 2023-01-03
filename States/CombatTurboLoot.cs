@@ -30,7 +30,7 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (!Conditions.InGameAndConnected
                     || !wManagerSetting.CurrentSetting.LootMobs
-                    || !_entityCache.Me.Valid
+                    || !_entityCache.Me.IsValid
                     || _entityCache.EnemiesAttackingGroup.Length <= 0)
                 {
                     return false;

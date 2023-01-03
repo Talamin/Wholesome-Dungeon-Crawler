@@ -23,7 +23,7 @@ namespace WholesomeDungeonCrawler.Helpers
 
         public static TargetPriority GetTargetPriority(IWoWUnit unit)
         {
-            switch (unit.UnitID)
+            switch (unit.Entry)
             {
                 case 8996: return TargetPriority.Low; // RFC - Voidwalker minion
                 case 598: return TargetPriority.High; // Deadmines - Defias Miner

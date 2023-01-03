@@ -34,8 +34,8 @@ namespace WholesomeDungeonCrawler.States
                 if (!Conditions.InGameAndConnected
                     || !_cache.IsRunningForcedTownRun
                     || !_stateTimer.IsReady
-                    || !_entityCache.Me.Valid
-                    || _entityCache.Me.Dead
+                    || !_entityCache.Me.IsValid
+                    || _entityCache.Me.IsDead
                     || Fight.InFight
                     || _profileManager.CurrentDungeonProfile != null
                     || _cache.IsInInstance

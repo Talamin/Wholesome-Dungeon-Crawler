@@ -94,7 +94,7 @@ namespace WholesomeDungeonCrawler.Profiles
             // Add default leave dungeon step at the end if it doesn't exist
             if (!(_profileSteps.Last() is LeaveDungeonStep))
             {
-                _profileSteps.Add(new LeaveDungeonStep(new LeaveDungeonModel() { Name = "Leave dungeon (default)" }, entityCache, partyChatManager, profileManager));
+                _profileSteps.Add(new LeaveDungeonStep(new LeaveDungeonModel() { Name = "Leave dungeon (default)", Order = _profileSteps.Count + 1 }, entityCache, partyChatManager, profileManager));
             }
 
             AllMoveAlongNodes.RemoveAll(node => node == null);

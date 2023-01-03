@@ -35,7 +35,7 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.Valid
+                    || !_entityCache.Me.IsValid
                     || !_cache.IsInInstance
                     || Fight.InFight
                     || _entityCache.IAmTank)
@@ -43,7 +43,7 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                if (_entityCache.Target.Dead)
+                if (_entityCache.Target.IsDead)
                 {
                     Interact.ClearTarget();
                 }

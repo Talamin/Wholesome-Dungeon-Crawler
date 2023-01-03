@@ -78,7 +78,7 @@ namespace WholesomeDungeonCrawler.States
                 _pointsAlongPathSegments.Clear();
                 _unitOnPath = (null, 0);
 
-                if (!_entityCache.Me.Valid
+                if (!_entityCache.Me.IsValid
                     || _entityCache.EnemiesAttackingGroup.Length > 0
                     || Fight.InFight
                     || !_cache.IsInInstance
@@ -254,7 +254,7 @@ namespace WholesomeDungeonCrawler.States
                     foreach (IWoWUnit unit in hostileUnits)
                     {
                         if (((int)unit.Reaction) > 2
-                            || _mobIdsToIgnoreDuringPathCheck.Contains(unit.UnitID)
+                            || _mobIdsToIgnoreDuringPathCheck.Contains(unit.Entry)
                             || unreachableMobsGuid.Contains(unit.Guid)
                             || unit.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) > _detectionRadius // in radius?
                             || pathToUnitLength + offset.DistanceTo(unit.PositionWithoutType) > _detecttionPathDistance // not too far?

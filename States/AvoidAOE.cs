@@ -30,8 +30,8 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (!Conditions.InGameAndConnected
                     || !_cache.IsInInstance
-                    || _entityCache.Me.Dead
-                    || !_entityCache.Me.Valid
+                    || _entityCache.Me.IsDead
+                    || !_entityCache.Me.IsValid
                     || !_avoidAOEManager.MustEscapeAOE
                     || _avoidAOEManager.GetEscapePath == null)
                 {

@@ -50,7 +50,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 return;
             }
 
-            if (!MovementManager.InMovement && !_entityCache.Me.Dead)
+            if (!MovementManager.InMovement && !_entityCache.Me.IsDead)
             {
                 if (_nextNode != null)
                 {

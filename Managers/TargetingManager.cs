@@ -37,7 +37,7 @@ namespace WholesomeDungeonCrawler.Managers
 
         public void OnFightHandler(WoWUnit currentTarget, CancelEventArgs canceable)
         {
-            if (_entityCache.Target.Dead)
+            if (_entityCache.Target.IsDead)
             {
                 Interact.ClearTarget();
             }
@@ -165,11 +165,11 @@ namespace WholesomeDungeonCrawler.Managers
                     || WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.MDPS)
                 {
                     // Detect if there is a prio enemy around
-                    if (_entityCache.EnemyUnitsList.Any(unit => Lists.ForceTargetListInt.Contains(unit.UnitID))
-                        && !Lists.ForceTargetListInt.Contains(_entityCache.Target.UnitID))
+                    if (_entityCache.EnemyUnitsList.Any(unit => Lists.ForceTargetListInt.Contains(unit.Entry))
+                        && !Lists.ForceTargetListInt.Contains(_entityCache.Target.Entry))
                     {
                         IWoWUnit prioTarget = _entityCache.EnemyUnitsList
-                            .Where(unit => Lists.ForceTargetListInt.Contains(unit.UnitID)
+                            .Where(unit => Lists.ForceTargetListInt.Contains(unit.Entry)
                                 && unit.PositionWithoutType.DistanceTo(myPos) <= 40)
                             .OrderBy(unit => unit.PositionWithoutType.DistanceTo(myPos))
                             .OrderBy(unit => TargetingHelper.GetTargetPriority(unit))

@@ -22,9 +22,9 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.Valid
+                    || !_entityCache.Me.IsValid
                     || _entityCache.Me.Swimming
-                    || !_entityCache.Me.Dead
+                    || !_entityCache.Me.IsDead
                     || !MovementManager.InMovement)
                 {
                     return false;

@@ -46,7 +46,7 @@ namespace WholesomeDungeonCrawler.Managers
             UnloadCurrentProfile();
 
             List<DungeonModel> myContinentDungeons = new List<DungeonModel>();
-            bool imDead = _entityCache.Me.Dead && _entityCache.Me.Auras.ContainsKey(8326);
+            bool imDead = _entityCache.Me.IsDead && _entityCache.Me.Auras.ContainsKey(8326);
 
             Logger.Log($"--------- PROFILE MANAGER ---------");
             // Dead, search for closest dungeon entrance

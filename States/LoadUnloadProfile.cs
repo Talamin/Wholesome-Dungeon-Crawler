@@ -31,7 +31,7 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.Valid
+                    || !_entityCache.Me.IsValid
                     || Fight.InFight)
                 {
                     return false;
@@ -47,7 +47,7 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 // Alive to dead, keep loaded profile for death run
-                if (_entityCache.Me.Dead && _entityCache.Me.Auras.ContainsKey(8326))
+                if (_entityCache.Me.IsDead && _entityCache.Me.Auras.ContainsKey(8326))
                 {
                     if (_profileManager.CurrentDungeonProfile != null)
                     {
@@ -62,7 +62,7 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 // Dead to alive, reload profile to restart from step 0
-                if (_recordDead && !_entityCache.Me.Dead)
+                if (_recordDead && !_entityCache.Me.IsDead)
                 {
                     Logger.Log($"We returned. Reloading profile");
                     _recordDead = false;

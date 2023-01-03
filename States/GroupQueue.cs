@@ -24,7 +24,7 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.Valid
+                    || !_entityCache.Me.IsValid
                     || Fight.InFight
                     || _entityCache.Me.Auras.Any(y => y.Key == 71041)
                     || _cache.IsInInstance

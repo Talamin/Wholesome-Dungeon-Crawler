@@ -27,7 +27,7 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (!timer.IsReady
                     || !Conditions.InGameAndConnected
-                    || !_entityCache.Me.Valid
+                    || !_entityCache.Me.IsValid
                     || Fight.InFight
                     || _cache.IsInInstance
                     || _entityCache.ListPartyMemberNames.Count() < 4)

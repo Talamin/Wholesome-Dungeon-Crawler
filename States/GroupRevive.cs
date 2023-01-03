@@ -43,14 +43,14 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.Valid
+                    || !_entityCache.Me.IsValid
                     || Fight.InFight
                     || _entityCache.EnemiesAttackingGroup.Length > 0
                     || !_cache.IsInInstance
                     || !_rezzClasses.ContainsKey(_entityCache.Me.WoWClass)
                     || !SpellManager.KnowSpell(_rezzClasses[_entityCache.Me.WoWClass])
                     || !SpellManager.SpellUsableLUA(_rezzClasses[_entityCache.Me.WoWClass])
-                    || !_entityCache.ListGroupMember.Any(unit => unit.Dead))
+                    || !_entityCache.ListGroupMember.Any(unit => unit.IsDead))
                 {
                     return false;
                 }
@@ -61,7 +61,7 @@ namespace WholesomeDungeonCrawler.States
                     _cacheTimer.Remove(entry.Key);
                 }
 
-                if (!_entityCache.ListGroupMember.Any(unit => unit.Dead && !_cacheTimer.ContainsKey(unit.Name)))
+                if (!_entityCache.ListGroupMember.Any(unit => unit.IsDead && !_cacheTimer.ContainsKey(unit.Name)))
                 {
                     // Everyone is on a timer
                     return false;
@@ -77,7 +77,7 @@ namespace WholesomeDungeonCrawler.States
             string spell = _rezzClasses[_entityCache.Me.WoWClass];
             Vector3 myPos = _entityCache.Me.PositionWithoutType;
             IWoWPlayer playerToResurrect = _entityCache.ListGroupMember
-                .Where(unit => unit.Dead && !_cacheTimer.ContainsKey(unit.Name))
+                .Where(unit => unit.IsDead && !_cacheTimer.ContainsKey(unit.Name))
                 .OrderBy(unit => unit.PositionWithoutType.DistanceTo(myPos))
                 .FirstOrDefault();
 

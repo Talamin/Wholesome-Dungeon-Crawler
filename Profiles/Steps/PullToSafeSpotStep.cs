@@ -56,7 +56,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
-            if (_entityCache.Me.Dead)
+            if (_entityCache.Me.IsDead)
             {
                 MovementManager.StopMove();
                 MovementManager.StopMoveTo();

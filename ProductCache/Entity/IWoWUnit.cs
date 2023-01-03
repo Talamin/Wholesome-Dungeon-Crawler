@@ -8,11 +8,11 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
     public interface IWoWUnit
     {
         string Name { get; }
-        int UnitID { get; }
+        int Entry { get; }
         ulong Guid { get; }
         ulong TargetGuid { get; }
-        bool Valid { get; }
-        bool Dead { get; }
+        bool IsValid { get; }
+        bool IsDead { get; }
         bool IsLootable { get; }
         Vector3 PositionWithoutType { get; }
         double HealthPercent { get; }

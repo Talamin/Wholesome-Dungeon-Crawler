@@ -31,8 +31,8 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.Valid
-                    || _entityCache.Me.Dead
+                    || !_entityCache.Me.IsValid
+                    || _entityCache.Me.IsDead
                     || Fight.InFight
                     || _profileManager.CurrentDungeonProfile == null
                     || _profileManager.CurrentDungeonProfile.CurrentStep == null

@@ -32,12 +32,12 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.Valid)
+                    || !_entityCache.Me.IsValid)
                 {
                     return false;
                 }
 
-                return _entityCache.Me.Dead;
+                return _entityCache.Me.IsDead;
             }
         }
 
@@ -85,7 +85,7 @@ namespace WholesomeDungeonCrawler.States
                 MovementManager.StopMove();
                 if (_entityCache.ListGroupMember
                     .Any(player => _rezzClasses.Contains(player.WoWClass)
-                        && !player.Dead
+                        && !player.IsDead
                         && _entityCache.Me.PositionWithoutType.DistanceTo(player.PositionWithoutType) < 50))
                 {
                     Logger.LogOnce("A group member can resurrect me. Waiting.");

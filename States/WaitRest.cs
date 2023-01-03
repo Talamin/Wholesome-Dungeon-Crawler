@@ -26,7 +26,7 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.Valid
+                    || !_entityCache.Me.IsValid
                     || Fight.InFight
                     || _entityCache.EnemiesAttackingGroup.Length > 0
                     || !_cache.IsInInstance)
@@ -43,7 +43,7 @@ namespace WholesomeDungeonCrawler.States
                         return true;
                     }
 
-                    if (player.Dead || player.Auras.ContainsKey(8326))
+                    if (player.IsDead || player.Auras.ContainsKey(8326))
                     {
                         Log($"Waiting because {player.Name} is dead");
                         _logTimer = new Timer(1000 * 10);

@@ -38,8 +38,8 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (!Conditions.InGameAndConnected
                     || !_cache.IsInInstance
-                    || !_entityCache.Me.Valid
-                    || _entityCache.Me.Dead
+                    || !_entityCache.Me.IsValid
+                    || _entityCache.Me.IsDead
                     || Fight.InFight
                     || _entityCache.EnemiesAttackingGroup.Length > 0
                     || _cache.LootRollShow
@@ -61,7 +61,7 @@ namespace WholesomeDungeonCrawler.States
                     return true;
                 }
 
-                if (!_entityCache.ListGroupMember.Any(player => _rezzClasses.Contains(player.WoWClass) && !player.Dead)
+                if (!_entityCache.ListGroupMember.Any(player => _rezzClasses.Contains(player.WoWClass) && !player.IsDead)
                     && !_rezzClasses.Contains(_entityCache.Me.WoWClass))
                 {
                     Logger.Log($"No healer alive. Teleporting out and back in to regroup.");
