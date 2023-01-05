@@ -13,6 +13,8 @@ namespace WholesomeDungeonCrawler.States
         public override string DisplayName => "Group Accept";
         private readonly ICache _cache;
         private Timer _stateTimer = new Timer();
+        private string _tankName = WholesomeDungeonCrawlerSettings.CurrentSetting.TankName.ToLower();
+        private int _luaResult = 0;
 
         public GroupInviteAccept(ICache iCache)
         {
@@ -33,24 +35,43 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                _stateTimer = new Timer(1000);
+                _luaResult = Lua.LuaDoString<int>($@"
+                    for i = 1, 5, 1 do
+                        local popup = _G[""StaticPopup"" .. i];
+                        if popup and popup:IsVisible() then
+                            local popupText = _G[""StaticPopup"" .. i .. ""Text""]:GetText();
+                            if string.find(popupText, ""invites you to a group"") then
+                                -- We have found an invite popup, make sure it comes from tank
+                                if string.find(string.lower(popupText), ""{_tankName}"") then
+                                    return i; -- return the popup to click
+                                else
+                                    return -i; -- return -number to indicate that the invite is not from tank, then decline
+                                end
+                            end
+                        end
+                    end
+                    return 0; -- no invite popup
+                ");
 
-                return Lua.LuaDoString<bool>("return StaticPopup1 and StaticPopup1:IsVisible();"); ;
+                return _luaResult != 0;
             }
         }
 
         public override void Run()
         {
-            string staticPopupText = Lua.LuaDoString<string>("return StaticPopup1Text:GetText()");
-            if (staticPopupText.ToLower().Contains(WholesomeDungeonCrawlerSettings.CurrentSetting.TankName.ToLower()))
+            // We have an invite, but not from tank
+            if (_luaResult < 0)
             {
-                Logger.LogOnce($"Accepting Invite from {WholesomeDungeonCrawlerSettings.CurrentSetting.TankName}");
-                Lua.LuaDoString("StaticPopup1Button1:Click()");
-                return;
+                int staticPopupIndex = -_luaResult;
+                Lua.LuaDoString($"StaticPopup{staticPopupIndex}Button2:Click();");
+                Logger.LogOnce("Denied invite. Make sure the tank name is correctly set in the product settings.");
             }
-
-            Lua.LuaDoString("StaticPopup1Button2:Click()");
-            Logger.LogOnce("Denied invite. Make sure the tank name is correctly set in the product settings.");
+            else
+            // We have an invite from tank
+            {
+                Lua.LuaDoString($"StaticPopup{_luaResult}Button1:Click()");
+                Logger.LogOnce($"Accepted Invite from {_tankName}");
+            }
         }
     }
 }
