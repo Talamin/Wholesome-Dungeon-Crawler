@@ -95,6 +95,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         return false;
                     }
                     // We first use a random LoS check (further than 1.5 yards) to reset the LoS cache
+                    /*
                     Random rnd = new Random();
                     int offset = rnd.Next(5, 30);                    
                     Vector3 resetLoSFrom = new Vector3(
@@ -106,9 +107,10 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         stepCompleteCondition.LOSPositionVectorTo.Y + offset,
                         stepCompleteCondition.LOSPositionVectorTo.Z + offset);
                     bool resetLoS = TraceLine.TraceLineGo(resetLoSFrom, resetLoSTo, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);                    
-
+                    */
                     // Actual check
                     bool losResult = !TraceLine.TraceLineGo(stepCompleteCondition.LOSPositionVectorFrom, stepCompleteCondition.LOSPositionVectorTo, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);
+                    //bool losResult = Toolbox.CheckLos(stepCompleteCondition.LOSPositionVectorFrom, stepCompleteCondition.LOSPositionVectorTo, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);
                     bool losFinalResult = stepCompleteCondition.LOSMustReturnTrue ? losResult : !losResult;
                     string losTxt = losResult ? "LoS result is positive" : "LoS result is negative";
                     string losPassTxt = losFinalResult ? "[Condition PASS]" : "[Condition FAIL]";

@@ -1,6 +1,12 @@
 ﻿using robotManager.Helpful;
+using robotManager.Helpful.Win32;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using WholesomeDungeonCrawler.ProductCache.Entity;
+using wManager.Wow;
+using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.Helpers
@@ -68,7 +74,7 @@ namespace WholesomeDungeonCrawler.Helpers
         private static Vector3 _toLast = new Vector3();
         private static Vector3 _fromLast = new Vector3();
         private static bool _lastResult = true;
-
+        
         public static bool CheckLos(Vector3 from, Vector3 to, CGWorldFrameHitFlags hitFlags = CGWorldFrameHitFlags.HitTestAll)
         {
             try
@@ -121,7 +127,7 @@ namespace WholesomeDungeonCrawler.Helpers
                         "push " + result,
                         "push " + start,
                         "push " + end,
-                        //"call " + (Memory.WowProcess.WowModule + (uint) Addresses.FunctionWow.CGWorldFrame__Intersect),
+                        "call " + (new Process().WowModule + (uint)0x93BACE),
                         "call " + (Memory.WowMemory.Memory.GetProcess().MainModule.BaseAddress.ToInt64() + (uint) 0x93BACE),
                         "mov [" + resultRet + "], al",
                         "add esp, " + (uint) 0x18,
@@ -153,4 +159,147 @@ namespace WholesomeDungeonCrawler.Helpers
             }
         }*/
     }
+    /*
+    public class Process
+    {
+        public Process()
+        {
+            ProcessId = 0;
+        }
+
+        public Process(int processId)
+        {
+            ProcessId = processId;
+            OpenProcess();
+        }
+
+        /// <summary>
+        /// Gets the Wow.exe module address.
+        /// </summary>
+        public uint WowModule { get; internal set; }
+
+
+        //public WndProcExecutor2 Executor { get; internal set; }
+
+        /// <summary>
+        /// Gets or sets the process handle.
+        /// </summary>
+        /// <value>
+        /// The process handle.
+        /// </value>
+        public IntPtr ProcessHandle { get; set; }
+
+        /// <summary>
+        /// Gets or sets the main window handle.
+        /// </summary>
+        /// <value>
+        /// The main window handle.
+        /// </value>
+        public IntPtr MainWindowHandle { get; internal set; }
+
+        private int _processId = 0;
+
+        /// <summary>
+        /// Gets or sets the process id.
+        /// </summary>
+        /// <value>
+        /// The process id.
+        /// </value>
+        public int ProcessId
+        {
+            get { return _processId; }
+            set { _processId = value; }
+        }
+
+        /// <summary>
+        /// Return a list of process.
+        /// </summary>
+        /// <typeparam></typeparam>
+        /// <param name="processName"></param>
+        /// <returns name="processHandle"></returns>
+        public static System.Diagnostics.Process[] ListeProcessIdByName(string processName)
+        {
+            try
+            {
+                System.Diagnostics.Process[] processesByNameList =
+                    System.Diagnostics.Process.GetProcessesByName(processName);
+                return processesByNameList;
+            }
+            catch (Exception e)
+            {
+                Logging.WriteError("ListeProcessIdByName(string processName = \"Wow\"): " + e);
+            }
+            return new System.Diagnostics.Process[0];
+        }
+
+        /// <summary>
+        /// Return true if process exist.
+        /// </summary>
+        /// <typeparam></typeparam>
+        /// <param></param>
+        /// <returns name="processHandle"></returns>
+        public bool ProcessExist()
+        {
+            try
+            {
+                return System.Diagnostics.Process.GetProcessById(ProcessId).Id == ProcessId;
+            }
+            catch (Exception e)
+            {
+                Logging.WriteError("ProcessExist(): " + e);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets the module.
+        /// </summary>
+        /// <param name="moduleName">Name of the module.</param>
+        /// <returns></returns>
+        public UInt32 GetModule(string moduleName)
+        {
+            try
+            {
+                ProcessModuleCollection modules = System.Diagnostics.Process.GetProcessById(ProcessId).Modules;
+                for (int i = 0; i < modules.Count; i++)
+                {
+                    if (modules[i].ModuleName.ToLower() == moduleName.ToLower())
+                    {
+                        return (uint)modules[i].BaseAddress;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logging.WriteError("GetModule(string moduleName): " + e);
+            }
+            return 0;
+        }
+
+        /// <summary>
+        /// Open process on all access mode and enter on debug mode.
+        /// </summary>
+        /// <typeparam></typeparam>
+        /// <param></param>
+        /// <returns name="processHandle"></returns>
+        public IntPtr OpenProcess()
+        {
+            try
+            {
+                System.Diagnostics.Process.EnterDebugMode();
+
+                ProcessHandle = Native.OpenProcess(0x1F0FFF, false, ProcessId);
+
+                System.Diagnostics.Process processById = System.Diagnostics.Process.GetProcessById(ProcessId);
+                MainWindowHandle = processById.MainWindowHandle;
+                WowModule = GetModule(processById.ProcessName + ".exe");
+                return ProcessHandle;
+            }
+            catch (Exception e)
+            {
+                Logging.WriteError("OpenProcess(): " + e);
+            }
+            return IntPtr.Zero;
+        }
+    }*/
 }

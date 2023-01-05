@@ -57,18 +57,22 @@ namespace WholesomeDungeonCrawler.GUI
         public ProfileEditor()
         {
             this.DataContext = this;
-            CurrentProfile = new ProfileModel();
-            CurrentProfile.StepModels = new List<StepModel>();
-            CurrentProfile.DeathRunPath = new List<Vector3>();
-            CurrentProfile.OffMeshConnections = new List<PathFinder.OffMeshConnection>();
+            ReInitializeProfile();
             InitializeComponent();
 
             cbDungeon.ItemsSource = Lists.AllDungeons;
             cbDungeon.SelectedValuePath = "Name";
             cbDungeon.DisplayMemberPath = "Name";
-            //cbDungeon.SelectedValue = Usefuls.ContinentId;
 
             Setup();
+        }
+
+        private void ReInitializeProfile()
+        {
+            CurrentProfile = new ProfileModel();
+            CurrentProfile.StepModels = new List<StepModel>();
+            CurrentProfile.DeathRunPath = new List<Vector3>();
+            CurrentProfile.OffMeshConnections = new List<PathFinder.OffMeshConnection>();
         }
 
         private void Setup()
@@ -125,8 +129,7 @@ namespace WholesomeDungeonCrawler.GUI
 
         private void btnNewProfile_Click(object sender, RoutedEventArgs e)
         {
-            CurrentProfile = new ProfileModel();
-            CurrentProfile.StepModels = new List<StepModel>();
+            ReInitializeProfile();
             Setup();
         }
 
@@ -134,7 +137,7 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(CurrentProfile.DungeonName))
+                if (string.IsNullOrEmpty(CurrentProfile.DungeonName))
                 {
                     await this.ShowMessageAsync("Save Failed.", "You need to select a dungeon in the list", MessageDialogStyle.Affirmative, _basicDialogSettings);
                     return;
