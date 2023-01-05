@@ -445,14 +445,8 @@ namespace WholesomeDungeonCrawler.GUI
         {
             if (dgProfileSteps.SelectedItem != null)
             {
-                //Debugger.Launch();
-
-                //foreach (var step in dgProfileSteps.SelectedItems)
-                //{
-                //    StepCollection.Remove((StepModel)step);
-                //    currentProfile.StepModels = StepCollection.ToList();
-                //}
                 StepCollection.Remove((StepModel)dgProfileSteps.SelectedItem);
+                CurrentProfile.StepModels = StepCollection.ToList();
             }
         }
 

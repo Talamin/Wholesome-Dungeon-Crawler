@@ -37,6 +37,11 @@ namespace WholesomeDungeonCrawler.Managers
 
         public void OnFightHandler(WoWUnit currentTarget, CancelEventArgs canceable)
         {
+            if (currentTarget== null)
+            {
+                return;
+            }
+
             if (_entityCache.Target.IsDead)
             {
                 Interact.ClearTarget();
@@ -56,14 +61,13 @@ namespace WholesomeDungeonCrawler.Managers
             if (_entityCache.IAmTank)
             {
                 // Cancel fight if we need to run back to safe spot
-                if (_profileManager.CurrentDungeonProfile?.CurrentStep != null
-                    && _profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep
-                    && currentTarget != null)
+                if (_profileManager.ProfileIsRunning
+                    && _profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep)
                 {
                     PullToSafeSpotStep pullStep = _profileManager.CurrentDungeonProfile.CurrentStep as PullToSafeSpotStep;
                     if (currentTarget.Target >= 0
                         && _entityCache.EnemiesAttackingGroup.Length > 0
-                        && !pullStep.IamInSafeSpot 
+                        //&& !pullStep.IamInSafeSpot 
                         && !pullStep.PositionInSafeSpotFightRange(currentTarget.Position))
                     {
                         canceable.Cancel = true;

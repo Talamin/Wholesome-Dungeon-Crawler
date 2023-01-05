@@ -47,7 +47,10 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 Logger.LogError($"ERROR: The zone to clear position of your current step {Name} is null!");
             }
 
-            _myFightRange = WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.RDPS ?
+            _myFightRange = 
+                WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.RDPS 
+                || WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Heal
+                || _entityCache.IAmTank ?
                 pullToSafeSpotModel.DEFAULT_RANGED_FIGHT_RANGE
                 : pullToSafeSpotModel.DEFAULT_MELEE_FIGHT_RANGE;
         }
@@ -125,9 +128,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                             {
                                 MovementManager.StopMove();
                                 Logger.Log($"{_entityCache.EnemiesAttackingGroup.Count()} enemies attacking, returning to safe spot");
-                                //List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, _safeSpot);
-                                List<Vector3> pathToSafeSpot = new List<Vector3>(closestEntry.Value);
-                                pathToSafeSpot.Reverse();
+                                List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, _safeSpot);
+                                //List<Vector3> pathToSafeSpot = new List<Vector3>(closestEntry.Value).Reverse();
+                                //pathToSafeSpot.Reverse();
                                 MovementManager.Go(WTPathFinder.PathFromClosestPoint(WTPathFinder.PathFromClosestPoint(pathToSafeSpot)));
                             }
                         }
