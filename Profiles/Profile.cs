@@ -8,6 +8,7 @@ using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles.Steps;
 using wManager.Wow.Helpers;
 using static wManager.Wow.Class.Npc;
+using static wManager.Wow.Helpers.PathFinder;
 
 namespace WholesomeDungeonCrawler.Profiles
 {
@@ -43,12 +44,13 @@ namespace WholesomeDungeonCrawler.Profiles
             _profileManager = profileManager;
             FileName = fileName;
 
-            foreach (StepModel model in profileModel.StepModels)
+            for (int i = 0; i < profileModel.StepModels.Count; i++)
             {
+                StepModel model = profileModel.StepModels[i];
                 switch (model)
                 {
                     case MoveAlongPathModel _:
-                        MoveAlongPathStep maStep = new MoveAlongPathStep((MoveAlongPathModel)model, entityCache, pathManager);
+                        MoveAlongPathStep maStep = new MoveAlongPathStep((MoveAlongPathModel)model, entityCache, pathManager, i);
                         DungeonPath.Add(maStep, maStep.GetMoveAlongPath);
                         AllMoveAlongNodes.AddRange(maStep.GetMoveAlongPath);
                         _profileSteps.Add(maStep);
@@ -108,7 +110,26 @@ namespace WholesomeDungeonCrawler.Profiles
                 DeathRunPath.Add(point);
             }
 
-            PathFinder.OffMeshConnections.AddRange(profileModel.OffMeshConnections);
+            // Clear all dungeon crawler offmesh connections
+            int removed =OffMeshConnections.MeshConnection.RemoveAll(con => con.Name.StartsWith("WDCOMS - "));
+            if (removed > 0)
+            {
+                Logger.Log($"Cleared {removed} crawler offmesh connections");
+            }
+
+            // Add profile offmesh connections
+            foreach (OffMeshConnection omConnection in profileModel.OffMeshConnections)
+            {
+                if (omConnection == null || omConnection.Path.Count <= 0) continue;
+                omConnection.Name = $"WDCOMS - {FileName} - {omConnection.Name}";
+                if (!OffMeshConnections.MeshConnection.Exists(con => con.Name == omConnection.Name))
+                {
+                    OffMeshConnections.Add(omConnection);
+                    Logger.Log($"Addded offmesh connection [{omConnection.Name}]");
+                }
+            }
+
+            OffMeshConnections.AddRange(profileModel.OffMeshConnections);
 
             MapId = profileModel.MapId;
             FactionType = profileModel.Faction;

@@ -41,7 +41,11 @@ namespace WholesomeDungeonCrawler.Managers
             {
                 foreach (Vector3 node in _neighboringNodes)
                 {
-                    Radar3D.DrawCircle(node, 0.5f, Color.GreenYellow, true, 50);
+                    if (_nextPathNode != null && node == _nextPathNode)
+                    {
+                        continue;
+                    }
+                    Radar3D.DrawCircle(node, 0.6f, Color.LawnGreen, false, 50);
                 }
             }
         }

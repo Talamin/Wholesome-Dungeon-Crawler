@@ -45,7 +45,8 @@ namespace WholesomeDungeonCrawler.States
                     || _cache.LootRollShow
                     || !_profileManager.ProfileIsRunning
                     || _profileManager.CurrentDungeonProfile.CurrentStep is RegroupStep
-                    || _profileManager.CurrentDungeonProfile.CurrentStep is LeaveDungeonStep)
+                    || _profileManager.CurrentDungeonProfile.CurrentStep is LeaveDungeonStep
+                    || _entityCache.ListGroupMember.Count() == 0)
                 {
                     return false;
                 }

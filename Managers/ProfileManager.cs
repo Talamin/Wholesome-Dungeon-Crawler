@@ -180,10 +180,6 @@ namespace WholesomeDungeonCrawler.Managers
                 // A profile has been found
                 string fileName = $"{chosenModel.ProfileName.Replace(" ", "_")}_{chosenModel.Faction}";
                 Logger.Log($"Selected {fileName} by closest node from the {chosenModel.DungeonName} folder.");
-                if (chosenModel.OffMeshConnections.Count > 0)
-                {
-                    PathFinder.OffMeshConnections.AddRange(chosenModel.OffMeshConnections);
-                }
                 _currentProfile = new Profile(chosenModel, _entityCache, _pathManager, _partyChatManager, this, fileName);
                 string log = $"Dungeon Profile loaded: {chosenModel.ProfileName}, ";
                 log += $"MapID {chosenModel.MapId}, ";

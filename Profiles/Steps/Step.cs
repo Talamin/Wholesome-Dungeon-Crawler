@@ -1,5 +1,4 @@
 ﻿using robotManager.Helpful;
-using System;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
@@ -94,23 +93,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         Logger.LogError($"[Condition FAIL] LoS check is missing a vector!");
                         return false;
                     }
-                    // We first use a random LoS check (further than 1.5 yards) to reset the LoS cache
-                    /*
-                    Random rnd = new Random();
-                    int offset = rnd.Next(5, 30);                    
-                    Vector3 resetLoSFrom = new Vector3(
-                        stepCompleteCondition.LOSPositionVectorFrom.X + offset,
-                        stepCompleteCondition.LOSPositionVectorFrom.Y + offset,
-                        stepCompleteCondition.LOSPositionVectorFrom.Z + offset);
-                    Vector3 resetLoSTo = new Vector3(
-                        stepCompleteCondition.LOSPositionVectorTo.X + offset,
-                        stepCompleteCondition.LOSPositionVectorTo.Y + offset,
-                        stepCompleteCondition.LOSPositionVectorTo.Z + offset);
-                    bool resetLoS = TraceLine.TraceLineGo(resetLoSFrom, resetLoSTo, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);                    
-                    */
-                    // Actual check
                     bool losResult = !TraceLine.TraceLineGo(stepCompleteCondition.LOSPositionVectorFrom, stepCompleteCondition.LOSPositionVectorTo, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);
-                    //bool losResult = Toolbox.CheckLos(stepCompleteCondition.LOSPositionVectorFrom, stepCompleteCondition.LOSPositionVectorTo, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);
                     bool losFinalResult = stepCompleteCondition.LOSMustReturnTrue ? losResult : !losResult;
                     string losTxt = losResult ? "LoS result is positive" : "LoS result is negative";
                     string losPassTxt = losFinalResult ? "[Condition PASS]" : "[Condition FAIL]";

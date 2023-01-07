@@ -1,5 +1,7 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
+using System.Linq;
+using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeToolbox;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
@@ -8,104 +10,38 @@ namespace WholesomeDungeonCrawler.Helpers
 {
     internal class MoveHelper
     {
-        public static List<(Vector3 a, Vector3 b)> GetFrontLinesOnPath(List<Vector3> path, int maxDistance = 50)
+        public static List<Vector3> GetFrontLinesOnPath(List<Vector3> path, int maxDistance = 50)
         {
-            List<(Vector3 a, Vector3 b)> result = new List<(Vector3, Vector3)>();
+            List<Vector3> result = new List<Vector3>();
             Vector3 myNextNode = MovementManager.CurrentMoveTo;
             if (!path.Contains(myNextNode))
             {
-                return new List<(Vector3 a, Vector3 b)>();
+                return result;
             }
             Vector3 myPos = ObjectManager.Me.Position;
-            bool nextNodeFound = false;
+            result.Add(myPos);
             float lineToCheckDistance = 0;
 
-            for (int i = 0; i < path.Count; i++)
+            for (int i = path.IndexOf(myNextNode) - 1; i < path.Count - 1; i++)
             {
-                // break on last node unless it's the only node
-                if (i >= path.Count - 1 && result.Count > 0)
-                {
-                    break;
-                }
-
-                // skip nodes behind me
-                if (!nextNodeFound)
-                {
-                    if (path[i] != myNextNode)
-                    {
-                        continue;
-                    }
-                    nextNodeFound = true;
-                }
-
                 // Ignore if too far
                 if (result.Count > 2 && lineToCheckDistance > maxDistance)
                 {
                     break;
                 }
 
-                // Path ahead of me
-                if (result.Count <= 0)
-                {
-                    result.Add((myPos, path[i]));
-                    lineToCheckDistance += myPos.DistanceTo(path[i]);
-                    if (path.Count > i + 1)
-                    {
-                        result.Add((path[i], path[i + 1]));
-                        lineToCheckDistance += path[i].DistanceTo(path[i + 1]);
-                    }
-                }
-                else
-                {
-                    result.Add((path[i], path[i + 1]));
-                    lineToCheckDistance += path[i].DistanceTo(path[i + 1]);
-                }
-            }
-
-            return result;
-        }
-        public static List<(Vector3 a, Vector3 b)> GetBackLinesOnPath(List<Vector3> path, int maxDistance = 50)
-        {
-            List<(Vector3 a, Vector3 b)> result = new List<(Vector3, Vector3)>();
-            Vector3 myNextNode = MovementManager.CurrentMoveTo;
-            if (!path.Contains(myNextNode))
-            {
-                return new List<(Vector3 a, Vector3 b)>();
-            }
-            float lineToCheckDistance = 0;
-
-            for (int i = 0; i < path.Count; i++)
-            {
-                // break on last node unless it's the only node
-                if (i >= path.Count - 1 && result.Count > 0)
-                {
-                    break;
-                }
-
-                // stop if we reached our node
-                if (i == path.IndexOf(myNextNode) - 1)
-                {
-                    return result;
-                }
-
-                // Ignore if too far
-                if (result.Count > 2 && lineToCheckDistance > maxDistance)
-                {
-                    break;
-                }
-
-                result.Add((path[i], path[i + 1]));
+                result.Add(path[i + 1]);
                 lineToCheckDistance += path[i].DistanceTo(path[i + 1]);
             }
 
             return result;
         }
 
-        public static bool PositionIsAlongPath(Vector3 position, List<(Vector3 a, Vector3 b)> path, float distanceFromPath = 3f)
+        public static bool PositionIsAlongPath(Vector3 position, List<Vector3> path, float distanceFromPath = 3f)
         {
-            foreach ((Vector3 a, Vector3 b) line in path)
+            for (int i = 0; i < path.Count - 1; i++)
             {
-                float positionDistanceFromLine = WTPathFinder.PointDistanceToLine(line.a, line.b, position);
+                float positionDistanceFromLine = WTPathFinder.PointDistanceToLine(path[i], path[i + 1], position);
                 if (positionDistanceFromLine < distanceFromPath)
                 {
                     return true;
@@ -115,28 +51,37 @@ namespace WholesomeDungeonCrawler.Helpers
         }
 
         // Gets X neighboring nodes on a path
-        public static List<Vector3> GetNodesAround(List<Vector3> path, Vector3 node, int nodeAmount = 5)
+        public static List<Vector3> GetSafeNodesAround(IEntityCache entityCache, List<Vector3> path, Vector3 baseNode, int nodeAmount = 5)
         {
             List<Vector3> result = new List<Vector3>();
-            int nodeIndex = path.IndexOf(node);
+            int baseNodeIndex = path.IndexOf(baseNode);
+
             // before node
-            for (int i = -nodeAmount; i < 0; i++)
+            if (baseNodeIndex > 0)
             {
-                if (nodeIndex + i > 0)
-                {
-                    result.Add(path[nodeIndex + i]);
-                }
+                List<Vector3> nodesBeforeBase = path.Where(node => path.IndexOf(node) <= baseNodeIndex).ToList();
+                nodesBeforeBase.Reverse();
+                List<Vector3> pointsBefore = Toolbox.GetPointsAlongPath(nodesBeforeBase, 5f, 30f);
+                pointsBefore.Reverse();
+                result.AddRange(pointsBefore);
             }
+
             // node itself
-            result.Add(node);
+            result.Add(baseNode);
+
             // after node
-            for (int i = 1; i <= nodeAmount; i++)
+            if (baseNodeIndex < path.Count - 1)
             {
-                if (nodeIndex + i < path.Count)
-                {
-                    result.Add(path[nodeIndex + i]);
-                }
+                List<Vector3> nodesAfterBase = path.Where(node => path.IndexOf(node) >= baseNodeIndex).ToList();
+                List<Vector3> pointsAfter = Toolbox.GetPointsAlongPath(nodesAfterBase, 5f, 30f);
+                result.AddRange(pointsAfter);
             }
+
+            if (!entityCache.IAmTank)
+            {
+                result.RemoveAll(node => entityCache.EnemyUnitsList.Any(unit => unit.PositionWithoutType.DistanceTo(node) < 20));
+            }
+
             return result;
         }
     }

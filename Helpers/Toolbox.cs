@@ -1,12 +1,7 @@
 ﻿using robotManager.Helpful;
-using robotManager.Helpful.Win32;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using WholesomeDungeonCrawler.ProductCache.Entity;
-using wManager.Wow;
-using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.Helpers
@@ -48,6 +43,62 @@ namespace WholesomeDungeonCrawler.Helpers
             return new Vector3(xvec / counter, yvec / counter, zvec / counter);
         }
 
+        /// <summary>
+        /// Returns nodes at regular distance intervals along a path. Doesn't include starting point.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="distanceBetweenPoints"></param>
+        /// <param name="maxDistance"></param>
+        /// <returns>Nodes at regular distance intervals along a path</returns>
+        public static List<Vector3> GetPointsAlongPath(
+            List<Vector3> path,
+            float distanceBetweenPoints,
+            float maxDistance)
+        {
+            List<Vector3> result = new List<Vector3>();
+            float remainder = 0f;
+            float totalDistance = 0f;
+
+            if (path.Count <= 0)
+            {
+                return result;
+            }
+
+            for (int i = 0; i < path.Count - 1; i++)
+            {
+                Vector3 segmentStart = path[i];
+                Vector3 segmentEnd = path[i + 1];
+                float segmentLength = segmentStart.DistanceTo(segmentEnd);
+
+                if (totalDistance > maxDistance) break;
+
+                for (float offsetIndex = distanceBetweenPoints; offsetIndex < segmentLength; offsetIndex += distanceBetweenPoints)
+                {
+                    if (remainder > 0)
+                    {
+                        offsetIndex -= remainder;
+                        remainder = 0;
+                    }
+
+                    if (offsetIndex + distanceBetweenPoints > segmentLength)
+                    {
+                        remainder = segmentLength - offsetIndex;
+                    }
+
+                    Vector3 vector = new Vector3(segmentEnd.X - segmentStart.X, segmentEnd.Y - segmentStart.Y, segmentEnd.Z - segmentStart.Z);
+                    double c = System.Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
+                    double a = offsetIndex / c;
+                    Vector3 offset = new Vector3(segmentStart.X + vector.X * a, segmentStart.Y + vector.Y * a, segmentStart.Z + vector.Z * a);
+
+                    totalDistance += distanceBetweenPoints;
+                    if (totalDistance > maxDistance) break;
+                    result.Add(offset);
+                }
+            }
+
+            return result;
+        }
+
         public static bool MemberHasRaidTarget(int targetIndex)
         {
             return Lua.LuaDoString<bool>($@"
@@ -69,237 +120,5 @@ namespace WholesomeDungeonCrawler.Helpers
                 return false;
             ");
         }
-
-        /*
-        private static Vector3 _toLast = new Vector3();
-        private static Vector3 _fromLast = new Vector3();
-        private static bool _lastResult = true;
-        
-        public static bool CheckLos(Vector3 from, Vector3 to, CGWorldFrameHitFlags hitFlags = CGWorldFrameHitFlags.HitTestAll)
-        {
-            try
-            {
-                if (from.X != 0 && from.Y != 0 && to.X != 0 && to.Y != 0)
-                {
-                    // cache:
-                    if (_toLast.DistanceTo(to) < 1.5f && _fromLast.DistanceTo(from) < 1.5f)
-                    {
-                        return _lastResult;
-                    }
-                    _toLast = to;
-                    _fromLast = from;
-
-                    uint end = Memory.WowMemory.Memory.AllocateMemory(0x4 * 3);
-                    uint start = Memory.WowMemory.Memory.AllocateMemory(0x4 * 3);
-                    uint result = Memory.WowMemory.Memory.AllocateMemory(0x4 * 3);
-                    uint distance = Memory.WowMemory.Memory.AllocateMemory(0x4);
-                    uint optional = Memory.WowMemory.Memory.AllocateMemory(0x4 * 3);
-                    uint resultRet = Memory.WowMemory.Memory.AllocateMemory(0x4);
-
-
-                    if (end <= 0 || start <= 0 || result <= 0 || distance <= 0 || optional <= 0)
-                        return false;
-
-                    Memory.WowMemory.Memory.WriteFloat(optional, 0);
-                    Memory.WowMemory.Memory.WriteFloat(optional + 0x4, 0);
-                    Memory.WowMemory.Memory.WriteFloat(optional + 0x8, 0);
-
-                    Memory.WowMemory.Memory.WriteFloat(distance, 0.9f);
-
-                    Memory.WowMemory.Memory.WriteFloat(result, 0);
-                    Memory.WowMemory.Memory.WriteFloat(result + 0x4, 0);
-                    Memory.WowMemory.Memory.WriteFloat(result + 0x8, 0);
-
-                    Memory.WowMemory.Memory.WriteFloat(start, from.X);
-                    Memory.WowMemory.Memory.WriteFloat(start + 0x4, from.Y);
-                    Memory.WowMemory.Memory.WriteFloat(start + 0x8, from.Z + 1.5f);
-
-                    Memory.WowMemory.Memory.WriteFloat(end, to.X);
-                    Memory.WowMemory.Memory.WriteFloat(end + 0x4, to.Y);
-                    Memory.WowMemory.Memory.WriteFloat(end + 0x8, to.Z + 1.5f);
-                    Memory.WowMemory.Memory.WriteInt32(resultRet, 0);
-
-                    string[] asm = new[]
-                    {
-                        "push " + 0,
-                        "push " + (uint) hitFlags,
-                        "push " + distance,
-                        "push " + result,
-                        "push " + start,
-                        "push " + end,
-                        "call " + (new Process().WowModule + (uint)0x93BACE),
-                        "call " + (Memory.WowMemory.Memory.GetProcess().MainModule.BaseAddress.ToInt64() + (uint) 0x93BACE),
-                        "mov [" + resultRet + "], al",
-                        "add esp, " + (uint) 0x18,
-                        "@out:",
-                        "retn"
-                    };
-
-                    Memory.WowMemory.InjectAndExecute(asm);
-                    bool ret = Memory.WowMemory.Memory.ReadInt32(resultRet) > 0;
-
-                    Memory.WowMemory.Memory.FreeMemory(resultRet);
-                    Memory.WowMemory.Memory.FreeMemory(end);
-                    Memory.WowMemory.Memory.FreeMemory(start);
-                    Memory.WowMemory.Memory.FreeMemory(result);
-                    Memory.WowMemory.Memory.FreeMemory(distance);
-                    Memory.WowMemory.Memory.FreeMemory(optional);
-
-                    _lastResult = ret;
-                    return ret;
-                }
-                return true;
-            }
-            catch (Exception exception)
-            {
-                Logging.WriteError(
-                    "TraceLineGo(Point from, Point to, Enums.CGWorldFrameHitFlags hitFlags = Enums.CGWorldFrameHitFlags.HitTestAll): " +
-                    exception);
-                return true;
-            }
-        }*/
     }
-    /*
-    public class Process
-    {
-        public Process()
-        {
-            ProcessId = 0;
-        }
-
-        public Process(int processId)
-        {
-            ProcessId = processId;
-            OpenProcess();
-        }
-
-        /// <summary>
-        /// Gets the Wow.exe module address.
-        /// </summary>
-        public uint WowModule { get; internal set; }
-
-
-        //public WndProcExecutor2 Executor { get; internal set; }
-
-        /// <summary>
-        /// Gets or sets the process handle.
-        /// </summary>
-        /// <value>
-        /// The process handle.
-        /// </value>
-        public IntPtr ProcessHandle { get; set; }
-
-        /// <summary>
-        /// Gets or sets the main window handle.
-        /// </summary>
-        /// <value>
-        /// The main window handle.
-        /// </value>
-        public IntPtr MainWindowHandle { get; internal set; }
-
-        private int _processId = 0;
-
-        /// <summary>
-        /// Gets or sets the process id.
-        /// </summary>
-        /// <value>
-        /// The process id.
-        /// </value>
-        public int ProcessId
-        {
-            get { return _processId; }
-            set { _processId = value; }
-        }
-
-        /// <summary>
-        /// Return a list of process.
-        /// </summary>
-        /// <typeparam></typeparam>
-        /// <param name="processName"></param>
-        /// <returns name="processHandle"></returns>
-        public static System.Diagnostics.Process[] ListeProcessIdByName(string processName)
-        {
-            try
-            {
-                System.Diagnostics.Process[] processesByNameList =
-                    System.Diagnostics.Process.GetProcessesByName(processName);
-                return processesByNameList;
-            }
-            catch (Exception e)
-            {
-                Logging.WriteError("ListeProcessIdByName(string processName = \"Wow\"): " + e);
-            }
-            return new System.Diagnostics.Process[0];
-        }
-
-        /// <summary>
-        /// Return true if process exist.
-        /// </summary>
-        /// <typeparam></typeparam>
-        /// <param></param>
-        /// <returns name="processHandle"></returns>
-        public bool ProcessExist()
-        {
-            try
-            {
-                return System.Diagnostics.Process.GetProcessById(ProcessId).Id == ProcessId;
-            }
-            catch (Exception e)
-            {
-                Logging.WriteError("ProcessExist(): " + e);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Gets the module.
-        /// </summary>
-        /// <param name="moduleName">Name of the module.</param>
-        /// <returns></returns>
-        public UInt32 GetModule(string moduleName)
-        {
-            try
-            {
-                ProcessModuleCollection modules = System.Diagnostics.Process.GetProcessById(ProcessId).Modules;
-                for (int i = 0; i < modules.Count; i++)
-                {
-                    if (modules[i].ModuleName.ToLower() == moduleName.ToLower())
-                    {
-                        return (uint)modules[i].BaseAddress;
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Logging.WriteError("GetModule(string moduleName): " + e);
-            }
-            return 0;
-        }
-
-        /// <summary>
-        /// Open process on all access mode and enter on debug mode.
-        /// </summary>
-        /// <typeparam></typeparam>
-        /// <param></param>
-        /// <returns name="processHandle"></returns>
-        public IntPtr OpenProcess()
-        {
-            try
-            {
-                System.Diagnostics.Process.EnterDebugMode();
-
-                ProcessHandle = Native.OpenProcess(0x1F0FFF, false, ProcessId);
-
-                System.Diagnostics.Process processById = System.Diagnostics.Process.GetProcessById(ProcessId);
-                MainWindowHandle = processById.MainWindowHandle;
-                WowModule = GetModule(processById.ProcessName + ".exe");
-                return ProcessHandle;
-            }
-            catch (Exception e)
-            {
-                Logging.WriteError("OpenProcess(): " + e);
-            }
-            return IntPtr.Zero;
-        }
-    }*/
 }

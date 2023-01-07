@@ -29,9 +29,8 @@ namespace WholesomeDungeonCrawler.States
         private List<Vector3> _pointsAlongPathSegments = new List<Vector3>();
         private (Vector3 a, Vector3 b) _dangerTraceline = (null, null);
         private List<TraceLineResult> _losCache = new List<TraceLineResult>();
-        private List<(Vector3 a, Vector3 b)> _linesToCheck = new List<(Vector3 a, Vector3 b)>();
-        private List<(Vector3 a, Vector3 b)> _linesAllPathsInfront = new List<(Vector3 a, Vector3 b)>();
-        private List<(Vector3 a, Vector3 b)> _linesAllPathsBehind = new List<(Vector3 a, Vector3 b)>();
+        private List<Vector3> _linesToCheck = new List<Vector3>();
+        private List<Vector3> _linesAllPathsInfront = new List<Vector3>();
 
         private readonly HashSet<int> _mobIdsToIgnoreDuringPathCheck = new HashSet<int>
         {
@@ -201,102 +200,75 @@ namespace WholesomeDungeonCrawler.States
             }
         }
 
-        private (IWoWUnit unit, float pathDistance) EnemyAlongTheLine(List<(Vector3 start, Vector3 end)> segments, IWoWUnit[] hostileUnits)
+        private (IWoWUnit unit, float pathDistance) EnemyAlongTheLine(List<Vector3> path, IWoWUnit[] hostileUnits)
         {
-            List<Vector3> pointsAlongLine = new List<Vector3>();
+            _pointsAlongPathSegments = Toolbox.GetPointsAlongPath(path, 3f, float.MaxValue);
             List<ulong> unreachableMobsGuid = new List<ulong>();
             float pathToUnitLength = 0;
-            float remainder = 0;
 
-            for (int i = 0; i < segments.Count; i++)
+            for (int i = 0; i < _pointsAlongPathSegments.Count - 1; i++)
             {
-                Vector3 segmentStart = segments[i].start;
-                Vector3 segmentEnd = segments[i].end;
+                Vector3 segmentStart = _pointsAlongPathSegments[i];
+                Vector3 segmentEnd = _pointsAlongPathSegments[i + 1];
                 float segmentLength = segmentStart.DistanceTo(segmentEnd);
-
-                // get points along line
-                for (float offsetIndex = 3; offsetIndex < segmentLength; offsetIndex += 3)
+                
+                // check if units have LoS/path from point
+                foreach (IWoWUnit unit in hostileUnits)
                 {
-                    if (remainder > 0)
-                    {
-                        offsetIndex -= remainder;
-                        remainder = 0;
-                    }
-
-                    if (offsetIndex + 3 > segmentLength)
-                    {
-                        remainder = segmentLength - offsetIndex;
-                    }
-
-                    Vector3 vector = new Vector3(segmentEnd.X - segmentStart.X, segmentEnd.Y - segmentStart.Y, segmentEnd.Z - segmentStart.Z);
-                    double c = System.Math.Sqrt(vector.X * vector.X + vector.Y * vector.Y + vector.Z * vector.Z);
-                    double a = offsetIndex / c;
-                    Vector3 offset = new Vector3(segmentStart.X + vector.X * a, segmentStart.Y + vector.Y * a, segmentStart.Z + vector.Z * a);
-
-                    if (offset.DistanceTo(_entityCache.Me.PositionWithoutType) < 5)
+                    if (((int)unit.Reaction) > 2
+                        || _mobIdsToIgnoreDuringPathCheck.Contains(unit.Entry)
+                        || unreachableMobsGuid.Contains(unit.Guid)
+                        || unit.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) > _detectionRadius // in radius?
+                        || pathToUnitLength + segmentStart.DistanceTo(unit.PositionWithoutType) > _detecttionPathDistance // not too far?
+                        || WTPathFinder.PointDistanceToLine(segmentStart, segmentEnd, unit.PositionWithoutType) > 20)
                     {
                         continue;
                     }
 
-                    _pointsAlongPathSegments.Add(offset);
-
-                    // check if units have LoS/path from point
-                    foreach (IWoWUnit unit in hostileUnits)
+                    // Check if we already have a positive result for this unit in the cache
+                    TraceLineResult positiveUnitLoS = _losCache.Where(result =>
+                            result.Unit.Guid == unit.Guid
+                            && result.IsVisibleAndReachable
+                            && unit.PositionWithoutType.DistanceTo(result.End) < 3f // double check for patrols
+                            && segmentLength + result.Distance < _detecttionPathDistance)
+                        .FirstOrDefault();
+                    if (positiveUnitLoS != null)
                     {
-                        if (((int)unit.Reaction) > 2
-                            || _mobIdsToIgnoreDuringPathCheck.Contains(unit.Entry)
-                            || unreachableMobsGuid.Contains(unit.Guid)
-                            || unit.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) > _detectionRadius // in radius?
-                            || pathToUnitLength + offset.DistanceTo(unit.PositionWithoutType) > _detecttionPathDistance // not too far?
-                            || WTPathFinder.PointDistanceToLine(segmentStart, segmentEnd, unit.PositionWithoutType) > 20)
+                        _dangerTraceline = (segmentStart, positiveUnitLoS.Unit.PositionWithoutType);
+                        return (positiveUnitLoS.Unit, segmentLength + positiveUnitLoS.Distance);
+                    }
+
+                    // Check the cache for any result for this traceline, cache it if not existant
+                    TraceLineResult losResult = _losCache
+                        .Where(tsResult => tsResult.Start.DistanceTo(segmentStart) < 3f && tsResult.End.DistanceTo(unit.PositionWithoutType) < 3f)
+                        .FirstOrDefault();
+                    if (losResult == null)
+                    {
+                        losResult = new TraceLineResult(segmentStart, unit.PositionWithoutType, unit);
+                        _losCache.Add(losResult);
+
+                        if (losResult.PathLength <= 0 && !unreachableMobsGuid.Contains(unit.Guid))
                         {
-                            continue;
+                            unreachableMobsGuid.Add(unit.Guid);
                         }
 
-                        // Check if we already have a positive result for this unit in the cache
-                        TraceLineResult positiveUnitLoS = _losCache.Where(result =>
-                                result.Unit.Guid == unit.Guid
-                                && result.IsVisibleAndReachable
-                                && unit.PositionWithoutType.DistanceTo(result.End) < 3f // double check for patrols
-                                && segmentLength + result.Distance < _detecttionPathDistance)
-                            .FirstOrDefault();
-                        if (positiveUnitLoS != null)
+                        if (_losCache.Count > 100)
                         {
-                            _dangerTraceline = (offset, positiveUnitLoS.Unit.PositionWithoutType);
-                            return (positiveUnitLoS.Unit, segmentLength + positiveUnitLoS.Distance);
+                            _losCache.RemoveRange(0, 20);
                         }
+                    }
 
-                        // Check the cache for any result for this traceline, cache it if not existant
-                        TraceLineResult losResult = _losCache
-                            .Where(tsResult => tsResult.Start.DistanceTo(offset) < 3f && tsResult.End.DistanceTo(unit.PositionWithoutType) < 3f)
-                            .FirstOrDefault();
-                        if (losResult == null)
+                    if (losResult.IsVisibleAndReachable)
+                    {
+                        pathToUnitLength += losResult.PathLength;
+                        if (pathToUnitLength < _detecttionPathDistance)
                         {
-                            losResult = new TraceLineResult(offset, unit.PositionWithoutType, unit);
-                            _losCache.Add(losResult);
-
-                            if (losResult.PathLength <= 0 && !unreachableMobsGuid.Contains(unit.Guid))
-                            {
-                                unreachableMobsGuid.Add(unit.Guid);
-                            }
-
-                            if (_losCache.Count > 100)
-                            {
-                                _losCache.RemoveRange(0, 20);
-                            }
-                        }
-
-                        if (losResult.IsVisibleAndReachable)
-                        {
-                            pathToUnitLength += losResult.PathLength;
-                            if (pathToUnitLength < _detecttionPathDistance)
-                            {
-                                _dangerTraceline = (offset, unit.PositionWithoutType);
-                                return (unit, pathToUnitLength);
-                            }
+                            _dangerTraceline = (segmentStart, unit.PositionWithoutType);
+                            return (unit, pathToUnitLength);
                         }
                     }
                 }
+
                 pathToUnitLength += segmentLength;
             }
 
@@ -342,10 +314,9 @@ namespace WholesomeDungeonCrawler.States
                 Radar3D.DrawCircle(_unitOnPath.unit.PositionWithoutType, 0.4f, Color.Red, true, 200);
             }
 
-            foreach ((Vector3 a, Vector3 b) line in _linesToCheck)
+            for (int i = 0; i < _linesToCheck.Count - 1; i++)
             {
-                if (line.a != null && line.b != null)
-                    Radar3D.DrawLine(line.a, line.b, Color.PaleTurquoise, 150);
+                Radar3D.DrawLine(_linesToCheck[i], _linesToCheck[i + 1], Color.PaleTurquoise, 150);
             }
             /*
             foreach ((Vector3 a, Vector3 b) line in _linesAllPathsInfront)
