@@ -79,7 +79,7 @@ namespace WholesomeDungeonCrawler.Helpers
 
             if (!entityCache.IAmTank)
             {
-                result.RemoveAll(node => entityCache.EnemyUnitsList.Any(unit => unit.PositionWithoutType.DistanceTo(node) < 20));
+                result.RemoveAll(node => node != baseNode && entityCache.EnemyUnitsList.Any(unit => unit.PositionWithoutType.DistanceTo(node) < 20));
             }
 
             return result;
