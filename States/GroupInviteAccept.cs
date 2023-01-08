@@ -13,7 +13,7 @@ namespace WholesomeDungeonCrawler.States
         public override string DisplayName => "Group Accept";
         private readonly ICache _cache;
         private Timer _stateTimer = new Timer();
-        private string _tankName = WholesomeDungeonCrawlerSettings.CurrentSetting.TankName.ToLower();
+        private string _tankName = WholesomeDungeonCrawlerSettings.CurrentSetting.TankName.ToLower().Trim();
         private int _luaResult = 0;
 
         public GroupInviteAccept(ICache iCache)

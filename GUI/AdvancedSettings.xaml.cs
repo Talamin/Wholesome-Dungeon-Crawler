@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.GUI
 {
@@ -22,6 +23,7 @@ namespace WholesomeDungeonCrawler.GUI
         {
             PartyMemberCollection = new ObservableCollection<string>(CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers);
             dgParty.ItemsSource = PartyMemberCollection;
+            txtErrorChooseRoleFirst.Visibility = System.Windows.Visibility.Collapsed;
 
             addDialogSettings = new MetroDialogSettings()
             {
@@ -63,6 +65,24 @@ namespace WholesomeDungeonCrawler.GUI
                     CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers = PartyMemberCollection.ToList();
                 }
             };
+
+            if (CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == Helpers.LFGRoles.Unknown)
+            {
+                tbTankName.Visibility = System.Windows.Visibility.Collapsed;
+                spPartyGrid.Visibility= System.Windows.Visibility.Collapsed;
+                txtErrorChooseRoleFirst.Visibility = System.Windows.Visibility.Visible;
+            }
+
+            if (CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == Helpers.LFGRoles.Tank)
+            {
+                CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.TankName = ObjectManager.Me.Name;
+                tbTankName.IsEnabled = false;
+                spPartyGrid.Visibility = System.Windows.Visibility.Visible;
+            }
+            else
+            {
+                spPartyGrid.Visibility = System.Windows.Visibility.Collapsed;
+            }
         }
 
         private void MetroWindow_Closing(object sender, CancelEventArgs e)

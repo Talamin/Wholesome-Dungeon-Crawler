@@ -173,6 +173,15 @@ namespace WholesomeDungeonCrawler.GUI
             }
         }
 
+        private void btnGetTargetMobAttackableEntry_Click(object sender, RoutedEventArgs e)
+        {
+            var target = ObjectManager.Target;
+            if (target != null)
+            {
+                nudMobAttackable.Value = target.Entry;
+            }
+        }
+
         private void btnGetTargetMobDeadEntry_Click(object sender, RoutedEventArgs e)
         {
             var target = ObjectManager.Target;

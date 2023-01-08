@@ -43,7 +43,18 @@ public class Main : IProduct
                 return;
             }
             */
-            
+            if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Unknown)
+            {
+                Logger.LogError($"You must select a role in the product settings first!");
+                return;
+            }
+            if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole != LFGRoles.Tank
+                && string.IsNullOrEmpty(WholesomeDungeonCrawlerSettings.CurrentSetting.TankName.Trim()))
+            {
+                Logger.LogError($"You must enter the name of your tank in the product settings first!");
+                return;
+            }
+
             if (_crawler.InitialSetup())
             {
                 Logger.Log("Started");

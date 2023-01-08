@@ -27,7 +27,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             CachePartyMembersInfo();
             OnObjectManagerPulse();
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
-            IAmTank = ObjectManager.Me.Name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName;
+            IAmTank = WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Tank;
         }
 
         public IWoWUnit Target { get; private set; } = Cache(new WoWUnit(0));

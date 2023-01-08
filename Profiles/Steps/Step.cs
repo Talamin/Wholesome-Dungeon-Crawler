@@ -25,9 +25,29 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
             switch (stepCompleteCondition.ConditionType)
             {
+                case CompleteConditionType.MobAttackable:
+                    WoWUnit unitAttackable = ObjectManager.GetObjectWoWUnit()
+                        .Where(unit => unit.Entry == stepCompleteCondition.MobAttackableEntry)
+                        .OrderBy(unit => unit.GetDistance)
+                        .FirstOrDefault();
+                    // Unit missing or dead
+                    if (unitAttackable == null || unitAttackable.IsDead)
+                    {
+                        string unitAttackableAbsentLog = stepCompleteCondition.MobAttackableSkipIfAbsent ?
+                            $"[Condition PASS] Unit to check if attackable is dead or absent"
+                            : $"[Condition FAIL] Unit to check if attackable is dead or absent";
+                        Logger.LogOnce(unitAttackableAbsentLog);
+                        return stepCompleteCondition.MobAttackableSkipIfAbsent;
+                    }
+                    bool conditionMet = stepCompleteCondition.MobAttackableMustReturnTrue ? unitAttackable.IsAttackable : !unitAttackable.IsAttackable;
+                    string unitAttackableLog = unitAttackable.IsAttackable ? "Unit is attackable" : "Unit is not attackable";
+                    string unitAttackableFinalLog = conditionMet ? $"[Condition PASS] {unitAttackableLog}" : $"[Condition FAIL] {unitAttackableLog}";
+                    Logger.LogOnce(unitAttackableFinalLog);
+                    return conditionMet;
+
                 case CompleteConditionType.FlagsChanged:
                     WoWGameObject objectFlagsChanged = ObjectManager.GetWoWGameObjectByEntry(stepCompleteCondition.FlagsChangedGameObjectId)
-                        .OrderBy(x => x.GetDistance)
+                        .OrderBy(wObject => wObject.GetDistance)
                         .FirstOrDefault();
                     if (objectFlagsChanged == null)
                     {
@@ -50,8 +70,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
                 case CompleteConditionType.MobDead:
                     WoWUnit deadmob = ObjectManager.GetObjectWoWUnit()
-                        .Where(x => x.Entry == stepCompleteCondition.DeadMobId)
-                        .OrderBy(x => x.GetDistance)
+                        .Where(unit => unit.Entry == stepCompleteCondition.DeadMobId)
+                        .OrderBy(unit => unit.GetDistance)
                         .FirstOrDefault();
                     bool resultMobDead = deadmob == null || deadmob.IsDead;
                     bool mobDeadFinalResult = stepCompleteCondition.MobDeadMustReturnTrue ? resultMobDead : !resultMobDead;
@@ -64,7 +84,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 case CompleteConditionType.MobAtPosition:
                     WoWUnit unitToCheck = ObjectManager
                         .GetWoWUnitByEntry(stepCompleteCondition.MobAtPositionId)
-                        .OrderBy(x => x.GetDistance)
+                        .OrderBy(unit => unit.GetDistance)
                         .FirstOrDefault();
                     Vector3 mobvec = stepCompleteCondition.MobAtPositionVector;
                     bool resultMobAtPosition = unitToCheck != null && mobvec.DistanceTo(unitToCheck.Position) < 5;
@@ -77,7 +97,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
                 case CompleteConditionType.CanGossip:
                     WoWUnit gossipUnit = ObjectManager.GetObjectWoWUnit()
-                        .Where(x => x.Entry == stepCompleteCondition.CanGossipMobId)
+                        .Where(unit => unit.Entry == stepCompleteCondition.CanGossipMobId)
                         .FirstOrDefault();
                     bool resultGossipUnit = gossipUnit != null && !gossipUnit.UnitNPCFlags.HasFlag(UnitNPCFlags.Gossip);
                     bool unitCanGossipFinalResult = stepCompleteCondition.CanGossipMustReturnTrue ? resultGossipUnit : !resultGossipUnit;

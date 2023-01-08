@@ -505,6 +505,29 @@
                             <Button x:Name="btnGetTargetMobPosVector" Content="Get Target Mob Position" Margin="5" Click="btnGetTargetMobPosVector_Click" />
                         </StackPanel>
                     </StackPanel>
+                    <!-- Mob Attackable-->
+                    <StackPanel>
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=cbConditionType, Path=SelectedValue}" Value="MobAttackable">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <StackPanel>
+                            <Controls:ToggleSwitch IsChecked="{Binding SelectedItem.CompleteCondition.MobAttackableMustReturnTrue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Condition must return True" OffLabel="Condition must return False" Margin="5"/>
+                        </StackPanel>
+                        <StackPanel>
+                            <Controls:ToggleSwitch IsChecked="{Binding SelectedItem.CompleteCondition.MobAttackableSkipIfAbsent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Complete if absent" OffLabel="Incomplete if absent" Margin="5"/>
+                        </StackPanel>
+                        <StackPanel x:Name="spConditionMobAttackable" Orientation="Horizontal"  Margin="5">
+                            <Controls:NumericUpDown Name="nudMobAttackable" Value="{Binding SelectedItem.CompleteCondition.MobAttackableEntry, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Mob Id" Margin="5"/>
+                            <Button x:Name="btnGetTargetMobAttackableEntry" Content="Get Target Mob Id" Margin="5" Click="btnGetTargetMobAttackableEntry_Click" />
+                        </StackPanel>
+                    </StackPanel>
                     <!--MobDead-->
                     <StackPanel x:Name="spConditionMobDead" Orientation="Vertical" Margin="5">
                         <StackPanel.Style>

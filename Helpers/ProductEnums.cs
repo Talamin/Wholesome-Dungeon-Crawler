@@ -2,6 +2,7 @@
 {
     public enum LFGRoles
     {
+        Unknown,
         MDPS,
         RDPS,
         Tank,
@@ -28,5 +29,6 @@
         MobAtPosition = 5,
         LOSCheck = 6,
         CanGossip = 7,
+        MobAttackable = 8,
     }
 }

@@ -40,6 +40,11 @@ namespace WholesomeDungeonCrawler.Models
         public Vector3 LOSPositionVectorFrom { get; set; }
         public Vector3 LOSPositionVectorTo { get; set; }
         public bool LOSMustReturnTrue { get; set; } = true;
+
+        // Unit is attackable
+        public int MobAttackableEntry { get; set; }
+        public bool MobAttackableMustReturnTrue { get; set; }
+        public bool MobAttackableSkipIfAbsent { get; set; }
     }
 
     public class MoveAlongPathModel : StepModel

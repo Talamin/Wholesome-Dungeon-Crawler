@@ -37,7 +37,7 @@
 
     <Grid>
         <StackPanel>
-            <Controls:MetroAnimatedTabControl Controls:TabControlHelper.Underlined="SelectedTabItem" >
+            <Controls:MetroAnimatedTabControl Controls:TabControlHelper.Underlined="SelectedTabItem" Height="Auto" >
                 <Controls:MetroAnimatedTabControl.Resources>
                     <Style TargetType="{x:Type Controls:MetroTabItem}" BasedOn="{StaticResource {x:Type Controls:MetroTabItem}}">
                         <Setter Property="Controls:ControlsHelper.HeaderFontSize" Value="14" />
@@ -59,17 +59,20 @@
                                 <Controls:NumericUpDown Controls:TextBoxHelper.Watermark="In combat (healers)" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding CombatFollowDistance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             </StackPanel>
                         </GroupBox>-->
-                        <TextBox x:Name="tbTankName" Controls:TextBoxHelper.Watermark="Tank Name" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding TankName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        <TextBox x:Name="tbTankName" Controls:TextBoxHelper.Watermark="Please enter tank name" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" Text="{Binding TankName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                         <StackPanel x:Name="spPartyGrid">
                             <DataGrid x:Name="dgParty" Margin="5" CanUserAddRows="False" IsReadOnly="True" MaxHeight="300" AutoGenerateColumns="False">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Party member name" Binding="{Binding}"/>
+                                    <DataGridTextColumn Header="Party member names" Binding="{Binding}"/>
                                 </DataGrid.Columns>
                             </DataGrid>
                             <StackPanel Orientation="Horizontal"  Margin="5">
                                 <Button x:Name="btnAddPartyMember" Content="Add" Margin="0 5 5 5"/>
                                 <Button x:Name="btnDeletePartyMember" Content="Delete" Margin="0 5 5 5"/>
                             </StackPanel>
+                        </StackPanel>
+                        <StackPanel x:Name="txtErrorChooseRoleFirst" Orientation="Horizontal"  Margin="5">
+                            <TextBlock  Margin="15">Please choose a role first</TextBlock>
                         </StackPanel>
                         
                     </StackPanel>
