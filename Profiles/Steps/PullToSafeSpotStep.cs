@@ -19,6 +19,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private readonly int _safeSpotRadius;
         private readonly Vector3 _zoneToClear;
         private readonly int _zoneToClearRadius;
+        private readonly int _zoneToClearZLimit;
         private readonly Dictionary<ulong, List<Vector3>> _enemiesToClear = new Dictionary<ulong, List<Vector3>>(); // unit -> path to unit from safespot
         private readonly float _myFightRange;
 
@@ -37,6 +38,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _safeSpot = pullToSafeSpotModel.SafeSpotPosition;
             _zoneToClear = pullToSafeSpotModel.ZoneToClearPosition;
             _zoneToClearRadius = pullToSafeSpotModel.ZoneToClearRadius;
+            _zoneToClearZLimit = pullToSafeSpotModel.ZoneToClearZLimit;
 
             if (_safeSpot == null)
             {
@@ -65,7 +67,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             }
 
             Vector3 myPos = _entityCache.Me.PositionWithoutType;
-            List<WoWUnit> enemiesInClearZone = ObjectManager.GetWoWUnitAttackables()
+            List<WoWUnit> enemiesInClearZone = ObjectManager.GetWoWUnitHostile()
+                .Where(unit => unit.Position.Z <= _zoneToClear.Z + _zoneToClearZLimit
+                    && unit.Position.Z >= _zoneToClear.Z - _zoneToClearZLimit)
                 .Where(unit => unit.PositionWithoutType.DistanceTo(_zoneToClear) <= _zoneToClearRadius)
                 .ToList();
 

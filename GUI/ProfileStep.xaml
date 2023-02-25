@@ -356,9 +356,10 @@
                                 </TextBox>
                                 <Button x:Name="btnPullToSafeSpotGetCurrentPosZoneToClear" Content="Get Current Position" Margin="5" Click="btnPullToSafeSpotGetCurrentPosZoneToClear_Click" />
                             </StackPanel>
-                            <!-- Zone to clear radius -->
+                            <!-- Zone to clear radius && Zone to clear Z limit-->
                             <StackPanel Orientation="Horizontal"  Margin="5">
                                 <Controls:NumericUpDown x:Name="txtZoneToClearRadius" Controls:TextBoxHelper.Watermark="Zone to clear radius" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.ZoneToClearRadius, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                <Controls:NumericUpDown x:Name="txtZoneToClearZLimit" Controls:TextBoxHelper.Watermark="Z limit" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.ZoneToClearZLimit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
                         </StackPanel>
                     </GroupBox>

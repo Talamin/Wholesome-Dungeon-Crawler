@@ -39,13 +39,13 @@ namespace WholesomeDungeonCrawler.States
 
                 bool continentChanged = _currentContinent != Usefuls.ContinentId;
                 _currentContinent = Usefuls.ContinentId;
-
+                /*
                 if (ObjectManager.Me.Position.DistanceTo(new robotManager.Helpful.Vector3(0, 0, 0)) < 5)
                 {
                     Logger.LogError($"In void. Delaying profile load/unload.");
                     return false;
                 }
-
+                */
                 // Alive to dead, keep loaded profile for death run
                 if (_entityCache.Me.IsDead && _entityCache.Me.Auras.ContainsKey(8326))
                 {

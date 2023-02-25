@@ -113,6 +113,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         Logger.LogError($"[Condition FAIL] LoS check is missing a vector!");
                         return false;
                     }
+                    TraceLine.ClearCache();
                     bool losResult = !TraceLine.TraceLineGo(stepCompleteCondition.LOSPositionVectorFrom, stepCompleteCondition.LOSPositionVectorTo, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS);
                     bool losFinalResult = stepCompleteCondition.LOSMustReturnTrue ? losResult : !losResult;
                     string losTxt = losResult ? "LoS result is positive" : "LoS result is negative";

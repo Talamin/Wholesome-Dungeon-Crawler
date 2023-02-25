@@ -18,11 +18,15 @@ namespace WholesomeDungeonCrawler.Helpers
             {
                 return result;
             }
+            List<Vector3> adjustedPath = new List<Vector3>();
             Vector3 myPos = ObjectManager.Me.Position;
-            result.Add(myPos);
+            int myNextNodeIndex = path.IndexOf(myNextNode);
+            adjustedPath.Add(myPos);
+            adjustedPath.AddRange(path.GetRange(myNextNodeIndex, path.Count - myNextNodeIndex));
             float lineToCheckDistance = 0;
+            result.Add(myPos);
 
-            for (int i = path.IndexOf(myNextNode) - 1; i < path.Count - 1; i++)
+            for (int i = 0; i < adjustedPath.Count - 1; i++)
             {
                 // Ignore if too far
                 if (result.Count > 2 && lineToCheckDistance > maxDistance)
@@ -30,8 +34,10 @@ namespace WholesomeDungeonCrawler.Helpers
                     break;
                 }
 
-                result.Add(path[i + 1]);
-                lineToCheckDistance += path[i].DistanceTo(path[i + 1]);
+                Vector3 nextNode = adjustedPath[i + 1];
+
+                result.Add(nextNode);
+                lineToCheckDistance += adjustedPath[i].DistanceTo(nextNode);
             }
 
             return result;
@@ -79,7 +85,10 @@ namespace WholesomeDungeonCrawler.Helpers
 
             if (!entityCache.IAmTank)
             {
-                result.RemoveAll(node => node != baseNode && entityCache.EnemyUnitsList.Any(unit => unit.PositionWithoutType.DistanceTo(node) < 20));
+                result.RemoveAll(node => 
+                    node != baseNode 
+                    && entityCache.EnemyUnitsList
+                        .Any(unit => unit.PositionWithoutType.DistanceTo(node) < 20 && unit.PositionWithoutType.Z < node.Z + 3 && unit.PositionWithoutType.Z > node.Z - 3));
             }
 
             return result;

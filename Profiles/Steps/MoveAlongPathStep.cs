@@ -162,7 +162,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         .FirstOrDefault();
 
                     if (nextPathNode != null
-                        && nextPathNode != _nextNode)
+                        && nextPathNode != _nextNode
+                        && (nextPathNode != GetMoveAlongPath.Last() || currentPath.Count <= 3)) // avoid path recalc shenanigans after stuck
                     {
                         _nextNode = nextPathNode;
                         _pathManager.SetNextNode(_nextNode);

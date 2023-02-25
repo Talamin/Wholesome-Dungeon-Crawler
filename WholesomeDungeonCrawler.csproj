@@ -45,7 +45,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Zero|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\WoW Wotlk\WRobot WOTLK\Products\</OutputPath>
+    <OutputPath>..\..\WoW Wotlk\WRobot\Products\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
