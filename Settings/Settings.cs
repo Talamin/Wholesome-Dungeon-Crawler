@@ -17,6 +17,7 @@ namespace WholesomeDungeonCrawler.CrawlerSettings
         public List<string> GroupMembers { get; set; }
         public LFGRoles LFGRole { get; set; }
         public double LastUpdateDate { get; set; }
+        public int SelectedDungeon { get; set; } = -1;
 
         public WholesomeDungeonCrawlerSettings()
         {
@@ -24,6 +25,7 @@ namespace WholesomeDungeonCrawler.CrawlerSettings
             TankName = "";
             GroupMembers = new List<string>();
             LFGRole = LFGRoles.Unknown;
+            SelectedDungeon = -1;
         }
 
         public static WholesomeDungeonCrawlerSettings CurrentSetting { get; set; }

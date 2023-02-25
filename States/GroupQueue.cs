@@ -1,7 +1,9 @@
 ﻿using robotManager.FiniteStateMachine;
 using System.Linq;
 using System.Threading;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
@@ -13,11 +15,13 @@ namespace WholesomeDungeonCrawler.States
         public override string DisplayName => "GroupQueue";
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
+        private readonly int _selectedDungeonId;
 
         public GroupQueue(ICache iCache, IEntityCache EntityCache)
         {
             _cache = iCache;
             _entityCache = EntityCache;
+            _selectedDungeonId = WholesomeDungeonCrawlerSettings.CurrentSetting.SelectedDungeon;
         }
 
         public override bool NeedToRun
@@ -41,8 +45,6 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            int specificDungeonId = -1;
-
             if (!Lua.LuaDoString<bool>("return LFDQueueFrame:IsVisible()"))
             {
                 Logger.Log($"Opening LFD frame");
@@ -50,15 +52,27 @@ namespace WholesomeDungeonCrawler.States
             }
             else
             {
-                if (specificDungeonId > -1)
+                if (_selectedDungeonId > -1)
                 {
+
                     if (!Lua.LuaDoString<bool>("return LFDQueueFrameSpecific:IsVisible()"))
                     {
-                        Logger.Log($"Selecting dungeon {specificDungeonId} in dropdown list");
-                        Lua.LuaDoString("LFDQueueFrameTypeDropDownButton:Click(); DropDownList1Button1:Click()");
+                        Logger.Log($"Selecting dungeon {_selectedDungeonId} in dropdown list");
+                        Lua.LuaDoString("LFDQueueFrameTypeDropDownButton:Click(); DropDownList1Button1:Click();");
                     }
                     else
                     {
+                        DungeonModel model = Lists.AllDungeons.Find(model => model.DungeonId == _selectedDungeonId);
+
+                        if (model == null)
+                        {
+                            Logger.LogOnce($"Couldn't find matching dungeon model with ID {_selectedDungeonId}");
+                            Thread.Sleep(5000);
+                            return;
+                        }
+
+                        Logger.LogOnce($"Launching dungeon search for {model.Name}");
+
                         Lua.LuaDoString($@"
                             for i=1,30,1 do
                                 local button = _G[""LFDQueueFrameSpecificListButton"" .. i .. ""EnableButton""];
@@ -67,7 +81,7 @@ namespace WholesomeDungeonCrawler.States
                                     local dungeonId = _G[""LFDQueueFrameSpecificListButton"" .. i].id;
                                     if dungeonId ~= nil then
                                         if LFGIsIDHeader(dungeonId) == false then
-                                            if dungeonId == {specificDungeonId} then
+                                            if dungeonId == {_selectedDungeonId} then
                                                 if button:GetChecked() ~= 1 then
                                                     button:Click();
                                                 end
@@ -80,7 +94,7 @@ namespace WholesomeDungeonCrawler.States
                                 end
                             end
                         ");
-                        Logger.LogOnce($"Launching dungeon search");
+
                         Lua.LuaDoString("LFDQueueFrameFindGroupButton:Click()");
                         Thread.Sleep(1000);
                     }
@@ -94,7 +108,7 @@ namespace WholesomeDungeonCrawler.States
                     }
                     else
                     {
-                        Logger.LogOnce($"Launching dungeon search");
+                        Logger.LogOnce($"Launching random dungeon search");
                         Lua.LuaDoString("LFDQueueFrameFindGroupButton:Click()");
                         Thread.Sleep(1000);
                     }

@@ -1,7 +1,11 @@
 ﻿using MahApps.Metro.Controls.Dialogs;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows.Controls;
+using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Models;
 using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.GUI
@@ -10,7 +14,7 @@ namespace WholesomeDungeonCrawler.GUI
     {
         private MetroDialogSettings basicDialogSettings;
         private MetroDialogSettings addDialogSettings;
-        public ObservableCollection<string> PartyMemberCollection { get; set; }
+        //public ObservableCollection<string> PartyMemberCollection { get; set; }
 
         public AdvancedSettings()
         {
@@ -21,8 +25,8 @@ namespace WholesomeDungeonCrawler.GUI
 
         private void Setup()
         {
-            PartyMemberCollection = new ObservableCollection<string>(CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers);
-            dgParty.ItemsSource = PartyMemberCollection;
+            ObservableCollection<string> partyMemberCollection = new ObservableCollection<string>(CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers);
+            dgParty.ItemsSource = partyMemberCollection;
             txtErrorChooseRoleFirst.Visibility = System.Windows.Visibility.Collapsed;
 
             addDialogSettings = new MetroDialogSettings()
@@ -43,7 +47,7 @@ namespace WholesomeDungeonCrawler.GUI
 
             btnAddPartyMember.Click += async (sender, e) =>
             {
-                if (PartyMemberCollection.Count >= 4)
+                if (partyMemberCollection.Count >= 4)
                 {
                     await this.ShowMessageAsync("Warning", "Cannot add more than 4 players to invite.", MessageDialogStyle.Affirmative, basicDialogSettings);
                 }
@@ -51,8 +55,8 @@ namespace WholesomeDungeonCrawler.GUI
                 var x = await this.ShowInputAsync("Add", "Party Member Name", addDialogSettings);
                 if (x != null)
                 {
-                    PartyMemberCollection.Add(x);
-                    CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers = PartyMemberCollection.ToList();
+                    partyMemberCollection.Add(x);
+                    CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers = partyMemberCollection.ToList();
                 }
 
             };
@@ -61,8 +65,8 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 if (dgParty.SelectedIndex >= 0)
                 {
-                    PartyMemberCollection.Remove(dgParty.SelectedValue.ToString());
-                    CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers = PartyMemberCollection.ToList();
+                    partyMemberCollection.Remove(dgParty.SelectedValue.ToString());
+                    CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers = partyMemberCollection.ToList();
                 }
             };
 
@@ -76,17 +80,37 @@ namespace WholesomeDungeonCrawler.GUI
             if (CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == Helpers.LFGRoles.Tank)
             {
                 CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.TankName = ObjectManager.Me.Name;
-                tbTankName.IsEnabled = false;
+                tbTankName.Visibility = System.Windows.Visibility.Collapsed;
+                cbSelectDungeon.Visibility = System.Windows.Visibility.Visible;
                 spPartyGrid.Visibility = System.Windows.Visibility.Visible;
             }
             else
             {
+                tbTankName.Visibility = System.Windows.Visibility.Visible;
                 spPartyGrid.Visibility = System.Windows.Visibility.Collapsed;
+                cbSelectDungeon.Visibility = System.Windows.Visibility.Collapsed;
+            }
+
+            // dungeon selection
+            List<DungeonModel> availableDungeons = Toolbox.GetListAvailableDungeons();
+            cbSelectDungeon.Items.Clear();
+            cbSelectDungeon.SelectedValuePath = "Key";
+            cbSelectDungeon.DisplayMemberPath = "Value";
+            cbSelectDungeon.Items.Add(new KeyValuePair<int, string>(-1, "Random Dungeon"));
+            foreach (DungeonModel dungeon in availableDungeons)
+            {
+                cbSelectDungeon.Items.Add(new KeyValuePair<int, string>(dungeon.DungeonId, dungeon.Name));
             }
         }
 
         private void MetroWindow_Closing(object sender, CancelEventArgs e)
         {
+            CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.Save();
+        }
+
+        private void cbSelectDungeon_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Logger.Log(cbSelectDungeon.SelectedItem.ToString());
             CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.Save();
         }
     }

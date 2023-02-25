@@ -1,6 +1,7 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Threading;
+using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
 
@@ -8,6 +9,37 @@ namespace WholesomeDungeonCrawler.Helpers
 {
     public class Toolbox
     {
+        public static List<DungeonModel> GetListAvailableDungeons()
+        {
+            List<DungeonModel> result = new List<DungeonModel>();
+            int[] availableInstancesIds = Lua.LuaDoString<int[]>($@"
+                local result = {{}};
+                for i=1,30,1 do
+                    local button = _G[""LFDQueueFrameSpecificListButton"" .. i .. ""EnableButton""];
+                    if button ~= nil then
+                        local dungeonId = _G[""LFDQueueFrameSpecificListButton"" .. i].id;
+                        if dungeonId ~= nil and LFGIsIDHeader(dungeonId) == false then
+                            table.insert(result, dungeonId);
+                        end
+                    end
+                end
+                return unpack(result);
+            ");
+
+            foreach (int instanceId in availableInstancesIds)
+            {
+                DungeonModel model = Lists.AllDungeons.Find(dungeon => dungeon.DungeonId == instanceId);
+                if (model == null)
+                {
+                    Logger.LogError($"Couldn't match instance with ID {instanceId}");
+                    continue;
+                }
+                Logger.Log(model.Name);
+                result.Add(model);
+            }
+            return result;
+        }
+
         public static void LeaveDungeonAndGroup()
         {
             Logger.Log($"Leaving party and teleporting out of dungeon");

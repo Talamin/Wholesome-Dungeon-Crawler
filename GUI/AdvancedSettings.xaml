@@ -59,8 +59,21 @@
                                 <Controls:NumericUpDown Controls:TextBoxHelper.Watermark="In combat (healers)" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding CombatFollowDistance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             </StackPanel>
                         </GroupBox>-->
-                        <TextBox x:Name="tbTankName" Controls:TextBoxHelper.Watermark="Please enter tank name" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" Text="{Binding TankName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
-                        <StackPanel x:Name="spPartyGrid">
+                        <StackPanel Margin="5">
+                            <TextBox x:Name="tbTankName" Controls:TextBoxHelper.Watermark="Please enter tank name" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" Text="{Binding TankName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                        </StackPanel>
+                        <StackPanel Margin="5">
+                            <Label
+                                Margin="0"
+                                HorizontalAlignment="Center"
+                                Content="Dungeon"/>
+                            <ComboBox
+                                x:Name="cbSelectDungeon" 
+                                SelectionChanged="cbSelectDungeon_SelectionChanged"
+                                SelectedValue="{Binding SelectedDungeon, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                Height="30" />
+                        </StackPanel>
+                        <StackPanel x:Name="spPartyGrid" Margin="5">
                             <DataGrid x:Name="dgParty" Margin="5" CanUserAddRows="False" IsReadOnly="True" MaxHeight="300" AutoGenerateColumns="False">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Party member names" Binding="{Binding}"/>

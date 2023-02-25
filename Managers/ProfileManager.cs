@@ -23,6 +23,7 @@ namespace WholesomeDungeonCrawler.Managers
         private IProfile _currentProfile = null;
         public static readonly string ProfilesDirectoryName = "Wholesome-Dungeon-Crawler-Profiles";
 
+        public List<DungeonModel> AvailableDungeons { get; private set; }
         public IProfile CurrentDungeonProfile => _currentProfile;
         public bool ProfileIsRunning => _currentProfile != null && _currentProfile.CurrentStep != null;
 
@@ -35,10 +36,13 @@ namespace WholesomeDungeonCrawler.Managers
         }
         public void Initialize()
         {
+            AvailableDungeons = Toolbox.GetListAvailableDungeons();
+            EventsLuaWithArgs.OnEventsLuaStringWithArgs += LuaEventHandler;
         }
 
         public void Dispose()
         {
+            EventsLuaWithArgs.OnEventsLuaStringWithArgs -= LuaEventHandler;
         }
 
         public void LoadProfile(bool safeWait)
@@ -202,6 +206,16 @@ namespace WholesomeDungeonCrawler.Managers
                 _currentProfile.Dispose();
             }
             _currentProfile = null;
+        }
+
+        private void LuaEventHandler(string eventid, List<string> args)
+        {
+            switch (eventid)
+            {
+                case "PLAYER_LEVEL_UP":
+                    AvailableDungeons = Toolbox.GetListAvailableDungeons();
+                    break;
+            }
         }
     }
 }
