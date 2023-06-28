@@ -17,7 +17,7 @@ namespace WholesomeDungeonCrawler.States
 
         private readonly IEntityCache _entitycache;
         private IWoWUnit _unitToLoot;
-        private List<ulong> _unitsLooted = new List<ulong>();
+        private List<LootedUnit> _lootedUnits = new List<LootedUnit>();
 
         public TurboLoot(IEntityCache entityCache)
         {
@@ -36,6 +36,13 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
+                // Purge cache
+                if (_lootedUnits.Count > 100)
+                {
+                    _lootedUnits.RemoveRange(0, 10);
+                }
+                _lootedUnits.RemoveAll(lu => lu.Timer.IsReady);
+
                 _unitToLoot = null;
                 Vector3 myPosition = _entitycache.Me.PositionWithoutType;
                 List<IWoWUnit> lootableCorpses = _entitycache.LootableUnits
@@ -44,7 +51,7 @@ namespace WholesomeDungeonCrawler.States
                     .ToList();
                 foreach (IWoWUnit lootableCorpse in lootableCorpses)
                 {
-                    if (!_unitsLooted.Contains(lootableCorpse.Guid))
+                    if (!_lootedUnits.Exists(lu => lu.Guid == lootableCorpse.Guid))
                     {
                         _unitToLoot = lootableCorpse;
                         break;
@@ -61,12 +68,6 @@ namespace WholesomeDungeonCrawler.States
             Vector3 myPos = _entitycache.Me.PositionWithoutType;
             Vector3 corpsePos = _unitToLoot.PositionWithoutType;
 
-            // Purge cache
-            if (_unitsLooted.Count > 100)
-            {
-                _unitsLooted.RemoveRange(0, 10);
-            }
-
             // Loot
             if (myPos.DistanceTo(corpsePos) <= 3.5)
             {
@@ -74,7 +75,7 @@ namespace WholesomeDungeonCrawler.States
                 MovementManager.StopMove();
                 Interact.InteractGameObject(_unitToLoot.GetBaseAddress);
                 Thread.Sleep(100);
-                _unitsLooted.Add(_unitToLoot.Guid);
+                _lootedUnits.Add(new LootedUnit(_unitToLoot.Guid));
                 return;
             }
 
@@ -91,9 +92,20 @@ namespace WholesomeDungeonCrawler.States
                 else
                 {
                     Logger.LogError($"[TurboLoot] {_unitToLoot.Name}'s corpse seems unreachable. Skipping loot.");
-                    _unitsLooted.Add(_unitToLoot.Guid);
+                    _lootedUnits.Add(new LootedUnit(_unitToLoot.Guid));
                 }
             }
+        }
+    }
+    struct LootedUnit
+    {
+        public ulong Guid { get; }
+        public robotManager.Helpful.Timer Timer { get; }
+
+        public LootedUnit(ulong guid)
+        {
+            Guid = guid;
+            Timer = new robotManager.Helpful.Timer(180 * 1000);
         }
     }
 }
