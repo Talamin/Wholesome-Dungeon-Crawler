@@ -162,9 +162,11 @@ namespace WholesomeDungeonCrawler.Bot
                     break;
                 case "START_LOOT_ROLL":
                 case "CANCEL_LOOT_ROLL":
+                    /*
                 case "CONFIRM_LOOT_ROLL":
                     _cache.CacheLootRollShow();
                     break;
+                    */
                 case "PARTY_MEMBERS_CHANGED":
                 case "PARTY_MEMBER_DISABLE":
                 case "PARTY_MEMBER_ENABLE":

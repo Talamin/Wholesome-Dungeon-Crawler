@@ -91,6 +91,11 @@ namespace WholesomeDungeonCrawler.States
                     Logger.LogOnce("A group member can resurrect me. Waiting.");
                     Thread.Sleep(3000);
                 }
+                else if (_entityCache.EnemiesAttackingGroup.Length > 0)
+                {
+                    Logger.LogOnce("Group is still fighting. Waiting.");
+                    Thread.Sleep(3000);
+                }
                 else
                 {
                     Thread.Sleep(1000);

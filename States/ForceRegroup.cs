@@ -42,7 +42,7 @@ namespace WholesomeDungeonCrawler.States
                     || _entityCache.Me.IsDead
                     || Fight.InFight
                     || _entityCache.EnemiesAttackingGroup.Length > 0
-                    || _cache.LootRollShow
+                    //|| _cache.LootRollShow
                     || !_profileManager.ProfileIsRunning
                     || _profileManager.CurrentDungeonProfile.CurrentStep is RegroupStep
                     || _profileManager.CurrentDungeonProfile.CurrentStep is LeaveDungeonStep

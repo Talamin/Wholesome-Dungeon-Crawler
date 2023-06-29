@@ -12,7 +12,7 @@ namespace WholesomeDungeonCrawler.ProductCache
         public string CurrentState { get; set; }
         public bool LFGProposalShown { get; private set; }
         public bool LFGRoleCheckShown { get; private set; }
-        public bool LootRollShow { get; private set; }
+        //public bool LootRollShow { get; private set; }
         public bool IAmAlliance { get; private set; }
         public bool InLoadingScreen { get; private set; }
         public bool IsRunningForcedTownRun { get; set; }
@@ -27,7 +27,7 @@ namespace WholesomeDungeonCrawler.ProductCache
             CacheIsInInstance();
             CacheRoleCheckShow();
             CacheLFGProposalShown();
-            CacheLootRollShow();
+            //CacheLootRollShow();
 
             robotManager.Events.FiniteStateMachineEvents.OnRunState += FiniteStateMachineEvents_OnRunState;
         }
@@ -80,10 +80,10 @@ namespace WholesomeDungeonCrawler.ProductCache
             LFGRoleCheckShown = Lua.LuaDoString<bool>("return LFDRoleCheckPopupAcceptButton:IsVisible()");
         }
 
-        public void CacheLootRollShow()
+        /*public void CacheLootRollShow()
         {
             // This doesn't work
             //LootRollShow = Lua.LuaDoString<bool>("for i = 1, 4 do local b = ['GroupLootFrame'..i] if b and b:IsVisible() then return true end end return false");
-        }
+        }*/
     }
 }

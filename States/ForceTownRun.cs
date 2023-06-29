@@ -37,7 +37,7 @@ namespace WholesomeDungeonCrawler.States
                     || !_profileManager.ProfileIsRunning
                     || _profileManager.CurrentDungeonProfile.GetCurrentStepIndex > 0
                     || !_cache.IsInInstance
-                    || _cache.LootRollShow)
+                    /*|| _cache.LootRollShow*/)
                 {
                     return false;
                 }
