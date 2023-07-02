@@ -15,6 +15,10 @@ namespace WholesomeDungeonCrawler.Models
     {
         public CompleteConditionType ConditionType { get; set; }
 
+        // Timer
+        public Timer Timer { get; set; }
+        public int TimerTimeInSeconds { get; set; }
+
         // Have Item
         public int HaveItemId { get; set; }
         public bool HaveItemMustReturnTrue { get; set; } = true;

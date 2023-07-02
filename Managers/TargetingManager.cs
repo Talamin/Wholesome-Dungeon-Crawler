@@ -67,7 +67,6 @@ namespace WholesomeDungeonCrawler.Managers
                     PullToSafeSpotStep pullStep = _profileManager.CurrentDungeonProfile.CurrentStep as PullToSafeSpotStep;
                     if (currentTarget.Target >= 0
                         && _entityCache.EnemiesAttackingGroup.Length > 0
-                        //&& !pullStep.IamInSafeSpot 
                         && !pullStep.PositionInSafeSpotFightRange(currentTarget.Position))
                     {
                         canceable.Cancel = true;

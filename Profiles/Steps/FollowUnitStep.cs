@@ -39,14 +39,14 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     {
                         if (_followUnitModel.SkipIfNotFound && EvaluateCompleteCondition(_followUnitModel.CompleteCondition))
                         {
-                            Logger.LogDebug($"[Step {_followUnitModel.Name}]: Skipping. Unit {_followUnitModel.UnitId} is not here or condition is complete.");
+                            Logger.Log($"[Step {_followUnitModel.Name}]: Skipping. Unit {_followUnitModel.UnitId} is not here or condition is complete.");
                             IsCompleted = true;
                             return;
                         }
                         else
                         {
                             Thread.Sleep(1000);
-                            Logger.LogDebug($"[Step {_followUnitModel.Name}]: Unit {_followUnitModel.UnitId} is not around and SkipIfNotFound is false. Waiting.");
+                            Logger.Log($"[Step {_followUnitModel.Name}]: Unit {_followUnitModel.UnitId} is not around and SkipIfNotFound is false. Waiting.");
                             return;
                         }
                     }
@@ -56,7 +56,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     if (foundUnit.Position.DistanceTo(_followUnitModel.ExpectedEndPosition) < 15
                         && EvaluateCompleteCondition(_followUnitModel.CompleteCondition))
                     {
-                        Logger.LogDebug($"[Step {_followUnitModel.Name}]: {foundUnit} has reached their destination");
+                        Logger.Log($"[Step {_followUnitModel.Name}]: {foundUnit.Name} has reached their destination");
                         IsCompleted = true;
                         return;
                     }

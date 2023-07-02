@@ -30,5 +30,6 @@
         LOSCheck = 6,
         CanGossip = 7,
         MobAttackable = 8,
+        Timer = 9
     }
 }

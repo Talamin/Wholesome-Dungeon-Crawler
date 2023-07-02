@@ -626,6 +626,22 @@
                             <Button x:Name="btnGetCanGossipEntry" Content="Get Target Mob Id" Margin="5" Click="btnGetCanGossipEntry_Click" />
                         </StackPanel>
                     </StackPanel>
+                    <!--Timer-->
+                    <StackPanel Orientation="Vertical"  Margin="5">
+                        <StackPanel.Style>
+                            <Style TargetType="StackPanel">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=cbConditionType, Path=SelectedValue}" Value="Timer">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <StackPanel Orientation="Horizontal">
+                            <Controls:NumericUpDown Name="nudTimerSeconds" Value="{Binding SelectedItem.CompleteCondition.TimerTimeInSeconds, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Timer (seconds)" Margin="5" Minimum="0"/>
+                        </StackPanel>
+                    </StackPanel>
                 </StackPanel>
             </StackPanel>
         </Grid>

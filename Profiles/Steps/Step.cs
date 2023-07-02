@@ -25,6 +25,25 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
             switch (stepCompleteCondition.ConditionType)
             {
+                case CompleteConditionType.Timer:
+                    if (stepCompleteCondition.Timer == null)
+                    {
+                        stepCompleteCondition.Timer = new Timer(stepCompleteCondition.TimerTimeInSeconds * 1000);
+                        return false;
+                    }
+
+                    if (stepCompleteCondition.Timer.IsReady)
+                    {
+                        Logger.Log($"[Condition PASS] Timer is over.");
+                        return true;
+                    }
+                    else
+                    {
+                        if ((stepCompleteCondition.Timer.TimeLeft() / 1000) % 5 == 0) 
+                            Logger.LogOnce($"[Condition FAIL] Time left: {stepCompleteCondition.Timer.TimeLeft() / 1000} seconds");
+                        return false;
+                    }
+
                 case CompleteConditionType.MobAttackable:
                     WoWUnit unitAttackable = ObjectManager.GetObjectWoWUnit()
                         .Where(unit => unit.Entry == stepCompleteCondition.MobAttackableEntry)

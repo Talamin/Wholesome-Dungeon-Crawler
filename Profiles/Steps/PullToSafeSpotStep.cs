@@ -157,6 +157,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 if (EvaluateCompleteCondition(_pullToSafeSpotModel.CompleteCondition)
                     && !_entityCache.Me.InCombatFlagOnly)
                 {
+                    _enemiesToClear.Clear();
                     IsCompleted = true;
                 }
             }
