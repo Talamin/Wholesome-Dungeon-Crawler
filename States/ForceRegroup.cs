@@ -60,7 +60,7 @@ namespace WholesomeDungeonCrawler.States
                         if (_gnomereganTImer == null)
                         {
                             Logger.Log($"Started Gnomeregan safety timer");
-                            _gnomereganTImer = new robotManager.Helpful.Timer(60 * 1000);
+                            _gnomereganTImer = new robotManager.Helpful.Timer(30 * 1000);
                         }
                         if (_gnomereganTImer.IsReady)
                         {
@@ -69,6 +69,10 @@ namespace WholesomeDungeonCrawler.States
                         }
                     }
                     return false;
+                }
+                else
+                {
+                    _gnomereganTImer = null;
                 }
 
                 if (_entityCache.ListGroupMember.Count() != _entityCache.ListPartyMemberNames.Count())
