@@ -1,5 +1,4 @@
 ﻿using robotManager.FiniteStateMachine;
-using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -21,11 +20,11 @@ namespace WholesomeDungeonCrawler.States
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
         private robotManager.Helpful.Timer _gnomereganTimer = null;
-        private int _gnomereganTimerTime = 30 * 1000;
+        private int _gnomereganTimerTime = 120 * 1000;
 
         public ForceRegroup(
-            ICache iCache, 
-            IEntityCache EntityCache, 
+            ICache iCache,
+            IEntityCache EntityCache,
             IProfileManager profilemanager)
         {
             _cache = iCache;
@@ -53,11 +52,6 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                if (_gnomereganTimer != null)
-                {
-                    Logger.LogError($"GNOME time left : {_gnomereganTimer.TimeLeft()}");
-                }
-
                 if (_profileManager.CurrentDungeonProfile.CurrentStep is RegroupStep)
                 {
                     // Gnomeregan exception to match entrances
@@ -77,8 +71,7 @@ namespace WholesomeDungeonCrawler.States
                     }
                     return false;
                 }
-
-                 _gnomereganTimer = null;
+                _gnomereganTimer = null;
 
                 if (_entityCache.ListGroupMember.Count() != _entityCache.ListPartyMemberNames.Count())
                 {
