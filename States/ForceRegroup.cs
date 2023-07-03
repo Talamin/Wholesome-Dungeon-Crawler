@@ -20,7 +20,8 @@ namespace WholesomeDungeonCrawler.States
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
-        private robotManager.Helpful.Timer _gnomereganTImer = null;
+        private robotManager.Helpful.Timer _gnomereganTimer = null;
+        private int _gnomereganTimerTime = 30 * 1000;
 
         public ForceRegroup(
             ICache iCache, 
@@ -52,27 +53,32 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
+                if (_gnomereganTimer != null)
+                {
+                    Logger.LogError($"GNOME time left : {_gnomereganTimer.TimeLeft()}");
+                }
+
                 if (_profileManager.CurrentDungeonProfile.CurrentStep is RegroupStep)
                 {
                     // Gnomeregan exception to match entrances
                     if (_profileManager.CurrentDungeonProfile.MapId == 90)
                     {
-                        if (_gnomereganTImer == null)
+                        if (_gnomereganTimer == null)
                         {
-                            Logger.Log($"Started Gnomeregan safety timer");
-                            _gnomereganTImer = new robotManager.Helpful.Timer(120 * 1000);
+                            Logger.Log($"Started Gnomeregan safety timer ({_gnomereganTimerTime} s)");
+                            _gnomereganTimer = new robotManager.Helpful.Timer(_gnomereganTimerTime);
                         }
-                        if (_gnomereganTImer.IsReady)
+                        if (_gnomereganTimer.IsReady)
                         {
                             Logger.Log($"Gnomeregan safety TP out/in");
-                            _gnomereganTImer = null;
+                            _gnomereganTimer = null;
                             return true;
                         }
                     }
                     return false;
                 }
 
-                 _gnomereganTImer = null;
+                 _gnomereganTimer = null;
 
                 if (_entityCache.ListGroupMember.Count() != _entityCache.ListPartyMemberNames.Count())
                 {
