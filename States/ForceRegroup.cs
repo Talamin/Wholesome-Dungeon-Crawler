@@ -47,7 +47,7 @@ namespace WholesomeDungeonCrawler.States
                     //|| _cache.LootRollShow
                     || !_profileManager.ProfileIsRunning
                     || _profileManager.CurrentDungeonProfile.CurrentStep is LeaveDungeonStep
-                    || _entityCache.ListGroupMember.Count() == 0)
+                    || _entityCache.ListGroupMember.Count() == 0 && _entityCache.ListPartyMemberNames.Count() == 0) // Not if you're alone
                 {
                     return false;
                 }
