@@ -15,6 +15,7 @@ using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 using wManager.Wow.Patchables;
+using static WholesomeDungeonCrawler.Managers.AvoidAOEManager;
 
 namespace WholesomeDungeonCrawler.Managers
 {
@@ -107,18 +108,18 @@ namespace WholesomeDungeonCrawler.Managers
 
             foreach (WoWObject wowObject in objectList)
             {
-                // Uncomment to detect objects in the log
                 /*
+                // Uncomment this part to detect objects in the log                
                 if (wowObject.Type == WoWObjectType.DynamicObject)
                 {
                     DynamicObject dObject = new DynamicObject(wowObject.GetBaseAddress);
-                    Logger.LogOnce($"{dObject.Name} -> {dObject.Entry}", true);
+                    Logger.LogOnce($"DYNAMIC: {dObject.Name} -> {dObject.Entry}", true);
                 }
                 if (wowObject.Type != WoWObjectType.Unit
                     && wowObject.Type != WoWObjectType.DynamicObject
                     && wowObject.Type != WoWObjectType.GameObject)
                 {
-                    Logger.LogOnce($"{wowObject.Name} -> {wowObject.Entry}", true);
+                    Logger.LogOnce($"WoWOBJECT: {wowObject.Name} -> {wowObject.Entry}", true);
                 }
                 */
                 if (_knowAOEs.TryGetValue(wowObject.Entry, out float radius))
@@ -226,10 +227,13 @@ namespace WholesomeDungeonCrawler.Managers
             if (Fight.InFight && _entityCache.Target.TargetGuid <= 0) return;
 
             // Cancel moves into danger zones
-            if (_dangerZones.Exists(dangerZone =>
+            DangerZone dangerZoneOnTheWay = _dangerZones.Where(dangerZone =>
                 dangerZone.Position.DistanceTo(path.Last()) < dangerZone.Radius
-                && _entityCache.Me.PositionWithoutType.DistanceTo(path.Last()) < dangerZone.Radius + _marginRadius + 4))
+                && _entityCache.Me.PositionWithoutType.DistanceTo(path.Last()) < dangerZone.Radius + _marginRadius + 4)
+                .FirstOrDefault();
+            if (dangerZoneOnTheWay != null)
             {
+                Logger.LogOnce($"Can't move, {dangerZoneOnTheWay.Name} is on the way. Waiting despawn.");
                 cancelable.Cancel = true;
                 return;
             }
@@ -270,10 +274,13 @@ namespace WholesomeDungeonCrawler.Managers
             }
 
             // Cancel moves into danger zones
-            if (_dangerZones.Exists(dangerZone =>
+            DangerZone dangerZoneOnTheWay = _dangerZones.Where(dangerZone =>
                 dangerZone.Position.DistanceTo(node) < dangerZone.Radius
-                && _entityCache.Me.PositionWithoutType.DistanceTo(node) < dangerZone.Radius + _marginRadius + 4))
+                && _entityCache.Me.PositionWithoutType.DistanceTo(node) < dangerZone.Radius + _marginRadius + 4)
+                .FirstOrDefault();
+            if (dangerZoneOnTheWay != null)
             {
+                Logger.LogOnce($"Can't move, {dangerZoneOnTheWay.Name} is on the way. Waiting despawn.");
                 cancelable.Cancel = true;
                 return;
             }
@@ -335,6 +342,8 @@ namespace WholesomeDungeonCrawler.Managers
             //{8317, 8f}, // Atal'ai Deathwalker's Spirit (Temple)
             {12222, 8f}, // Creeping Sludge (Foulspore Caverns)
             {21070, 8f}, // Noxious Slime gas (Foulspore Caverns)
+            {181877, 6f},// Proximity Mine (The Blood Furnace)
+            {181890, 8f}, // Liquid Fire (Hellfire Ramparts, last boss)
 
             {42748, 4f}, // Shadow Axe (Ingvar The Plunderer)
             {47958, 4f}, // Crystal Spikes (Ormorok The Tree Shaper)
