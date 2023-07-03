@@ -96,8 +96,31 @@ namespace WholesomeDungeonCrawler.States
                 {
                     MoveAlongPathStep moveAlongStep = (MoveAlongPathStep)_profileManager.CurrentDungeonProfile.CurrentStep;
                     List<Vector3> moveAlongPath = moveAlongStep.GetMoveAlongPath;
-                    Vector3 currentMANode = moveAlongPath.Where(node => node == MovementManager.CurrentMoveTo).FirstOrDefault();
+                    List<Vector3> currentMMPath = MovementManager.CurrentPath;
                     Vector3 myPos = _entityCache.Me.PositionWithoutType;
+
+                    // Check if we're on the profile path, if not, we could be in a recalculated path after a blockage
+                    if (MovementManager.CurrentPath.Count > 2)
+                    {
+                        List<Vector3> pathToCheck = currentMMPath.GetRange(1, currentMMPath.Count - 2);
+                        bool pathIsCurrent = false;
+                        foreach (Vector3 node in pathToCheck)
+                        {
+                            if (moveAlongPath.Contains(node))
+                            {
+                                pathIsCurrent = true;
+                                break;
+                            }
+                        }
+
+                        // We are not on the profile path
+                        if (!pathIsCurrent && myPos.DistanceTo(currentMMPath[0]) > 15)
+                        {
+                            MovementManager.StopMove();
+                        }
+                    }
+
+                    Vector3 currentMANode = moveAlongPath.Where(node => node == MovementManager.CurrentMoveTo).FirstOrDefault();
                     if (currentMANode == null)
                     {
                         // Next node is not a MA path node
@@ -113,7 +136,7 @@ namespace WholesomeDungeonCrawler.States
                         }
                     }
 
-                    _linesToCheck = MoveHelper.GetFrontLinesOnPath(MovementManager.CurrentPath);
+                    _linesToCheck = MoveHelper.GetFrontLinesOnPath(currentMMPath);
                     _unitOnPath = EnemyAlongTheLine(_linesToCheck, _entityCache.EnemyUnitsList);
 
                     // TANK - Check for followers along the line in front

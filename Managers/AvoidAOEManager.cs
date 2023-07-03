@@ -342,8 +342,9 @@ namespace WholesomeDungeonCrawler.Managers
             //{8317, 8f}, // Atal'ai Deathwalker's Spirit (Temple)
             {12222, 8f}, // Creeping Sludge (Foulspore Caverns)
             {21070, 8f}, // Noxious Slime gas (Foulspore Caverns)
-            {181877, 6f},// Proximity Mine (The Blood Furnace)
+            {181877, 8f},// Proximity Mine (The Blood Furnace)
             {181890, 8f}, // Liquid Fire (Hellfire Ramparts, last boss)
+            {17662, 15f}, // Broggok poison cloud (Blood Furnace)
 
             {42748, 4f}, // Shadow Axe (Ingvar The Plunderer)
             {47958, 4f}, // Crystal Spikes (Ormorok The Tree Shaper)
