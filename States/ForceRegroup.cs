@@ -1,4 +1,5 @@
 ﻿using robotManager.FiniteStateMachine;
+using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -19,6 +20,7 @@ namespace WholesomeDungeonCrawler.States
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
+        private robotManager.Helpful.Timer _gnomereganTImer = null;
 
         public ForceRegroup(
             ICache iCache, 
@@ -44,10 +46,28 @@ namespace WholesomeDungeonCrawler.States
                     || _entityCache.EnemiesAttackingGroup.Length > 0
                     //|| _cache.LootRollShow
                     || !_profileManager.ProfileIsRunning
-                    || _profileManager.CurrentDungeonProfile.CurrentStep is RegroupStep
                     || _profileManager.CurrentDungeonProfile.CurrentStep is LeaveDungeonStep
                     || _entityCache.ListGroupMember.Count() == 0)
                 {
+                    return false;
+                }
+
+                if (_profileManager.CurrentDungeonProfile.CurrentStep is RegroupStep)
+                {
+                    // Gnomeregan exception to match entrances
+                    if (_profileManager.CurrentDungeonProfile.MapId == 90)
+                    {
+                        if (_gnomereganTImer == null)
+                        {
+                            Logger.Log($"Started Gnomeregan safety timer");
+                            _gnomereganTImer = new robotManager.Helpful.Timer(60 * 1000);
+                        }
+                        if (_gnomereganTImer.IsReady)
+                        {
+                            Logger.Log($"Gnomeregan safety TP out/in");
+                            return true;
+                        }
+                    }
                     return false;
                 }
 
