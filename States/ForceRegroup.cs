@@ -65,6 +65,7 @@ namespace WholesomeDungeonCrawler.States
                         if (_gnomereganTImer.IsReady)
                         {
                             Logger.Log($"Gnomeregan safety TP out/in");
+                            _gnomereganTImer = null;
                             return true;
                         }
                     }
