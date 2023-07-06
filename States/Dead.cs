@@ -19,6 +19,8 @@ namespace WholesomeDungeonCrawler.States
 
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
+        private robotManager.Helpful.Timer _forceReleaseTimer = null;
+        private int _forceReleaseTimeInSeconds = 180;
 
         public Dead(IEntityCache iEntityCache, IProfileManager profilemanager)
         {
@@ -43,22 +45,34 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            if (WTLuaFrames.GetStaticPopup1Text().Contains("wants to resurrect you"))
+            for (int i = 1; i <= 3; i++)
             {
-                Logger.LogOnce("Accepting resurrection from a player");
-                Lua.LuaDoString("StaticPopup1Button1:Click()");
-                return;
+                if (Lua.LuaDoString<bool>($"return StaticPopup{i}Text:IsVisible();"))
+                {
+                    string resText = Lua.LuaDoString<string>($"return StaticPopup{i}Text:GetText();");
+                    if (resText != null && resText.Contains("wants to resurrect you"))
+                    {
+                        Logger.LogOnce("Accepting party resurrection");
+                        Lua.LuaDoString($"StaticPopup{i}Button1:Click();");
+                        _forceReleaseTimer = null;
+                        return;
+                    }
+                }
             }
 
             if (_entityCache.Me.Auras.ContainsKey(20762)) // Soulstone
             {
                 Logger.LogOnce("Accepting soulstone resurrection");
-                Lua.LuaDoString("StaticPopup1Button1:Click()");
+                for (int i = 1; i <= 3; i++)
+                {
+                    Lua.LuaDoString($"StaticPopup{i}Button1:Click();");
+                }
                 return;
             }
 
             if (_entityCache.Me.Auras.ContainsKey(8326)) // Ghost
             {
+                _forceReleaseTimer = null;
                 if (MovementManager.InMovement)
                 {
                     return;
@@ -82,28 +96,57 @@ namespace WholesomeDungeonCrawler.States
             }
             else
             {
+                // Failsafe for loading screen
+                Thread.Sleep(3000);
+                if (!_entityCache.Me.IsDead)
+                {
+                    _forceReleaseTimer = null;
+                    return;
+                }
+
                 MovementManager.StopMove();
                 if (_entityCache.ListGroupMember
-                    .Any(player => _rezzClasses.Contains(player.WoWClass)
-                        && !player.IsDead
-                        && _entityCache.Me.PositionWithoutType.DistanceTo(player.PositionWithoutType) < 50))
+                    .Any(resPlayer => _rezzClasses.Contains(resPlayer.WoWClass)
+                        && !resPlayer.IsDead
+                        && _entityCache.Me.PositionWithoutType.DistanceTo(resPlayer.PositionWithoutType) < 50))
                 {
+                    if (_forceReleaseTimer == null)
+                    {
+                        Logger.Log($"Starting force release timer ({_forceReleaseTimeInSeconds} seconds)");
+                        _forceReleaseTimer = new robotManager.Helpful.Timer(_forceReleaseTimeInSeconds * 1000);
+                    }
+
                     Logger.LogOnce("A group member can resurrect me. Waiting.");
+
+                    if (_forceReleaseTimer.IsReady)
+                    {
+                        _forceReleaseTimer = null;
+                        ReleaseCorpse("Timer is up");
+                        return;
+                    }
+
                     Thread.Sleep(3000);
                 }
                 else if (_entityCache.EnemiesAttackingGroup.Length > 0)
                 {
+                    _forceReleaseTimer = null;
                     Logger.LogOnce("Group is still fighting. Waiting.");
                     Thread.Sleep(3000);
                 }
                 else
                 {
-                    Thread.Sleep(1000);
-                    Logger.Log("Nothing can resurrect me. We will have to walk.");
-                    Lua.LuaDoString("RepopMe();");
-                    Thread.Sleep(5000);
+                    _forceReleaseTimer = null;
+                    ReleaseCorpse("No one can resurrect me");
                 }
             }
+        }
+
+        private void ReleaseCorpse(string reason)
+        {
+            Thread.Sleep(1000);
+            Logger.Log($"Releasing corpse ({reason}).");
+            Lua.LuaDoString("RepopMe();");
+            Thread.Sleep(5000);
         }
     }
 }

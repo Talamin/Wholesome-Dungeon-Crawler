@@ -345,6 +345,7 @@ namespace WholesomeDungeonCrawler.Managers
             {181877, 8f},// Proximity Mine (The Blood Furnace)
             {181890, 8f}, // Liquid Fire (Hellfire Ramparts, last boss)
             {17662, 15f}, // Broggok poison cloud (Blood Furnace)
+            {17990, 10f }, // Underbog Mushroom (Underbog, Hungarfen boss)
 
             {42748, 4f}, // Shadow Axe (Ingvar The Plunderer)
             {47958, 4f}, // Crystal Spikes (Ormorok The Tree Shaper)
