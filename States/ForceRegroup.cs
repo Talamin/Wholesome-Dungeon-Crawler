@@ -19,8 +19,8 @@ namespace WholesomeDungeonCrawler.States
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
-        private robotManager.Helpful.Timer _gnomereganTimer = null;
-        private int _gnomereganTimerTime = 120 * 1000;
+        private robotManager.Helpful.Timer _safetyTimer = null;
+        private int _safetyTimerTime = 120 * 1000;
 
         public ForceRegroup(
             ICache iCache,
@@ -54,24 +54,25 @@ namespace WholesomeDungeonCrawler.States
 
                 if (_profileManager.CurrentDungeonProfile.CurrentStep is RegroupStep)
                 {
-                    // Gnomeregan exception to match entrances
-                    if (_profileManager.CurrentDungeonProfile.MapId == 90)
+                    // Gnomeregan / Uldaman exception to match entrances
+                    if (_profileManager.CurrentDungeonProfile.MapId == 90
+                        || _profileManager.CurrentDungeonProfile.MapId == 70)
                     {
-                        if (_gnomereganTimer == null)
+                        if (_safetyTimer == null)
                         {
-                            Logger.Log($"Started Gnomeregan safety timer ({_gnomereganTimerTime} s)");
-                            _gnomereganTimer = new robotManager.Helpful.Timer(_gnomereganTimerTime);
+                            Logger.Log($"Started safety timer ({_safetyTimerTime} s)");
+                            _safetyTimer = new robotManager.Helpful.Timer(_safetyTimerTime);
                         }
-                        if (_gnomereganTimer.IsReady)
+                        if (_safetyTimer.IsReady)
                         {
-                            Logger.Log($"Gnomeregan safety TP out/in");
-                            _gnomereganTimer = null;
+                            Logger.Log($"Safety TP out/in");
+                            _safetyTimer = null;
                             return true;
                         }
                     }
                     return false;
                 }
-                _gnomereganTimer = null;
+                _safetyTimer = null;
 
                 if (_entityCache.ListGroupMember.Count() != _entityCache.ListPartyMemberNames.Count())
                 {

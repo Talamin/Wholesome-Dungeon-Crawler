@@ -1,4 +1,5 @@
 ﻿using robotManager.Helpful;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -15,7 +16,6 @@ using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 using wManager.Wow.Patchables;
-using static WholesomeDungeonCrawler.Managers.AvoidAOEManager;
 
 namespace WholesomeDungeonCrawler.Managers
 {
@@ -31,6 +31,7 @@ namespace WholesomeDungeonCrawler.Managers
         //private DangerZone _dangerZoneToEscape = null;
         //private List<(ulong guid, Vector3 position)> _blackListCache = new List<(ulong, Vector3)>();
         private float _marginRadius = 4f;
+        private LFGRoles _myRole = CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole;
 
         public bool MustEscapeAOE => _dangerZones.Exists(dangerZone => dangerZone.Position.DistanceTo(_entityCache.Me.PositionWithoutType) < dangerZone.Radius);
         public List<Vector3> GetEscapePath => _escapePath;
@@ -41,12 +42,27 @@ namespace WholesomeDungeonCrawler.Managers
         {
             _entityCache = entityCache;
             _cache = cache;
+
+            // We load the AOEs in a dictionary to speed up AOE lookup
+            foreach (KnownAOE knownAOE in _knownAOEs)
+            {
+                if (!knownAOE.AffectedRoles.Contains(_myRole)) continue;
+
+                if (!_knowAOEsDic.ContainsKey(knownAOE.Id))
+                {
+                    _knowAOEsDic.Add(knownAOE.Id, knownAOE);
+                }
+                else
+                {
+                    Logger.LogError($"Multiple entries for AOE : {knownAOE.Id}");
+                }
+            }
         }
 
         public void Initialize()
         {
-            //Radar3D.OnDrawEvent += Radar3DOnDrawEvent;
-            //Radar3D.Pulse();
+            Radar3D.OnDrawEvent += Radar3DOnDrawEvent;
+            Radar3D.Pulse();
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             MovementEvents.OnMovementPulse += MovementEventsOnMovementPulse;
             MovementEvents.OnMoveToPulse += MovementsEventsOnMoveToPulse;
@@ -55,7 +71,7 @@ namespace WholesomeDungeonCrawler.Managers
 
         public void Dispose()
         {
-            //Radar3D.OnDrawEvent -= Radar3DOnDrawEvent;
+            Radar3D.OnDrawEvent -= Radar3DOnDrawEvent;
             ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
             MovementEvents.OnMovementPulse -= MovementEventsOnMovementPulse;
             MovementEvents.OnMoveToPulse -= MovementsEventsOnMoveToPulse;
@@ -92,7 +108,7 @@ namespace WholesomeDungeonCrawler.Managers
         {
             Stopwatch watch = Stopwatch.StartNew();
             Vector3 myPos = _entityCache.Me.PositionWithoutType;
-            bool automaticallyDetectRange = false;
+            //bool automaticallyDetectRange = false;
 
             List<WoWObject> objectList = ObjectManager.ObjectList.ToList();
 
@@ -108,13 +124,15 @@ namespace WholesomeDungeonCrawler.Managers
 
             foreach (WoWObject wowObject in objectList)
             {
+
+                // Uncomment this part to detect objects in the log
                 /*
-                // Uncomment this part to detect objects in the log                
                 if (wowObject.Type == WoWObjectType.DynamicObject)
                 {
                     DynamicObject dObject = new DynamicObject(wowObject.GetBaseAddress);
                     Logger.LogOnce($"DYNAMIC: {dObject.Name} -> {dObject.Entry}", true);
                 }
+                
                 if (wowObject.Type != WoWObjectType.Unit
                     && wowObject.Type != WoWObjectType.DynamicObject
                     && wowObject.Type != WoWObjectType.GameObject)
@@ -122,7 +140,7 @@ namespace WholesomeDungeonCrawler.Managers
                     Logger.LogOnce($"WoWOBJECT: {wowObject.Name} -> {wowObject.Entry}", true);
                 }
                 */
-                if (_knowAOEs.TryGetValue(wowObject.Entry, out float radius))
+                if (_knowAOEsDic.TryGetValue(wowObject.Entry, out KnownAOE knownAOE))
                 {
                     switch (wowObject.Type)
                     {
@@ -130,7 +148,7 @@ namespace WholesomeDungeonCrawler.Managers
                             WoWUnit unit = wowObject as WoWUnit;
                             if (unit.IsAlive)
                             {
-                                AddDangerZone(wowObject, radius);
+                                AddDangerZone(wowObject, knownAOE.Radius);
                             }
                             else
                             {
@@ -139,11 +157,11 @@ namespace WholesomeDungeonCrawler.Managers
                             break;
                         case WoWObjectType.DynamicObject:
                             DynamicObject dObject = new DynamicObject(wowObject.GetBaseAddress);
-                            radius = automaticallyDetectRange ? dObject.Radius : radius;
-                            AddDangerZone(dObject, radius);
+                            //knownAOE = automaticallyDetectRange ? dObject.Radius : knownAOE;
+                            AddDangerZone(dObject, knownAOE.Radius);
                             break;
                         case WoWObjectType.GameObject:
-                            AddDangerZone(wowObject, radius);
+                            AddDangerZone(wowObject, knownAOE.Radius);
                             break;
                         default:
                             Logger.LogError($"Invalid object type {wowObject.Type} for object with entry {wowObject.Entry} in AoE avoider.");
@@ -157,6 +175,7 @@ namespace WholesomeDungeonCrawler.Managers
                 .Find(dangerZone => dangerZone.Position.DistanceTo(myPos) < dangerZone.Radius);
             if (dangerZoneToEscape != null)
             {
+                Lua.LuaDoString("SpellStopCasting();");
                 if (_escapePath == null || _escapePath.Last().DistanceTo(myPos) < _marginRadius - 1)
                 {
                     Logger.LogOnce($"Escaping {dangerZoneToEscape.Name}");
@@ -189,11 +208,20 @@ namespace WholesomeDungeonCrawler.Managers
                         return;
                     }
 
-                    List<Vector3> closestSpotsFromGroup = safeSpots
-                        .OrderBy(spot => _entityCache.Me.PositionWithoutType.DistanceTo2D(spot))
+                    // Prefer a position nearby tank, if out, myself
+                    IWoWPlayer tank = _entityCache.TankUnit;
+                    Vector3 positionPreferred = tank != null ? tank.PositionWithoutType : _entityCache.Me.PositionWithoutType;
+                    List<Vector3> closestSpotsFromPreferred = safeSpots
+                        .OrderBy(spot => positionPreferred.DistanceTo2D(spot))
                         .ToList();
-                    foreach (Vector3 spot in closestSpotsFromGroup)
+                    foreach (Vector3 spot in closestSpotsFromPreferred)
                     {
+                        // Should always be in LoS of tank?
+                        if (tank != null && TraceLine.TraceLineGo(spot, tank.PositionWithoutType))
+                        {
+                            continue;
+                        }
+
                         Vector3 targetPosition = new Vector3(spot.X, spot.Y, PathFinder.GetZPosition(spot));
                         if (!TraceLine.TraceLineGo(targetPosition))
                         {
@@ -222,7 +250,7 @@ namespace WholesomeDungeonCrawler.Managers
 
         private void MovementEventsOnMovementPulse(List<Vector3> path, CancelEventArgs cancelable)
         {
-            if (path.Count <= 0) return;
+            if (path == null || path.Count <= 0) return;
             // Don't cancel during pull
             if (Fight.InFight && _entityCache.Target.TargetGuid <= 0) return;
 
@@ -310,7 +338,7 @@ namespace WholesomeDungeonCrawler.Managers
             {
                 Radar3D.DrawCircle(_safeSpot, 0.4f, Color.ForestGreen, false, 200);
             }
-
+            
             for (int i = 0; i < _escapePath.Count - 1; i++)
             {
                 Radar3D.DrawLine(_escapePath[i], _escapePath[i + 1], Color.ForestGreen);
@@ -336,6 +364,44 @@ namespace WholesomeDungeonCrawler.Managers
             }
         }
 
+        private struct KnownAOE
+        {
+            public int Id { get; private set; }
+            public float Radius { get; private set; }
+            public List<LFGRoles> AffectedRoles { get; private set; }
+            public Func<bool> Condition { get; private set; }
+            public bool IsConditionMet => Condition == null || Condition();
+
+            public KnownAOE(int id, float radius, List<LFGRoles> affectedRoles, Func<bool> condition = null)
+            {
+                Id = id;
+                Radius = radius;
+                AffectedRoles = affectedRoles;
+                Condition = condition;
+            }
+        }
+
+        private Dictionary<int, KnownAOE> _knowAOEsDic = new Dictionary<int, KnownAOE>();
+        private readonly List<KnownAOE> _knownAOEs = new List<KnownAOE>()
+        { 
+            // Creeping Sludge (Foulspore Caverns)
+            new KnownAOE(12222, 8f, new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS }),
+            // Noxious Slime gas (Foulspore Caverns)
+            new KnownAOE(21070, 8f, new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS }),
+            // Proximity Mine (The Blood Furnace)
+            new KnownAOE(181877, 8f, new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS }),
+            // Liquid Fire (Hellfire Ramparts, last boss)
+            new KnownAOE(181890, 8f, new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS }),
+            // Broggok poison cloud (Blood Furnace)
+            new KnownAOE(17662, 15f, new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS }),
+            // Underbog Mushroom (Underbog, Hungarfen boss)
+            new KnownAOE(17990, 10f, new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS }),
+            // Focus Target Visual (Mana Tombs, Shirrak the Dead Watcher)
+            new KnownAOE(32286, 16f, new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS }),
+            // Shirrak the Dead Watcher (stay in range if you can)
+            new KnownAOE(18371, 15f, new List<LFGRoles>() { LFGRoles.Heal, LFGRoles.RDPS }),
+        };
+        /*
         private readonly Dictionary<int, float> _knowAOEs = new Dictionary<int, float> // { Entry, Radius }
         {
             // 5 man
@@ -346,6 +412,7 @@ namespace WholesomeDungeonCrawler.Managers
             {181890, 8f}, // Liquid Fire (Hellfire Ramparts, last boss)
             {17662, 15f}, // Broggok poison cloud (Blood Furnace)
             {17990, 10f }, // Underbog Mushroom (Underbog, Hungarfen boss)
+            {32286, 10f }, // Focus Target Visual (Mana Tombs, Shirrak the Dead Watcher)
 
             {42748, 4f}, // Shadow Axe (Ingvar The Plunderer)
             {47958, 4f}, // Crystal Spikes (Ormorok The Tree Shaper)
@@ -515,7 +582,7 @@ namespace WholesomeDungeonCrawler.Managers
             {73063, 4f }, // Frost Breath P2 (Sindragosa, ICC 10H)
             {71058, 4f }, // Frost Breath P1 (Sindragosa, ICC 25H)
             {73064, 4f }, // Frost Breath P2 (Sindragosa, ICC 25H)
-        };
+        };*/
 
         private class DynamicObject : WoWObject
         {
