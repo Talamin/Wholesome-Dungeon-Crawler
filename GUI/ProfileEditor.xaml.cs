@@ -328,7 +328,7 @@ namespace WholesomeDungeonCrawler.GUI
                             WoWUnit unitToEscort = ObjectManager.GetObjectWoWUnit().Find(unit => unit.Entry == model.UnitId);
                             if (unitToEscort != null)
                             {
-                                Radar3D.DrawCircle(model.ExpectedEndPosition, 3f, Color.LawnGreen, true, 200);
+                                Radar3D.DrawCircle(unitToEscort.Position, 3f, Color.LawnGreen, true, 200);
                             }
                         }
 

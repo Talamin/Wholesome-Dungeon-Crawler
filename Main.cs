@@ -26,11 +26,6 @@ public class Main : IProduct
         {
             WholesomeDungeonCrawlerSettings.Load();
             Logger.Log($"{_productName} version {_productVersion} loaded");
-
-            // Open/Close LFD frame to update available dungeons
-            Lua.RunMacroText("/lfd");
-            Lua.LuaDoString("LFDQueueFrameTypeDropDownButton:Click(); DropDownList1Button1:Click();");
-            Lua.RunMacroText("/lfd");
         }
         catch (Exception e)
         {

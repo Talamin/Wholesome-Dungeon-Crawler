@@ -217,7 +217,8 @@ namespace WholesomeDungeonCrawler.Managers
                     foreach (Vector3 spot in closestSpotsFromPreferred)
                     {
                         // Should always be in LoS of tank?
-                        if (tank != null && TraceLine.TraceLineGo(spot, tank.PositionWithoutType))
+                        if (tank != null 
+                            && (tank.PositionWithoutType.DistanceTo(spot) > 27 || TraceLine.TraceLineGo(spot, tank.PositionWithoutType)))
                         {
                             continue;
                         }
@@ -382,24 +383,28 @@ namespace WholesomeDungeonCrawler.Managers
         }
 
         private Dictionary<int, KnownAOE> _knowAOEsDic = new Dictionary<int, KnownAOE>();
+        private static readonly List<LFGRoles> _everyone = new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS };
+        private static readonly List<LFGRoles> _meleeOnly = new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.MDPS };
+        private static readonly List<LFGRoles> _rangedOnly = new List<LFGRoles>() { LFGRoles.Heal, LFGRoles.RDPS };
+        private static readonly List<LFGRoles> _everyoneExceptTank = new List<LFGRoles>() { LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS };
         private readonly List<KnownAOE> _knownAOEs = new List<KnownAOE>()
         { 
             // Creeping Sludge (Foulspore Caverns)
-            new KnownAOE(12222, 8f, new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS }),
+            new KnownAOE(12222, 8f, _everyone),
             // Noxious Slime gas (Foulspore Caverns)
-            new KnownAOE(21070, 8f, new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS }),
+            new KnownAOE(21070, 8f, _everyone),
             // Proximity Mine (The Blood Furnace)
-            new KnownAOE(181877, 8f, new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS }),
-            // Liquid Fire (Hellfire Ramparts, last boss)
-            new KnownAOE(181890, 8f, new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS }),
+            new KnownAOE(181877, 8f, _everyone),
+            // Liquid Fire (Hellfire Ramparts, last boss)   
+            new KnownAOE(181890, 8f, _everyone),
             // Broggok poison cloud (Blood Furnace)
-            new KnownAOE(17662, 15f, new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS }),
+            new KnownAOE(17662, 15f, _everyone),
             // Underbog Mushroom (Underbog, Hungarfen boss)
-            new KnownAOE(17990, 10f, new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS }),
+            new KnownAOE(17990, 10f, _everyone),
             // Focus Target Visual (Mana Tombs, Shirrak the Dead Watcher)
-            new KnownAOE(32286, 16f, new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS }),
-            // Shirrak the Dead Watcher (stay in range if you can)
-            new KnownAOE(18371, 15f, new List<LFGRoles>() { LFGRoles.Heal, LFGRoles.RDPS }),
+            new KnownAOE(32286, 16f, _everyone),
+            // Shirrak the Dead Watcher (cast debuff when close)
+            new KnownAOE(18371, 15f, _rangedOnly),
         };
         /*
         private readonly Dictionary<int, float> _knowAOEs = new Dictionary<int, float> // { Entry, Radius }

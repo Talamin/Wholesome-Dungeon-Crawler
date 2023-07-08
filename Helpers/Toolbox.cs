@@ -11,6 +11,11 @@ namespace WholesomeDungeonCrawler.Helpers
     {
         public static List<DungeonModel> GetListAvailableDungeons()
         {
+            // Open/Close LFD frame to update available dungeons
+            Lua.RunMacroText("/lfd");
+            Lua.LuaDoString("LFDQueueFrameTypeDropDownButton:Click(); DropDownList1Button1:Click();");
+            Lua.RunMacroText("/lfd");
+
             List<DungeonModel> result = new List<DungeonModel>();
             int[] availableInstancesIds = Lua.LuaDoString<int[]>($@"
                 local result = {{}};
@@ -18,7 +23,8 @@ namespace WholesomeDungeonCrawler.Helpers
                     local button = _G[""LFDQueueFrameSpecificListButton"" .. i .. ""EnableButton""];
                     if button ~= nil then
                         local dungeonId = _G[""LFDQueueFrameSpecificListButton"" .. i].id;
-                        if dungeonId ~= nil and LFGIsIDHeader(dungeonId) == false then
+                        local dungeonText = _G[""LFDQueueFrameSpecificListButton"" .. i].instanceName:GetText();
+                        if dungeonId ~= nil and dungeonText ~= nil and LFGIsIDHeader(dungeonId) == false then
                             table.insert(result, dungeonId);
                         end
                     end
@@ -31,7 +37,7 @@ namespace WholesomeDungeonCrawler.Helpers
                 DungeonModel model = Lists.AllDungeons.Find(dungeon => dungeon.DungeonId == instanceId);
                 if (model == null)
                 {
-                    Logger.LogError($"Couldn't match instance with ID {instanceId}");
+                    Logger.LogError($"Couldn't match instance with ID {instanceId} from LFG list");
                     continue;
                 }
                 Logger.Log(model.Name);
