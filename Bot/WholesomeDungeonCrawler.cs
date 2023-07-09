@@ -1,12 +1,14 @@
 ﻿using robotManager.FiniteStateMachine;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.States;
+using wManager.Events;
 using wManager.Wow.Bot.States;
 using wManager.Wow.Helpers;
 
@@ -55,6 +57,7 @@ namespace WholesomeDungeonCrawler.Bot
                 _checkPathAheadState.Initialize();
 
                 EventsLuaWithArgs.OnEventsLuaStringWithArgs += OnEventsLuaStringWithArgs;
+                OthersEvents.OnMount += OnMount;
 
                 // List of states, top of the list is highest priority
                 State[] states = new State[]
@@ -188,7 +191,7 @@ namespace WholesomeDungeonCrawler.Bot
             try
             {
                 EventsLuaWithArgs.OnEventsLuaStringWithArgs -= OnEventsLuaStringWithArgs;
-                CustomClass.DisposeCustomClass();
+                OthersEvents.OnMount -= OnMount;
                 _avoidAOEManager?.Dispose();
                 _checkPathAheadState?.Dispose();
                 _partyChatManager?.Dispose();
@@ -200,11 +203,17 @@ namespace WholesomeDungeonCrawler.Bot
                 _targetingManager?.Dispose();
                 _luaStatusFrameManager?.Dispose();
                 Fight.StopFight();
+                CustomClass.DisposeCustomClass();
             }
             catch (Exception e)
             {
                 Logger.LogError("Bot > Bot > Dispose: " + e);
             }
+        }
+
+        private void OnMount(string mountName, CancelEventArgs cancelable)
+        {
+            cancelable.Cancel = _cache.IsInInstance;
         }
     }
 }
