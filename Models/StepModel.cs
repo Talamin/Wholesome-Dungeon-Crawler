@@ -16,7 +16,8 @@ namespace WholesomeDungeonCrawler.Models
         public CompleteConditionType ConditionType { get; set; }
 
         // Timer
-        public Timer Timer { get; set; }
+        public Timer ConditionTimer { get; set; }
+        public double GetTimerTimeLeft => ConditionTimer == null || ConditionTimer.IsReady ? 0 : ConditionTimer.TimeLeft();
         public int TimerTimeInSeconds { get; set; }
 
         // Have Item

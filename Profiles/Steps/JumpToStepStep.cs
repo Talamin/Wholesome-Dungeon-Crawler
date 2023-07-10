@@ -10,7 +10,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override string Name { get; }
 
-        public JumpToStepStep(JumpToStepModel jumpToStepModel, IProfile profile)
+        public JumpToStepStep(JumpToStepModel jumpToStepModel, IProfile profile) : base(jumpToStepModel.CompleteCondition)
         {
             _jumpToStepModel = jumpToStepModel;
             _stepToJumpTo = _jumpToStepModel.StepToJumpTo;
@@ -20,7 +20,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
-            if (EvaluateCompleteCondition(_jumpToStepModel.CompleteCondition))
+            if (EvaluateCompleteCondition())
             {
                 _profile.JumpToStep(Name, _stepToJumpTo);
             }

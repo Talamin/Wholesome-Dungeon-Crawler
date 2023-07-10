@@ -20,7 +20,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public override string Name { get; }
         private List<int> _objectIds = new List<int>();
 
-        public InteractWithStep(InteractWithModel interactWithModel, IEntityCache entityCache)
+        public InteractWithStep(InteractWithModel interactWithModel, IEntityCache entityCache) : base(interactWithModel.CompleteCondition)
         {
             _interactWithModel = interactWithModel;
             _entityCache = entityCache;
@@ -38,7 +38,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             // Keep checking while we cast
             if (ObjectManager.Me.IsCast
                 && _interactWithModel.CompleteCondition.ConditionType != CompleteConditionType.None
-                && !EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
+                && !EvaluateCompleteCondition())
             {
                 Thread.Sleep(500);
                 return;
@@ -76,7 +76,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     }
                 }
 
-                if (EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
+                if (EvaluateCompleteCondition())
                 {
                     if (_interactWithModel.SkipIfNotFound)
                     {
@@ -114,7 +114,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 MovementManager.StopMove();
                 MovementManager.StopMoveTo();
                 if (_interactWithModel.CompleteCondition.ConditionType != CompleteConditionType.None
-                    && EvaluateCompleteCondition(_interactWithModel.CompleteCondition))
+                    && EvaluateCompleteCondition())
                 {
                     Logger.Log($"[{_interactWithModel.Name}] Interaction with object {foundObject.Name} ({foundObject.Entry}) is complete");
                     IsCompleted = true;

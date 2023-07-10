@@ -30,7 +30,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             MoveAlongPathModel stepModel,
             IEntityCache entityCache,
             IPathManager pathManager,
-            int mapStepIndex)
+            int mapStepIndex) : base(stepModel.CompleteCondition)
         {
             _moveAlongPathModel = stepModel;
             _entityCache = entityCache;
@@ -60,7 +60,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
             if ((MovementManager.CurrentMoveTo == null || MovementManager.CurrentMoveTo == lastPointOfPath)
                 && _entityCache.Me.PositionWithoutType.DistanceTo(lastPointOfPath) < 2f
-                && EvaluateCompleteCondition(_moveAlongPathModel.CompleteCondition))
+                && EvaluateCompleteCondition())
             {
                 IsCompleted = true;
                 return;

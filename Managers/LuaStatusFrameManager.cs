@@ -18,8 +18,10 @@ namespace WholesomeDungeonCrawler.Managers
         private string _tankName = null;
         private string _dungeonName = null;
         private static readonly int _defaultFrameHeight = 160;
-        private IStep _currentStep = null;
-        private int _currentNumberOfSteps = 0;
+        // Mem
+        private string _lastStepName;
+        private bool _lastStepCompletion;
+        private int _lastNumberOfSteps = 0;
 
         public static System.Timers.Timer LuaFrameUpdateTimer { get; set; }
 
@@ -52,6 +54,38 @@ namespace WholesomeDungeonCrawler.Managers
 
         public void CreateFrame()
         {
+            // Timer frame
+            Lua.LuaDoString($@"
+                        if not wdcrawlerTimer then
+                            wdcrawlerTimer = CreateFrame(""Frame"",nil,UIParent)
+                        end
+                        wdcrawlerTimer:SetFrameStrata(""BACKGROUND"")
+                        wdcrawlerTimer:SetWidth(250)
+                        wdcrawlerTimer:SetHeight(100)
+                        wdcrawlerTimer:SetBackdrop(StaticPopup1:GetBackdrop())
+                        wdcrawlerTimer:SetBackdropBorderColor(0.2, 0.2, 0.2, 0.7)                            
+                        wdcrawlerTimer:SetPoint(""CENTER"", 0, 150)
+                        
+                        if not wdcrawlerTimer.defTimerText then
+                            wdcrawlerTimer.defTimerText = wdcrawlerTimer:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
+                            wdcrawlerTimer.defTimerText:SetText(""Defend spot timer : --:--"")
+                            wdcrawlerTimer.defTimerText:SetTextColor(0.4, 0.4, 0.4)
+                        end
+                        wdcrawlerTimer.defTimerText:SetPoint(""TOP"", 0, -25)
+                        wdcrawlerTimer.defTimerText:SetFont(""Fonts\\ARIALN.TTF"", 16, ""OUTLINE"")
+                        
+                        if not wdcrawlerTimer.condTimerText then
+                            wdcrawlerTimer.condTimerText = wdcrawlerTimer:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
+                            wdcrawlerTimer.condTimerText:SetText(""Condition timer : --:--"")
+                            wdcrawlerTimer.condTimerText:SetTextColor(0.4, 0.4, 0.4)
+                        end
+                        wdcrawlerTimer.condTimerText:SetPoint(""TOP"", 0, -55)
+                        wdcrawlerTimer.condTimerText:SetFont(""Fonts\\ARIALN.TTF"", 16, ""OUTLINE"")
+
+                        wdcrawlerTimer:Hide();
+                ");
+
+            // Main Crawler frame
             Lua.LuaDoString($@"
                         if not wdcrawler then
                             wdcrawler = CreateFrame(""Frame"",nil,UIParent)
@@ -175,6 +209,7 @@ namespace WholesomeDungeonCrawler.Managers
 
                         wdcrawler:Show();");
         }
+
         public void UpdateFrame()
         {
             string allLua = "";
@@ -217,58 +252,130 @@ namespace WholesomeDungeonCrawler.Managers
 
             int currentNumberOfSteps = 0;
 
-            // Steps
             if (_profileManager.CurrentDungeonProfile != null)
             {
                 List<IStep> allSteps = _profileManager.CurrentDungeonProfile.GetAllSteps;
                 currentNumberOfSteps = allSteps.Count;
                 int stepsBasePosition = -140;
+                IStep currentStep = _profileManager.CurrentDungeonProfile.CurrentStep;
 
-                // Current step change
-                if (_profileManager.CurrentDungeonProfile.CurrentStep != null
-                    && _currentStep != _profileManager.CurrentDungeonProfile.CurrentStep)
+                // Detect change in the step list
+                if (currentNumberOfSteps != _lastNumberOfSteps
+                    || _lastStepCompletion != currentStep.IsCompleted
+                    || _lastStepName != currentStep.Name)
                 {
-                    for (int i = 0; i < allSteps.Count; i++)
+                    // Delete all previous steps
+                    for (int i = 0; i < 100; i++)
                     {
+                        allLua += $@"
+                            if wdcrawler.allstepsText{i} then
+                                wdcrawler.allstepsText{i}:SetText("""")
+                            end
+                            ";
+                    }
+
+                    for (int i = 0; i < currentNumberOfSteps; i++)
+                    {
+                        // step text color
                         string color = "1, 1, 1, 1";
-
                         if (allSteps[i].IsCompleted) color = "0.5, 0.5, 0.5";
-
-                        if (allSteps[i] == _profileManager.CurrentDungeonProfile.CurrentStep)
+                        if (allSteps[i] == currentStep)
                         {
                             color = "0.5, 0.5, 1";
-                            /*
-                            allStepsLua += $@"
-                                wdcrawler.stepskipbtn:SetPoint(""TOPLEFT"",20,{stepsBasePosition + 3})
-                                wdcrawler.stepskipbtn:Show();
-                                wdcrawler.stepskipbtn.stepskipbtntext:Show();";
-                            */
                         }
 
                         allLua += $@"
-                        if not wdcrawler.allstepsText{i} then
-                            wdcrawler.allstepsText{i} = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
-                            wdcrawler.allstepsText{i}:ClearAllPoints()
-                            wdcrawler.allstepsText{i}:SetPoint(""TOPLEFT"",60,{stepsBasePosition})
-                            wdcrawler.allstepsText{i}:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
-                        end
-                        if not wdcrawler.allstepsText{i}:IsVisible() then
-                            wdcrawler.allstepsText{i}:Show()                            
-                        end
-                        wdcrawler.allstepsText{i}:SetText(""{allSteps[i].Name}"")
-                        wdcrawler.allstepsText{i}:SetTextColor({color})";
+                            if not wdcrawler.allstepsText{i} then
+                                wdcrawler.allstepsText{i} = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
+                                wdcrawler.allstepsText{i}:ClearAllPoints()
+                                wdcrawler.allstepsText{i}:SetPoint(""TOPLEFT"",60,{stepsBasePosition})
+                                wdcrawler.allstepsText{i}:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
+                            end
+                            if not wdcrawler.allstepsText{i}:IsVisible() then
+                                wdcrawler.allstepsText{i}:Show()                            
+                            end
+                            wdcrawler.allstepsText{i}:SetText(""{allSteps[i].Name}"")
+                            wdcrawler.allstepsText{i}:SetTextColor({color})";
 
                         stepsBasePosition -= 17;
-                        _currentStep = _profileManager.CurrentDungeonProfile.CurrentStep;
                     }
                 }
 
-            }
-            else
-            {
-                if (_currentNumberOfSteps > 0)
+                // Timer text
+                bool shouldShowTimer = false;
+                if (currentStep != null)
                 {
-                    for (int i = 0; i < _currentNumberOfSteps; i++)
+                    // Defend spot timer
+                    if (currentStep is DefendSpotStep defendSpotStep)
+                    {
+                        shouldShowTimer = true;
+                        double timeLeft = defendSpotStep.GetTimeLeft;
+                        if (timeLeft > 0)
+                        {
+                            allLua += $@"
+                                    wdcrawlerTimer.defTimerText:SetText(""Defend spot timer : {ReadableTime(timeLeft)}"")
+                                    wdcrawlerTimer.defTimerText:SetTextColor(0.9, 0.7, 0, 0.9)
+                                    wdcrawlerTimer:Show();
+                                ";
+                        }
+                        else
+                        {
+                            allLua += $@"
+                                    wdcrawlerTimer.defTimerText:SetText(""Defend spot timer : --:--"")
+                                    wdcrawlerTimer.defTimerText:SetTextColor(0.4, 0.4, 0.4)
+                                ";
+                        }
+                    }
+                    // Condtion Timer
+                    if (currentStep.StepCompleteConditionModel.ConditionType == Helpers.CompleteConditionType.Timer)
+                    {
+                        shouldShowTimer = true;
+                        double condTimeLeft = currentStep.StepCompleteConditionModel.GetTimerTimeLeft;
+                        if (condTimeLeft > 0)
+                        {
+                            allLua += $@"
+                                wdcrawlerTimer.condTimerText:SetText(""Condition timer : {ReadableTime(condTimeLeft)}"")
+                                wdcrawlerTimer.condTimerText:SetTextColor(0.9, 0.7, 0, 0.9)
+                                wdcrawlerTimer:Show();
+                            ";
+                        }
+                        else
+                        {
+                            allLua += $@"
+                                wdcrawlerTimer.condTimerText:SetText(""Condition timer : --:--"")
+                                wdcrawlerTimer.condTimerText:SetTextColor(0.4, 0.4, 0.4)
+                            ";
+                        }
+                    }
+                }
+                if (!shouldShowTimer)
+                {
+                    allLua += $@"
+                            wdcrawlerTimer:Hide();
+                        ";
+
+                }
+
+                // Frame height
+                if (currentNumberOfSteps != _lastNumberOfSteps)
+                {
+                    allLua += @$"
+                    wdcrawler:SetHeight({_defaultFrameHeight + 17 * currentNumberOfSteps})";
+                }
+
+                _lastStepName = currentStep.Name;
+                _lastStepCompletion = currentStep.IsCompleted;
+                _lastNumberOfSteps = currentNumberOfSteps;
+            }
+            else // CurrentDungeonProfile is null
+            {
+                allLua += $@"
+                            wdcrawlerTimer:Hide();
+                        ";
+
+                if (_lastNumberOfSteps > 0)
+                {
+                    for (int i = 0; i < _lastNumberOfSteps; i++)
                     {
                         allLua += $@"
                         if wdcrawler.allstepsText{i} and wdcrawler.allstepsText{i}:IsVisible() then
@@ -278,14 +385,6 @@ namespace WholesomeDungeonCrawler.Managers
                 }
             }
 
-            // Frame height
-            if (currentNumberOfSteps != _currentNumberOfSteps)
-            {
-                allLua += @$"
-                    wdcrawler:SetHeight({_defaultFrameHeight + 17 * currentNumberOfSteps})";
-                _currentNumberOfSteps = currentNumberOfSteps;
-            }
-            
             if (!string.IsNullOrEmpty(allLua))
             {
                 //Logging.Write(allLua);
@@ -296,12 +395,25 @@ namespace WholesomeDungeonCrawler.Managers
             }
         }
 
+        private string ReadableTime(double timeMs)
+        {
+            int totalSeconds = (int)(timeMs / 1000);
+            int minutes = totalSeconds / 60;
+            int seconds = totalSeconds - minutes * 60;
+            string leadingZero = seconds < 10 ? "0" : "";
+            return $"{minutes}:{leadingZero}{seconds}";
+        }
+
         public void HideFrame()
         {
             Lua.LuaDoString($@"
                 if wdcrawler then
                     wdcrawler:Hide();
-                end");
+                end
+                if wdcrawlerTimer then
+                    wdcrawlerTimer:Hide();
+                end
+            ");
         }
     }
 }

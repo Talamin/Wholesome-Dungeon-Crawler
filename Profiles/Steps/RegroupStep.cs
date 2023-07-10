@@ -27,7 +27,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private bool _imPartyLeader;
         private bool _receivedChatSystemReady;
 
-        public RegroupStep(RegroupModel regroupModel, IEntityCache entityCache, IPartyChatManager partyChatManager)
+        public RegroupStep(RegroupModel regroupModel, IEntityCache entityCache, IPartyChatManager partyChatManager) : base(regroupModel.CompleteCondition)
         {
             _partyChatManager = partyChatManager;
             _regroupModel = regroupModel;
@@ -116,7 +116,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 return;
             }
 
-            if (!EvaluateCompleteCondition(_regroupModel.CompleteCondition))
+            if (!EvaluateCompleteCondition())
             {
                 IsCompleted = false;
                 return;

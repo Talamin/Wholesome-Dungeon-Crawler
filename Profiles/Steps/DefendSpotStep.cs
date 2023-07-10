@@ -19,7 +19,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override string Name { get; }
 
-        public DefendSpotStep(DefendSpotModel defendSpotModel, IEntityCache entityCache)
+        public DefendSpotStep(DefendSpotModel defendSpotModel, IEntityCache entityCache) : base(defendSpotModel.CompleteCondition)
         {
             _defendSpotModel = defendSpotModel;
             _entityCache = entityCache;
@@ -57,11 +57,13 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
             if (_entityCache.Me.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= _defendSpotRadius
                 && _stepTimer.IsReady
-                && EvaluateCompleteCondition(_defendSpotModel.CompleteCondition))
+                && EvaluateCompleteCondition())
             {
                 IsCompleted = true;
                 return;
             }
         }
+
+        public double GetTimeLeft => _stepTimer == null || _stepTimer.IsReady ? 0 : _stepTimer.TimeLeft();
     }
 }

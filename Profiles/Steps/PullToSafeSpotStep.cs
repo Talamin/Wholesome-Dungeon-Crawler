@@ -29,7 +29,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public PullToSafeSpotStep(
             PullToSafeSpotModel pullToSafeSpotModel,
-            IEntityCache entityCache)
+            IEntityCache entityCache) : base(pullToSafeSpotModel.CompleteCondition)
         {
             Name = pullToSafeSpotModel.Name;
             _pullToSafeSpotModel = pullToSafeSpotModel;
@@ -154,7 +154,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             else
             {
                 // Zone is clear
-                if (EvaluateCompleteCondition(_pullToSafeSpotModel.CompleteCondition)
+                if (EvaluateCompleteCondition()
                     && !_entityCache.Me.InCombatFlagOnly)
                 {
                     _enemiesToClear.Clear();

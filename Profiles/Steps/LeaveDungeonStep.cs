@@ -27,7 +27,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public LeaveDungeonStep(LeaveDungeonModel leaveDungeonModel, 
             IEntityCache entityCache,
             IPartyChatManager partyChatManager,
-            IProfileManager profileManager)
+            IProfileManager profileManager) : base(leaveDungeonModel.CompleteCondition)
         {
             _profileManager = profileManager;
             _partyChatManager = partyChatManager;
@@ -66,7 +66,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 return;
             }
 
-            if (!EvaluateCompleteCondition(_leaveDungeonModel.CompleteCondition))
+            if (!EvaluateCompleteCondition())
             {
                 IsCompleted = false;
                 return;

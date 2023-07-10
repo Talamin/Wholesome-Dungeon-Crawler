@@ -145,14 +145,17 @@ namespace WholesomeDungeonCrawler.Managers
                             // Search in steps
                             foreach (StepModel stepModel in profileModel.StepModels)
                             {
-                                if (stepModel is RegroupModel)
+                                if (stepModel is RegroupModel regroupModel)
                                 {
-                                    RegroupModel regroupModel = (RegroupModel)stepModel;
+                                    if (regroupModel.RegroupSpot == null)
+                                    {
+                                        Logger.LogError($"WARNING : The step {regroupModel.Name} doesn't have a position!");
+                                        continue;
+                                    }
                                     dungeonPath.Add(regroupModel.RegroupSpot);
                                 }
-                                if (stepModel is MoveAlongPathModel)
+                                if (stepModel is MoveAlongPathModel moveAlongPathModel)
                                 {
-                                    MoveAlongPathModel moveAlongPathModel = (MoveAlongPathModel)stepModel;
                                     dungeonPath.AddRange(moveAlongPathModel.Path);
                                 }
                             }

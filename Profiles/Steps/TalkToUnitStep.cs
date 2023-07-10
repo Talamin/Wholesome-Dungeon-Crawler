@@ -15,7 +15,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private readonly IEntityCache _entityCache;
         public override string Name { get; }
 
-        public TalkToUnitStep(TalkToUnitModel talkToUnitModel, IEntityCache entityCache)
+        public TalkToUnitStep(TalkToUnitModel talkToUnitModel, IEntityCache entityCache) : base(talkToUnitModel.CompleteCondition)
         {
             _talkToUnitModel = talkToUnitModel;
             _entityCache = entityCache;
@@ -36,7 +36,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 }
                 else
                 {
-                    if (_talkToUnitModel.SkipIfNotFound && EvaluateCompleteCondition(_talkToUnitModel.CompleteCondition))
+                    if (_talkToUnitModel.SkipIfNotFound && EvaluateCompleteCondition())
                     {
                         Logger.LogDebug($"[Step {_talkToUnitModel.Name}]: Skipping unit {_talkToUnitModel.UnitId} because he's not here.");
                         IsCompleted = true;
@@ -56,7 +56,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 float targetInteractDistance = foundUnit.InteractDistance;
                 GoToTask.ToPositionAndIntecractWithNpc(targetPosition, _talkToUnitModel.UnitId, _talkToUnitModel.GossipIndex);
                 if (myPosition.DistanceTo(targetPosition) < targetInteractDistance
-                    && EvaluateCompleteCondition(_talkToUnitModel.CompleteCondition))
+                    && EvaluateCompleteCondition())
                 {
                     IsCompleted = true;
                     return;

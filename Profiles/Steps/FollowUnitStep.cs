@@ -16,7 +16,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private readonly IEntityCache _entityCache;
         public override string Name { get; }
 
-        public FollowUnitStep(FollowUnitModel followUnitModel, IEntityCache entityCache)
+        public FollowUnitStep(FollowUnitModel followUnitModel, IEntityCache entityCache) : base(followUnitModel.CompleteCondition)
         {
             _followUnitModel = followUnitModel;
             _entityCache = entityCache;
@@ -37,7 +37,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     }
                     else
                     {
-                        if (_followUnitModel.SkipIfNotFound && EvaluateCompleteCondition(_followUnitModel.CompleteCondition))
+                        if (_followUnitModel.SkipIfNotFound && EvaluateCompleteCondition())
                         {
                             Logger.Log($"[Step {_followUnitModel.Name}]: Skipping. Unit {_followUnitModel.UnitId} is not here or condition is complete.");
                             IsCompleted = true;
@@ -54,7 +54,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 else
                 {
                     if (foundUnit.Position.DistanceTo(_followUnitModel.ExpectedEndPosition) < 15
-                        && EvaluateCompleteCondition(_followUnitModel.CompleteCondition))
+                        && EvaluateCompleteCondition())
                     {
                         Logger.Log($"[Step {_followUnitModel.Name}]: {foundUnit.Name} has reached their destination");
                         IsCompleted = true;
