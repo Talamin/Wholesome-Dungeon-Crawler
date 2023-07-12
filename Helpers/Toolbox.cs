@@ -40,7 +40,6 @@ namespace WholesomeDungeonCrawler.Helpers
                     Logger.LogError($"Couldn't match instance with ID {instanceId} from LFG list");
                     continue;
                 }
-                Logger.Log(model.Name);
                 result.Add(model);
             }
             return result;

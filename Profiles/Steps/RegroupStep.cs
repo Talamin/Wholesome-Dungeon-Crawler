@@ -143,7 +143,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     Lua.LuaDoString($"SetRaidTarget('player', {_readyTargetIndex})");
                     Task.Run(async delegate
                     {
-                        await Task.Delay(30000);
+                        await Task.Delay(15000);
                         Lua.LuaDoString($"SetRaidTarget('player', 0)");
                     });
                     _receivedChatSystemReady = false;

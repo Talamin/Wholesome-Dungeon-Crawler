@@ -175,24 +175,17 @@ namespace WholesomeDungeonCrawler.Managers
                 .Find(dangerZone => dangerZone.Position.DistanceTo(myPos) < dangerZone.Radius);
             if (dangerZoneToEscape != null)
             {
-                Lua.LuaDoString("SpellStopCasting();");
-                if (_escapePath == null || _escapePath.Last().DistanceTo(myPos) < _marginRadius - 1)
+                if (!MovementManager.InMovement)
                 {
-                    Logger.LogOnce($"Escaping {dangerZoneToEscape.Name}");
-
-                    if (Fight.InFight)
-                    {
-                        Fight.StopFight();
-                    }
-
+                    Logger.Log($"Trying to escape {dangerZoneToEscape.Name}");
                     List<Vector3> safeSpots = new List<Vector3>();
-                    for (byte range = 15; range <= 50; range += 5)
+                    for (byte range = 10; range <= 50; range += 5)
                     {
                         for (int y = -range; y <= range; y += 5)
                         {
                             for (int x = -range; x <= range; x += 5)
                             {
-                                Vector3 safePosition = myPos + new Vector3(x, y, 0);
+                                Vector3 safePosition = myPos + new Vector3(x, y, _entityCache.Me.PositionWithoutType.Z);
                                 if (!_dangerZones.Any(dangerZone => dangerZone.Position.DistanceTo2D(safePosition) < dangerZone.Radius + _marginRadius)
                                     && !_entityCache.EnemyUnitsList.Any(enemy => enemy.TargetGuid <= 0 && safePosition.DistanceTo(enemy.PositionWithoutType) < 30)) // don't go towards unpulled enemies
                                 {
@@ -208,39 +201,47 @@ namespace WholesomeDungeonCrawler.Managers
                         return;
                     }
 
-                    // Prefer a position nearby tank, if out, myself
+                    // Prefer a position nearby myself
                     IWoWPlayer tank = _entityCache.TankUnit;
-                    Vector3 positionPreferred = tank != null ? tank.PositionWithoutType : _entityCache.Me.PositionWithoutType;
+                    Vector3 positionPreferred = _entityCache.Me.PositionWithoutType;
                     List<Vector3> closestSpotsFromPreferred = safeSpots
-                        .OrderBy(spot => positionPreferred.DistanceTo2D(spot))
+                        .OrderBy(spot => positionPreferred.DistanceTo(spot))
                         .ToList();
                     foreach (Vector3 spot in closestSpotsFromPreferred)
                     {
-                        // Should always be in LoS of tank?
-                        if (tank != null 
-                            && (tank.PositionWithoutType.DistanceTo(spot) > 27 || TraceLine.TraceLineGo(spot, tank.PositionWithoutType)))
+                        Vector3 spotPosition = new Vector3(spot.X, spot.Y, PathFinder.GetZPosition(spot));
+
+                        // Should always be in range of tank
+                        if (tank != null && tank.PositionWithoutType.DistanceTo(spotPosition) > 27)
                         {
                             continue;
                         }
 
-                        Vector3 targetPosition = new Vector3(spot.X, spot.Y, PathFinder.GetZPosition(spot));
-                        if (!TraceLine.TraceLineGo(targetPosition))
+                        if (!TraceLine.TraceLineGo(spotPosition))
                         {
-                            List<Vector3> pathToSafeSpot = PathFinder.FindPath(targetPosition, out bool foundPath);
-                            float straightLineDistance = myPos.DistanceTo(targetPosition);
+                            List<Vector3> pathToSafeSpot = PathFinder.FindPath(spotPosition, out bool foundPath);
+                            float straightLineDistance = myPos.DistanceTo(spotPosition);
 
                             if (foundPath)
                             {
                                 // Avoid big detours or fall off cliffs
-                                if (WTPathFinder.CalculatePathTotalDistance(pathToSafeSpot) > straightLineDistance * 1.5)
+                                if (WTPathFinder.CalculatePathTotalDistance(pathToSafeSpot) > straightLineDistance * 1.8)
                                 {
                                     continue;
                                 }
+
+                                if (Fight.InFight)
+                                {
+                                    Lua.LuaDoString("SpellStopCasting();");
+                                    Fight.StopFight();
+                                }
+
                                 _escapePath = pathToSafeSpot;
-                                break;
+                                return;
                             }
                         }
                     }
+                    Logger.LogError($"No escape route found!");
                 }
             }
             else
