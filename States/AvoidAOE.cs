@@ -1,4 +1,5 @@
 ﻿using robotManager.FiniteStateMachine;
+using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
@@ -32,8 +33,7 @@ namespace WholesomeDungeonCrawler.States
                     || !_cache.IsInInstance
                     || _entityCache.Me.IsDead
                     || !_entityCache.Me.IsValid
-                    || !_avoidAOEManager.MustEscapeAOE
-                    || _avoidAOEManager.GetEscapePath == null)
+                    || !_avoidAOEManager.ShouldReposition)
                 {
                     return false;
                 }

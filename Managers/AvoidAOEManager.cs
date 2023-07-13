@@ -25,16 +25,27 @@ namespace WholesomeDungeonCrawler.Managers
         private readonly ICache _cache;
 
         private List<DangerZone> _dangerZones = new List<DangerZone>();
-        //private List<Vector3> _safeSpots = new List<Vector3>();
+        private List<Vector3> _safeSpots = new List<Vector3>();
         private List<Vector3> _escapePath;
-        //private Vector3 _safeSpot = null;
-        //private DangerZone _dangerZoneToEscape = null;
         //private List<(ulong guid, Vector3 position)> _blackListCache = new List<(ulong, Vector3)>();
-        private float _marginRadius = 4f;
         private LFGRoles _myRole = CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole;
 
-        public bool MustEscapeAOE => _dangerZones.Exists(dangerZone => dangerZone.Position.DistanceTo(_entityCache.Me.PositionWithoutType) < dangerZone.Radius);
+        public bool ShouldReposition =>
+            _escapePath != null
+            && (PositionInDangerZone(_entityCache.Me.PositionWithoutType, _currentDangerZone) || !PositionInSafeZone(_entityCache.Me.PositionWithoutType, _currentforcedSafeZone));
+        private ForcedSafeZone _currentforcedSafeZone;
+        private DangerZone _currentDangerZone;
         public List<Vector3> GetEscapePath => _escapePath;
+
+        private bool PositionInDangerZone(Vector3 position, DangerZone zone, int margin = 0)
+        {
+            return zone != null && zone.Position.DistanceTo(position) < zone.Radius + margin;
+        }
+
+        private bool PositionInSafeZone(Vector3 position, ForcedSafeZone fsz, int margin = 0)
+        {
+            return fsz == null || fsz.ZoneCenter.DistanceTo(position) < fsz.Radius + margin;
+        }
 
         public AvoidAOEManager(
             IEntityCache entityCache,
@@ -43,7 +54,7 @@ namespace WholesomeDungeonCrawler.Managers
             _entityCache = entityCache;
             _cache = cache;
 
-            // We load the AOEs in a dictionary to speed up AOE lookup
+            // We load the AOEs in a dictionary to speed up lookup
             foreach (KnownAOE knownAOE in _knownAOEs)
             {
                 if (!knownAOE.AffectedRoles.Contains(_myRole)) continue;
@@ -55,6 +66,19 @@ namespace WholesomeDungeonCrawler.Managers
                 else
                 {
                     Logger.LogError($"Multiple entries for AOE : {knownAOE.Id}");
+                }
+            }
+
+            // We load the Forced Safe Zones in a dictionary to speed up lookup
+            foreach (ForcedSafeZone forcedSafeZone in _knownForcesSafeZones)
+            {
+                if (!_forcedSafeZonesDic.ContainsKey(forcedSafeZone.BossId))
+                {
+                    _forcedSafeZonesDic.Add(forcedSafeZone.BossId, forcedSafeZone);
+                }
+                else
+                {
+                    Logger.LogError($"Multiple entries for Forced Safe Zone : {forcedSafeZone.BossId}");
                 }
             }
         }
@@ -108,7 +132,6 @@ namespace WholesomeDungeonCrawler.Managers
         {
             Stopwatch watch = Stopwatch.StartNew();
             Vector3 myPos = _entityCache.Me.PositionWithoutType;
-            //bool automaticallyDetectRange = false;
 
             List<WoWObject> objectList = ObjectManager.ObjectList.ToList();
 
@@ -122,9 +145,9 @@ namespace WholesomeDungeonCrawler.Managers
                 RemoveDangerZone(dzToRemoveGuid);
             }
 
+            // Detect danger zones
             foreach (WoWObject wowObject in objectList)
             {
-
                 // Uncomment this part to detect objects in the log
                 /*
                 if (wowObject.Type == WoWObjectType.DynamicObject)
@@ -157,7 +180,6 @@ namespace WholesomeDungeonCrawler.Managers
                             break;
                         case WoWObjectType.DynamicObject:
                             DynamicObject dObject = new DynamicObject(wowObject.GetBaseAddress);
-                            //knownAOE = automaticallyDetectRange ? dObject.Radius : knownAOE;
                             AddDangerZone(dObject, knownAOE.Radius);
                             break;
                         case WoWObjectType.GameObject:
@@ -170,32 +192,74 @@ namespace WholesomeDungeonCrawler.Managers
                 }
             }
 
-            // In danger zone
-            DangerZone dangerZoneToEscape = _dangerZones
-                .Find(dangerZone => dangerZone.Position.DistanceTo(myPos) < dangerZone.Radius);
-            if (dangerZoneToEscape != null)
+            // Is current fight a Forced Safe Zone fight?
+            ForcedSafeZone forcedSafeZone = null;
+            foreach (IWoWUnit enemy in _entityCache.EnemiesAttackingGroup)
             {
-                if (!MovementManager.InMovement)
+                if (_forcedSafeZonesDic.ContainsKey(enemy.Entry))
                 {
-                    Logger.Log($"Trying to escape {dangerZoneToEscape.Name}");
-                    List<Vector3> safeSpots = new List<Vector3>();
-                    for (byte range = 10; range <= 50; range += 5)
+                    forcedSafeZone = _forcedSafeZonesDic[enemy.Entry];
+                    break;
+                }
+            }
+            _currentforcedSafeZone = forcedSafeZone;
+
+            // In danger zone
+            _currentDangerZone = _dangerZones.Find(dangerZone => PositionInDangerZone(myPos, dangerZone));
+            bool inSafeZone = PositionInSafeZone(myPos, _currentforcedSafeZone);
+            if (_currentDangerZone != null || !inSafeZone)
+            {
+                if (_escapePath == null)
+                {
+                    Vector3 referenceGridPosition = myPos;
+                    if (!inSafeZone)
                     {
-                        for (int y = -range; y <= range; y += 5)
+                        referenceGridPosition = _currentforcedSafeZone.ZoneCenter;
+                        Logger.LogOnce($"Trying to reposition into safe zone");
+                    }
+                    else
+                    {
+                        Logger.LogOnce($"Trying to escape {_currentDangerZone.Name}");
+                    }
+
+                    Stopwatch gridWatch = Stopwatch.StartNew();
+                    _safeSpots.Clear();
+                    int nbSpotsFound = 0;
+                    int nbSpotsInDangerZone = 0;
+                    int nbSpotsTooCloseToEnemy = 0;
+                    int nbSpotsOutsideFSZ = 0;
+                    int range = 50;
+
+                    for (int y = -range; y <= range; y += 5)
+                    {
+                        for (int x = -range; x <= range; x += 5)
                         {
-                            for (int x = -range; x <= range; x += 5)
+                            Vector3 gridPosition = referenceGridPosition + new Vector3(x, y, 0);
+                            if (_dangerZones.Any(dangerZone => PositionInDangerZone(gridPosition, dangerZone, 4)))
                             {
-                                Vector3 safePosition = myPos + new Vector3(x, y, _entityCache.Me.PositionWithoutType.Z);
-                                if (!_dangerZones.Any(dangerZone => dangerZone.Position.DistanceTo2D(safePosition) < dangerZone.Radius + _marginRadius)
-                                    && !_entityCache.EnemyUnitsList.Any(enemy => enemy.TargetGuid <= 0 && safePosition.DistanceTo(enemy.PositionWithoutType) < 30)) // don't go towards unpulled enemies
-                                {
-                                    safeSpots.Add(safePosition);
-                                }
+                                nbSpotsInDangerZone++;
+                                continue;
                             }
+
+                            if (_entityCache.EnemyUnitsList.Any(enemy => enemy.TargetGuid <= 0 && gridPosition.DistanceTo(enemy.PositionWithoutType) < 30)) // don't go towards unpulled enemies)
+                            {
+                                nbSpotsTooCloseToEnemy++;
+                                continue;
+                            }
+
+                            if (_currentforcedSafeZone != null && !PositionInSafeZone(gridPosition, forcedSafeZone, -4))
+                            {
+                                nbSpotsOutsideFSZ++;
+                                continue;
+                            }
+                            nbSpotsFound++;
+                            _safeSpots.Add(gridPosition);
                         }
                     }
 
-                    if (safeSpots.Count <= 0)
+                    Logger.LogOnce($"Spots found: {nbSpotsFound} - In danger zone: {nbSpotsInDangerZone} - Enemy too close: {nbSpotsTooCloseToEnemy} - Outside forced safe zone {nbSpotsOutsideFSZ}");
+
+                    if (_safeSpots.Count <= 0)
                     {
                         Logger.LogError("Failed to find any safe spot!");
                         return;
@@ -203,50 +267,62 @@ namespace WholesomeDungeonCrawler.Managers
 
                     // Prefer a position nearby myself
                     IWoWPlayer tank = _entityCache.TankUnit;
-                    Vector3 positionPreferred = _entityCache.Me.PositionWithoutType;
-                    List<Vector3> closestSpotsFromPreferred = safeSpots
-                        .OrderBy(spot => positionPreferred.DistanceTo(spot))
+                    List<Vector3> closestSpotsFromPreferred = _safeSpots
+                        .OrderBy(spot => myPos.DistanceTo(spot))
                         .ToList();
+                    Stopwatch posWatch = Stopwatch.StartNew();
                     foreach (Vector3 spot in closestSpotsFromPreferred)
                     {
-                        Vector3 spotPosition = new Vector3(spot.X, spot.Y, PathFinder.GetZPosition(spot));
-
                         // Should always be in range of tank
-                        if (tank != null && tank.PositionWithoutType.DistanceTo(spotPosition) > 27)
+                        if (tank != null && (tank.PositionWithoutType.DistanceTo(spot) > 35))
                         {
                             continue;
                         }
 
-                        if (!TraceLine.TraceLineGo(spotPosition))
+                        Vector3 spotPosition = new Vector3(spot.X, spot.Y, PathFinder.GetZPosition(spot));
+
+                        // Check LoS with tank
+                        if (tank != null && TraceLine.TraceLineGo(spotPosition + new Vector3(0, 0, 2), tank.PositionWithoutType + new Vector3(0, 0, 2)))
                         {
-                            List<Vector3> pathToSafeSpot = PathFinder.FindPath(spotPosition, out bool foundPath);
-                            float straightLineDistance = myPos.DistanceTo(spotPosition);
+                            continue;
+                        }
 
-                            if (foundPath)
+                        float straightLineDistance = myPos.DistanceTo(spotPosition);
+                        List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, spotPosition, out bool foundPath);
+                        if (foundPath)
+                        {
+                            // Avoid big detours or fall off cliffs
+                            if (WTPathFinder.CalculatePathTotalDistance(pathToSafeSpot) > straightLineDistance * 1.6)
                             {
-                                // Avoid big detours or fall off cliffs
-                                if (WTPathFinder.CalculatePathTotalDistance(pathToSafeSpot) > straightLineDistance * 1.8)
-                                {
-                                    continue;
-                                }
-
-                                if (Fight.InFight)
-                                {
-                                    Lua.LuaDoString("SpellStopCasting();");
-                                    Fight.StopFight();
-                                }
-
-                                _escapePath = pathToSafeSpot;
-                                return;
+                                continue;
                             }
+
+                            StopFight();
+
+                            Logger.Log($"Found a path in {posWatch.ElapsedMilliseconds}ms");
+                            _escapePath = pathToSafeSpot;
+                            return;
                         }
                     }
-                    Logger.LogError($"No escape route found!");
+                    Logger.LogError($"No escape route found in {posWatch.ElapsedMilliseconds}ms!");
                 }
             }
             else
             {
+                if (_escapePath != null)
+                {
+                    MovementManager.StopMove();
+                }
                 _escapePath = null;
+            }
+        }
+
+        private void StopFight()
+        {
+            if (Fight.InFight)
+            {
+                Lua.LuaDoString("SpellStopCasting();");
+                Fight.StopFight();
             }
         }
 
@@ -256,30 +332,31 @@ namespace WholesomeDungeonCrawler.Managers
             // Don't cancel during pull
             if (Fight.InFight && _entityCache.Target.TargetGuid <= 0) return;
 
-            // Cancel moves into danger zones
-            DangerZone dangerZoneOnTheWay = _dangerZones.Where(dangerZone =>
-                dangerZone.Position.DistanceTo(path.Last()) < dangerZone.Radius
-                && _entityCache.Me.PositionWithoutType.DistanceTo(path.Last()) < dangerZone.Radius + _marginRadius + 4)
-                .FirstOrDefault();
-            if (dangerZoneOnTheWay != null)
+            // Never cancel escape
+            if (ShouldReposition && _escapePath.Last() != path.Last())
             {
-                Logger.LogOnce($"Can't move, {dangerZoneOnTheWay.Name} is on the way. Waiting despawn.");
+                Logger.LogOnce($"Canceled path that is not our escape route (MovementPulse)");
                 cancelable.Cancel = true;
                 return;
             }
 
-            // Never cancel escape
-            if (MustEscapeAOE)
+            // We have reached a safe spot
+            if (_escapePath?.Last().DistanceTo(_entityCache.Me.PositionWithoutType) < 2)
             {
-                if (_escapePath?.Last() == path.Last())
-                {
-                    return;
-                }
-                else
-                {
-                    cancelable.Cancel = true;
-                    return;
-                }
+                _escapePath = null;
+                cancelable.Cancel = true;
+                return;
+            }
+
+            // Cancel moves into danger zones
+            DangerZone dangerZoneOnTheWay = _dangerZones.Where(dangerZone =>
+                PositionInDangerZone(path.Last(), dangerZone))
+                .FirstOrDefault();
+            if (!ShouldReposition && dangerZoneOnTheWay != null)
+            {
+                Logger.LogOnce($"Can't move, {dangerZoneOnTheWay.Name} is on the way. Waiting despawn.");
+                cancelable.Cancel = true;
+                return;
             }
         }
 
@@ -289,37 +366,41 @@ namespace WholesomeDungeonCrawler.Managers
             if (Fight.InFight && _entityCache.Target.TargetGuid <= 0) return;
 
             // Never cancel escape
-            if (MustEscapeAOE)
+            if (ShouldReposition && !_escapePath.Contains(node))
             {
-                if (_escapePath != null && _escapePath.Contains(node))
-                {
-                    return;
-                }
-                else
-                {
-                    // Cancel everything else
-                    cancelable.Cancel = true;
-                    return;
-                }
+                Logger.LogOnce($"Canceled path that is not our escape route (MoveTo)");
+                cancelable.Cancel = true;
+                return;
+            }
+
+            // We have reached a safe spot
+            if (_escapePath?.Last().DistanceTo(_entityCache.Me.PositionWithoutType) < 2)
+            {
+                _escapePath = null;
+                cancelable.Cancel = true;
+                return;
             }
 
             // Cancel moves into danger zones
-            DangerZone dangerZoneOnTheWay = _dangerZones.Where(dangerZone =>
-                dangerZone.Position.DistanceTo(node) < dangerZone.Radius
-                && _entityCache.Me.PositionWithoutType.DistanceTo(node) < dangerZone.Radius + _marginRadius + 4)
-                .FirstOrDefault();
-            if (dangerZoneOnTheWay != null)
+            if (!ShouldReposition)
             {
-                Logger.LogOnce($"Can't move, {dangerZoneOnTheWay.Name} is on the way. Waiting despawn.");
-                cancelable.Cancel = true;
-                return;
+                DangerZone dangerZoneOnTheWay = _dangerZones.Where(dangerZone =>
+                    PositionInDangerZone(node, dangerZone))
+                    .FirstOrDefault();
+                if (dangerZoneOnTheWay != null)
+                {
+                    Logger.LogOnce($"Can't move, {dangerZoneOnTheWay.Name} is on the way. Waiting despawn.");
+                    cancelable.Cancel = true;
+                    return;
+                }
             }
         }
 
         private void FightEventsOnFightStart(WoWUnit unit, CancelEventArgs cancelable)
         {
-            if (MustEscapeAOE)
+            if (ShouldReposition)
             {
+                Logger.LogOnce($"Canceled fight because we need to reposition");
                 cancelable.Cancel = true;
             }
         }
@@ -330,22 +411,26 @@ namespace WholesomeDungeonCrawler.Managers
             {
                 Radar3D.DrawCircle(dangerZone.Position, dangerZone.Radius, Color.IndianRed, false, 150);
             }
+
+            if (_currentDangerZone != null)
+            {
+                Radar3D.DrawCircle(_currentDangerZone.Position, _currentDangerZone.Radius, Color.IndianRed, true, 30);
+            }
+
+            if (_currentforcedSafeZone != null)
+            {
+                Radar3D.DrawCircle(_currentforcedSafeZone.ZoneCenter, _currentforcedSafeZone.Radius, Color.Blue, false, 30);
+            }
             /*
             foreach (Vector3 safeSpot in _safeSpots)
             {
-                Radar3D.DrawCircle(safeSpot, 0.2f, Color.CadetBlue, true, 200);
+                Radar3D.DrawCircle(safeSpot, 0.2f, Color.Blue, true, 100);
             }
-
-            if (_safeSpot != null)
-            {
-                Radar3D.DrawCircle(_safeSpot, 0.4f, Color.ForestGreen, false, 200);
-            }
-            
+            */
             for (int i = 0; i < _escapePath.Count - 1; i++)
             {
                 Radar3D.DrawLine(_escapePath[i], _escapePath[i + 1], Color.ForestGreen);
             }
-            */
         }
 
         public class DangerZone
@@ -365,6 +450,26 @@ namespace WholesomeDungeonCrawler.Managers
                 Radius = radius;
             }
         }
+
+        private class ForcedSafeZone
+        {
+            public int BossId { get; private set; }
+            public Vector3 ZoneCenter { get; private set; }
+            public int Radius { get; private set; }
+
+            public ForcedSafeZone(int bossId, Vector3 zoneCenter, int radius)
+            {
+                BossId = bossId;
+                ZoneCenter = zoneCenter;
+                Radius = radius;
+            }
+        }
+        private Dictionary<int, ForcedSafeZone> _forcedSafeZonesDic = new Dictionary<int, ForcedSafeZone>();
+        private readonly List<ForcedSafeZone> _knownForcesSafeZones = new List<ForcedSafeZone>()
+        { 
+            // Shirrak fight - Auchenai Crypt
+            new ForcedSafeZone(18371, new Vector3(-51.94074, -163.6697, 26.36175, "None"), 40),
+        };
 
         private struct KnownAOE
         {

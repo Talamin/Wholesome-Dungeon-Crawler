@@ -7,7 +7,7 @@ namespace WholesomeDungeonCrawler.Managers
 {
     internal interface IAvoidAOEManager : ICycleable
     {
-        bool MustEscapeAOE { get; }
+        bool ShouldReposition { get; }
         List<Vector3> GetEscapePath { get; }
     }
 }
