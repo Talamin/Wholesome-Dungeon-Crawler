@@ -54,7 +54,7 @@ namespace WholesomeDungeonCrawler.Helpers
             new DungeonModel { Name="The Mechanar",DungeonId =172, MapId=554,ContinentId=530, EntranceLoc=new Vector3(2860.551, 1544.211, 252.159, "Flying") },
             new DungeonModel { Name="The Shattered Halls",DungeonId =138, MapId=540,ContinentId=530, EntranceLoc=new Vector3(-310.0916, 3089.395, -4.094568, "None") },
             new DungeonModel { Name="Magisters' Terrace",DungeonId =198, MapId=585,ContinentId=530, EntranceLoc=new Vector3(12881.7, -7342.356, 65.52691, "None") },
-            new DungeonModel { Name="Utgarde Keep",DungeonId =242, MapId=574,ContinentId=571, EntranceLoc=new Vector3(1236.232, -4859.632, 41.24857, "None") },
+            new DungeonModel { Name="Utgarde Keep",DungeonId =/*242*/202, MapId=574,ContinentId=571, EntranceLoc=new Vector3(1236.232, -4859.632, 41.24857, "None") },
             new DungeonModel { Name="The Nexus",DungeonId =225, MapId=576,ContinentId=571, EntranceLoc=new Vector3(3906.412, 6985.285, 69.4881, "None") },
             new DungeonModel { Name="Azjol Nerub",DungeonId =204, MapId=601,ContinentId=571, EntranceLoc=new Vector3(3669.932, 2173.066, 36.05176, "None") },
             new DungeonModel { Name="Ahn'kahet The Old Kingdom",DungeonId =218, MapId=619,ContinentId=571, EntranceLoc=new Vector3(3639.375, 2026.671, 2.541712, "None") },

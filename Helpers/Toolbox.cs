@@ -17,30 +17,36 @@ namespace WholesomeDungeonCrawler.Helpers
             Lua.RunMacroText("/lfd");
 
             List<DungeonModel> result = new List<DungeonModel>();
-            int[] availableInstancesIds = Lua.LuaDoString<int[]>($@"
+            string[] availableInstancesIds = Lua.LuaDoString<string[]>($@"
                 local result = {{}};
-                for i=1,30,1 do
+                for i=1,100,1 do
                     local button = _G[""LFDQueueFrameSpecificListButton"" .. i .. ""EnableButton""];
                     if button ~= nil then
-                        local dungeonId = _G[""LFDQueueFrameSpecificListButton"" .. i].id;
-                        local dungeonText = _G[""LFDQueueFrameSpecificListButton"" .. i].instanceName:GetText();
+                        local dungeon = _G[""LFDQueueFrameSpecificListButton"" .. i];
+                        local dungeonId = dungeon.id;
+                        local dungeonText = dungeon.instanceName:GetText();
                         if dungeonId ~= nil and dungeonText ~= nil and LFGIsIDHeader(dungeonId) == false then
-                            table.insert(result, dungeonId);
+                            table.insert(result, dungeonId .. ""$"" .. dungeonText);
                         end
                     end
                 end
                 return unpack(result);
             ");
 
-            foreach (int instanceId in availableInstancesIds)
+            foreach (string instance in availableInstancesIds)
             {
-                DungeonModel model = Lists.AllDungeons.Find(dungeon => dungeon.DungeonId == instanceId);
-                if (model == null)
+                string[] instanceInfo = instance.Split('$');
+                if (instanceInfo.Length == 2)
                 {
-                    Logger.LogError($"Couldn't match instance with ID {instanceId} from LFG list");
-                    continue;
+                    int dungeonId = int.Parse(instanceInfo[0]);
+                    DungeonModel model = Lists.AllDungeons.Find(dungeon => dungeon.DungeonId == dungeonId);
+                    if (model == null)
+                    {
+                        Logger.LogError($"Couldn't find client dungeon {instanceInfo[1]} with ID {dungeonId} in internal list (Lists.AllDungeons)");
+                        continue;
+                    }
+                    result.Add(model);
                 }
-                result.Add(model);
             }
             return result;
         }

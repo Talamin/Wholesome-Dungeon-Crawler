@@ -45,7 +45,7 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 _stateTimer = new Timer(3000);
-                return true; ;
+                return true;
             }
         }
 

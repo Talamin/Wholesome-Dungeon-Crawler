@@ -99,7 +99,7 @@ namespace WholesomeDungeonCrawler.GUI
             cbSelectDungeon.Items.Add(new KeyValuePair<int, string>(-1, "Random Dungeon"));
             foreach (DungeonModel dungeon in availableDungeons)
             {
-                cbSelectDungeon.Items.Add(new KeyValuePair<int, string>(dungeon.DungeonId, dungeon.Name));
+                cbSelectDungeon.Items.Add(new KeyValuePair<int, string>(dungeon.DungeonId, $"[{dungeon.DungeonId}] {dungeon.Name}"));
             }
         }
 
