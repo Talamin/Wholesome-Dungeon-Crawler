@@ -93,7 +93,7 @@ namespace WholesomeDungeonCrawler.States
                 else
                 {
                     DungeonModel dungeon = Lists.AllDungeons.Where(x => x.ContinentId == Usefuls.ContinentId)
-                            .OrderBy(y =>y.EntranceLoc.DistanceTo(_entityCache.Me.PositionCorpse))
+                            .OrderBy(dungeon => dungeon.EntranceLoc.DistanceTo(_entityCache.Me.PositionCorpse))
                             .FirstOrDefault();
                     Logger.Log("No profile death run found, using pathfinder.");
                     GoToTask.ToPosition(dungeon.EntranceLoc, skipIfCannotMakePath: false);
