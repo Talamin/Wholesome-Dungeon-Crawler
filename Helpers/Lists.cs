@@ -33,7 +33,7 @@ namespace WholesomeDungeonCrawler.Helpers
             new DungeonModel { Name="Blackrock Depths - Upper City", DungeonId=276, ContinentId=0, MapId=230, EntranceLoc=new Vector3(-7177.132, -932.0781, 165.9823, "None"), Start=new Vector3(872.8282, -232.221, -43.75124, "None")},
             new DungeonModel { Name="Blackrock Spire", DungeonId=32, MapId=229, ContinentId=0, EntranceLoc=new Vector3(-7522.83, -1233.157, 285.7446, "None") },
             new DungeonModel { Name="Dire Maul West", DungeonId=36, MapId=429, ContinentId=1, EntranceLoc=new Vector3(0, 0,0, "None"), Start=new Vector3(31.5609, 159.45, -3.4777, "None") },
-            new DungeonModel { Name="Dire Maul North", DungeonId=38, MapId=429, ContinentId=1, EntranceLoc=new Vector3(0, 0,0, "None"), Start=new Vector3(255.249, -16.0561, -2.58737, "None") },
+            new DungeonModel { Name="Dire Maul North", DungeonId=38, MapId=429, ContinentId=1, EntranceLoc=new Vector3(255.249, -16.0561, -2.58737, "None"), Start=new Vector3(255.249, -16.0561, -2.58737, "None") },
             new DungeonModel { Name="Dire Maul East", DungeonId=34, MapId=429, ContinentId=1, EntranceLoc=new Vector3(0, 0,0, "None"), Start=new Vector3(44.4499, -154.822, -2.71364, "None")},
             new DungeonModel { Name="Scholomance", DungeonId= 2, MapId=289, ContinentId=0, EntranceLoc=new Vector3(1280.767, -2549.763, 86.29783, "None") },
             new DungeonModel { Name="Stratholme - Main Gate", DungeonId=40, MapId=329, ContinentId=0, EntranceLoc=new Vector3(3237.718, -4055.83, 108.4676, "None"), Start=new Vector3(3395.09, -3380.25, 142.702, "None") },
@@ -88,10 +88,10 @@ namespace WholesomeDungeonCrawler.Helpers
 
         }.OrderBy(dungeon => dungeon.Name).ToList();
 
-        public static readonly HashSet<int> ForceTargetListInt = new HashSet<int>
+        public static readonly HashSet<int> HighPrioTargetEntries = new HashSet<int>
         {
-            4625, // Neutral mobs (RFK)
-            18176,  // Tainted Earthgrab Totem (Mennu, Slave Pens)
+            //4625, // Neutral mobs guarding the portal (RFK)
+            18176, // Tainted Earthgrab Totem (Mennu, Slave Pens)
             20208, // Mennu's Healing Ward (Mennu, Slave Pens)
             18177, // Tainted Stoneskin Totem (Mennu, Slave Pens)
             18179, // Corrupted Nova Totem (Mennu, Slave Pens)
@@ -102,6 +102,8 @@ namespace WholesomeDungeonCrawler.Helpers
             28734, // Anubar Skirmisher (Krik'thier, Azjol Nerub)
             42672, // Frost Tomb(Prince Kelesth, Utgard Keep)
             23775, // Head of the Horseman (Haloween Event)
+            17917, // Coilfang Water Elemental (Hydromancer Thespia, Steamvault)
+            17951, // Steamrigger Mechanic (Mekgineer SteamRigger, Steamvault)
         };
 
         public static readonly HashSet<int> IgnoreTargetListInt = new HashSet<int>

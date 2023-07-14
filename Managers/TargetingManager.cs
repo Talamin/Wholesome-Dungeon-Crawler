@@ -1,4 +1,5 @@
 ﻿using robotManager.Helpful;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using WholesomeDungeonCrawler.CrawlerSettings;
@@ -14,8 +15,8 @@ namespace WholesomeDungeonCrawler.Managers
     {
         private readonly IProfileManager _profileManager;
         private readonly IEntityCache _entityCache;
-        private static long MIN_TARGET_SWAP_HP = 1000;
-        private static readonly long MIN_TARGET_SWAP_RATIO = 2;
+        private readonly long MIN_TARGET_SWAP_HP = 1000;
+        private readonly long MIN_TARGET_SWAP_RATIO = 2;
 
         public TargetingManager(
             IEntityCache entityCache,
@@ -168,18 +169,20 @@ namespace WholesomeDungeonCrawler.Managers
                     || WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.MDPS)
                 {
                     // Detect if there is a prio enemy around
-                    if (_entityCache.EnemyUnitsList.Any(unit => Lists.ForceTargetListInt.Contains(unit.Entry))
-                        && !Lists.ForceTargetListInt.Contains(_entityCache.Target.Entry))
+                    List<IWoWUnit> highPrioEnemiesToTarget = _entityCache.EnemiesAttackingGroup
+                        .Where(unit => Lists.HighPrioTargetEntries.Contains(unit.Entry)
+                            && unit.PositionWithoutType.DistanceTo(myPos) <= 40)
+                        .ToList();
+                    if (highPrioEnemiesToTarget.Count > 0
+                        && !Lists.HighPrioTargetEntries.Contains(_entityCache.Target.Entry))
                     {
-                        IWoWUnit prioTarget = _entityCache.EnemyUnitsList
-                            .Where(unit => Lists.ForceTargetListInt.Contains(unit.Entry)
-                                && unit.PositionWithoutType.DistanceTo(myPos) <= 40)
+                        IWoWUnit prioTarget = highPrioEnemiesToTarget
                             .OrderBy(unit => unit.PositionWithoutType.DistanceTo(myPos))
                             .OrderBy(unit => TargetingHelper.GetTargetPriority(unit))
                             .FirstOrDefault();
                         if (prioTarget != null && prioTarget.Guid != _entityCache.Me.TargetGuid)
                         {
-                            Logger.Log($"Slaughering Prio-Target mob: {prioTarget.Name}");
+                            Logger.Log($"Atacking Prio-Target mob: {prioTarget.Name}");
                             TargetingHelper.SwitchTargetAndFight(prioTarget, canceable);
                             return;
                         }

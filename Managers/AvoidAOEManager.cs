@@ -511,6 +511,8 @@ namespace WholesomeDungeonCrawler.Managers
             new KnownAOE(32286, 16f, _everyone),
             // Shirrak the Dead Watcher (cast debuff when close)
             new KnownAOE(18371, 15f, _rangedOnly),
+            // Lightning Cloud (Hydromancer Thepias)
+            new KnownAOE(25033, 12f, _everyone),
         };
         /*
         private readonly Dictionary<int, float> _knowAOEs = new Dictionary<int, float> // { Entry, Radius }

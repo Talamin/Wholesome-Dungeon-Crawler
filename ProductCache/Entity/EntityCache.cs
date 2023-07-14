@@ -121,12 +121,14 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
             foreach (WoWUnit unit in units)
             {
+                /*
                 // Ignore hostile statues in Uldaman until they become animated.
                 if (Lists.ForceTargetListInt.Contains(unit.Entry)
                     && ((unit.UnitFlags & UnitFlags.NotAttackable) != 0))
                 {
                     continue;
                 }
+                */
                 // Ignore seed pods from Nexus
                 if (Lists.IgnoreTargetListInt.Contains(unit.Entry))
                 {
