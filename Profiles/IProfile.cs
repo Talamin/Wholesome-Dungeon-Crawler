@@ -1,5 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
+using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.Profiles.Steps;
 using static wManager.Wow.Class.Npc;
@@ -18,6 +19,7 @@ namespace WholesomeDungeonCrawler.Profiles
         FactionType FactionType { get; }
         List<IStep> GetAllSteps { get; }
         int GetCurrentStepIndex { get; }
+        DungeonModel DungeonModel { get; }
 
         void AutoSetCurrentStep();
         void SetFirstLaunchStep();

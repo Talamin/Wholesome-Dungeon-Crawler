@@ -39,8 +39,9 @@ namespace WholesomeDungeonCrawler.States
         public override void Run()
         {
             Logger.Log("Diving!");
+            MovementManager.StopMove();
             MovementManager.GoUnderWater();
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
         }
     }
 }

@@ -31,6 +31,7 @@ namespace WholesomeDungeonCrawler.Profiles
         public bool ProfileIsCompleted => _profileSteps.All(p => p.IsCompleted);
         public List<IStep> GetAllSteps => _profileSteps;
         public IStep CurrentStep => _currentStep;
+        public DungeonModel DungeonModel { get; private set; }
 
         public Profile(ProfileModel profileModel,
                 IEntityCache entityCache,
@@ -43,6 +44,7 @@ namespace WholesomeDungeonCrawler.Profiles
             _partyChatManager = partyChatManager;
             _profileManager = profileManager;
             FileName = fileName;
+            DungeonModel = profileModel.DungeonModel;
 
             for (int i = 0; i < profileModel.StepModels.Count; i++)
             {

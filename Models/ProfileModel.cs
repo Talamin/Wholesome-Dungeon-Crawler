@@ -14,5 +14,6 @@ namespace WholesomeDungeonCrawler.Models
         public Npc.FactionType Faction { get; set; }
         public List<Vector3> DeathRunPath { get; set; }
         public List<PathFinder.OffMeshConnection> OffMeshConnections { get; set; }
+        public DungeonModel DungeonModel { get; set; }
     }
 }

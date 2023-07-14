@@ -121,6 +121,8 @@ namespace WholesomeDungeonCrawler.Managers
                                 continue;
                             }
 
+                            deserializedProfile.DungeonModel = dungeonModel; // assign dungeon model for future use
+
                             profileModels.Add(deserializedProfile);
                         }
 
@@ -192,7 +194,8 @@ namespace WholesomeDungeonCrawler.Managers
                 log += $"MapID {chosenModel.MapId}, ";
                 log += $"{chosenModel.StepModels.Count()} steps, ";
                 log += $"{chosenModel.DeathRunPath.Count()} deathrun nodes, ";
-                log += $"{chosenModel.OffMeshConnections.Count()} offmesh connections";
+                log += $"{chosenModel.OffMeshConnections.Count()} offmesh connections, ";
+                log += $"Dungeon model ID: {chosenModel.DungeonModel?.DungeonId}";
                 Logger.Log(log);
                 Thread.Sleep(waitTime);
                 Logger.Log($"-----------------------------------------");

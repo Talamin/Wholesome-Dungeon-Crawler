@@ -59,6 +59,7 @@ public class Main : IProduct
             {
                 Logger.Log("Started");
                 PluginsManager.LoadAllPlugins();
+                WTSettings.AddRecommendedOffmeshConnections();
                 WTTransport.AddRecommendedTransportsOffmeshes();
                 wManagerSetting.CurrentSetting.WallDistancePathFinder = 1;
                 wManagerSetting.CurrentSetting.Save();

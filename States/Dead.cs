@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
+using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeToolbox;
 using wManager.Wow.Bot.Tasks;
@@ -83,11 +84,15 @@ namespace WholesomeDungeonCrawler.States
                 {
                     Logger.Log("Running profile's death run");
                     List<Vector3> adjustedDeathPath = WTPathFinder.PathFromClosestPoint(_profileManager.CurrentDungeonProfile.DeathRunPath);
+                    if (_profileManager.CurrentDungeonProfile.DungeonModel != null)
+                    {
+                        adjustedDeathPath.Add(_profileManager.CurrentDungeonProfile.DungeonModel.EntranceLoc);
+                    }
                     MovementManager.Go(adjustedDeathPath, false);
                 }
                 else
                 {
-                    var dungeon = Lists.AllDungeons.Where(x => x.ContinentId == Usefuls.ContinentId)
+                    DungeonModel dungeon = Lists.AllDungeons.Where(x => x.ContinentId == Usefuls.ContinentId)
                             .OrderBy(y =>y.EntranceLoc.DistanceTo(_entityCache.Me.PositionCorpse))
                             .FirstOrDefault();
                     Logger.Log("No profile death run found, using pathfinder.");

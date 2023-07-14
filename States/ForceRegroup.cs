@@ -56,7 +56,8 @@ namespace WholesomeDungeonCrawler.States
                 {
                     // Gnomeregan / Uldaman exception to match entrances
                     if (_profileManager.CurrentDungeonProfile.MapId == 90
-                        || _profileManager.CurrentDungeonProfile.MapId == 70)
+                        || _profileManager.CurrentDungeonProfile.MapId == 70
+                        || _profileManager.CurrentDungeonProfile.MapId == 329)
                     {
                         if (_safetyTimer == null)
                         {
