@@ -72,30 +72,15 @@ namespace WholesomeDungeonCrawler.States
                         }
 
                         Logger.LogOnce($"Launching dungeon search for {model.Name}");
-
-                        Lua.LuaDoString($@"
-                            for i=1,30,1 do
-                                local button = _G[""LFDQueueFrameSpecificListButton"" .. i .. ""EnableButton""];
-                                if button ~= nil then
-                                    -- Select if wanted dungeon
-                                    local dungeonId = _G[""LFDQueueFrameSpecificListButton"" .. i].id;
-                                    if dungeonId ~= nil then
-                                        if LFGIsIDHeader(dungeonId) == false then
-                                            if dungeonId == {_selectedDungeonId} then
-                                                if button:GetChecked() ~= 1 then
-                                                    button:Click();
-                                                end
-                                            -- Unselect the rest
-                                            elseif button:GetChecked() == 1 then
-                                                button:Click();
-                                            end
-                                        end
-                                    end
-                                end
+                        Lua.LuaDoString(@$"
+                            for i=1, 1000, 1 do
+                                LFDList_SetDungeonEnabled(i, false);
                             end
+                            LFDList_SetDungeonEnabled({model.DungeonId}, true);
+                            LFDQueueFrameSpecificList_Update();
+                            LFDQueueFrameFindGroupButton:Click();
                         ");
 
-                        Lua.LuaDoString("LFDQueueFrameFindGroupButton:Click()");
                         Thread.Sleep(1000);
                     }
                 }

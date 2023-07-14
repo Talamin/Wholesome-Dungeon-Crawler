@@ -53,6 +53,7 @@ namespace WholesomeDungeonCrawler.Managers
 
             List<DungeonModel> myContinentDungeons = new List<DungeonModel>();
             bool imDead = _entityCache.Me.IsDead && _entityCache.Me.Auras.ContainsKey(8326);
+            bool isHeroic = Lua.LuaDoString<int>($"return GetDungeonDifficulty();") == 2; // for later, in case of mid-dungeon reload
 
             Logger.Log($"--------- PROFILE MANAGER ---------");
             // Dead, search for closest dungeon entrance
@@ -71,7 +72,6 @@ namespace WholesomeDungeonCrawler.Managers
                     .FindAll(d => d.MapId == Usefuls.ContinentId);
                 Logger.Log($"{myContinentDungeons.Count} dungeons match your Map ID");
             }
-
 
             if (myContinentDungeons.Count > 0)
             {

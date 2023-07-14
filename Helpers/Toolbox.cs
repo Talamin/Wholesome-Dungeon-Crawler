@@ -11,43 +11,39 @@ namespace WholesomeDungeonCrawler.Helpers
     {
         public static List<DungeonModel> GetListAvailableDungeons()
         {
-            // Open/Close LFD frame to update available dungeons
-            Lua.RunMacroText("/lfd");
-            Lua.LuaDoString("LFDQueueFrameTypeDropDownButton:Click(); DropDownList1Button1:Click();");
-            Lua.RunMacroText("/lfd");
-
             List<DungeonModel> result = new List<DungeonModel>();
-            string[] availableInstancesIds = Lua.LuaDoString<string[]>($@"
+            string[] availableInstances = Lua.LuaDoString<string[]>($@"
                 local result = {{}};
-                for i=1,100,1 do
-                    local button = _G[""LFDQueueFrameSpecificListButton"" .. i .. ""EnableButton""];
-                    if button ~= nil then
-                        local dungeon = _G[""LFDQueueFrameSpecificListButton"" .. i];
-                        local dungeonId = dungeon.id;
-                        local dungeonText = dungeon.instanceName:GetText();
-                        if dungeonId ~= nil and dungeonText ~= nil and LFGIsIDHeader(dungeonId) == false then
-                            table.insert(result, dungeonId .. ""$"" .. dungeonText);
-                        end
+                local tableInstances = GetLFDChoiceInfo();
+                for instanceId, instanceInfo in pairs(tableInstances) do
+                    local instanceName = instanceInfo[1];
+                    local numPlayers = instanceInfo[12];
+                    local instanceDifficulty = instanceInfo[11]; -- 0 Normal, 1 Heroic
+                    if IsLFGDungeonJoinable(instanceId) and numPlayers == 5  then
+                        table.insert(result, instanceId .. ""$"" .. instanceName .. ""$"" .. numPlayers .. ""$"" .. instanceDifficulty)
                     end
                 end
                 return unpack(result);
             ");
 
-            foreach (string instance in availableInstancesIds)
+            foreach (string instance in availableInstances)
             {
                 string[] instanceInfo = instance.Split('$');
-                if (instanceInfo.Length == 2)
-                {
-                    int dungeonId = int.Parse(instanceInfo[0]);
-                    DungeonModel model = Lists.AllDungeons.Find(dungeon => dungeon.DungeonId == dungeonId);
+                int dungeonId = int.Parse(instanceInfo[0]);
+                string dungeonName = instanceInfo[1];
+                int numPlayers = int.Parse(instanceInfo[2]);
+                int difficulty = int.Parse(instanceInfo[3]);
+                string type = difficulty == 0 ? "Normal" : "Heroic";
+
+                DungeonModel model = Lists.AllDungeons.Find(dungeon => dungeon.DungeonId == dungeonId);
                     if (model == null)
                     {
-                        Logger.LogError($"Couldn't find client dungeon {instanceInfo[1]} with ID {dungeonId} in internal list (Lists.AllDungeons)");
+                        Logger.LogError($"Couldn't find client dungeon {dungeonName} ({type}) with ID {dungeonId} in internal list (Lists.AllDungeons)");
                         continue;
                     }
                     result.Add(model);
-                }
             }
+
             return result;
         }
 

@@ -14,7 +14,6 @@ namespace WholesomeDungeonCrawler.GUI
     {
         private MetroDialogSettings basicDialogSettings;
         private MetroDialogSettings addDialogSettings;
-        //public ObservableCollection<string> PartyMemberCollection { get; set; }
 
         public AdvancedSettings()
         {
@@ -70,14 +69,14 @@ namespace WholesomeDungeonCrawler.GUI
                 }
             };
 
-            if (CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == Helpers.LFGRoles.Unknown)
+            if (CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Unknown)
             {
                 tbTankName.Visibility = System.Windows.Visibility.Collapsed;
                 spPartyGrid.Visibility= System.Windows.Visibility.Collapsed;
                 txtErrorChooseRoleFirst.Visibility = System.Windows.Visibility.Visible;
             }
 
-            if (CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == Helpers.LFGRoles.Tank)
+            if (CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Tank)
             {
                 CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.TankName = ObjectManager.Me.Name;
                 tbTankName.Visibility = System.Windows.Visibility.Collapsed;
@@ -97,9 +96,10 @@ namespace WholesomeDungeonCrawler.GUI
             cbSelectDungeon.SelectedValuePath = "Key";
             cbSelectDungeon.DisplayMemberPath = "Value";
             cbSelectDungeon.Items.Add(new KeyValuePair<int, string>(-1, "Random Dungeon"));
-            foreach (DungeonModel dungeon in availableDungeons)
+            foreach (DungeonModel dungeon in availableDungeons.OrderBy(d => d.IsHeroic))
             {
-                cbSelectDungeon.Items.Add(new KeyValuePair<int, string>(dungeon.DungeonId, $"[{dungeon.DungeonId}] {dungeon.Name}"));
+                string suffix = dungeon.IsHeroic ? "[Heroic] " : "";
+                cbSelectDungeon.Items.Add(new KeyValuePair<int, string>(dungeon.DungeonId, $"{suffix}{dungeon.Name} ({dungeon.DungeonId})"));
             }
         }
 
@@ -110,7 +110,6 @@ namespace WholesomeDungeonCrawler.GUI
 
         private void cbSelectDungeon_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Logger.Log(cbSelectDungeon.SelectedItem.ToString());
             CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.Save();
         }
     }
