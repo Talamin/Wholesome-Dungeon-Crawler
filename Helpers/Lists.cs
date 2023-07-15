@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using WholesomeDungeonCrawler.Models;
+using static WholesomeDungeonCrawler.Helpers.TargetingHelper;
 
 namespace WholesomeDungeonCrawler.Helpers
 {
@@ -88,27 +89,54 @@ namespace WholesomeDungeonCrawler.Helpers
 
         }.OrderBy(dungeon => dungeon.Name).ToList();
 
-        public static readonly HashSet<int> HighPrioTargetEntries = new HashSet<int>
+        // These mobs will only be ignored during path check (they won't be pulled). The group will still defend against them is attacked.
+        public static readonly HashSet<int> MobsToIgnoreDuringPathCheck = new HashSet<int>
         {
-            //4625, // Neutral mobs guarding the portal (RFK)
-            18176, // Tainted Earthgrab Totem (Mennu, Slave Pens)
-            20208, // Mennu's Healing Ward (Mennu, Slave Pens)
-            18177, // Tainted Stoneskin Totem (Mennu, Slave Pens)
-            18179, // Corrupted Nova Totem (Mennu, Slave Pens)
-            26918, // Chaotic Rift (Anomalus, Nexus)
-            30176, // Ahn'kahar Guardian (Elder Nadox, Old Kingdom)
-            30385, // Twilight Volunteer (Jedoga Shadowseer, Old Kingdom)
-            28619, // Web Wrap (Krik'thier, Azjol Nerub)
-            28734, // Anubar Skirmisher (Krik'thier, Azjol Nerub)
-            42672, // Frost Tomb(Prince Kelesth, Utgard Keep)
-            23775, // Head of the Horseman (Haloween Event)
-            17917, // Coilfang Water Elemental (Hydromancer Thespia, Steamvault)
-            17951, // Steamrigger Mechanic (Mekgineer SteamRigger, Steamvault)
+            26793, // Crystalline Frayer (Nexus)
+            191016, // Seed Pod (Nexus)
+            32593, // Skittering Swarmer Anub'arak            
+            2748, // Archaedas
+            10120, // Vault Warder
+            4857, // Stone Keeper
+            7309, // Earthen Custodian
+            7077, // Earthen Hallshaper
+            7076, // Earthen Guardian
         };
 
-        public static readonly HashSet<int> IgnoreTargetListInt = new HashSet<int>
+        // These neutral mobs will be pulled when navigating the dungeon as if they were hostile
+        public static readonly HashSet<int> NeutralsToAttackDuringPathCheck = new HashSet<int>
         {
-             26793, // Crystalline Frayer (Nexus) [TODO Remove]
+            4625, // Death's Head Ward Keeper (RFK)
+            3653, // Kresh (Wailing Caverns)
+        };
+
+        // These mobs will have a higher target priority (only during fights and if they are actively engaged with your team)
+        public static readonly Dictionary<int, SpecialPrio> SpecialPrioTargets = new Dictionary<int, SpecialPrio>
+        {
+            // High
+            { 18176, new SpecialPrio(17941, TargetPriority.High) }, // Tainted Earthgrab Totem (Mennu, Slave Pens)
+            { 20208, new SpecialPrio(17941, TargetPriority.High) }, // Mennu's Healing Ward (Mennu, Slave Pens)
+            { 18177, new SpecialPrio(17941, TargetPriority.High) }, // Tainted Stoneskin Totem (Mennu, Slave Pens)
+            { 18179, new SpecialPrio(17941, TargetPriority.High) }, // Corrupted Nova Totem (Mennu, Slave Pens)
+            { 26918, new SpecialPrio(26763, TargetPriority.High) }, // Chaotic Rift (Anomalus, Nexus)
+            { 30176, new SpecialPrio(29309, TargetPriority.High) }, // Ahn'kahar Guardian (Elder Nadox, Old Kingdom)
+            { 30385, new SpecialPrio(29310, TargetPriority.High) }, // Twilight Volunteer (Jedoga Shadowseer, Old Kingdom)
+            { 28619, new SpecialPrio(28684, TargetPriority.High) }, // Web Wrap (Krik'thir, Azjol Nerub)
+            { 28734, new SpecialPrio(28684, TargetPriority.High) }, // Anubar Skirmisher (Krik'thir, Azjol Nerub)
+            { 42672, new SpecialPrio(23953, TargetPriority.High) }, // Frost Tomb (Prince Kelesth, Utgard Keep)
+            { 23775, new SpecialPrio(23682, TargetPriority.High) }, // Head of the Horseman (Haloween Event)
+            { 17917, new SpecialPrio(17797, TargetPriority.High) }, // Coilfang Water Elemental (Hydromancer Thespia, Steamvault)
+            { 17951, new SpecialPrio(17796, TargetPriority.High) }, // Steamrigger Mechanic (Mekgineer SteamRigger, Steamvault)
+            { 17954, new SpecialPrio(17798, TargetPriority.High) }, // Naga Distiller (Warlord Kalithresh, Steamvault)
+            // Low
+            { 8996, new SpecialPrio(0, TargetPriority.Low, true) }, // Ragefire - Voidwalker minion
+            { 2520, new SpecialPrio(0, TargetPriority.Low, true) }, // Deadmines - Remote-Controlled Golem
+            { 598, new SpecialPrio(0, TargetPriority.High, true) }, // Deadmines - Defias Miner
+    };
+
+        // These mobs will be completely ignored in the entity cache. Careful with this one, the group won't even defend against them
+        public static readonly HashSet<int> IgnoredMobs = new HashSet<int>
+        {
             191016, // Seed Pod (Nexus)
         };
     }

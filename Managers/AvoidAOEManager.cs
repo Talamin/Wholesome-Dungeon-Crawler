@@ -85,8 +85,8 @@ namespace WholesomeDungeonCrawler.Managers
 
         public void Initialize()
         {
-            Radar3D.OnDrawEvent += Radar3DOnDrawEvent;
-            Radar3D.Pulse();
+            if (!Radar3D.IsLaunched) Radar3D.Pulse();
+            Radar3D.OnDrawEvent += DrawEventAOE;
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             MovementEvents.OnMovementPulse += MovementEventsOnMovementPulse;
             MovementEvents.OnMoveToPulse += MovementsEventsOnMoveToPulse;
@@ -95,7 +95,8 @@ namespace WholesomeDungeonCrawler.Managers
 
         public void Dispose()
         {
-            Radar3D.OnDrawEvent -= Radar3DOnDrawEvent;
+            Radar3D.OnDrawEvent -= DrawEventAOE;
+            Radar3D.Stop();
             ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
             MovementEvents.OnMovementPulse -= MovementEventsOnMovementPulse;
             MovementEvents.OnMoveToPulse -= MovementsEventsOnMoveToPulse;
@@ -405,7 +406,7 @@ namespace WholesomeDungeonCrawler.Managers
             }
         }
 
-        private void Radar3DOnDrawEvent()
+        private void DrawEventAOE()
         {
             foreach (DangerZone dangerZone in _dangerZones)
             {
@@ -427,9 +428,12 @@ namespace WholesomeDungeonCrawler.Managers
                 Radar3D.DrawCircle(safeSpot, 0.2f, Color.Blue, true, 100);
             }
             */
-            for (int i = 0; i < _escapePath.Count - 1; i++)
+            if (_escapePath != null && _escapePath.Count > 1)
             {
-                Radar3D.DrawLine(_escapePath[i], _escapePath[i + 1], Color.ForestGreen);
+                for (int i = 0; i < _escapePath.Count - 1; i++)
+                {
+                    Radar3D.DrawLine(_escapePath[i], _escapePath[i + 1], Color.ForestGreen);
+                }
             }
         }
 

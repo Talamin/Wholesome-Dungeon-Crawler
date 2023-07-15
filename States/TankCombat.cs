@@ -69,7 +69,6 @@ namespace WholesomeDungeonCrawler.States
                         && unit.TargetGuid != _entityCache.Me.Guid
                         && !unit.Fleeing)
                     .OrderBy(unit => unit.PositionWithoutType.DistanceTo(Toolbox.PointInMidOfGroup(_entityCache.ListGroupMember)))
-                    .OrderBy(unit => TargetingHelper.GetTargetPriority(unit))
                     .FirstOrDefault();
                 if (attackingGroupMember != null)
                 {
@@ -84,7 +83,6 @@ namespace WholesomeDungeonCrawler.States
                         && unit.TargetGuid == _entityCache.Me.Guid
                         && !unit.Fleeing)
                     .OrderBy(unit => unit.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType))
-                    .OrderBy(unit => TargetingHelper.GetTargetPriority(unit))
                     .FirstOrDefault();
                 if (attackerMe != null)
                 {

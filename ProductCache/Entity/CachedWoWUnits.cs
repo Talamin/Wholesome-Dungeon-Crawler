@@ -53,7 +53,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             UnitFlags = unit.UnitFlags;
             IsLootable = unit.IsLootable;
             IsAttackingMe = unit.IsTargetingMe;
-            IsAttackingGroup = unit.IsTargetingPartyMember;
+            IsAttackingGroup = unit.IsTargetingPartyMember || IsAttackingMe;
             IsPartyMember = unit.IsPartyMember;
             TargetGuid = unit.Target;
             Fleeing = unit.Fleeing;

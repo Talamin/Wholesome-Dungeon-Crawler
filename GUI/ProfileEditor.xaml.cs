@@ -224,7 +224,6 @@ namespace WholesomeDungeonCrawler.GUI
                 Radar3D.OnDrawEvent -= new Radar3D.OnDrawHandler(psControl.Monitor);
                 Radar3D.Stop();
             }
-
         }
 
         public void Monitor()

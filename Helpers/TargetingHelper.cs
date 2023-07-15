@@ -17,18 +17,19 @@ namespace WholesomeDungeonCrawler.Helpers
         public enum TargetPriority
         {
             High,
-            Normal,
             Low
         }
 
-        public static TargetPriority GetTargetPriority(IWoWUnit unit)
+        public class SpecialPrio
         {
-            switch (unit.Entry)
+            public bool WhenAttackingGroup { get; private set; } // Prioritized only if the unit is targeting a party member
+            public int WhenInFightWith { get; private set; }
+            public TargetPriority TargetPriority { get; private set; }
+            public SpecialPrio(int whenInFightWith, TargetPriority targetPriority, bool ifAttackingGroup = false)
             {
-                case 8996: return TargetPriority.Low; // RFC - Voidwalker minion
-                case 598: return TargetPriority.High; // Deadmines - Defias Miner
-                case 2520: return TargetPriority.Low; // Deadmines - Remote-Controlled Golem
-                default: return TargetPriority.Normal;
+                WhenInFightWith = whenInFightWith;
+                TargetPriority = targetPriority;
+                WhenAttackingGroup = ifAttackingGroup;
             }
         }
     }

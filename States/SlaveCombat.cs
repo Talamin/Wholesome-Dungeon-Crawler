@@ -65,7 +65,6 @@ namespace WholesomeDungeonCrawler.States
                         .Where(unit => unit.TargetGuid == _entityCache.TankUnit.Guid
                             && (pullToSafeSpotStep == null || pullToSafeSpotStep.PositionInSafeSpotFightRange(unit.PositionWithoutType)))
                         .OrderBy(unit => unit.PositionWithoutType.DistanceTo(_entityCache.TankUnit.PositionWithoutType))
-                        .OrderBy(unit => TargetingHelper.GetTargetPriority(unit))
                         .FirstOrDefault();
                     if (attackingTank != null)
                     {
@@ -79,7 +78,6 @@ namespace WholesomeDungeonCrawler.States
                 IWoWUnit attackingGroup = _entityCache.EnemiesAttackingGroup
                     .Where(unit => pullToSafeSpotStep == null || pullToSafeSpotStep.PositionInSafeSpotFightRange(unit.PositionWithoutType))
                     .OrderBy(unit => unit.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType))
-                    .OrderBy(unit => TargetingHelper.GetTargetPriority(unit))
                     .FirstOrDefault();
                 if (attackingGroup != null)
                 {

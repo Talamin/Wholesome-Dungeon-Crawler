@@ -12,12 +12,14 @@ namespace WholesomeDungeonCrawler.Managers
 
         public void Initialize()
         {
-            Radar3D.OnDrawEvent += DrawEvent;
+            if (!Radar3D.IsLaunched) Radar3D.Pulse();
+            Radar3D.OnDrawEvent += DrawEventPathManager;
         }
 
         public void Dispose()
         {
-            Radar3D.OnDrawEvent -= DrawEvent;
+            Radar3D.OnDrawEvent -= DrawEventPathManager;
+            Radar3D.Stop();
         }
 
         public void SetNextNode(Vector3 nextNode)
@@ -30,7 +32,7 @@ namespace WholesomeDungeonCrawler.Managers
             _neighboringNodes = neighboringNodes;
         }
 
-        private void DrawEvent()
+        private void DrawEventPathManager()
         {
             if (_nextPathNode != null)
             {

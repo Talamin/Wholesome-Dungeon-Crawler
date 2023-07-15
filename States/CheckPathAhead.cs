@@ -20,7 +20,7 @@ namespace WholesomeDungeonCrawler.States
         public override string DisplayName { get; set; } = "Check Path Ahead";
 
         private readonly float _detectionRadius = 45f;
-        private readonly float _detecttionPathDistance = 35f;
+        private readonly float _detectionPathDistance = 35f;
         private readonly IEntityCache _entityCache;
         private readonly IPartyChatManager _partyChatManager;
         private readonly ICache _cache;
@@ -31,19 +31,6 @@ namespace WholesomeDungeonCrawler.States
         private List<TraceLineResult> _losCache = new List<TraceLineResult>();
         private List<Vector3> _linesToCheck = new List<Vector3>();
         private List<Vector3> _linesAllPathsInfront = new List<Vector3>();
-
-        private readonly HashSet<int> _mobIdsToIgnoreDuringPathCheck = new HashSet<int>
-        {
-            26793, // Crystalline Frayer (Nexus)
-            191016, // Seed Pod (Nexus)
-            32593, // Skittering Swarmer Anub'arak            
-            2748, // Archaedas
-            10120, // Vault Warder
-            4857, // Stone Keeper
-            7309, // Earthen Custodian
-            7077, // Earthen Hallshaper
-            7076, // Earthen Guardian
-        };
 
         public CheckPathAhead(
             IEntityCache EntityCache,
@@ -59,13 +46,14 @@ namespace WholesomeDungeonCrawler.States
 
         public void Initialize()
         {
-            Radar3D.OnDrawEvent += Radar3DOnDrawEvent;
-            Radar3D.Pulse();
+            if (!Radar3D.IsLaunched) Radar3D.Pulse();
+            Radar3D.OnDrawEvent += DrawEventAOEPathAhead;
         }
 
         public void Dispose()
         {
-            Radar3D.OnDrawEvent -= Radar3DOnDrawEvent;
+            Radar3D.OnDrawEvent -= DrawEventAOEPathAhead;
+            Radar3D.Stop();
         }
 
         public override bool NeedToRun
@@ -238,11 +226,11 @@ namespace WholesomeDungeonCrawler.States
                 // check if units have LoS/path from point
                 foreach (IWoWUnit unit in hostileUnits)
                 {
-                    if (((int)unit.Reaction) > 2
-                        || _mobIdsToIgnoreDuringPathCheck.Contains(unit.Entry)
+                    if ((unit.Reaction >= Reaction.Neutral && !Lists.NeutralsToAttackDuringPathCheck.Contains(unit.Entry))
+                        || Lists.MobsToIgnoreDuringPathCheck.Contains(unit.Entry)
                         || unreachableMobsGuid.Contains(unit.Guid)
                         || unit.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) > _detectionRadius // in radius?
-                        || pathToUnitLength + segmentStart.DistanceTo(unit.PositionWithoutType) > _detecttionPathDistance // not too far?
+                        || pathToUnitLength + segmentStart.DistanceTo(unit.PositionWithoutType) > _detectionPathDistance // not too far?
                         || WTPathFinder.PointDistanceToLine(segmentStart, segmentEnd, unit.PositionWithoutType) > 20)
                     {
                         continue;
@@ -253,7 +241,7 @@ namespace WholesomeDungeonCrawler.States
                             result.Unit.Guid == unit.Guid
                             && result.IsVisibleAndReachable
                             && unit.PositionWithoutType.DistanceTo(result.End) < 3f // double check for patrols
-                            && segmentLength + result.Distance < _detecttionPathDistance)
+                            && segmentLength + result.Distance < _detectionPathDistance)
                         .FirstOrDefault();
                     if (positiveUnitLoS != null)
                     {
@@ -284,7 +272,7 @@ namespace WholesomeDungeonCrawler.States
                     if (losResult.IsVisibleAndReachable)
                     {
                         pathToUnitLength += losResult.PathLength;
-                        if (pathToUnitLength < _detecttionPathDistance)
+                        if (pathToUnitLength < _detectionPathDistance)
                         {
                             _dangerTraceline = (segmentStart, unit.PositionWithoutType);
                             return (unit, pathToUnitLength);
@@ -330,7 +318,7 @@ namespace WholesomeDungeonCrawler.States
         private bool MyTeamIsAround => _entityCache.ListGroupMember.Length == _entityCache.ListPartyMemberNames.Count
                     && _entityCache.ListGroupMember.All(member => member.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) < 15);
 
-        private void Radar3DOnDrawEvent()
+        private void DrawEventAOEPathAhead()
         {
             if (_unitOnPath.unit != null)
             {

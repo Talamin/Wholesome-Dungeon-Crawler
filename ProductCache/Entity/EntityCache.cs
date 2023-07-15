@@ -130,7 +130,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 }
                 */
                 // Ignore seed pods from Nexus
-                if (Lists.IgnoreTargetListInt.Contains(unit.Entry))
+                if (Lists.IgnoredMobs.Contains(unit.Entry))
                 {
                     continue;
                 }
