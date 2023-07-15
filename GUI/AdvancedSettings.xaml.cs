@@ -1,10 +1,15 @@
 ﻿using MahApps.Metro.Controls.Dialogs;
+using Newtonsoft.Json;
+using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Windows.Controls;
+using System.Windows.Media;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.Models;
 using wManager.Wow.ObjectManager;
 
@@ -72,7 +77,7 @@ namespace WholesomeDungeonCrawler.GUI
             if (CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Unknown)
             {
                 tbTankName.Visibility = System.Windows.Visibility.Collapsed;
-                spPartyGrid.Visibility= System.Windows.Visibility.Collapsed;
+                spPartyGrid.Visibility = System.Windows.Visibility.Collapsed;
                 txtErrorChooseRoleFirst.Visibility = System.Windows.Visibility.Visible;
             }
 
@@ -94,13 +99,65 @@ namespace WholesomeDungeonCrawler.GUI
             List<DungeonModel> availableDungeons = Toolbox.GetListAvailableDungeons();
             cbSelectDungeon.Items.Clear();
             cbSelectDungeon.SelectedValuePath = "Key";
-            cbSelectDungeon.DisplayMemberPath = "Value";
-            cbSelectDungeon.Items.Add(new KeyValuePair<int, string>(-1, "Random Dungeon"));
-            foreach (DungeonModel dungeon in availableDungeons.OrderBy(d => d.IsHeroic))
+            //cbSelectDungeon.DisplayMemberPath = "Value";
+
+            //cbSelectDungeon.Items.Add(new KeyValuePair<int, string>(-1, "Random Dungeon"));
+            cbSelectDungeon.Items.Add(new WDCComboboxItem()
             {
-                string suffix = dungeon.IsHeroic ? "[Heroic] " : "";
-                cbSelectDungeon.Items.Add(new KeyValuePair<int, string>(dungeon.DungeonId, $"{suffix}{dungeon.Name} ({dungeon.DungeonId})"));
+                Key = -1,
+                Content = $"Random Dungeon",
+                Foreground = Brushes.Wheat
+            });
+            foreach (DungeonModel dungeonModel in availableDungeons.OrderBy(d => d.IsHeroic))
+            {
+                DirectoryInfo profilePath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/{ProfileManager.ProfilesDirectoryName}/{dungeonModel.Name}");
+                int profilecount = profilePath.GetFiles().Count();
+                string suffix = "";
+                SolidColorBrush textColor = Brushes.White;
+                if (profilecount <= 0)
+                {
+                    suffix = " NO PROFILE";
+                    textColor = Brushes.Gray;
+                }
+                else
+                {
+                    List<FileInfo> files = profilePath.GetFiles().ToList();
+                    files.RemoveAll(file => !file.Name.EndsWith(".json"));
+                    foreach (FileInfo file in files)
+                    {
+                        ProfileModel deserializedProfile = null;
+                        try
+                        {
+                            deserializedProfile = JsonConvert.DeserializeObject<ProfileModel>(
+                                File.ReadAllText(file.FullName),
+                                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+                        }
+                        catch (JsonSerializationException ex)
+                        {
+                            Logger.LogError($"There was an error when trying to deserialize the profile {file.FullName}.");
+                            Logger.LogError($"{ex}");
+                            return;
+                        }
+                        if (deserializedProfile.Faction == wManager.Wow.Class.Npc.FactionType.Neutral) suffix += " N";
+                        else if (deserializedProfile.Faction == wManager.Wow.Class.Npc.FactionType.Alliance) suffix += " A";
+                        else if (deserializedProfile.Faction == wManager.Wow.Class.Npc.FactionType.Horde) suffix += " H";
+                    }
+                }
+                string prefix = dungeonModel.IsHeroic ? "[Heroic] " : "";
+
+                WDCComboboxItem item = new WDCComboboxItem()
+                {
+                    Key = dungeonModel.DungeonId,
+                    Content = $"{prefix}{dungeonModel.Name} ({dungeonModel.DungeonId}) -{suffix}",
+                    Foreground = textColor
+                };
+                cbSelectDungeon.Items.Add(item);
             }
+        }
+
+        public class WDCComboboxItem : ComboBoxItem
+        {
+            public int Key { get; set; }
         }
 
         private void MetroWindow_Closing(object sender, CancelEventArgs e)
