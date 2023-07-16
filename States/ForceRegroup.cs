@@ -75,13 +75,18 @@ namespace WholesomeDungeonCrawler.States
                 }
                 _safetyTimer = null;
 
+                // TP out if someone is missing. Multiple attempts as failsafe
                 if (_entityCache.ListGroupMember.Count() != _entityCache.ListPartyMemberNames.Count())
                 {
-                    foreach (string playerName in _entityCache.ListPartyMemberNames.Where(p => !_entityCache.ListGroupMember.Any(lgm => lgm.Name == p)))
+                    for (int i = 0; i < 5; i++)
                     {
-                        Logger.Log($"{playerName} is missing! Teleporting out and back in to regroup.");
-                    }
+                        Thread.Sleep(1000);
+                        if (_entityCache.ListGroupMember.Count() == _entityCache.ListPartyMemberNames.Count())
+                            return false;
 
+                        foreach (string playerName in _entityCache.ListPartyMemberNames.Where(p => !_entityCache.ListGroupMember.Any(lgm => lgm.Name == p)))
+                            Logger.Log($"{playerName} is missing! Teleporting out and back in to regroup in {5 - i}s");
+                    }
                     return true;
                 }
 

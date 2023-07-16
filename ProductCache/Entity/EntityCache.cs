@@ -121,15 +121,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
             foreach (WoWUnit unit in units)
             {
-                /*
-                // Ignore hostile statues in Uldaman until they become animated.
-                if (Lists.ForceTargetListInt.Contains(unit.Entry)
-                    && ((unit.UnitFlags & UnitFlags.NotAttackable) != 0))
-                {
-                    continue;
-                }
-                */
-                // Ignore seed pods from Nexus
+                // Ignored mobs from list
                 if (Lists.IgnoredMobs.Contains(unit.Entry))
                 {
                     continue;
@@ -188,7 +180,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             {
                 Logger.LogError($"Entity cache pulse took {watch.ElapsedMilliseconds}");
             }
-
         }
 
         // Records name and GUIDs of other players even if outside object manager
@@ -257,6 +248,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
         public void CacheGroupMembers(string trigger)
         {
+            Logger.LogDebug($"CacheGroupMembers called by {trigger}");
             CachePartyMembersInfo();
         }
     }

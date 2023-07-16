@@ -123,11 +123,14 @@ namespace WholesomeDungeonCrawler.Helpers
             { 30385, new SpecialPrio(29310, TargetPriority.High) }, // Twilight Volunteer (Jedoga Shadowseer, Old Kingdom)
             { 28619, new SpecialPrio(28684, TargetPriority.High) }, // Web Wrap (Krik'thir, Azjol Nerub)
             { 28734, new SpecialPrio(28684, TargetPriority.High) }, // Anubar Skirmisher (Krik'thir, Azjol Nerub)
-            { 42672, new SpecialPrio(23953, TargetPriority.High) }, // Frost Tomb (Prince Kelesth, Utgard Keep)
+            { 23965, new SpecialPrio(23953, TargetPriority.High) }, // Frost Tomb (Prince Kelesth, Utgard Keep)
             { 23775, new SpecialPrio(23682, TargetPriority.High) }, // Head of the Horseman (Haloween Event)
             { 17917, new SpecialPrio(17797, TargetPriority.High) }, // Coilfang Water Elemental (Hydromancer Thespia, Steamvault)
             { 17951, new SpecialPrio(17796, TargetPriority.High) }, // Steamrigger Mechanic (Mekgineer SteamRigger, Steamvault)
             { 17954, new SpecialPrio(17798, TargetPriority.High) }, // Naga Distiller (Warlord Kalithresh, Steamvault)
+            { 24722, new SpecialPrio(24723, TargetPriority.High) }, // Fell Crystal (Selin FIreheart, Magister's Terrace)
+            { 24675, new SpecialPrio(24664, TargetPriority.High) }, // Phoenix egg (Kael'thas Sunstrider, Magister's Terrace)
+            { 24674, new SpecialPrio(24664, TargetPriority.High) }, // Phoenix (Kael'thas Sunstrider, Magister's Terrace)
             // Low
             { 8996, new SpecialPrio(0, TargetPriority.Low, true) }, // Ragefire - Voidwalker minion
             { 2520, new SpecialPrio(0, TargetPriority.Low, true) }, // Deadmines - Remote-Controlled Golem

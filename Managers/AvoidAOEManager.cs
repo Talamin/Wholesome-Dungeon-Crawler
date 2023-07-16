@@ -157,6 +157,7 @@ namespace WholesomeDungeonCrawler.Managers
                     Logger.LogOnce($"DYNAMIC: {dObject.Name} -> {dObject.Entry}", true);
                 }
                 
+                /*
                 if (wowObject.Type != WoWObjectType.Unit
                     && wowObject.Type != WoWObjectType.DynamicObject
                     && wowObject.Type != WoWObjectType.GameObject)
@@ -517,6 +518,10 @@ namespace WholesomeDungeonCrawler.Managers
             new KnownAOE(18371, 15f, _rangedOnly),
             // Lightning Cloud (Hydromancer Thepias)
             new KnownAOE(25033, 12f, _everyone),
+            // Arcane Sphere (Kael'thas Sunstrider)
+            new KnownAOE(24708, 20f, _everyone),
+            // Flame Strike (Kael'thas Sunstrider)
+            new KnownAOE(24666, 10f, _everyone),
         };
         /*
         private readonly Dictionary<int, float> _knowAOEs = new Dictionary<int, float> // { Entry, Radius }

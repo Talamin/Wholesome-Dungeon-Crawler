@@ -102,7 +102,19 @@ namespace WholesomeDungeonCrawler.Profiles
             // Add default leave dungeon step at the end if it doesn't exist
             if (!(_profileSteps.Last() is LeaveDungeonStep))
             {
-                _profileSteps.Add(new LeaveDungeonStep(new LeaveDungeonModel() { Name = "Leave dungeon (default)" }, entityCache, partyChatManager, profileManager));
+                _profileSteps.Add(new LeaveDungeonStep(new LeaveDungeonModel() { Name = "Leave dungeon (auto)" }, entityCache, partyChatManager, profileManager));
+            }
+
+            // Add default regroup step after every Safe Pulls
+            int nbPTS = _profileSteps.Count(step => step is PullToSafeSpotStep);
+            for (int i = _profileSteps.Count - 1; i >= 0; i--)
+            {
+                if (_profileSteps[i] is PullToSafeSpotStep pullToSafeSpotStep 
+                    && i < _profileSteps.Count - 1
+                    && !(_profileSteps[i+1] is RegroupModel))
+                {
+                    _profileSteps.Insert(i+1, new RegroupStep(new RegroupModel() { Name = $"PTS Regroup {nbPTS--} (auto)", RegroupSpot = pullToSafeSpotStep.SafeSportCenter }, entityCache, partyChatManager));
+                }
             }
 
             AllMoveAlongNodes.RemoveAll(node => node == null);

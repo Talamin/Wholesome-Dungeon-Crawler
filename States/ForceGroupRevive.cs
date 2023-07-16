@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
-using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Enums;
@@ -13,7 +12,7 @@ using Timer = robotManager.Helpful.Timer;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class GroupRevive : State, IState
+    class ForceGroupRevive : State, IState
     {
         public override string DisplayName => "Group Revive";
 
@@ -28,10 +27,10 @@ namespace WholesomeDungeonCrawler.States
             { WoWClass.Shaman, "Ancestral Spirit" }
         };
 
-        private Dictionary<string, Timer> _cacheTimer = new Dictionary<string, Timer>(); // player name -> associated Timer
+        private Dictionary<string, Timer> _playerRezTimer = new Dictionary<string, Timer>(); // player name -> associated Timer
 
-        public GroupRevive(
-            ICache iCache, 
+        public ForceGroupRevive(
+            ICache iCache,
             IEntityCache entityCache)
         {
             _cache = iCache;
@@ -56,12 +55,12 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 // Clean up cache timers
-                foreach (var entry in _cacheTimer.Where(kv => kv.Value.IsReady).ToList())
+                foreach (var entry in _playerRezTimer.Where(kv => kv.Value.IsReady).ToList())
                 {
-                    _cacheTimer.Remove(entry.Key);
+                    _playerRezTimer.Remove(entry.Key);
                 }
 
-                if (!_entityCache.ListGroupMember.Any(unit => unit.IsDead && !_cacheTimer.ContainsKey(unit.Name)))
+                if (!_entityCache.ListGroupMember.Any(unit => unit.IsDead && !_playerRezTimer.ContainsKey(unit.Name)))
                 {
                     // Everyone is on a timer
                     return false;
@@ -77,7 +76,7 @@ namespace WholesomeDungeonCrawler.States
             string spell = _rezzClasses[_entityCache.Me.WoWClass];
             Vector3 myPos = _entityCache.Me.PositionWithoutType;
             IWoWPlayer playerToResurrect = _entityCache.ListGroupMember
-                .Where(unit => unit.IsDead && !_cacheTimer.ContainsKey(unit.Name))
+                .Where(unit => unit.IsDead && !_playerRezTimer.ContainsKey(unit.Name))
                 .OrderBy(unit => unit.PositionWithoutType.DistanceTo(myPos))
                 .FirstOrDefault();
 
@@ -104,7 +103,8 @@ namespace WholesomeDungeonCrawler.States
                 Thread.Sleep(200);
                 SpellManager.CastSpellByNameLUA(spell);
                 Usefuls.WaitIsCasting();
-                _cacheTimer.Add(playerToResurrect.Name, new Timer(10000));
+                Interact.ClearTarget();
+                _playerRezTimer.Add(playerToResurrect.Name, new Timer(10000));
             }
         }
     }

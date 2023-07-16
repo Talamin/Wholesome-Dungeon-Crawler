@@ -1,7 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
-using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
@@ -15,17 +14,20 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
     {
         private readonly PullToSafeSpotModel _pullToSafeSpotModel;
         private readonly IEntityCache _entityCache;
-        private readonly Vector3 _safeSpot;
+        private readonly Vector3 _safeSpotCenter;
         private readonly int _safeSpotRadius;
-        private readonly Vector3 _zoneToClear;
+        private readonly Vector3 _zoneToClearPosition;
         private readonly int _zoneToClearRadius;
         private readonly int _zoneToClearZLimit;
         private readonly Dictionary<ulong, List<Vector3>> _enemiesToClear = new Dictionary<ulong, List<Vector3>>(); // unit -> path to unit from safespot
-        private readonly float _myFightRange;
+        private readonly Dictionary<ulong, PulledEnemy> _pulledEnemiesDic = new Dictionary<ulong, PulledEnemy>(); // used to detect standing still enemies outside safe zone
+        //private readonly float _myFightRange;
 
         public override string Name { get; }
-        public bool IamInSafeSpot => _safeSpot != null && _safeSpot.DistanceTo(_entityCache.Me.PositionWithoutType) < _safeSpotRadius;
-        public bool PositionInSafeSpotFightRange(Vector3 position) => position.DistanceTo(_safeSpot) < _safeSpotRadius + _myFightRange;
+        public bool PositionInSafeSpotFightRange(Vector3 position) => position.DistanceTo(_safeSpotCenter) <= _safeSpotRadius/* + _myFightRange*/
+            && !TraceLine.TraceLineGo(_safeSpotCenter, position);
+        public bool AnEnemyIsStandingStill => _pulledEnemiesDic.Count > 0 && _pulledEnemiesDic.Any(kvp => kvp.Value.ShouldBeAttacked);
+        public Vector3 SafeSportCenter => _safeSpotCenter;
 
         public PullToSafeSpotStep(
             PullToSafeSpotModel pullToSafeSpotModel,
@@ -35,26 +37,27 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _pullToSafeSpotModel = pullToSafeSpotModel;
             _entityCache = entityCache;
             _safeSpotRadius = pullToSafeSpotModel.SafeSpotRadius;
-            _safeSpot = pullToSafeSpotModel.SafeSpotPosition;
-            _zoneToClear = pullToSafeSpotModel.ZoneToClearPosition;
+            _safeSpotCenter = pullToSafeSpotModel.SafeSpotPosition;
+            _zoneToClearPosition = pullToSafeSpotModel.ZoneToClearPosition;
             _zoneToClearRadius = pullToSafeSpotModel.ZoneToClearRadius;
             _zoneToClearZLimit = pullToSafeSpotModel.ZoneToClearZLimit;
 
-            if (_safeSpot == null)
+            if (_safeSpotCenter == null)
             {
                 Logger.LogError($"ERROR: The safe spot of your current step {Name} is null!");
             }
-            if (_zoneToClear == null)
+            if (_zoneToClearPosition == null)
             {
                 Logger.LogError($"ERROR: The zone to clear position of your current step {Name} is null!");
             }
-
-            _myFightRange = 
+            /*
+            _myFightRange =                 
                 WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.RDPS 
                 || WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Heal
                 || _entityCache.IAmTank ?
                 pullToSafeSpotModel.DEFAULT_RANGED_FIGHT_RANGE
                 : pullToSafeSpotModel.DEFAULT_MELEE_FIGHT_RANGE;
+                */
         }
 
         public override void Run()
@@ -67,25 +70,69 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             }
 
             Vector3 myPos = _entityCache.Me.PositionWithoutType;
-            List<WoWUnit> enemiesInClearZone = ObjectManager.GetWoWUnitHostile()
-                .Where(unit => unit.Position.Z <= _zoneToClear.Z + _zoneToClearZLimit
-                    && unit.Position.Z >= _zoneToClear.Z - _zoneToClearZLimit)
-                .Where(unit => unit.PositionWithoutType.DistanceTo(_zoneToClear) <= _zoneToClearRadius)
+            List<WoWUnit> enemiesToPull = ObjectManager.GetWoWUnitHostile()
+                .Where(unit => unit.Position.Z <= _zoneToClearPosition.Z + _zoneToClearZLimit
+                    && unit.Position.Z >= _zoneToClearPosition.Z - _zoneToClearZLimit
+                    && unit.IsAttackable
+                    && !unit.InCombatFlagOnly)
+                .Where(unit => unit.PositionWithoutType.DistanceTo(_zoneToClearPosition) <= _zoneToClearRadius)
                 .ToList();
 
-            Logger.LogOnce($"There are {enemiesInClearZone.Count} enemies left in the zone to clear");
-
-            if (enemiesInClearZone.Count > 0)
+            // Detect Standing still enemies when entire team in safe spot with no target
+            if (_entityCache.EnemiesAttackingGroup.Length > 0
+                && _entityCache.ListGroupMember.All(m => m.TargetGuid > 0 || m.PositionWithoutType.DistanceTo(_safeSpotCenter) < _safeSpotRadius))
             {
+                foreach (IWoWUnit unit in _entityCache.EnemiesAttackingGroup)
+                {
+                    if (_pulledEnemiesDic.TryGetValue(unit.Guid, out PulledEnemy enemyPulled))
+                    {
+                        enemyPulled.RecordPosition(unit.PositionWithoutType);
+                    }
+                    else
+                    {
+                        _pulledEnemiesDic.Add(unit.Guid, new PulledEnemy(unit));
+                    }
+                }
+            }
+            else
+            {
+                _pulledEnemiesDic.Clear();
+            }
+
+            Logger.LogOnce($"There are {enemiesToPull.Count} enemies left in the zone to clear");
+
+            if (enemiesToPull.Count > 0 || _entityCache.EnemiesAttackingGroup.Length > 0)
+            {
+                IWoWUnit enemyInSafeSpot = _entityCache.EnemiesAttackingGroup
+                    .OrderBy(e => e.PositionWithoutType.DistanceTo(_safeSpotCenter))
+                    .FirstOrDefault(e => PositionInSafeSpotFightRange(e.PositionWithoutType));
+
+                // if an enemy is in the safe spot
+                if (enemyInSafeSpot != null)
+                {
+                    Logger.Log($"{enemyInSafeSpot.Name} is in the safe zone. Attacking.");
+                    Fight.StartFight(enemyInSafeSpot.Guid);
+                    return;
+                }
+
+                // Attack standing still enemy
+                IWoWUnit standingStillEnemy = GetStandingStillEnemy();
+                if (standingStillEnemy != null)
+                {
+                    Logger.Log($"{standingStillEnemy.Name} is standing still. Attacking.");
+                    Fight.StartFight(standingStillEnemy.Guid);
+                    return;
+                }
+
                 // Tank logic
                 if (_entityCache.IAmTank)
                 {
                     // record path distances
-                    foreach (WoWUnit enemy in enemiesInClearZone)
+                    foreach (WoWUnit enemy in enemiesToPull)
                     {
                         if (!_enemiesToClear.ContainsKey(enemy.Guid))
                         {
-                            List<Vector3> pathToEnemy = PathFinder.FindPath(_safeSpot, enemy.Position);
+                            List<Vector3> pathToEnemy = PathFinder.FindPath(_safeSpotCenter, enemy.Position);
                             _enemiesToClear.Add(enemy.Guid, pathToEnemy);
                             Logger.Log($"Detected {enemy.Name} with path distance {WTPathFinder.CalculatePathTotalDistance(pathToEnemy)} yards");
                         }
@@ -96,9 +143,10 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         .OrderBy(kvp => WTPathFinder.CalculatePathTotalDistance(kvp.Value))
                         .FirstOrDefault();
 
+                    // Get closest enemy to pull from dictionary
                     if (closestEntry.Key > 0)
                     {
-                        WoWUnit unit = enemiesInClearZone
+                        WoWUnit unit = enemiesToPull
                             .Where(unit => unit.Guid == closestEntry.Key)
                             .FirstOrDefault();
 
@@ -109,56 +157,127 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                             return;
                         }
 
-                        if (_entityCache.EnemiesAttackingGroup.Count() <= 0
+                        // No enemy attacking us, start pulling
+                        if (_entityCache.EnemiesAttackingGroup.Length <= 0
                             || !_entityCache.Me.InCombatFlagOnly)
                         {
-                            if (unit.Position.DistanceTo(myPos) < 50)
+                            // Stop to pull
+                            if (unit.Position.DistanceTo(myPos) < 50 && !TraceLine.TraceLineGo(unit.Position))
                             {
+                                Logger.Log($"Pulling {unit.Name}");
                                 Fight.StartFight(unit.Guid);
                                 return;
                             }
 
-                            // Move towards enemy
-                            if (!MovementManager.InMovement)
+                            // Move towards enemy to pull
+                            List<IWoWPlayer> myTeamMates = _entityCache.ListGroupMember
+                                .Where(m => m.Guid != _entityCache.Me.Guid)
+                                .ToList();
+                            if (!MovementManager.InMovement && myTeamMates.All(m => m.PositionWithoutType.DistanceTo(_safeSpotCenter) < 5f))
                             {
-                                Logger.Log($"Pulling {unit.Name} to safe spot");                               
+                                Logger.Log($"Pulling {unit.Name} to safe spot");
                                 MovementManager.Go(WTPathFinder.PathFromClosestPoint(closestEntry.Value));
                             }
                         }
                         else
                         {
                             // Run back to safe spot
-                            if (!MovementManager.InMovement || MovementManager.CurrentPath.Last() != _safeSpot)
+                            if (myPos.DistanceTo(_safeSpotCenter) > 2f
+                                && (!MovementManager.InMovement || MovementManager.CurrentPath.Last() != _safeSpotCenter))
                             {
                                 MovementManager.StopMove();
                                 Logger.Log($"{_entityCache.EnemiesAttackingGroup.Count()} enemies attacking, returning to safe spot");
-                                List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, _safeSpot);
-                                //List<Vector3> pathToSafeSpot = new List<Vector3>(closestEntry.Value).Reverse();
-                                //pathToSafeSpot.Reverse();
+                                List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, _safeSpotCenter);
                                 MovementManager.Go(WTPathFinder.PathFromClosestPoint(WTPathFinder.PathFromClosestPoint(pathToSafeSpot)));
                             }
                         }
                     }
                 }
-                else
-                // Follower logic
+                else // Follower logic
                 {
-                    if (myPos.DistanceTo(_safeSpot) > _safeSpotRadius
+                    // No enemy pulled, regroup
+                    if (myPos.DistanceTo(_safeSpotCenter) > 2f
                         && !MovementManager.InMovement)
                     {
-                        List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, _safeSpot);
+                        Logger.Log($"Moving to safe spot");
+                        List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, _safeSpotCenter);
                         MovementManager.Go(pathToSafeSpot);
                     }
                 }
             }
+            // No more enemy detected in the zone and party not in fight
             else
             {
-                // Zone is clear
+                // Move back to spot
+                if (myPos.DistanceTo(_safeSpotCenter) > 3f
+                    && !MovementManager.InMovement)
+                {
+                    Logger.Log($"Moving to safe spot");
+                    List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, _safeSpotCenter);
+                    MovementManager.Go(pathToSafeSpot);
+                    return;
+                }
+
+                // Complete condition
                 if (EvaluateCompleteCondition()
-                    && !_entityCache.Me.InCombatFlagOnly)
+                    && _entityCache.EnemiesAttackingGroup.Length <= 0
+                    && _entityCache.ListGroupMember.All(m => !m.InCombatFlagOnly && m.PositionWithoutType.DistanceTo(_safeSpotCenter) < 5f))
                 {
                     _enemiesToClear.Clear();
                     IsCompleted = true;
+                }
+            }
+        }
+
+        private IWoWUnit GetStandingStillEnemy()
+        {
+            List<IWoWUnit> standingStillEnemies = new List<IWoWUnit>();
+            foreach (KeyValuePair<ulong, PulledEnemy> kvp in _pulledEnemiesDic)
+            {
+                if (kvp.Value.ShouldBeAttacked)
+                    standingStillEnemies.Add(kvp.Value.Unit);
+            }
+            return standingStillEnemies
+                .OrderBy(e => e.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType))
+                .FirstOrDefault();
+        }
+
+        private class PulledEnemy
+        {
+            public IWoWUnit Unit { get; private set; }
+            private Vector3 _lastRecordedPosition;
+            private Timer _recordTimer;
+            private int _standingStillOccurrences;
+
+            public bool ShouldBeAttacked => _standingStillOccurrences > 4;
+
+            public PulledEnemy(IWoWUnit unit)
+            {
+                Unit = unit;
+            }
+
+            public void RecordPosition(Vector3 position)
+            {
+                if (!ShouldBeAttacked)
+                {
+                    if (_recordTimer == null || _recordTimer.IsReady)
+                    {
+                        if (_lastRecordedPosition == position)
+                        {
+                            _standingStillOccurrences++;
+                            Logger.Log($"{Unit.Name} is standing still ({_standingStillOccurrences} occurrences)");
+                        }
+                        else
+                        {
+                            _standingStillOccurrences = 0;
+                            _lastRecordedPosition = position;
+                        }
+                        _recordTimer = new Timer(1000);
+                    }
+                }
+                else
+                {
+                    Logger.Log($"{Unit.Name} should be attacked");
                 }
             }
         }

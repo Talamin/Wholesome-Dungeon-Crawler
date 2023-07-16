@@ -159,5 +159,20 @@ namespace WholesomeDungeonCrawler.Helpers
                 return false;
             ");
         }
+
+        public static void AnswerYesReadyCHeck()
+        {
+            Logger.LogOnce($"Answering yes to ready check.");
+            Lua.LuaDoString("ReadyCheckFrameYesButton:Click();");
+            Lua.LuaDoString("ConfirmReadyCheck(true);");
+        }
+
+        public static void DoGroupReadyCheck()
+        {
+            Logger.Log($"Initiating ready check.");
+            Lua.LuaDoString($"SetRaidTarget('player', 0)");
+            Lua.LuaDoString("DoReadyCheck();");
+            Thread.Sleep(1000);
+        }
     }
 }

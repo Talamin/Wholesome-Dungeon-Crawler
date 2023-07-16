@@ -170,6 +170,8 @@
     <Compile Include="States\Dead.cs" />
     <Compile Include="States\DeadDive.cs" />
     <Compile Include="States\AvoidAOE.cs" />
+    <Compile Include="States\ForceWaitCombatFlagsDisappear.cs" />
+    <Compile Include="States\ForceOOCHeal.cs" />
     <Compile Include="States\LoadingScreenLock.cs" />
     <Compile Include="States\LoadUnloadProfile.cs" />
     <Compile Include="States\RejoinDungeonAfterForcedTownRun.cs" />
@@ -185,7 +187,7 @@
     <Compile Include="States\GroupProposalAccept.cs" />
     <Compile Include="States\GroupQueue.cs" />
     <Compile Include="States\GroupQueueAccept.cs" />
-    <Compile Include="States\GroupRevive.cs" />
+    <Compile Include="States\ForceGroupRevive.cs" />
     <Compile Include="States\IState.cs" />
     <Compile Include="States\OpenSatchel.cs" />
     <Compile Include="States\WaitRest.cs" />

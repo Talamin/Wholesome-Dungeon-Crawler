@@ -53,7 +53,8 @@ namespace WholesomeDungeonCrawler.States
                 if (_profileManager.CurrentDungeonProfile?.CurrentStep != null
                     && _profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep)
                 {
-                    pullToSafeSpotStep = _profileManager.CurrentDungeonProfile.CurrentStep as PullToSafeSpotStep;
+                    return false;
+                    //pullToSafeSpotStep = _profileManager.CurrentDungeonProfile.CurrentStep as PullToSafeSpotStep;
                 }
 
                 Target = null;

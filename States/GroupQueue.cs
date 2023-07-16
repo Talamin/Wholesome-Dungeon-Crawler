@@ -52,6 +52,7 @@ namespace WholesomeDungeonCrawler.States
             }
             else
             {
+                Lua.LuaDoString("ResetInstances();");
                 if (_selectedDungeonId > -1)
                 {
 

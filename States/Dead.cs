@@ -95,8 +95,11 @@ namespace WholesomeDungeonCrawler.States
                     DungeonModel dungeon = Lists.AllDungeons.Where(x => x.ContinentId == Usefuls.ContinentId)
                             .OrderBy(dungeon => dungeon.EntranceLoc.DistanceTo(_entityCache.Me.PositionCorpse))
                             .FirstOrDefault();
-                    Logger.Log("No profile death run found, using pathfinder.");
-                    GoToTask.ToPosition(dungeon.EntranceLoc, skipIfCannotMakePath: false);
+                    Logger.Log("No profile death run found, using pathfinder towards EntranceLoc.");
+                    if (dungeon != null)
+                    {
+                        GoToTask.ToPosition(dungeon.EntranceLoc, skipIfCannotMakePath: false);
+                    }
                 }
             }
             else
@@ -121,12 +124,16 @@ namespace WholesomeDungeonCrawler.States
                         _forceReleaseTimer = new robotManager.Helpful.Timer(_forceReleaseTimeInSeconds * 1000);
                     }
 
+                    if (_forceReleaseTimer.TimeLeft() % 10000 == 0)
+                    {
+                        Logger.LogOnce($"Forcing release in {_forceReleaseTimer.TimeLeft() / 1000}");
+                    }
+
                     Logger.LogOnce("A group member can resurrect me. Waiting.");
 
                     if (_forceReleaseTimer.IsReady)
                     {
-                        _forceReleaseTimer = null;
-                        ReleaseCorpse("Timer is up");
+                        ReleaseCorpse("Timer is up. Forcing release.");
                         return;
                     }
 
@@ -140,7 +147,6 @@ namespace WholesomeDungeonCrawler.States
                 }
                 else
                 {
-                    _forceReleaseTimer = null;
                     ReleaseCorpse("No one can resurrect me");
                 }
             }
@@ -148,6 +154,7 @@ namespace WholesomeDungeonCrawler.States
 
         private void ReleaseCorpse(string reason)
         {
+            _forceReleaseTimer = null;
             Thread.Sleep(1000);
             Logger.Log($"Releasing corpse ({reason}).");
             Lua.LuaDoString("RepopMe();");

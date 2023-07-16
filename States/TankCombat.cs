@@ -44,11 +44,14 @@ namespace WholesomeDungeonCrawler.States
                 if (_profileManager.CurrentDungeonProfile?.CurrentStep != null
                     && _profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep)
                 {
-                    PullToSafeSpotStep step = _profileManager.CurrentDungeonProfile.CurrentStep as PullToSafeSpotStep;
-                    if (!step.IamInSafeSpot)
+                    return false;
+                    /*
+                    PullToSafeSpotStep pullToSafeSpotStep = _profileManager.CurrentDungeonProfile.CurrentStep as PullToSafeSpotStep;
+                    if (pullToSafeSpotStep != null && _entityCache.EnemiesAttackingGroup.Any(e => !pullToSafeSpotStep.PositionInSafeSpotFightRange(_entityCache.Me.PositionWithoutType)))
                     {
                         return false;
                     }
+                    */
                 }
 
                 if (_entityCache.Target.IsDead)

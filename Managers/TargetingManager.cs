@@ -74,13 +74,15 @@ namespace WholesomeDungeonCrawler.Managers
                     && _profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep)
                 {
                     PullToSafeSpotStep pullStep = _profileManager.CurrentDungeonProfile.CurrentStep as PullToSafeSpotStep;
-                    if (currentTarget.Target >= 0
-                        && _entityCache.EnemiesAttackingGroup.Length > 0
-                        && !pullStep.PositionInSafeSpotFightRange(currentTarget.Position))
+                    if (_entityCache.EnemiesAttackingGroup.Length > 0
+                        && !pullStep.AnEnemyIsStandingStill
+                        && !_entityCache.EnemiesAttackingGroup.Any(e => pullStep.PositionInSafeSpotFightRange(e.PositionWithoutType))
+                        && _entityCache.ListGroupMember.All(g => g.TargetGuid == 0 || !g.Target.IsAttackable))
                     {
+                        Logger.LogError($"Canceled fight");
                         canceable.Cancel = true;
                         return;
-                    }
+                   }
                 }
 
                 // Don't chase fleers

@@ -43,6 +43,7 @@ namespace WholesomeDungeonCrawler.GUI
 
         private MetroDialogSettings _basicDialogSettings;
         private MetroDialogSettings _addDialogSettings;
+        private bool _radarRunning = false;
 
         public ProfileModel CurrentProfile
         {
@@ -211,18 +212,20 @@ namespace WholesomeDungeonCrawler.GUI
         private void btnToggleOverlay_Click(object sender, RoutedEventArgs e)
         {
 
-            if (!Radar3D.IsLaunched)
+            if (!_radarRunning)
             {
                 md5 = MD5.Create();
                 Radar3D.Pulse();
                 Radar3D.OnDrawEvent += new Radar3D.OnDrawHandler(Monitor);
                 Radar3D.OnDrawEvent += new Radar3D.OnDrawHandler(psControl.Monitor);
+                _radarRunning = true;
             }
             else
             {
                 Radar3D.OnDrawEvent -= new Radar3D.OnDrawHandler(Monitor);
                 Radar3D.OnDrawEvent -= new Radar3D.OnDrawHandler(psControl.Monitor);
                 Radar3D.Stop();
+                _radarRunning = false;
             }
         }
 
@@ -230,7 +233,7 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                if (Conditions.InGameAndConnected)
+                if (Conditions.InGameAndConnected && CurrentProfile != null && CurrentProfile.StepModels != null)
                 {
                     foreach (StepModel step in CurrentProfile.StepModels)
                     {
@@ -241,25 +244,25 @@ namespace WholesomeDungeonCrawler.GUI
                         if (step is PullToSafeSpotModel)
                         {
                             PullToSafeSpotModel model = (PullToSafeSpotModel)step;
-                            if (model.SafeSpotPosition != null)
+                            if (model != null && model.SafeSpotPosition != null)
                             {
                                 Radar3D.DrawCircle(model.SafeSpotPosition, model.SafeSpotRadius, Color.DarkBlue, true, 100);
-                                Radar3D.DrawCircle(model.SafeSpotPosition, model.SafeSpotRadius + model.DEFAULT_MELEE_FIGHT_RANGE, Color.MediumBlue, false, 100);
-                                Radar3D.DrawCircle(model.SafeSpotPosition, model.SafeSpotRadius + model.DEFAULT_RANGED_FIGHT_RANGE, Color.LightSteelBlue, false, 100);
+                                //Radar3D.DrawCircle(model.SafeSpotPosition, model.SafeSpotRadius + model.DEFAULT_MELEE_FIGHT_RANGE, Color.MediumBlue, false, 100);
+                                //Radar3D.DrawCircle(model.SafeSpotPosition, model.SafeSpotRadius + model.DEFAULT_RANGED_FIGHT_RANGE, Color.LightSteelBlue, false, 100);
                             }
-                            if (model.ZoneToClearPosition != null)
+                            if (model != null && model.ZoneToClearPosition != null)
                             {
                                 Radar3D.DrawCircle(model.ZoneToClearPosition, 2f, Color.Red, true, 100);
                                 Radar3D.DrawCircle(model.ZoneToClearPosition, model.ZoneToClearRadius, Color.Red, false, 100);
                             }
-                            if (model.SafeSpotPosition != null
+                            if (model != null && model.SafeSpotPosition != null
                                 && model.ZoneToClearPosition != null)
                             {
                                 Radar3D.DrawLine(model.SafeSpotPosition, model.ZoneToClearPosition, Color.MediumBlue, 100);
                             }
                             foreach (WoWUnit unit in ObjectManager.GetWoWUnitAttackables())
                             {
-                                if (unit.Position.DistanceTo(model.ZoneToClearPosition) <= model.ZoneToClearRadius)
+                                if (unit != null && unit.Position.DistanceTo(model.ZoneToClearPosition) <= model.ZoneToClearRadius)
                                 {
                                     Radar3D.DrawCircle(unit.Position, 1f, Color.Red, true, 100);
                                     Radar3D.DrawLine(model.ZoneToClearPosition, unit.Position, Color.Red, 100);
@@ -271,7 +274,7 @@ namespace WholesomeDungeonCrawler.GUI
                         if (step is TalkToUnitModel)
                         {
                             TalkToUnitModel model = (TalkToUnitModel)step;
-                            if (model.ExpectedPosition != null)
+                            if (model != null && model.ExpectedPosition != null)
                             {
                                 Radar3D.DrawCircle(model.ExpectedPosition, 3f, randomColor, false, 200);
                             }
@@ -281,7 +284,7 @@ namespace WholesomeDungeonCrawler.GUI
                         if (step is InteractWithModel)
                         {
                             InteractWithModel model = (InteractWithModel)step;
-                            if (model.ExpectedPosition != null)
+                            if (model != null && model.ExpectedPosition != null)
                             {
                                 Radar3D.DrawCircle(model.ExpectedPosition, model.InteractDistance, randomColor, false, 200);
                             }
@@ -291,7 +294,7 @@ namespace WholesomeDungeonCrawler.GUI
                         if (step is DefendSpotModel)
                         {
                             DefendSpotModel model = (DefendSpotModel)step;
-                            if (model.DefendPosition != null)
+                            if (model != null && model.DefendPosition != null)
                             {
                                 Radar3D.DrawCircle(model.DefendPosition, model.DefendSpotRadius, Color.MediumVioletRed, false, 200);
                             }
@@ -301,7 +304,7 @@ namespace WholesomeDungeonCrawler.GUI
                         if (step is RegroupModel)
                         {
                             RegroupModel model = (RegroupModel)step;
-                            if (model.RegroupSpot != null)
+                            if (model != null && model.RegroupSpot != null)
                             {
                                 Radar3D.DrawCircle(model.RegroupSpot, 4f, Color.White, false, 200);
                             }
@@ -311,23 +314,26 @@ namespace WholesomeDungeonCrawler.GUI
                         if (step is FollowUnitModel)
                         {
                             FollowUnitModel model = (FollowUnitModel)step;
-                            if (model.ExpectedStartPosition != null)
+                            if (model != null)
                             {
-                                Radar3D.DrawCircle(model.ExpectedStartPosition, 2f, Color.LawnGreen, false, 200);
-                            }
-                            if (model.ExpectedEndPosition != null)
-                            {
-                                Radar3D.DrawCircle(model.ExpectedEndPosition, 2f, Color.LawnGreen, false, 200);
-                            }
-                            if (model.ExpectedStartPosition != null
-                                && model.ExpectedEndPosition != null)
-                            {
-                                Radar3D.DrawLine(model.ExpectedStartPosition, model.ExpectedEndPosition, Color.LawnGreen, 50);
-                            }
-                            WoWUnit unitToEscort = ObjectManager.GetObjectWoWUnit().Find(unit => unit.Entry == model.UnitId);
-                            if (unitToEscort != null)
-                            {
-                                Radar3D.DrawCircle(unitToEscort.Position, 3f, Color.LawnGreen, true, 200);
+                                if (model.ExpectedStartPosition != null)
+                                {
+                                    Radar3D.DrawCircle(model.ExpectedStartPosition, 2f, Color.LawnGreen, false, 200);
+                                }
+                                if (model.ExpectedEndPosition != null)
+                                {
+                                    Radar3D.DrawCircle(model.ExpectedEndPosition, 2f, Color.LawnGreen, false, 200);
+                                }
+                                if (model.ExpectedStartPosition != null
+                                    && model.ExpectedEndPosition != null)
+                                {
+                                    Radar3D.DrawLine(model.ExpectedStartPosition, model.ExpectedEndPosition, Color.LawnGreen, 50);
+                                }
+                                WoWUnit unitToEscort = ObjectManager.GetObjectWoWUnit().Find(unit => unit.Entry == model.UnitId);
+                                if (unitToEscort != null)
+                                {
+                                    Radar3D.DrawCircle(unitToEscort.Position, 3f, Color.LawnGreen, true, 200);
+                                }
                             }
                         }
 
@@ -348,7 +354,7 @@ namespace WholesomeDungeonCrawler.GUI
                         }
 
                         // Draw LOS checks
-                        if (step.CompleteCondition.ConditionType == CompleteConditionType.LOSCheck)
+                        if (step.CompleteCondition != null && step.CompleteCondition.ConditionType == CompleteConditionType.LOSCheck)
                         {
                             if (step.CompleteCondition.LOSPositionVectorFrom != null)
                             {
@@ -369,38 +375,44 @@ namespace WholesomeDungeonCrawler.GUI
                     // Draw death run paths
                     Color deadcolour = Color.Red;
                     Vector3 deadpreviousVector = new Vector3();
-                    foreach (Vector3 node in CurrentProfile.DeathRunPath)
+                    if (CurrentProfile.DeathRunPath != null)
                     {
-                        if (deadpreviousVector == new Vector3())
+                        foreach (Vector3 node in CurrentProfile.DeathRunPath)
                         {
+                            if (deadpreviousVector == new Vector3())
+                            {
+                                deadpreviousVector = node;
+                            }
+                            Radar3D.DrawCircle(node, 1f, deadcolour, true, 200);
+                            Radar3D.DrawLine(node, deadpreviousVector, deadcolour, 200);
                             deadpreviousVector = node;
                         }
-                        Radar3D.DrawCircle(node, 1f, deadcolour, true, 200);
-                        Radar3D.DrawLine(node, deadpreviousVector, deadcolour, 200);
-                        deadpreviousVector = node;
                     }
 
                     // Draw offmesh connections
-                    foreach (var offmesh in CurrentProfile.OffMeshConnections)
+                    if (CurrentProfile.OffMeshConnections != null)
                     {
-                        Color offmeshcolour = Color.Green;
-                        Vector3 offmeshcpreviousVector = new Vector3();
-                        foreach (var vec in offmesh.Path)
+                        foreach (var offmesh in CurrentProfile.OffMeshConnections)
                         {
-                            if (offmeshcpreviousVector == new Vector3())
+                            Color offmeshcolour = Color.Green;
+                            Vector3 offmeshcpreviousVector = new Vector3();
+                            foreach (var vec in offmesh.Path)
                             {
+                                if (offmeshcpreviousVector == new Vector3())
+                                {
+                                    offmeshcpreviousVector = vec;
+                                }
+                                Radar3D.DrawCircle(vec, 1f, offmeshcolour, true, 200);
+                                Radar3D.DrawLine(vec, offmeshcpreviousVector, offmeshcolour, 200);
                                 offmeshcpreviousVector = vec;
                             }
-                            Radar3D.DrawCircle(vec, 1f, offmeshcolour, true, 200);
-                            Radar3D.DrawLine(vec, offmeshcpreviousVector, offmeshcolour, 200);
-                            offmeshcpreviousVector = vec;
                         }
                     }
                 }
             }
-            catch
+            catch (Exception e)
             {
-                //Main.logError("Failed to run the Monitor() function.");
+                Logger.LogError($"Failed to run the Monitor() function. {e.Message}");
             }
         }
 
@@ -718,7 +730,10 @@ namespace WholesomeDungeonCrawler.GUI
             var result = await this.ShowMessageAsync("", "Are you sure you want to close?", MessageDialogStyle.AffirmativeAndNegative, _basicDialogSettings);
             this.closeMe = result == MessageDialogResult.Affirmative;
 
-            if (this.closeMe) this.Close();
+            if (this.closeMe)
+            {
+                this.Close();
+            }
         }
 
         private async void btnMoveStepUp_Click(object sender, RoutedEventArgs e)

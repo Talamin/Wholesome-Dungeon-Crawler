@@ -154,10 +154,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 // We need to initiate the check
                 if (luaTimeRemaining <= 0)
                 {
-                    Logger.Log($"No ready check in progress. Initiating.");
-                    Lua.LuaDoString($"SetRaidTarget('player', 0)");
-                    Lua.LuaDoString("DoReadyCheck();");
-                    Thread.Sleep(1000);
+                    Toolbox.DoGroupReadyCheck();
                     return;
                 }
 
@@ -169,9 +166,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             {
                 if (!imReady && _readyCheckTimer.TimeLeft() > 3000)
                 {
-                    Logger.LogOnce($"Answering yes to ready check.");
-                    Lua.LuaDoString("ReadyCheckFrameYesButton:Click();");
-                    Lua.LuaDoString("ConfirmReadyCheck(true);");
+                    Toolbox.AnswerYesReadyCHeck();
                 }
 
                 if (Toolbox.MemberHasRaidTarget(_readyTargetIndex))

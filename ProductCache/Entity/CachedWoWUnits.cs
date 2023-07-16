@@ -33,6 +33,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public uint GetBaseAddress { get; }
         public bool Fleeing { get; }
         public WoWUnit WowUnit { get; }
+        public WoWUnit Target { get; }
 
         public CachedWoWUnit(WoWUnit unit)
         {
@@ -58,6 +59,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             TargetGuid = unit.Target;
             Fleeing = unit.Fleeing;
             WowUnit = unit;
+            Target = unit.TargetObject;
 
             GetBaseAddress = unit.GetBaseAddress;
 
