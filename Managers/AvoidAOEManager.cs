@@ -158,7 +158,7 @@ namespace WholesomeDungeonCrawler.Managers
                 {
                     DynamicObject dObject = new DynamicObject(wowObject.GetBaseAddress);
                     Logger.LogOnce($"DYNAMIC: {dObject.Name} -> {dObject.Entry}", true);
-                }                
+                }
                 if (debugOthers 
                     && wowObject.Type != WoWObjectType.Unit
                     && wowObject.Type != WoWObjectType.DynamicObject
@@ -526,7 +526,9 @@ namespace WholesomeDungeonCrawler.Managers
             // Flame Strike (Kael'thas Sunstrider)
             new KnownAOE(24666, 10f, _everyone),
             // Axe Ingvar the Plunderer (Utgarde Keep)
-            new KnownAOE(23997, 8f, _everyone)
+            new KnownAOE(23997, 8f, _everyone),
+            // Cloud of Disease (Scholomance)
+            new KnownAOE(17742, 8f, _everyone),
         };
         /*
         private readonly Dictionary<int, float> _knowAOEs = new Dictionary<int, float> // { Entry, Radius }
