@@ -127,14 +127,27 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 // Tank logic
                 if (_entityCache.IAmTank)
                 {
-                    // record path distances
-                    foreach (WoWUnit enemy in enemiesToPull)
+                    if (_entityCache.EnemiesAttackingGroup.Length <= 0)
                     {
-                        if (!_enemiesToClear.ContainsKey(enemy.Guid))
+                        // record path distances
+                        foreach (WoWUnit enemy in enemiesToPull)
                         {
-                            List<Vector3> pathToEnemy = PathFinder.FindPath(_safeSpotCenter, enemy.Position);
-                            _enemiesToClear.Add(enemy.Guid, pathToEnemy);
-                            Logger.Log($"Detected {enemy.Name} with path distance {WTPathFinder.CalculatePathTotalDistance(pathToEnemy)} yards");
+                            if (_enemiesToClear.TryGetValue(enemy.Guid, out List<Vector3> savedPath)) // readjust paths for patrols
+                            {
+                                if (savedPath == null || savedPath.Last().DistanceTo(enemy.Position) > 5f)
+                                {
+                                    _enemiesToClear.Remove(enemy.Guid);
+                                    List<Vector3> pathToEnemy = PathFinder.FindPath(_safeSpotCenter, enemy.Position);
+                                    _enemiesToClear.Add(enemy.Guid, pathToEnemy);
+                                    Logger.Log($"Adjusted {enemy.Name} path (enemy is patroling)");
+                                }
+                            }
+                            else // add path to dic
+                            {
+                                List<Vector3> pathToEnemy = PathFinder.FindPath(_safeSpotCenter, enemy.Position);
+                                _enemiesToClear.Add(enemy.Guid, pathToEnemy);
+                                Logger.Log($"Added {enemy.Name} path with path distance {WTPathFinder.CalculatePathTotalDistance(pathToEnemy)} yards");
+                            }
                         }
                     }
 
@@ -161,8 +174,14 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         if (_entityCache.EnemiesAttackingGroup.Length <= 0
                             || !_entityCache.Me.InCombatFlagOnly)
                         {
+                            List<IWoWPlayer> myTeamMates = _entityCache.ListGroupMember
+                                .Where(m => m.Guid != _entityCache.Me.Guid)
+                                .ToList();
+                            bool teammatesAtSafeSpot = myTeamMates.All(m => m.PositionWithoutType.DistanceTo(_safeSpotCenter) < 5f);
+
                             // Stop to pull
-                            if (unit.Position.DistanceTo(myPos) < 50 && !TraceLine.TraceLineGo(unit.Position))
+                            if (teammatesAtSafeSpot
+                                && unit.Position.DistanceTo(myPos) < 50)
                             {
                                 Logger.Log($"Pulling {unit.Name}");
                                 Fight.StartFight(unit.Guid);
@@ -170,10 +189,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                             }
 
                             // Move towards enemy to pull
-                            List<IWoWPlayer> myTeamMates = _entityCache.ListGroupMember
-                                .Where(m => m.Guid != _entityCache.Me.Guid)
-                                .ToList();
-                            if (!MovementManager.InMovement && myTeamMates.All(m => m.PositionWithoutType.DistanceTo(_safeSpotCenter) < 5f))
+                            if (!MovementManager.InMovement
+                                && teammatesAtSafeSpot)
                             {
                                 Logger.Log($"Pulling {unit.Name} to safe spot");
                                 MovementManager.Go(WTPathFinder.PathFromClosestPoint(closestEntry.Value));

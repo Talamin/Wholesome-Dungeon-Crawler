@@ -124,9 +124,9 @@ namespace WholesomeDungeonCrawler.States
                         _forceReleaseTimer = new robotManager.Helpful.Timer(_forceReleaseTimeInSeconds * 1000);
                     }
 
-                    if (_forceReleaseTimer.TimeLeft() % 10000 == 0)
+                    if ((int)(_forceReleaseTimer.TimeLeft()) % 10000 == 0)
                     {
-                        Logger.LogOnce($"Forcing release in {_forceReleaseTimer.TimeLeft() / 1000}");
+                        Logger.LogOnce($"Forcing release in {(int)(_forceReleaseTimer.TimeLeft() / 1000)}");
                     }
 
                     Logger.LogOnce("A group member can resurrect me. Waiting.");

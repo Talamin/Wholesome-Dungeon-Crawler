@@ -146,25 +146,28 @@ namespace WholesomeDungeonCrawler.Managers
                 RemoveDangerZone(dzToRemoveGuid);
             }
 
+            // Turn these to detect objects in the log
+            bool debugDynamic = false;
+            bool debugOthers = false;
+            if (debugDynamic || debugOthers)
+                Logger.LogOnce($"**************************************", true);
             // Detect danger zones
             foreach (WoWObject wowObject in objectList)
             {
-                // Uncomment this part to detect objects in the log
-                /*
-                if (wowObject.Type == WoWObjectType.DynamicObject)
+                if (debugDynamic && wowObject.Type == WoWObjectType.DynamicObject)
                 {
                     DynamicObject dObject = new DynamicObject(wowObject.GetBaseAddress);
                     Logger.LogOnce($"DYNAMIC: {dObject.Name} -> {dObject.Entry}", true);
+                }                
+                if (debugOthers 
+                    && wowObject.Type != WoWObjectType.Unit
+                    && wowObject.Type != WoWObjectType.DynamicObject
+                    && wowObject.Type != WoWObjectType.Player
+                    && wowObject.Type != WoWObjectType.Item)
+                {
+                    Logger.LogOnce($"WoWOBJECT: {wowObject.Name} -> {wowObject.Entry} - {wowObject.Position.DistanceTo(_entityCache.Me.PositionWithoutType)}", true);
                 }
                 
-                /*
-                if (wowObject.Type != WoWObjectType.Unit
-                    && wowObject.Type != WoWObjectType.DynamicObject
-                    && wowObject.Type != WoWObjectType.GameObject)
-                {
-                    Logger.LogOnce($"WoWOBJECT: {wowObject.Name} -> {wowObject.Entry}", true);
-                }
-                */
                 if (_knowAOEsDic.TryGetValue(wowObject.Entry, out KnownAOE knownAOE))
                 {
                     switch (wowObject.Type)
@@ -522,6 +525,8 @@ namespace WholesomeDungeonCrawler.Managers
             new KnownAOE(24708, 20f, _everyone),
             // Flame Strike (Kael'thas Sunstrider)
             new KnownAOE(24666, 10f, _everyone),
+            // Axe Ingvar the Plunderer (Utgarde Keep)
+            new KnownAOE(23997, 8f, _everyone)
         };
         /*
         private readonly Dictionary<int, float> _knowAOEs = new Dictionary<int, float> // { Entry, Radius }

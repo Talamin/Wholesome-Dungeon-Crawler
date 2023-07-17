@@ -72,7 +72,7 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            Logger.LogOnce($"Waiting for party combat flags to wear off ({(int)(_timerUntilBan.TimeLeft() / 1000)}s)");
+            Logger.LogOnce($"Waiting for party combat flags to wear off (max {_waitTime}s)");
             MovementManager.StopMove();
             Thread.Sleep(1000);
         }
