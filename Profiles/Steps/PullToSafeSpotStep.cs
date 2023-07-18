@@ -295,10 +295,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         _recordTimer = new Timer(1000);
                     }
                 }
-                else
-                {
-                    Logger.LogOnce($"{Unit.Name} should be attacked");
-                }
             }
         }
     }

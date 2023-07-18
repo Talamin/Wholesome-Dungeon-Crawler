@@ -156,7 +156,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
                 if (unit.Level > 1
                     && unit.Reaction <= Reaction.Neutral
-                    && unit.PositionWithoutType.DistanceTo(playerPosition) <= 60)
+                    && unit.PositionWithoutType.DistanceTo(playerPosition) <= 70)
                 {
                     enemyUnits.Add(cachedUnit);
 

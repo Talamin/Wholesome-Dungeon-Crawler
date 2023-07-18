@@ -132,9 +132,10 @@ namespace WholesomeDungeonCrawler.Helpers
             { 24675, new SpecialPrio(24664, TargetPriority.High) }, // Phoenix egg (Kael'thas Sunstrider, Magister's Terrace)
             { 24674, new SpecialPrio(24664, TargetPriority.High) }, // Phoenix (Kael'thas Sunstrider, Magister's Terrace)
             // Low
-            { 8996, new SpecialPrio(0, TargetPriority.Low, true) }, // Ragefire - Voidwalker minion
-            { 2520, new SpecialPrio(0, TargetPriority.Low, true) }, // Deadmines - Remote-Controlled Golem
-            { 598, new SpecialPrio(0, TargetPriority.High, true) }, // Deadmines - Defias Miner
+            { 8996, new SpecialPrio(0, TargetPriority.Low, true) }, // Voidwalker minion (Ragefire Chasm)
+            { 2520, new SpecialPrio(0, TargetPriority.Low, true) }, // Remote-Controlled Golem (Deadmines)
+            { 598, new SpecialPrio(0, TargetPriority.High, true) }, // Defias Miner (Deadmines)
+            { 11582, new SpecialPrio(0, TargetPriority.High, true) }, // Dark Summoner (Scholomance=
     };
 
         // These mobs will be completely ignored in the entity cache. Careful with this one, the group won't even defend against them
