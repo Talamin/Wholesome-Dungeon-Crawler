@@ -78,9 +78,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 .Where(unit => unit.PositionWithoutType.DistanceTo(_zoneToClearPosition) <= _zoneToClearRadius)
                 .ToList();
 
-            // Detect Standing still enemies when entire team in safe spot with no target
+            // Detect Standing still enemies
             if (_entityCache.EnemiesAttackingGroup.Length > 0
-                && _entityCache.ListGroupMember.All(m => m.TargetGuid > 0 || m.PositionWithoutType.DistanceTo(_safeSpotCenter) < _safeSpotRadius))
+                /*&& _entityCache.ListGroupMember.All(m => m.TargetGuid > 0 || m.PositionWithoutType.DistanceTo(_safeSpotCenter) < _safeSpotRadius)*/)
             {
                 foreach (IWoWUnit unit in _entityCache.EnemiesAttackingGroup)
                 {
@@ -101,6 +101,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
             Logger.LogOnce($"There are {enemiesToPull.Count} enemies left in the zone to clear");
 
+            // There are enemies in the safe spot or we are attacked
             if (enemiesToPull.Count > 0 || _entityCache.EnemiesAttackingGroup.Length > 0)
             {
                 IWoWUnit enemyInSafeSpot = _entityCache.EnemiesAttackingGroup
@@ -115,12 +116,13 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     return;
                 }
 
-                // Attack standing still enemy
-                IWoWUnit standingStillEnemy = GetStandingStillEnemy();
-                if (standingStillEnemy != null)
+                // Attack standing still enemy (last)
+                if (GetStandingStillEnemies().Count > 0
+                    && GetStandingStillEnemies().Count == _entityCache.EnemiesAttackingGroup.Length)
                 {
-                    Logger.Log($"{standingStillEnemy.Name} is standing still. Attacking.");
-                    Fight.StartFight(standingStillEnemy.Guid);
+                    IWoWUnit standingStillToAttack = GetStandingStillEnemies().First();
+                    Logger.Log($"{standingStillToAttack.Name} is standing still. Attacking.");
+                    Fight.StartFight(standingStillToAttack.Guid);
                     return;
                 }
 
@@ -246,7 +248,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             }
         }
 
-        private IWoWUnit GetStandingStillEnemy()
+        private List<IWoWUnit> GetStandingStillEnemies()
         {
             List<IWoWUnit> standingStillEnemies = new List<IWoWUnit>();
             foreach (KeyValuePair<ulong, PulledEnemy> kvp in _pulledEnemiesDic)
@@ -256,7 +258,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             }
             return standingStillEnemies
                 .OrderBy(e => e.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType))
-                .FirstOrDefault();
+                .ToList();
         }
 
         private class PulledEnemy
@@ -265,8 +267,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             private Vector3 _lastRecordedPosition;
             private Timer _recordTimer;
             private int _standingStillOccurrences;
+            private int _maxSecsStandingStill = 3;
 
-            public bool ShouldBeAttacked => _standingStillOccurrences > 4;
+            public bool ShouldBeAttacked => _standingStillOccurrences > _maxSecsStandingStill;
 
             public PulledEnemy(IWoWUnit unit)
             {
@@ -282,7 +285,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         if (_lastRecordedPosition == position)
                         {
                             _standingStillOccurrences++;
-                            Logger.Log($"{Unit.Name} is standing still ({_standingStillOccurrences} occurrences)");
+                            Logger.Log($"{Unit.Name} has been standing still for {_standingStillOccurrences}s");
                         }
                         else
                         {
@@ -294,7 +297,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 }
                 else
                 {
-                    Logger.Log($"{Unit.Name} should be attacked");
+                    Logger.LogOnce($"{Unit.Name} should be attacked");
                 }
             }
         }

@@ -23,9 +23,29 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private int _foodMin;
         private int _drinkMin;
         private bool _drinkAllowed;
-        private readonly int _readyTargetIndex = 1;
         private bool _imPartyLeader;
         private bool _receivedChatSystemReady;
+        private static RegroupRaidIcons _regroupRaidIconRotation;
+        private RegroupRaidIcons _stepIcon;
+
+        public enum RegroupRaidIcons
+        {
+            STAR = 1,
+            DIAMOND = 3,
+            TRIANGLE = 4
+        }
+
+        public void SetRaidIcon()
+        {
+            switch (_regroupRaidIconRotation)
+            {
+                case RegroupRaidIcons.STAR: _regroupRaidIconRotation = RegroupRaidIcons.DIAMOND; break;
+                case RegroupRaidIcons.DIAMOND: _regroupRaidIconRotation = RegroupRaidIcons.TRIANGLE; break;
+                case RegroupRaidIcons.TRIANGLE: _regroupRaidIconRotation = RegroupRaidIcons.STAR; break;
+                default: _regroupRaidIconRotation = RegroupRaidIcons.STAR; break;
+            }
+            _stepIcon = _regroupRaidIconRotation;
+        }
 
         public RegroupStep(RegroupModel regroupModel, IEntityCache entityCache, IPartyChatManager partyChatManager) : base(regroupModel.CompleteCondition)
         {
@@ -140,10 +160,16 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             {
                 if (_receivedChatSystemReady)
                 {
-                    Lua.LuaDoString($"SetRaidTarget('player', {_readyTargetIndex})");
+                    Lua.LuaDoString($"SetRaidTarget('player', {(int)_stepIcon})");
                     Task.Run(async delegate
                     {
-                        await Task.Delay(15000);
+                        int delay = 1000;
+                        int maxWaitMs = delay * 15;
+                        while (maxWaitMs > 0 && _entityCache.ListGroupMember.Any(m => m.PositionWithoutType.DistanceTo(RegroupSpot) < 5f))
+                        {
+                            maxWaitMs -= delay;
+                            await Task.Delay(delay);
+                        }
                         Lua.LuaDoString($"SetRaidTarget('player', 0)");
                     });
                     _receivedChatSystemReady = false;
@@ -169,7 +195,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     Toolbox.AnswerYesReadyCHeck();
                 }
 
-                if (Toolbox.MemberHasRaidTarget(_readyTargetIndex))
+                if (Toolbox.MemberHasRaidTarget((int)_stepIcon))
                 {
                     CompleteStep();
                     return;

@@ -118,6 +118,15 @@ namespace WholesomeDungeonCrawler.Profiles
                 }
             }
 
+            // Set regroup raid icons
+            foreach (IStep step in _profileSteps)
+            {
+                if (step is RegroupStep regroupStep)
+                {
+                    regroupStep.SetRaidIcon();
+                }
+            }
+
             AllMoveAlongNodes.RemoveAll(node => node == null);
 
             foreach (Vector3 point in profileModel.DeathRunPath)

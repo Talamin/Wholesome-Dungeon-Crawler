@@ -60,6 +60,7 @@ namespace WholesomeDungeonCrawler.States
                     {
                         Logger.Log($"Selecting dungeon {_selectedDungeonId} in dropdown list");
                         Lua.LuaDoString("LFDQueueFrameTypeDropDownButton:Click(); DropDownList1Button1:Click();");
+                        Thread.Sleep(1000);
                     }
                     else
                     {
