@@ -8,6 +8,7 @@ using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles.Steps;
 using WholesomeToolbox;
 using wManager.Wow.Helpers;
+using static WholesomeDungeonCrawler.Profiles.Steps.RegroupStep;
 using static wManager.Wow.Class.Npc;
 using static wManager.Wow.Helpers.PathFinder;
 
@@ -119,11 +120,18 @@ namespace WholesomeDungeonCrawler.Profiles
             }
 
             // Set regroup raid icons
+            RegroupRaidIcons referenceIcon = RegroupRaidIcons.STAR;
             foreach (IStep step in _profileSteps)
             {
                 if (step is RegroupStep regroupStep)
                 {
-                    regroupStep.SetRaidIcon();
+                    regroupStep.SetRaidIcon(referenceIcon);
+                    switch (referenceIcon)
+                    {
+                        case RegroupRaidIcons.STAR: referenceIcon = RegroupRaidIcons.DIAMOND; break;
+                        case RegroupRaidIcons.DIAMOND: referenceIcon = RegroupRaidIcons.TRIANGLE; break;
+                        case RegroupRaidIcons.TRIANGLE: referenceIcon = RegroupRaidIcons.STAR; break;
+                    }
                 }
             }
 

@@ -99,33 +99,32 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 _pulledEnemiesDic.Clear();
             }
 
+            // if an enemy is in the safe spot
+            IWoWUnit enemyInSafeSpot = _entityCache.EnemiesAttackingGroup
+                .OrderBy(e => e.PositionWithoutType.DistanceTo(_safeSpotCenter))
+                .FirstOrDefault(e => PositionInSafeSpotFightRange(e.PositionWithoutType));
+            if (enemyInSafeSpot != null)
+            {
+                Logger.Log($"{enemyInSafeSpot.Name} is in the safe zone. Attacking.");
+                Fight.StartFight(enemyInSafeSpot.Guid);
+                return;
+            }
+
+            // Attack standing still enemy (last)
+            if (GetStandingStillEnemies().Count > 0
+                && GetStandingStillEnemies().Count == _entityCache.EnemiesAttackingGroup.Length)
+            {
+                IWoWUnit standingStillToAttack = GetStandingStillEnemies().First();
+                Logger.Log($"{standingStillToAttack.Name} is standing still. Attacking.");
+                Fight.StartFight(standingStillToAttack.Guid);
+                return;
+            }
+
             Logger.LogOnce($"There are {enemiesToPull.Count} enemies left in the zone to clear");
 
             // There are enemies in the safe spot or we are attacked
             if (enemiesToPull.Count > 0 || _entityCache.EnemiesAttackingGroup.Length > 0)
             {
-                IWoWUnit enemyInSafeSpot = _entityCache.EnemiesAttackingGroup
-                    .OrderBy(e => e.PositionWithoutType.DistanceTo(_safeSpotCenter))
-                    .FirstOrDefault(e => PositionInSafeSpotFightRange(e.PositionWithoutType));
-
-                // if an enemy is in the safe spot
-                if (enemyInSafeSpot != null)
-                {
-                    Logger.Log($"{enemyInSafeSpot.Name} is in the safe zone. Attacking.");
-                    Fight.StartFight(enemyInSafeSpot.Guid);
-                    return;
-                }
-
-                // Attack standing still enemy (last)
-                if (GetStandingStillEnemies().Count > 0
-                    && GetStandingStillEnemies().Count == _entityCache.EnemiesAttackingGroup.Length)
-                {
-                    IWoWUnit standingStillToAttack = GetStandingStillEnemies().First();
-                    Logger.Log($"{standingStillToAttack.Name} is standing still. Attacking.");
-                    Fight.StartFight(standingStillToAttack.Guid);
-                    return;
-                }
-
                 // Tank logic
                 if (_entityCache.IAmTank)
                 {

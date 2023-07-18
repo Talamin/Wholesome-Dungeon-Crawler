@@ -25,7 +25,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private bool _drinkAllowed;
         private bool _imPartyLeader;
         private bool _receivedChatSystemReady;
-        private static RegroupRaidIcons _regroupRaidIconRotation;
         private RegroupRaidIcons _stepIcon;
 
         public enum RegroupRaidIcons
@@ -35,16 +34,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             TRIANGLE = 4
         }
 
-        public void SetRaidIcon()
+        public void SetRaidIcon(RegroupRaidIcons icon)
         {
-            switch (_regroupRaidIconRotation)
-            {
-                case RegroupRaidIcons.STAR: _regroupRaidIconRotation = RegroupRaidIcons.DIAMOND; break;
-                case RegroupRaidIcons.DIAMOND: _regroupRaidIconRotation = RegroupRaidIcons.TRIANGLE; break;
-                case RegroupRaidIcons.TRIANGLE: _regroupRaidIconRotation = RegroupRaidIcons.STAR; break;
-                default: _regroupRaidIconRotation = RegroupRaidIcons.STAR; break;
-            }
-            _stepIcon = _regroupRaidIconRotation;
+            _stepIcon = icon;
         }
 
         public RegroupStep(RegroupModel regroupModel, IEntityCache entityCache, IPartyChatManager partyChatManager) : base(regroupModel.CompleteCondition)
