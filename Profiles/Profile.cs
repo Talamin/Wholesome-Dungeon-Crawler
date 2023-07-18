@@ -6,6 +6,7 @@ using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles.Steps;
+using WholesomeToolbox;
 using wManager.Wow.Helpers;
 using static wManager.Wow.Class.Npc;
 using static wManager.Wow.Helpers.PathFinder;
@@ -189,13 +190,15 @@ namespace WholesomeDungeonCrawler.Profiles
                     Vector3 closestNodeFromThisPath = moveAlongStep.GetMoveAlongPath
                         .OrderBy(node => node.DistanceTo(_entityCache.Me.PositionWithoutType))
                         .First();
-                    stepDistances[i] = closestNodeFromThisPath.DistanceTo(_entityCache.Me.PositionWithoutType);
+                    stepDistances[i] = WTPathFinder.CalculatePathTotalDistance(_entityCache.Me.PositionWithoutType, closestNodeFromThisPath);
+                    Logger.LogDebug($"Closest spot from {moveAlongStep.Name} is {stepDistances[i]} yards away");
                 }
 
                 if (_profileSteps[i] is RegroupStep)
                 {
                     RegroupStep regroupStep = (RegroupStep)_profileSteps[i];
-                    stepDistances[i] = regroupStep.RegroupSpot.DistanceTo(_entityCache.Me.PositionWithoutType);
+                    stepDistances[i] = WTPathFinder.CalculatePathTotalDistance(_entityCache.Me.PositionWithoutType, regroupStep.RegroupSpot);
+                    Logger.LogDebug($"Closest spot from {regroupStep.Name} is {stepDistances[i]} yards away");
                 }
             }
 
@@ -225,7 +228,6 @@ namespace WholesomeDungeonCrawler.Profiles
                 break;
             }
 
-            Logger.Log($"Setting {_profileSteps[resultIndex].Name} as current");
             SetCurrentStep(_profileSteps[resultIndex]);
         }
 

@@ -59,7 +59,7 @@ namespace WholesomeDungeonCrawler.Managers
             if (_entityCache.ListGroupMember.Any(member => member.HasDrinkBuff || member.HasFoodBuff)
                 && _entityCache.EnemiesAttackingGroup.Length <= 0)
             {
-                Logger.Log($"Cancelling fight because someone needs regeneration");
+                Logger.LogOnce($"Cancelling fight because someone needs regeneration");
                 canceable.Cancel = true;
                 MovementManager.StopMove();
                 return;
@@ -79,7 +79,7 @@ namespace WholesomeDungeonCrawler.Managers
                         && !_entityCache.EnemiesAttackingGroup.Any(e => pullStep.PositionInSafeSpotFightRange(e.PositionWithoutType))
                         && _entityCache.ListGroupMember.All(g => g.TargetGuid == 0 || !g.Target.IsAttackable))
                     {
-                        Logger.LogError($"Canceled fight");
+                        Logger.LogOnce($"SafeSpot pull. Canceled fight");
                         canceable.Cancel = true;
                         return;
                    }
@@ -90,6 +90,7 @@ namespace WholesomeDungeonCrawler.Managers
                     && _entityCache.Target.Fleeing
                     && _entityCache.EnemiesAttackingGroup.Count() > 0)
                 {
+                    Logger.LogOnce($"Target is fleeing. Canceled fight");
                     canceable.Cancel = true;
                     Interact.ClearTarget();
                     return;
@@ -105,8 +106,7 @@ namespace WholesomeDungeonCrawler.Managers
                         .FirstOrDefault();
                     if (unitTargetingEscort != null && unitTargetingEscort.Guid != _entityCache.Target.Guid)
                     {
-                        Logger.Log($"{unitTargetingEscort.Name} needs tanking to protect NPC");
-                        SwitchTargetAndFight(unitTargetingEscort, canceable);
+                        SwitchTargetAndFight(unitTargetingEscort, canceable, "Protecting NPC");
                         return;
                     }
 
@@ -118,8 +118,7 @@ namespace WholesomeDungeonCrawler.Managers
                         .FirstOrDefault();
                     if (untankedUnit != null && untankedUnit.Guid != _entityCache.Target.Guid)
                     {
-                        Logger.Log($"{untankedUnit.Name} needs tanking to protect group member");
-                        SwitchTargetAndFight(untankedUnit, canceable);
+                        SwitchTargetAndFight(untankedUnit, canceable, "Protecting group member");
                         return;
                     }
 
@@ -134,8 +133,7 @@ namespace WholesomeDungeonCrawler.Managers
                         && _entityCache.Target.Health / weakestEnemy.Health > MIN_TARGET_SWAP_RATIO
                         && _entityCache.Target.Health - weakestEnemy.Health > MIN_TARGET_SWAP_HP)
                     {
-                        Logger.Log($"{weakestEnemy.Name} needs finishing off");
-                        SwitchTargetAndFight(weakestEnemy, canceable);
+                        SwitchTargetAndFight(weakestEnemy, canceable, "Lowest HP");
                         return;
                     }
 
@@ -148,8 +146,7 @@ namespace WholesomeDungeonCrawler.Managers
                             .FirstOrDefault();
                         if (closestEnemy != null && closestEnemy.Guid != _entityCache.Me.TargetGuid)
                         {
-                            Logger.Log($"{closestEnemy.Name} still needs killing");
-                            SwitchTargetAndFight(closestEnemy, canceable);
+                            SwitchTargetAndFight(closestEnemy, canceable, "Closest");
                             return;
 
                         }
@@ -164,6 +161,7 @@ namespace WholesomeDungeonCrawler.Managers
                     && _entityCache.Target.Fleeing
                     && _entityCache.EnemiesAttackingGroup.Count() > 0)
                 {
+                    Logger.LogOnce($"Target is fleeing. Canceled fight (melee)");
                     canceable.Cancel = true;
                     Interact.ClearTarget();
                     return;
@@ -195,8 +193,7 @@ namespace WholesomeDungeonCrawler.Managers
                             .FirstOrDefault();
                         if (newUnit != null)
                         {
-                            Logger.Log($"Atacking better target: {newUnit.Name}");
-                            SwitchTargetAndFight(newUnit, canceable);
+                            SwitchTargetAndFight(newUnit, canceable, "Target was low priority");
                             return;
                         }
                     }
@@ -215,8 +212,7 @@ namespace WholesomeDungeonCrawler.Managers
                             .FirstOrDefault();
                         if (prioTarget.Guid != _entityCache.Me.TargetGuid)
                         {
-                            Logger.Log($"Atacking high prio target: {prioTarget.Name}");
-                            SwitchTargetAndFight(prioTarget, canceable);
+                            SwitchTargetAndFight(prioTarget, canceable, "High priority target");
                             return;
                         }
                     }
@@ -231,8 +227,7 @@ namespace WholesomeDungeonCrawler.Managers
                         .FirstOrDefault();
                     if (fleer != null && fleer.Guid != _entityCache.Me.TargetGuid)
                     {
-                        Logger.Log($"Atacking fleeing mob: {fleer.Name}");
-                        SwitchTargetAndFight(fleer, canceable);
+                        SwitchTargetAndFight(fleer, canceable, "Target is fleeing");
                         return;
                     }
                 }
@@ -248,8 +243,7 @@ namespace WholesomeDungeonCrawler.Managers
                             .FirstOrDefault();
                         if (unitTargetedByTank != null && unitTargetedByTank.Guid != _entityCache.Me.TargetGuid)
                         {
-                            Logger.Log($"Assisting tank against: {unitTargetedByTank.Name}");
-                            SwitchTargetAndFight(unitTargetedByTank, canceable);
+                            SwitchTargetAndFight(unitTargetedByTank, canceable, "Assisting tank");
                             return;
                         }
                     }
@@ -261,8 +255,7 @@ namespace WholesomeDungeonCrawler.Managers
                         .FirstOrDefault();
                     if (unitAttackingMember != null && unitAttackingMember.Guid != _entityCache.Me.TargetGuid)
                     {
-                        Logger.Log($"Assisting group member against: {unitAttackingMember.Name}");
-                        SwitchTargetAndFight(unitAttackingMember, canceable);
+                        SwitchTargetAndFight(unitAttackingMember, canceable, "Assisting group member");
                         return;
                     }
                 }

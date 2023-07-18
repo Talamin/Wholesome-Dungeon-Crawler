@@ -348,6 +348,7 @@ namespace WholesomeDungeonCrawler.Managers
             // We have reached a safe spot
             if (_escapePath?.Last().DistanceTo(_entityCache.Me.PositionWithoutType) < 2)
             {
+                Logger.LogOnce($"Safe spot reached. Canceled Move event (MovementPulse)");
                 _escapePath = null;
                 cancelable.Cancel = true;
                 return;
@@ -381,6 +382,7 @@ namespace WholesomeDungeonCrawler.Managers
             // We have reached a safe spot
             if (_escapePath?.Last().DistanceTo(_entityCache.Me.PositionWithoutType) < 2)
             {
+                Logger.LogOnce($"Safe spot reached. Canceled Move event (MoveTo)");
                 _escapePath = null;
                 cancelable.Cancel = true;
                 return;

@@ -8,6 +8,7 @@ using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
 using Timer = robotManager.Helpful.Timer;
 
 namespace WholesomeDungeonCrawler.States
@@ -54,12 +55,12 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                // Clean up cache timers
+                // Clean up cache timers                
                 foreach (var entry in _playerRezTimer.Where(kv => kv.Value.IsReady).ToList())
                 {
                     _playerRezTimer.Remove(entry.Key);
                 }
-
+                
                 if (!_entityCache.ListGroupMember.Any(unit => unit.IsDead && !_playerRezTimer.ContainsKey(unit.Name)))
                 {
                     // Everyone is on a timer
@@ -100,9 +101,18 @@ namespace WholesomeDungeonCrawler.States
 
                 Logger.Log($"Resurrecting {playerToResurrect.Name}");
                 Interact.InteractGameObject(playerToResurrect.GetBaseAddress);
-                Thread.Sleep(200);
                 SpellManager.CastSpellByNameLUA(spell);
-                Usefuls.WaitIsCasting();
+                Thread.Sleep(200);
+                while (Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause && ObjectManager.Me.IsCast)
+                {
+                    WoWPlayer player = ObjectManager.GetObjectWoWPlayer()
+                        .FirstOrDefault(o => o.Name == playerToResurrect.Name);
+                    Thread.Sleep(100);
+                    if (player == null || !player.IsDead)
+                    {
+                        Lua.LuaDoString("SpellStopCasting();");
+                    }
+                }
                 Interact.ClearTarget();
                 _playerRezTimer.Add(playerToResurrect.Name, new Timer(10000));
             }

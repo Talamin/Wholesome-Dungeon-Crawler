@@ -8,6 +8,7 @@ using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
@@ -25,8 +26,8 @@ namespace WholesomeDungeonCrawler.States
         {
             { WoWClass.Druid, new List<string>() { "Healing Touch" } },
             { WoWClass.Paladin, new List<string>() { "Holy Light" } },
-            { WoWClass.Priest, new List<string>() { "Lesser Heal", "Heal" } },
-            { WoWClass.Shaman, new List<string>() { "Healing Wave", "Lesser Healing Wave" } }
+            { WoWClass.Priest, new List<string>() { "Heal", "Lesser Heal" } },
+            { WoWClass.Shaman, new List<string>() { "Lesser Healing Wave", "Healing Wave" } }
         };
 
         public ForceOOCHeal(
@@ -35,7 +36,8 @@ namespace WholesomeDungeonCrawler.States
         {
             _cache = iCache;
             _entityCache = entityCache;
-            _iAmHealer = _healClasses.ContainsKey(_entityCache.Me.WoWClass);
+            _iAmHealer = _healClasses.ContainsKey(_entityCache.Me.WoWClass)
+                && CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Heal;
         }
 
         public override bool NeedToRun
@@ -100,15 +102,22 @@ namespace WholesomeDungeonCrawler.States
                     Interact.InteractGameObject(playerToHeal.GetBaseAddress);
                     Thread.Sleep(200);
                     SpellManager.CastSpellByNameLUA(_healSPell);
-                    Usefuls.WaitIsCasting();
+                    while (Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause && ObjectManager.Me.IsCast)
+                    {
+                        Thread.Sleep(100);
+                        if (playerToHeal == null || playerToHeal.HealthPercent >= _healThreshold)
+                        {
+                            Lua.LuaDoString("SpellStopCasting();");
+                        }
+                    }
                     Interact.ClearTarget();
                 }
             }
             else // Others logic
             {
-                Logger.LogOnce("Waiting to get healed");
+                Logger.LogOnce("Waiting for heals");
                 MovementManager.StopMove();
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
             }
         }
     }

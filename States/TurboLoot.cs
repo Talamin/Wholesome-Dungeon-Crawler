@@ -45,6 +45,7 @@ namespace WholesomeDungeonCrawler.States
 
                 _unitToLoot = null;
                 Vector3 myPosition = _entitycache.Me.PositionWithoutType;
+                List<IWoWUnit> corpsesFromCache = new List<IWoWUnit>(_entitycache.LootableUnits);
                 List<IWoWUnit> lootableCorpses = _entitycache.LootableUnits
                     .Where(corpse => corpse?.PositionWithoutType.DistanceTo(myPosition) <= _lootRange)
                     .OrderBy(corpse => corpse?.PositionWithoutType.DistanceTo(myPosition))
