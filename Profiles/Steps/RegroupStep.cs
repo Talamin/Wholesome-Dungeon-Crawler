@@ -27,18 +27,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private bool _receivedChatSystemReady;
         private RegroupRaidIcons _stepIcon;
 
-        public enum RegroupRaidIcons
-        {
-            STAR = 1,
-            DIAMOND = 3,
-            TRIANGLE = 4
-        }
-
-        public void SetRaidIcon(RegroupRaidIcons icon)
-        {
-            _stepIcon = icon;
-        }
-
         public RegroupStep(RegroupModel regroupModel, IEntityCache entityCache, IPartyChatManager partyChatManager) : base(regroupModel.CompleteCondition)
         {
             _partyChatManager = partyChatManager;
@@ -50,6 +38,22 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _drinkMin = wManager.wManagerSetting.CurrentSetting.DrinkPercent;
             _drinkAllowed = wManager.wManagerSetting.CurrentSetting.RestingMana;
             Lua.LuaDoString($"SetRaidTarget('player', 0)");
+        }
+
+        public override void Initialize() { }
+
+        public override void Dispose() { }
+
+        public enum RegroupRaidIcons
+        {
+            STAR = 1,
+            DIAMOND = 3,
+            TRIANGLE = 4
+        }
+
+        public void SetRaidIcon(RegroupRaidIcons icon)
+        {
+            _stepIcon = icon;
         }
 
         public override void Run()

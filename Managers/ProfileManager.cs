@@ -9,6 +9,7 @@ using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles;
+using WholesomeDungeonCrawler.Profiles.Steps;
 using wManager.Wow.Helpers;
 using static wManager.Wow.Class.Npc;
 
@@ -43,6 +44,13 @@ namespace WholesomeDungeonCrawler.Managers
         public void Dispose()
         {
             EventsLuaWithArgs.OnEventsLuaStringWithArgs -= LuaEventHandler;
+            if (_currentProfile != null)
+            {
+                foreach (IStep step in _currentProfile.GetAllSteps)
+                {
+                    step.Dispose();
+                }
+            }
         }
 
         public void LoadProfile(bool safeWait)

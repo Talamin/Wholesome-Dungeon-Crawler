@@ -10,5 +10,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         void Run();
         void MarkAsCompleted();
+        void Initialize();
+        void Dispose();
     }
 }

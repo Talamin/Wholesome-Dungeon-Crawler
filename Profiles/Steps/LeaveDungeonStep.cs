@@ -40,6 +40,10 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             Lua.LuaDoString($"SetRaidTarget('player', 0)");
         }
 
+        public override void Initialize() { }
+
+        public override void Dispose() { }
+
         public override void Run()
         {
             if (_entityCache.Me.IsDead || _entityCache.EnemiesAttackingGroup.Length > 0)

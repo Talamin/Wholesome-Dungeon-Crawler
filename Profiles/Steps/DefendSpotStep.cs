@@ -29,6 +29,10 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             Name = _defendSpotModel.Name;
         }
 
+        public override void Initialize() { }
+
+        public override void Dispose() { }
+
         public override void Run()
         {
             if (_stepTimer == null)

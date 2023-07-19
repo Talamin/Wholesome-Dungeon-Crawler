@@ -40,6 +40,10 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             FirstLaunch = true;
         }
 
+        public override void Initialize() { }
+
+        public override void Dispose() { }
+
         public override void Run()
         {
             if (GetMoveAlongPath.Count <= 0)

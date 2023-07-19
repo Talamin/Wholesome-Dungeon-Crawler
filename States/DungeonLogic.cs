@@ -23,6 +23,7 @@ namespace WholesomeDungeonCrawler.States
             _profileManager = profilemanager;
             _cache = cache;
         }
+
         public override bool NeedToRun
         {
             get

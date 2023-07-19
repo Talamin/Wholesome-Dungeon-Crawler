@@ -18,6 +18,10 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             Name = _jumpToStepModel.Name;
         }
 
+        public override void Initialize() { }
+
+        public override void Dispose() { }
+
         public override void Run()
         {
             if (EvaluateCompleteCondition())

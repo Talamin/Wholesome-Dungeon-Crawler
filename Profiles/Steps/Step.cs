@@ -21,6 +21,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         }
 
         public abstract void Run();
+        public abstract void Initialize();
+        public abstract void Dispose();
 
         public bool EvaluateCompleteCondition()
         {

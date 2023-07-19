@@ -183,7 +183,10 @@ namespace WholesomeDungeonCrawler.Profiles
                 _partyChatManager.SetRegroupStep((RegroupStep)step);
             }
             Logger.Log($"Setting current step to {step.Name}");
+
+            _currentStep?.Dispose();
             _currentStep = step;
+            step.Initialize();
         }
 
         // A method to set the closest movealong step after a restart

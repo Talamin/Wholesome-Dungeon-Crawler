@@ -23,6 +23,10 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             Name = followUnitModel.Name;
         }
 
+        public override void Initialize() { }
+
+        public override void Dispose() { }
+
         public override void Run()
         {
             {

@@ -22,6 +22,10 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             Name = talkToUnitModel.Name;
         }
 
+        public override void Initialize() { }
+
+        public override void Dispose() { }
+
         public override void Run()
         {
             WoWUnit foundUnit = ObjectManager.GetObjectWoWUnit().FirstOrDefault(unit => unit.Entry == _talkToUnitModel.UnitId);

@@ -33,6 +33,11 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 _objectIds.Add(int.Parse(objectId));
             }
         }
+
+        public override void Initialize() { }
+
+        public override void Dispose() { }
+
         public override void Run()
         {
             // Keep checking while we cast
