@@ -44,7 +44,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             }
 
             IWoWUnit unitToAttack = _entityCache.EnemyUnitsList
-                .Where(unit => unit.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= _defendSpotRadius)
+                .Where(unit => unit.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition) <= _defendSpotRadius
+                    && unit.Reaction <= wManager.Wow.Enums.Reaction.Hostile)
+                .OrderBy(unit => unit.PositionWithoutType.DistanceTo(_defendSpotModel.DefendPosition))
                 .FirstOrDefault();
 
             if (unitToAttack != null)

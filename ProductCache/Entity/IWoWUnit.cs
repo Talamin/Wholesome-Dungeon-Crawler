@@ -34,5 +34,5 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         bool HasFoodBuff { get; }
         WoWUnit WowUnit { get; }
         WoWUnit Target { get; }
-    }
+}
 }

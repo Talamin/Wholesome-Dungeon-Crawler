@@ -24,7 +24,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         //private readonly float _myFightRange;
 
         public override string Name { get; }
-        public bool PositionInSafeSpotFightRange(Vector3 position) => position.DistanceTo(_safeSpotCenter) <= _safeSpotRadius/* + _myFightRange*/
+        public bool PositionInSafeSpotFightRange(Vector3 position) =>
+            position.DistanceTo(_safeSpotCenter) <= _safeSpotRadius
             && !TraceLine.TraceLineGo(_safeSpotCenter, position);
         public bool AnEnemyIsStandingStill => _pulledEnemiesDic.Count > 0 && _pulledEnemiesDic.Any(kvp => kvp.Value.ShouldBeAttacked);
         public Vector3 SafeSportCenter => _safeSpotCenter;
@@ -51,15 +52,29 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 Logger.LogError($"ERROR: The zone to clear position of your current step {Name} is null!");
             }
             /*
-            _myFightRange =                 
-                WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.RDPS 
-                || WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Heal
-                || _entityCache.IAmTank ?
-                pullToSafeSpotModel.DEFAULT_RANGED_FIGHT_RANGE
-                : pullToSafeSpotModel.DEFAULT_MELEE_FIGHT_RANGE;
-                */
+            if (!Radar3D.IsLaunched) Radar3D.Pulse();
+            Radar3D.OnDrawEvent += DrawEventPathManager;
+            */
         }
-
+        /*
+        private void DrawEventPathManager()
+        {
+            foreach (KeyValuePair<ulong, PulledEnemy> kvp in _pulledEnemiesDic)
+            {
+                PulledEnemy unit = kvp.Value;
+                if (unit.ShouldBeAttacked)
+                {
+                    Radar3D.DrawLine(_entityCache.Me.PositionWithoutType, unit.Unit.PositionWithoutType, Color.Red);
+                    Radar3D.DrawCircle(unit.Unit.PositionWithoutType, 0.6f, Color.Red, true, 150);
+                }
+                else
+                {
+                    Radar3D.DrawLine(_entityCache.Me.PositionWithoutType, unit.Unit.PositionWithoutType, Color.Blue);
+                    Radar3D.DrawCircle(unit.Unit.PositionWithoutType, 0.6f, Color.Blue, true, 150);
+                }
+            }
+        }
+        */
         public override void Run()
         {
             if (_entityCache.Me.IsDead)
@@ -74,7 +89,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 .Where(unit => unit.Position.Z <= _zoneToClearPosition.Z + _zoneToClearZLimit
                     && unit.Position.Z >= _zoneToClearPosition.Z - _zoneToClearZLimit
                     && unit.IsAttackable
-                    && !unit.InCombatFlagOnly)
+                    && unit.Target <= 0)
                 .Where(unit => unit.PositionWithoutType.DistanceTo(_zoneToClearPosition) <= _zoneToClearRadius)
                 .ToList();
 
@@ -253,7 +268,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             foreach (KeyValuePair<ulong, PulledEnemy> kvp in _pulledEnemiesDic)
             {
                 if (kvp.Value.ShouldBeAttacked)
+                {
                     standingStillEnemies.Add(kvp.Value.Unit);
+                }
             }
             return standingStillEnemies
                 .OrderBy(e => e.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType))
@@ -268,7 +285,11 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             private int _standingStillOccurrences;
             private int _maxSecsStandingStill = 3;
 
-            public bool ShouldBeAttacked => _standingStillOccurrences > _maxSecsStandingStill;
+            public bool ShouldBeAttacked =>
+                _standingStillOccurrences > _maxSecsStandingStill
+                && !Unit.IsDead
+                && Unit.WowUnit.IsAttackable
+                && !Unit.WowUnit.NotSelectable;
 
             public PulledEnemy(IWoWUnit unit)
             {
