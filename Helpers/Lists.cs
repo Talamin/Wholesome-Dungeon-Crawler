@@ -38,7 +38,7 @@ namespace WholesomeDungeonCrawler.Helpers
             new DungeonModel { Name="Dire Maul East", DungeonId=34, MapId=429, ContinentId=1, EntranceLoc=new Vector3(-3980.82, 772.9068, 161.0013, "None"), Start=new Vector3(44.4499, -154.822, -2.71364, "None")},
             new DungeonModel { Name="Scholomance", DungeonId= 2, MapId=289, ContinentId=0, EntranceLoc=new Vector3(1280.767, -2549.763, 86.29783, "None") },
             new DungeonModel { Name="Stratholme - Main Gate", DungeonId=40, MapId=329, ContinentId=0, EntranceLoc=new Vector3(3237.718, -4055.83, 108.4676, "None"), Start=new Vector3(3395.09, -3380.25, 142.702, "None") },
-            new DungeonModel { Name="Stratholme - Service EntranceLoc", DungeonId=274, MapId=329, ContinentId=0, EntranceLoc=new Vector3(3237.718, -4055.83, 108.4676, "None"), Start=new Vector3(3591.732, -3643.578, 138.4914, "None") },
+            new DungeonModel { Name="Stratholme - Service Entrance", DungeonId=274, MapId=329, ContinentId=0, EntranceLoc=new Vector3(3237.718, -4055.83, 108.4676, "None"), Start=new Vector3(3591.732, -3643.578, 138.4914, "None") },
             new DungeonModel { Name="Hellfire Ramparts", DungeonId=136, MapId=543, ContinentId=530, EntranceLoc=new Vector3(-364.8607, 3083.738, -14.67881, "None") },
             new DungeonModel { Name="The Blood Furnace", DungeonId=137, MapId=542, ContinentId=530, EntranceLoc=new Vector3(-306.7688, 3168.562, 29.87161, "None") },
             new DungeonModel { Name="The Slave Pens", DungeonId=140, MapId=547, ContinentId=530, EntranceLoc=new Vector3(741.4343, 7011.924, -73.0747, "None") },
