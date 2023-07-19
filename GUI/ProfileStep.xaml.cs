@@ -25,6 +25,7 @@ namespace WholesomeDungeonCrawler.GUI
         private StepModel selectedItem;
         private static Timer addVectorTimer;
         private static Vector3 selectedMAPNode;
+        private static StepModel _currentMAPModel;
         public StepModel SelectedItem
         {
             get { return selectedItem; }
@@ -57,9 +58,18 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 try
                 {
-                    this.Dispatcher.Invoke(() =>
+                    Dispatcher.Invoke(() =>
                     {
-                        if (this.IsVisible && (bool)chkRecordPath.IsChecked && (fpsCollection.Count == 0 || fpsCollection.LastOrDefault().DistanceTo(ObjectManager.Me.Position) > 8))
+                        if (_currentMAPModel != selectedItem)
+                        {
+                            _currentMAPModel = selectedItem;
+                            chkRecordPath.IsChecked = false;
+                            return;
+                        }
+
+                        if (IsVisible 
+                            && (bool)chkRecordPath.IsChecked 
+                            && (fpsCollection.Count == 0 || fpsCollection.LastOrDefault().DistanceTo(ObjectManager.Me.Position) > 8))
                         {
                             fpsCollection.Add(ObjectManager.Me.Position);
                             ((MoveAlongPathModel)SelectedItem).Path = fpsCollection.ToList();

@@ -233,142 +233,131 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
-                if (Conditions.InGameAndConnected && CurrentProfile != null && CurrentProfile.StepModels != null)
+                if (Conditions.InGameAndConnected && CurrentProfile != null
+                    && CurrentProfile.StepModels != null
+                    && psControl.SelectedItem != null)
                 {
-                    foreach (StepModel step in CurrentProfile.StepModels)
+                    byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(psControl.SelectedItem.Name));
+                    Color randomColor = Color.FromArgb(hash[0], hash[1], hash[2]);
+
+                    // Draw pull to safespot
+                    if (psControl.SelectedItem is PullToSafeSpotModel ptssModel)
                     {
-                        byte[] hash = md5.ComputeHash(Encoding.UTF8.GetBytes(step.Name));
-                        Color randomColor = Color.FromArgb(hash[0], hash[1], hash[2]);
-
-                        // Draw pull to safespot
-                        if (step is PullToSafeSpotModel)
+                        if (ptssModel.SafeSpotPosition != null)
                         {
-                            PullToSafeSpotModel model = (PullToSafeSpotModel)step;
-                            if (model != null && model.SafeSpotPosition != null)
+                            Radar3D.DrawCircle(ptssModel.SafeSpotPosition, ptssModel.SafeSpotRadius, Color.DarkBlue, true, 100);
+                        }
+                        if (ptssModel.ZoneToClearPosition != null)
+                        {
+                            Radar3D.DrawCircle(ptssModel.ZoneToClearPosition, 2f, Color.Red, true, 100);
+                            Radar3D.DrawCircle(ptssModel.ZoneToClearPosition, ptssModel.ZoneToClearRadius, Color.Red, false, 100);
+                        }
+                        if (ptssModel.SafeSpotPosition != null
+                            && ptssModel.ZoneToClearPosition != null)
+                        {
+                            Radar3D.DrawLine(ptssModel.SafeSpotPosition, ptssModel.ZoneToClearPosition, Color.MediumBlue, 100);
+                        }
+                        foreach (WoWUnit unit in ObjectManager.GetWoWUnitAttackables())
+                        {
+                            if (unit != null && unit.Position.DistanceTo(ptssModel.ZoneToClearPosition) <= ptssModel.ZoneToClearRadius)
                             {
-                                Radar3D.DrawCircle(model.SafeSpotPosition, model.SafeSpotRadius, Color.DarkBlue, true, 100);
-                                //Radar3D.DrawCircle(model.SafeSpotPosition, model.SafeSpotRadius + model.DEFAULT_MELEE_FIGHT_RANGE, Color.MediumBlue, false, 100);
-                                //Radar3D.DrawCircle(model.SafeSpotPosition, model.SafeSpotRadius + model.DEFAULT_RANGED_FIGHT_RANGE, Color.LightSteelBlue, false, 100);
-                            }
-                            if (model != null && model.ZoneToClearPosition != null)
-                            {
-                                Radar3D.DrawCircle(model.ZoneToClearPosition, 2f, Color.Red, true, 100);
-                                Radar3D.DrawCircle(model.ZoneToClearPosition, model.ZoneToClearRadius, Color.Red, false, 100);
-                            }
-                            if (model != null && model.SafeSpotPosition != null
-                                && model.ZoneToClearPosition != null)
-                            {
-                                Radar3D.DrawLine(model.SafeSpotPosition, model.ZoneToClearPosition, Color.MediumBlue, 100);
-                            }
-                            foreach (WoWUnit unit in ObjectManager.GetWoWUnitAttackables())
-                            {
-                                if (unit != null && unit.Position.DistanceTo(model.ZoneToClearPosition) <= model.ZoneToClearRadius)
-                                {
-                                    Radar3D.DrawCircle(unit.Position, 1f, Color.Red, true, 100);
-                                    Radar3D.DrawLine(model.ZoneToClearPosition, unit.Position, Color.Red, 100);
-                                }
+                                Radar3D.DrawCircle(unit.Position, 1f, Color.Red, true, 100);
+                                Radar3D.DrawLine(ptssModel.ZoneToClearPosition, unit.Position, Color.Red, 100);
                             }
                         }
+                    }
 
-                        // Draw talk to
-                        if (step is TalkToUnitModel)
+                    // Draw talk to
+                    if (psControl.SelectedItem is TalkToUnitModel ttModel)
+                    {
+                        if (ttModel.ExpectedPosition != null)
                         {
-                            TalkToUnitModel model = (TalkToUnitModel)step;
-                            if (model != null && model.ExpectedPosition != null)
-                            {
-                                Radar3D.DrawCircle(model.ExpectedPosition, 3f, randomColor, false, 200);
-                            }
+                            Radar3D.DrawCircle(ttModel.ExpectedPosition, 3f, randomColor, false, 200);
                         }
+                    }
 
-                        // Draw interact
-                        if (step is InteractWithModel)
+                    // Draw interact
+                    if (psControl.SelectedItem is InteractWithModel iwModel)
+                    {
+                        if (iwModel.ExpectedPosition != null)
                         {
-                            InteractWithModel model = (InteractWithModel)step;
-                            if (model != null && model.ExpectedPosition != null)
-                            {
-                                Radar3D.DrawCircle(model.ExpectedPosition, model.InteractDistance, randomColor, false, 200);
-                            }
+                            Radar3D.DrawCircle(iwModel.ExpectedPosition, iwModel.InteractDistance, randomColor, false, 200);
                         }
+                    }
 
-                        // Draw defend spot
-                        if (step is DefendSpotModel)
+                    // Draw defend spot
+                    if (psControl.SelectedItem is DefendSpotModel dsModel)
+                    {
+                        if (dsModel.DefendPosition != null)
                         {
-                            DefendSpotModel model = (DefendSpotModel)step;
-                            if (model != null && model.DefendPosition != null)
-                            {
-                                Radar3D.DrawCircle(model.DefendPosition, model.DefendSpotRadius, Color.MediumVioletRed, false, 200);
-                            }
+                            Radar3D.DrawCircle(dsModel.DefendPosition, dsModel.DefendSpotRadius, Color.MediumVioletRed, false, 200);
                         }
+                    }
 
-                        // Draw regroup spots
-                        if (step is RegroupModel)
+                    // Draw regroup spots
+                    if (psControl.SelectedItem is RegroupModel rModel)
+                    {
+                        if (rModel.RegroupSpot != null)
                         {
-                            RegroupModel model = (RegroupModel)step;
-                            if (model != null && model.RegroupSpot != null)
-                            {
-                                Radar3D.DrawCircle(model.RegroupSpot, 4f, Color.White, false, 200);
-                            }
+                            Radar3D.DrawCircle(rModel.RegroupSpot, 4f, Color.White, false, 200);
                         }
+                    }
 
-                        // Draw follow unit
-                        if (step is FollowUnitModel)
+                    // Draw follow unit
+                    if (psControl.SelectedItem is FollowUnitModel fuModel)
+                    {
+                        if (fuModel.ExpectedStartPosition != null)
                         {
-                            FollowUnitModel model = (FollowUnitModel)step;
-                            if (model != null)
-                            {
-                                if (model.ExpectedStartPosition != null)
-                                {
-                                    Radar3D.DrawCircle(model.ExpectedStartPosition, 2f, Color.LawnGreen, false, 200);
-                                }
-                                if (model.ExpectedEndPosition != null)
-                                {
-                                    Radar3D.DrawCircle(model.ExpectedEndPosition, 2f, Color.LawnGreen, false, 200);
-                                }
-                                if (model.ExpectedStartPosition != null
-                                    && model.ExpectedEndPosition != null)
-                                {
-                                    Radar3D.DrawLine(model.ExpectedStartPosition, model.ExpectedEndPosition, Color.LawnGreen, 50);
-                                }
-                                WoWUnit unitToEscort = ObjectManager.GetObjectWoWUnit().Find(unit => unit.Entry == model.UnitId);
-                                if (unitToEscort != null)
-                                {
-                                    Radar3D.DrawCircle(unitToEscort.Position, 3f, Color.LawnGreen, true, 200);
-                                }
-                            }
+                            Radar3D.DrawCircle(fuModel.ExpectedStartPosition, 2f, Color.LawnGreen, false, 200);
                         }
-
-                        // Draw moveAlong paths
-                        if (step is MoveAlongPathModel)
+                        if (fuModel.ExpectedEndPosition != null)
                         {
-                            var previousVector = new Vector3();
-                            foreach (Vector3 node in ((MoveAlongPathModel)step).Path)
+                            Radar3D.DrawCircle(fuModel.ExpectedEndPosition, 2f, Color.LawnGreen, false, 200);
+                        }
+                        if (fuModel.ExpectedStartPosition != null
+                            && fuModel.ExpectedEndPosition != null)
+                        {
+                            Radar3D.DrawLine(fuModel.ExpectedStartPosition, fuModel.ExpectedEndPosition, Color.LawnGreen, 50);
+                        }
+                        WoWUnit unitToEscort = ObjectManager.GetObjectWoWUnit().Find(unit => unit.Entry == fuModel.UnitId);
+                        if (unitToEscort != null)
+                        {
+                            Radar3D.DrawCircle(unitToEscort.Position, 3f, Color.LawnGreen, true, 200);
+                        }
+                    }
+
+                    // Draw moveAlong paths
+                    if (psControl.SelectedItem is MoveAlongPathModel mapModel)
+                    {
+                        var previousVector = new Vector3();
+                        foreach (Vector3 node in mapModel.Path)
+                        {
+                            if (previousVector == new Vector3())
                             {
-                                if (previousVector == new Vector3())
-                                {
-                                    previousVector = node;
-                                }
-                                Radar3D.DrawCircle(node, 1f, randomColor, true, 200);
-                                Radar3D.DrawLine(node, previousVector, randomColor, 200);
                                 previousVector = node;
                             }
+                            Radar3D.DrawCircle(node, 1f, randomColor, true, 200);
+                            Radar3D.DrawLine(node, previousVector, randomColor, 200);
+                            previousVector = node;
                         }
+                    }
 
-                        // Draw LOS checks
-                        if (step.CompleteCondition != null && step.CompleteCondition.ConditionType == CompleteConditionType.LOSCheck)
+                    // Draw LOS checks
+                    if (psControl.SelectedItem.CompleteCondition != null
+                        && psControl.SelectedItem.CompleteCondition.ConditionType == CompleteConditionType.LOSCheck)
+                    {
+                        if (psControl.SelectedItem.CompleteCondition.LOSPositionVectorFrom != null)
                         {
-                            if (step.CompleteCondition.LOSPositionVectorFrom != null)
-                            {
-                                Radar3D.DrawCircle(step.CompleteCondition.LOSPositionVectorFrom, 0.3f, Color.Magenta, true, 200);
-                            }
-                            if (step.CompleteCondition.LOSPositionVectorTo != null)
-                            {
-                                Radar3D.DrawCircle(step.CompleteCondition.LOSPositionVectorTo, 0.3f, Color.Magenta, true, 200);
-                            }
-                            if (step.CompleteCondition.LOSPositionVectorTo != null
-                                && step.CompleteCondition.LOSPositionVectorFrom != null)
-                            {
-                                Radar3D.DrawLine(step.CompleteCondition.LOSPositionVectorFrom, step.CompleteCondition.LOSPositionVectorTo, Color.Magenta, 200);
-                            }
+                            Radar3D.DrawCircle(psControl.SelectedItem.CompleteCondition.LOSPositionVectorFrom, 0.3f, Color.Magenta, true, 200);
+                        }
+                        if (psControl.SelectedItem.CompleteCondition.LOSPositionVectorTo != null)
+                        {
+                            Radar3D.DrawCircle(psControl.SelectedItem.CompleteCondition.LOSPositionVectorTo, 0.3f, Color.Magenta, true, 200);
+                        }
+                        if (psControl.SelectedItem.CompleteCondition.LOSPositionVectorTo != null
+                            && psControl.SelectedItem.CompleteCondition.LOSPositionVectorFrom != null)
+                        {
+                            Radar3D.DrawLine(psControl.SelectedItem.CompleteCondition.LOSPositionVectorFrom, psControl.SelectedItem.CompleteCondition.LOSPositionVectorTo, Color.Magenta, 200);
                         }
                     }
 
@@ -659,7 +648,9 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 this.Dispatcher.Invoke(() =>
                 {
-                    if (gbDeathRun.IsVisible && (bool)chkRecordDeathRunPath.IsChecked && (DeathrunCollection.Count == 0 || DeathrunCollection.LastOrDefault().DistanceTo(ObjectManager.Me.Position) > 8))
+                    if (gbDeathRun.IsVisible 
+                    && (bool)chkRecordDeathRunPath.IsChecked 
+                    && (DeathrunCollection.Count == 0 || DeathrunCollection.LastOrDefault().DistanceTo(ObjectManager.Me.Position) > 8))
                     {
                         DeathrunCollection.Add(ObjectManager.Me.Position);
                         CurrentProfile.DeathRunPath = DeathrunCollection.ToList();
