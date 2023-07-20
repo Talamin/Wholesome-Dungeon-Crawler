@@ -1,4 +1,5 @@
 ﻿using robotManager.Helpful;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -91,7 +92,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             var groupPets = new List<IWoWUnit>();
 
             var targetGuid = cachedTarget.Guid;
-            var playerPosition = cachedMe.PositionWithoutType;
+            var playerPosition = cachedMe.PositionWT;
 
             IWoWPlayer tankUnit = null;
 
@@ -187,7 +188,9 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         {
             lock (cacheLock)
             {
-                string pList = Lua.LuaDoString<string>(@"
+                try
+                {
+                    string pList = Lua.LuaDoString<string>(@"
                     plist='';
                     for i=1,4 do
                         local unitName = UnitName('party'..i);
@@ -199,50 +202,55 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                     return plist;
                 ");
 
-                if (string.IsNullOrEmpty(pList))
-                {
-                    ListPartyMemberNames.Clear();
-                    _listPartyMemberGuid.Clear();
-                    return;
-                }
-
-                List<string> namesAndGuid = pList.Remove(pList.Length - 1, 1).Split(',').ToList();
-                List<string> partyNames = new List<string>();
-                List<ulong> partyGuids = new List<ulong>();
-                foreach (string nameAndGuid in namesAndGuid)
-                {
-                    string[] splitNameAndGuid = nameAndGuid.Split('|');
-                    if (splitNameAndGuid.Length != 2)
+                    if (string.IsNullOrEmpty(pList))
                     {
-                        Logger.LogError($"ERROR: splitNameAndGuid's {nameAndGuid} length wasn't 2!");
-                        continue;
+                        ListPartyMemberNames.Clear();
+                        _listPartyMemberGuid.Clear();
+                        return;
                     }
 
-                    if (ulong.TryParse(splitNameAndGuid[1], out ulong guid))
+                    List<string> namesAndGuid = pList.Remove(pList.Length - 1, 1).Split(',').ToList();
+                    List<string> partyNames = new List<string>();
+                    List<ulong> partyGuids = new List<ulong>();
+                    foreach (string nameAndGuid in namesAndGuid)
                     {
-                        string memberName = splitNameAndGuid[0];
-                        if (memberName == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+                        string[] splitNameAndGuid = nameAndGuid.Split('|');
+                        if (splitNameAndGuid.Length != 2)
                         {
-                            _tankGuid = guid;
+                            Logger.LogError($"ERROR: splitNameAndGuid's {nameAndGuid} length wasn't 2!");
+                            continue;
                         }
-                        partyNames.Add(memberName);
-                        partyGuids.Add(guid);
+
+                        if (ulong.TryParse(splitNameAndGuid[1], out ulong guid))
+                        {
+                            string memberName = splitNameAndGuid[0];
+                            if (memberName == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
+                            {
+                                _tankGuid = guid;
+                            }
+                            partyNames.Add(memberName);
+                            partyGuids.Add(guid);
+                        }
+                        else
+                        {
+                            Logger.LogError($"ERROR: unit guid {splitNameAndGuid[1]} couldn't be parsed!");
+                            continue;
+                        }
                     }
-                    else
+
+                    if (!Enumerable.SequenceEqual(ListPartyMemberNames, partyNames)
+                        || !Enumerable.SequenceEqual(_listPartyMemberGuid, partyGuids))
                     {
-                        Logger.LogError($"ERROR: unit guid {splitNameAndGuid[1]} couldn't be parsed!");
-                        continue;
+                        Logger.Log($"Party: {string.Join(", ", partyNames)} with GUIDs {string.Join(", ", partyGuids)}");
                     }
-                }
 
-                if (!Enumerable.SequenceEqual(ListPartyMemberNames, partyNames)
-                    || !Enumerable.SequenceEqual(_listPartyMemberGuid, partyGuids))
+                    ListPartyMemberNames = partyNames;
+                    _listPartyMemberGuid = partyGuids;
+                }
+                catch (Exception e)
                 {
-                    Logger.Log($"Party: {string.Join(", ", partyNames)} with GUIDs {string.Join(", ", partyGuids)}");
+                    Logger.LogError($"CachePartyMembersInfo() => {e}");
                 }
-
-                ListPartyMemberNames = partyNames;
-                _listPartyMemberGuid = partyGuids;
             }
         }
 

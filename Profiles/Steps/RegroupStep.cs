@@ -80,7 +80,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
             // Move to regroup spot location
             if (!MovementManager.InMovement
-                && _entityCache.Me.PositionWithoutType.DistanceTo(RegroupSpot) > 5f)
+                && _entityCache.Me.PositionWT.DistanceTo(RegroupSpot) > 5f)
             {
                 Logger.LogOnce($"[{_regroupModel.Name}] Moving to regroup spot location");
                 GoToTask.ToPosition(RegroupSpot, 0.5f);
@@ -91,7 +91,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             // Move to the exact regroup spot
             if (!MovementManager.InMovement
                 && !MovementManager.InMoveTo
-                && _entityCache.Me.PositionWithoutType.DistanceTo(RegroupSpot) > 1f)
+                && _entityCache.Me.PositionWT.DistanceTo(RegroupSpot) > 1f)
             {
                 Logger.LogOnce($"[{_regroupModel.Name}] Moving precisely to regroup spot");
                 MovementManager.MoveTo(RegroupSpot);
@@ -109,8 +109,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
             // Check if everyone is here
             if (_entityCache.ListGroupMember.Length != _entityCache.ListPartyMemberNames.Count
-                || _entityCache.ListGroupMember.Any(member => member.PositionWithoutType.DistanceTo(RegroupSpot) > 8f)
-                || _entityCache.Me.PositionWithoutType.DistanceTo(RegroupSpot) > 8f)
+                || _entityCache.ListGroupMember.Any(member => member.PositionWT.DistanceTo(RegroupSpot) > 8f)
+                || _entityCache.Me.PositionWT.DistanceTo(RegroupSpot) > 8f)
             {
                 Logger.LogOnce($"Waiting for the team to regroup.");
                 IsCompleted = false;
@@ -161,7 +161,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     {
                         int delay = 1000;
                         int maxWaitMs = delay * 15;
-                        while (maxWaitMs > 0 && _entityCache.ListGroupMember.Any(m => m.PositionWithoutType.DistanceTo(RegroupSpot) < 5f))
+                        while (maxWaitMs > 0 && _entityCache.ListGroupMember.Any(m => m.PositionWT.DistanceTo(RegroupSpot) < 5f))
                         {
                             maxWaitMs -= delay;
                             await Task.Delay(delay);

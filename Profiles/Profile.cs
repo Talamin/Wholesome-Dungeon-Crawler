@@ -208,16 +208,16 @@ namespace WholesomeDungeonCrawler.Profiles
                     // get closest node from this path
                     MoveAlongPathStep moveAlongStep = (MoveAlongPathStep)_profileSteps[i];
                     Vector3 closestNodeFromThisPath = moveAlongStep.GetMoveAlongPath
-                        .OrderBy(node => node.DistanceTo(_entityCache.Me.PositionWithoutType))
+                        .OrderBy(node => node.DistanceTo(_entityCache.Me.PositionWT))
                         .First();
-                    stepDistances[i] = WTPathFinder.CalculatePathTotalDistance(_entityCache.Me.PositionWithoutType, closestNodeFromThisPath);
+                    stepDistances[i] = WTPathFinder.CalculatePathTotalDistance(_entityCache.Me.PositionWT, closestNodeFromThisPath);
                     Logger.LogDebug($"Closest spot from {moveAlongStep.Name} is {stepDistances[i]} yards away");
                 }
 
                 if (_profileSteps[i] is RegroupStep)
                 {
                     RegroupStep regroupStep = (RegroupStep)_profileSteps[i];
-                    stepDistances[i] = WTPathFinder.CalculatePathTotalDistance(_entityCache.Me.PositionWithoutType, regroupStep.RegroupSpot);
+                    stepDistances[i] = WTPathFinder.CalculatePathTotalDistance(_entityCache.Me.PositionWT, regroupStep.RegroupSpot);
                     Logger.LogDebug($"Closest spot from {regroupStep.Name} is {stepDistances[i]} yards away");
                 }
             }

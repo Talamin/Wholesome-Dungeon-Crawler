@@ -116,7 +116,7 @@ namespace WholesomeDungeonCrawler.States
                 if (_entityCache.ListGroupMember
                     .Any(resPlayer => _rezzClasses.Contains(resPlayer.WoWClass)
                         && !resPlayer.IsDead
-                        && _entityCache.Me.PositionWithoutType.DistanceTo(resPlayer.PositionWithoutType) < 50))
+                        && _entityCache.Me.PositionWT.DistanceTo(resPlayer.PositionWT) < 50))
                 {
                     if (_forceReleaseTimer == null)
                     {

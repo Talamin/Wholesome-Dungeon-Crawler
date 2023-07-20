@@ -83,7 +83,7 @@ namespace WholesomeDungeonCrawler.Managers
 
             if (myContinentDungeons.Count > 0)
             {
-                Vector3 myPos = _entityCache.Me.PositionWithoutType;
+                Vector3 myPos = _entityCache.Me.PositionWT;
                 float closestMatchDistance = float.MaxValue;
                 ProfileModel chosenModel = null;
 

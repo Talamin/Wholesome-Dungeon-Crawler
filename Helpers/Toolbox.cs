@@ -72,9 +72,9 @@ namespace WholesomeDungeonCrawler.Helpers
 
             foreach (IWoWUnit player in group)
             {
-                xvec = xvec + player.PositionWithoutType.X;
-                yvec = yvec + player.PositionWithoutType.Y;
-                zvec = zvec + player.PositionWithoutType.Z;
+                xvec = xvec + player.PositionWT.X;
+                yvec = yvec + player.PositionWT.Y;
+                zvec = zvec + player.PositionWT.Z;
 
                 counter++;
             }

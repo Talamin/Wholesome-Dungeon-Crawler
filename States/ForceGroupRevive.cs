@@ -75,15 +75,15 @@ namespace WholesomeDungeonCrawler.States
         {
 
             string spell = _rezzClasses[_entityCache.Me.WoWClass];
-            Vector3 myPos = _entityCache.Me.PositionWithoutType;
+            Vector3 myPos = _entityCache.Me.PositionWT;
             IWoWPlayer playerToResurrect = _entityCache.ListGroupMember
                 .Where(unit => unit.IsDead && !_playerRezTimer.ContainsKey(unit.Name))
-                .OrderBy(unit => unit.PositionWithoutType.DistanceTo(myPos))
+                .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
                 .FirstOrDefault();
 
             if (playerToResurrect != null)
             {
-                Vector3 playerPos = playerToResurrect.PositionWithoutType;
+                Vector3 playerPos = playerToResurrect.PositionWT;
 
                 if (playerPos.DistanceTo(myPos) > 25
                     || TraceLine.TraceLineGo(myPos, playerPos, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS))

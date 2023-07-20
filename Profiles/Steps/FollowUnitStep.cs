@@ -31,7 +31,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         {
             {
                 WoWUnit foundUnit = ObjectManager.GetObjectWoWUnit().FirstOrDefault(unit => unit.Entry == _followUnitModel.UnitId);
-                Vector3 myPosition = _entityCache.Me.PositionWithoutType;
+                Vector3 myPosition = _entityCache.Me.PositionWT;
 
                 if (foundUnit == null)
                 {
@@ -79,7 +79,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     }
 
                     if (!MovementManager.InMovement &&
-                        _entityCache.Me.PositionWithoutType.DistanceTo(targetPosition) > followDistance)
+                        _entityCache.Me.PositionWT.DistanceTo(targetPosition) > followDistance)
                     {
                         GoToTask.ToPosition(targetPosition);
                     }

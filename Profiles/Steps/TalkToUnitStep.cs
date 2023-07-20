@@ -29,7 +29,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public override void Run()
         {
             WoWUnit foundUnit = ObjectManager.GetObjectWoWUnit().FirstOrDefault(unit => unit.Entry == _talkToUnitModel.UnitId);
-            Vector3 myPosition = _entityCache.Me.PositionWithoutType;
+            Vector3 myPosition = _entityCache.Me.PositionWT;
 
             if (foundUnit == null)
             {

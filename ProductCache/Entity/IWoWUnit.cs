@@ -14,7 +14,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         bool IsValid { get; }
         bool IsDead { get; }
         bool IsLootable { get; }
-        Vector3 PositionWithoutType { get; }
+        Vector3 PositionWT { get; }
         double HealthPercent { get; }
         long Health { get; }
         long Mana { get; }

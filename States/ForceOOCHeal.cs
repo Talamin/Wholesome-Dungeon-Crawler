@@ -74,15 +74,15 @@ namespace WholesomeDungeonCrawler.States
             // Healer Logic
             if (_iAmHealer)
             {
-                Vector3 myPos = _entityCache.Me.PositionWithoutType;
+                Vector3 myPos = _entityCache.Me.PositionWT;
                 IWoWPlayer playerToHeal = _entityCache.ListGroupMember
                     .Where(unit => unit.IsValid && !unit.IsDead && unit.HealthPercent <= _healThreshold)
-                    .OrderBy(unit => unit.PositionWithoutType.DistanceTo(myPos))
+                    .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
                     .FirstOrDefault();
 
                 if (playerToHeal != null)
                 {
-                    Vector3 playerPos = playerToHeal.PositionWithoutType;
+                    Vector3 playerPos = playerToHeal.PositionWT;
 
                     if (playerPos.DistanceTo(myPos) > 25
                         || TraceLine.TraceLineGo(myPos, playerPos, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS))

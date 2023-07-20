@@ -32,7 +32,7 @@ namespace WholesomeDungeonCrawler.Managers
 
         public bool ShouldReposition =>
             _escapePath != null
-            && (PositionInDangerZone(_entityCache.Me.PositionWithoutType, _currentDangerZone) || !PositionInSafeZone(_entityCache.Me.PositionWithoutType, _currentforcedSafeZone));
+            && (PositionInDangerZone(_entityCache.Me.PositionWT, _currentDangerZone) || !PositionInSafeZone(_entityCache.Me.PositionWT, _currentforcedSafeZone));
         private ForcedSafeZone _currentforcedSafeZone;
         private DangerZone _currentDangerZone;
         public List<Vector3> GetEscapePath => _escapePath;
@@ -132,7 +132,7 @@ namespace WholesomeDungeonCrawler.Managers
         private void OnObjectManagerPulse()
         {
             Stopwatch watch = Stopwatch.StartNew();
-            Vector3 myPos = _entityCache.Me.PositionWithoutType;
+            Vector3 myPos = _entityCache.Me.PositionWT;
 
             List<WoWObject> objectList = ObjectManager.ObjectList.ToList();
 
@@ -165,7 +165,7 @@ namespace WholesomeDungeonCrawler.Managers
                     && wowObject.Type != WoWObjectType.Player
                     && wowObject.Type != WoWObjectType.Item)
                 {
-                    Logger.LogOnce($"WoWOBJECT: {wowObject.Name} -> {wowObject.Entry} - {wowObject.Position.DistanceTo(_entityCache.Me.PositionWithoutType)}", true);
+                    Logger.LogOnce($"WoWOBJECT: {wowObject.Name} -> {wowObject.Entry} - {wowObject.Position.DistanceTo(_entityCache.Me.PositionWT)}", true);
                 }
                 
                 if (_knowAOEsDic.TryGetValue(wowObject.Entry, out KnownAOE knownAOE))
@@ -246,7 +246,7 @@ namespace WholesomeDungeonCrawler.Managers
                                 continue;
                             }
 
-                            if (_entityCache.EnemyUnitsList.Any(enemy => enemy.TargetGuid <= 0 && gridPosition.DistanceTo(enemy.PositionWithoutType) < 30)) // don't go towards unpulled enemies)
+                            if (_entityCache.EnemyUnitsList.Any(enemy => enemy.TargetGuid <= 0 && gridPosition.DistanceTo(enemy.PositionWT) < 30)) // don't go towards unpulled enemies)
                             {
                                 nbSpotsTooCloseToEnemy++;
                                 continue;
@@ -279,7 +279,7 @@ namespace WholesomeDungeonCrawler.Managers
                     foreach (Vector3 spot in closestSpotsFromPreferred)
                     {
                         // Should always be in range of tank
-                        if (tank != null && (tank.PositionWithoutType.DistanceTo(spot) > 35))
+                        if (tank != null && (tank.PositionWT.DistanceTo(spot) > 35))
                         {
                             continue;
                         }
@@ -287,7 +287,7 @@ namespace WholesomeDungeonCrawler.Managers
                         Vector3 spotPosition = new Vector3(spot.X, spot.Y, PathFinder.GetZPosition(spot));
 
                         // Check LoS with tank
-                        if (tank != null && TraceLine.TraceLineGo(spotPosition + new Vector3(0, 0, 2), tank.PositionWithoutType + new Vector3(0, 0, 2)))
+                        if (tank != null && TraceLine.TraceLineGo(spotPosition + new Vector3(0, 0, 2), tank.PositionWT + new Vector3(0, 0, 2)))
                         {
                             continue;
                         }
@@ -346,7 +346,7 @@ namespace WholesomeDungeonCrawler.Managers
             }
 
             // We have reached a safe spot
-            if (_escapePath?.Last().DistanceTo(_entityCache.Me.PositionWithoutType) < 2)
+            if (_escapePath?.Last().DistanceTo(_entityCache.Me.PositionWT) < 2)
             {
                 Logger.LogOnce($"Safe spot reached. Canceled Move event (MovementPulse)");
                 _escapePath = null;
@@ -380,7 +380,7 @@ namespace WholesomeDungeonCrawler.Managers
             }
 
             // We have reached a safe spot
-            if (_escapePath?.Last().DistanceTo(_entityCache.Me.PositionWithoutType) < 2)
+            if (_escapePath?.Last().DistanceTo(_entityCache.Me.PositionWT) < 2)
             {
                 Logger.LogOnce($"Safe spot reached. Canceled Move event (MoveTo)");
                 _escapePath = null;

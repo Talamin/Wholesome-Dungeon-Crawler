@@ -37,10 +37,10 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 _unitToLoot = null;
-                Vector3 myPosition = _entityCache.Me.PositionWithoutType;
+                Vector3 myPosition = _entityCache.Me.PositionWT;
                 List<IWoWUnit> lootableCorpses = _entityCache.LootableUnits
-                    .Where(corpse => corpse?.PositionWithoutType.DistanceTo(myPosition) <= _lootRange)
-                    .OrderBy(corpse => corpse?.PositionWithoutType.DistanceTo(myPosition))
+                    .Where(corpse => corpse?.PositionWT.DistanceTo(myPosition) <= _lootRange)
+                    .OrderBy(corpse => corpse?.PositionWT.DistanceTo(myPosition))
                     .ToList();
                 foreach (IWoWUnit lootableCorpse in lootableCorpses)
                 {
@@ -58,8 +58,8 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            Vector3 myPos = _entityCache.Me.PositionWithoutType;
-            Vector3 corpsePos = _unitToLoot.PositionWithoutType;
+            Vector3 myPos = _entityCache.Me.PositionWT;
+            Vector3 corpsePos = _unitToLoot.PositionWT;
 
             // Purge cache
             if (_unitsLooted.Count > 100)

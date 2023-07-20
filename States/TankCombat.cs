@@ -41,17 +41,10 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 // Block state if pulling to safe spot
-                if (_profileManager.CurrentDungeonProfile?.CurrentStep != null
+                if (_profileManager.ProfileIsRunning
                     && _profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep)
                 {
                     return false;
-                    /*
-                    PullToSafeSpotStep pullToSafeSpotStep = _profileManager.CurrentDungeonProfile.CurrentStep as PullToSafeSpotStep;
-                    if (pullToSafeSpotStep != null && _entityCache.EnemiesAttackingGroup.Any(e => !pullToSafeSpotStep.PositionInSafeSpotFightRange(_entityCache.Me.PositionWithoutType)))
-                    {
-                        return false;
-                    }
-                    */
                 }
 
                 if (_entityCache.Target.IsDead)
@@ -68,10 +61,10 @@ namespace WholesomeDungeonCrawler.States
                 _foundtarget = null;
 
                 IWoWUnit attackingGroupMember = _entityCache.EnemiesAttackingGroup
-                    .Where(unit => _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
+                    .Where(unit => _entityCache.Me.PositionWT.DistanceTo(unit.PositionWT) <= 60
                         && unit.TargetGuid != _entityCache.Me.Guid
                         && !unit.Fleeing)
-                    .OrderBy(unit => unit.PositionWithoutType.DistanceTo(Toolbox.PointInMidOfGroup(_entityCache.ListGroupMember)))
+                    .OrderBy(unit => unit.PositionWT.DistanceTo(Toolbox.PointInMidOfGroup(_entityCache.ListGroupMember)))
                     .FirstOrDefault();
                 if (attackingGroupMember != null)
                 {
@@ -82,10 +75,10 @@ namespace WholesomeDungeonCrawler.States
 
                 // defend against enemy attacking me
                 IWoWUnit attackerMe = _entityCache.EnemiesAttackingGroup
-                    .Where(unit => _entityCache.Me.PositionWithoutType.DistanceTo(unit.PositionWithoutType) <= 60
+                    .Where(unit => _entityCache.Me.PositionWT.DistanceTo(unit.PositionWT) <= 60
                         && unit.TargetGuid == _entityCache.Me.Guid
                         && !unit.Fleeing)
-                    .OrderBy(unit => unit.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType))
+                    .OrderBy(unit => unit.PositionWT.DistanceTo(_entityCache.Me.PositionWT))
                     .FirstOrDefault();
                 if (attackerMe != null)
                 {

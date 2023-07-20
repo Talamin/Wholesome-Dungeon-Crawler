@@ -44,11 +44,11 @@ namespace WholesomeDungeonCrawler.States
                 _lootedUnits.RemoveAll(lu => lu.Timer.IsReady);
 
                 _unitToLoot = null;
-                Vector3 myPosition = _entitycache.Me.PositionWithoutType;
+                Vector3 myPosition = _entitycache.Me.PositionWT;
                 List<IWoWUnit> corpsesFromCache = new List<IWoWUnit>(_entitycache.LootableUnits);
                 List<IWoWUnit> lootableCorpses = _entitycache.LootableUnits
-                    .Where(corpse => corpse?.PositionWithoutType.DistanceTo(myPosition) <= _lootRange)
-                    .OrderBy(corpse => corpse?.PositionWithoutType.DistanceTo(myPosition))
+                    .Where(corpse => corpse?.PositionWT.DistanceTo(myPosition) <= _lootRange)
+                    .OrderBy(corpse => corpse?.PositionWT.DistanceTo(myPosition))
                     .ToList();
                 foreach (IWoWUnit lootableCorpse in lootableCorpses)
                 {
@@ -66,8 +66,8 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            Vector3 myPos = _entitycache.Me.PositionWithoutType;
-            Vector3 corpsePos = _unitToLoot.PositionWithoutType;
+            Vector3 myPos = _entitycache.Me.PositionWT;
+            Vector3 corpsePos = _unitToLoot.PositionWT;
 
             // Loot
             if (myPos.DistanceTo(corpsePos) <= 3.5)

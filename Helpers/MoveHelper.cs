@@ -88,7 +88,7 @@ namespace WholesomeDungeonCrawler.Helpers
                 result.RemoveAll(node => 
                     node != baseNode 
                     && entityCache.EnemyUnitsList
-                        .Any(unit => unit.PositionWithoutType.DistanceTo(node) < 20 && unit.PositionWithoutType.Z < node.Z + 3 && unit.PositionWithoutType.Z > node.Z - 3));
+                        .Any(unit => unit.PositionWT.DistanceTo(node) < 20 && unit.PositionWT.Z < node.Z + 3 && unit.PositionWT.Z > node.Z - 3));
             }
 
             return result;

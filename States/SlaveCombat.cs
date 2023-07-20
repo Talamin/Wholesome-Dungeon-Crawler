@@ -49,12 +49,10 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 // Block state if pulling to safe spot
-                PullToSafeSpotStep pullToSafeSpotStep = null;
-                if (_profileManager.CurrentDungeonProfile?.CurrentStep != null
+                if (_profileManager.ProfileIsRunning
                     && _profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep)
                 {
                     return false;
-                    //pullToSafeSpotStep = _profileManager.CurrentDungeonProfile.CurrentStep as PullToSafeSpotStep;
                 }
 
                 Target = null;
@@ -63,9 +61,8 @@ namespace WholesomeDungeonCrawler.States
                 if (_entityCache.TankUnit != null)
                 {
                     IWoWUnit attackingTank = _entityCache.EnemiesAttackingGroup
-                        .Where(unit => unit.TargetGuid == _entityCache.TankUnit.Guid
-                            && (pullToSafeSpotStep == null || pullToSafeSpotStep.PositionInSafeSpotFightRange(unit.PositionWithoutType)))
-                        .OrderBy(unit => unit.PositionWithoutType.DistanceTo(_entityCache.TankUnit.PositionWithoutType))
+                        .Where(unit => unit.TargetGuid == _entityCache.TankUnit.Guid)
+                        .OrderBy(unit => unit.PositionWT.DistanceTo(_entityCache.TankUnit.PositionWT))
                         .FirstOrDefault();
                     if (attackingTank != null)
                     {
@@ -77,8 +74,7 @@ namespace WholesomeDungeonCrawler.States
 
                 // Defend players when the tank is dead, out of OM, or has no target
                 IWoWUnit attackingGroup = _entityCache.EnemiesAttackingGroup
-                    .Where(unit => pullToSafeSpotStep == null || pullToSafeSpotStep.PositionInSafeSpotFightRange(unit.PositionWithoutType))
-                    .OrderBy(unit => unit.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType))
+                    .OrderBy(unit => unit.PositionWT.DistanceTo(_entityCache.Me.PositionWT))
                     .FirstOrDefault();
                 if (attackingGroup != null)
                 {

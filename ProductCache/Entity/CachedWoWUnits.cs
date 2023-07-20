@@ -15,7 +15,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public ulong TargetGuid { get; }
         public bool IsValid { get; }
         public bool IsDead { get; }
-        public Vector3 PositionWithoutType { get; }
+        public Vector3 PositionWT { get; }
         public double HealthPercent { get; }
         public long Health { get; }
         public long Mana { get; }
@@ -42,7 +42,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             Guid = unit.Guid;
             IsValid = unit.IsValid;
             IsDead = unit.IsDead;
-            PositionWithoutType = unit.PositionWithoutType;
+            PositionWT = unit.PositionWithoutType;
             HealthPercent = unit.HealthPercent;
             Health = unit.Health;
             Mana = unit.Mana;

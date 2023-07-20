@@ -65,24 +65,16 @@ namespace WholesomeDungeonCrawler.Managers
                 return;
             }
 
-            Vector3 myPos = _entityCache.Me.PositionWithoutType;
+            Vector3 myPos = _entityCache.Me.PositionWT;
 
             if (_entityCache.IAmTank)
             {
-                // Cancel fight if we need to run back to safe spot
+                // Don't override pull step combat
                 if (_profileManager.ProfileIsRunning
-                    && _profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep)
+                    && _profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep pullStep)
                 {
-                    PullToSafeSpotStep pullStep = _profileManager.CurrentDungeonProfile.CurrentStep as PullToSafeSpotStep;
-                    if (_entityCache.EnemiesAttackingGroup.Length > 0
-                        && !pullStep.AnEnemyIsStandingStill
-                        && !_entityCache.EnemiesAttackingGroup.Any(e => pullStep.PositionInSafeSpotFightRange(e.PositionWithoutType))
-                        && _entityCache.ListGroupMember.All(g => g.TargetGuid == 0 || !g.Target.IsAttackable))
-                    {
-                        Logger.LogOnce($"SafeSpot pull. Canceled fight");
-                        canceable.Cancel = true;
+                    if (!pullStep.PositionInSafeSpotFightRange(_entityCache.Me.PositionWT))
                         return;
-                   }
                 }
 
                 // Don't chase fleers
@@ -102,7 +94,7 @@ namespace WholesomeDungeonCrawler.Managers
                     // Check for escort NPCs being targeted
                     IWoWUnit unitTargetingEscort = _entityCache.EnemyUnitsList
                         .Where(unit => _entityCache.NpcsToDefend.Exists(npcToDefend => npcToDefend.Guid == unit.TargetGuid))
-                        .OrderBy(unit => unit.PositionWithoutType.DistanceTo(myPos))
+                        .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
                         .FirstOrDefault();
                     if (unitTargetingEscort != null && unitTargetingEscort.Guid != _entityCache.Target.Guid)
                     {
@@ -113,8 +105,8 @@ namespace WholesomeDungeonCrawler.Managers
                     // Check for untanked units
                     IWoWUnit untankedUnit = _entityCache.EnemiesAttackingGroup
                         .Where(unit => unit.TargetGuid != _entityCache.Me.Guid
-                            && unit.PositionWithoutType.DistanceTo(myPos) <= 60)
-                        .OrderBy(unit => unit.PositionWithoutType.DistanceTo(myPos))
+                            && unit.PositionWT.DistanceTo(myPos) <= 60)
+                        .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
                         .FirstOrDefault();
                     if (untankedUnit != null && untankedUnit.Guid != _entityCache.Target.Guid)
                     {
@@ -124,8 +116,8 @@ namespace WholesomeDungeonCrawler.Managers
 
                     // Everything is being tanked, switch tank target to lowest HP mob
                     IWoWUnit weakestEnemy = _entityCache.EnemiesAttackingGroup
-                        .Where(unit => unit.PositionWithoutType.DistanceTo(myPos) <= 60)
-                        .OrderBy(unit => unit.PositionWithoutType.DistanceTo(myPos))
+                        .Where(unit => unit.PositionWT.DistanceTo(myPos) <= 60)
+                        .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
                         .FirstOrDefault();
                     if (weakestEnemy != null
                         && weakestEnemy.Guid != _entityCache.Me.TargetGuid
@@ -141,8 +133,8 @@ namespace WholesomeDungeonCrawler.Managers
                     if (_entityCache.Target == null)
                     {
                         IWoWUnit closestEnemy = _entityCache.EnemiesAttackingGroup
-                            .Where(unit => unit.PositionWithoutType.DistanceTo(myPos) <= 60)
-                            .OrderBy(unit => unit.PositionWithoutType.DistanceTo(myPos))
+                            .Where(unit => unit.PositionWT.DistanceTo(myPos) <= 60)
+                            .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
                             .FirstOrDefault();
                         if (closestEnemy != null && closestEnemy.Guid != _entityCache.Me.TargetGuid)
                         {
@@ -222,7 +214,7 @@ namespace WholesomeDungeonCrawler.Managers
                 if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.RDPS)
                 {
                     IWoWUnit fleer = _entityCache.EnemyUnitsList
-                        .Where(unit => unit.Fleeing && unit.PositionWithoutType.DistanceTo(myPos) <= 60)
+                        .Where(unit => unit.Fleeing && unit.PositionWT.DistanceTo(myPos) <= 60)
                         .OrderBy(e => e.HealthPercent)
                         .FirstOrDefault();
                     if (fleer != null && fleer.Guid != _entityCache.Me.TargetGuid)
@@ -250,7 +242,7 @@ namespace WholesomeDungeonCrawler.Managers
 
                     // Assist any Groupmember if Tank is not here
                     IWoWUnit unitAttackingMember = filteredEnemies
-                        .Where(unit => unit.PositionWithoutType.DistanceTo(myPos) <= 60)
+                        .Where(unit => unit.PositionWT.DistanceTo(myPos) <= 60)
                         .OrderBy(unit => unit.HealthPercent)
                         .FirstOrDefault();
                     if (unitAttackingMember != null && unitAttackingMember.Guid != _entityCache.Me.TargetGuid)
@@ -266,11 +258,11 @@ namespace WholesomeDungeonCrawler.Managers
         {
             foreach (IWoWUnit unit in _highPrioUnits)
             {
-                Radar3D.DrawCircle(unit.PositionWithoutType, 1f, Color.Yellow, true, 30);
+                Radar3D.DrawCircle(unit.PositionWT, 1f, Color.Yellow, true, 30);
             }
             foreach (IWoWUnit unit in _lowPrioUnits)
             {
-                Radar3D.DrawCircle(unit.PositionWithoutType, 1f, Color.Red, true, 30);
+                Radar3D.DrawCircle(unit.PositionWT, 1f, Color.Red, true, 30);
             }
         }
     }

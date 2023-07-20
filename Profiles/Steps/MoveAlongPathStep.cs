@@ -63,7 +63,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             Vector3 lastPointOfPath = GetMoveAlongPath.Last();
 
             if ((MovementManager.CurrentMoveTo == null || MovementManager.CurrentMoveTo == lastPointOfPath)
-                && _entityCache.Me.PositionWithoutType.DistanceTo(lastPointOfPath) < 2f
+                && _entityCache.Me.PositionWT.DistanceTo(lastPointOfPath) < 2f
                 && EvaluateCompleteCondition())
             {
                 IsCompleted = true;
@@ -78,7 +78,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     List<Vector3> neighboringNodes = MoveHelper.GetSafeNodesAround(_entityCache, GetMoveAlongPath, _nextNode);
                     _pathManager.SetNeighboringNodes(neighboringNodes);
                     List<Vector3> orderedNeighbors = neighboringNodes
-                        .OrderBy(node => node.DistanceTo(_entityCache.Me.PositionWithoutType))
+                        .OrderBy(node => node.DistanceTo(_entityCache.Me.PositionWT))
                         .ToList();
                     Vector3 neighborNodeToReach;
 

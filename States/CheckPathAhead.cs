@@ -85,7 +85,7 @@ namespace WholesomeDungeonCrawler.States
                     MoveAlongPathStep moveAlongStep = (MoveAlongPathStep)_profileManager.CurrentDungeonProfile.CurrentStep;
                     List<Vector3> moveAlongPath = moveAlongStep.GetMoveAlongPath;
                     List<Vector3> currentMMPath = MovementManager.CurrentPath;
-                    Vector3 myPos = _entityCache.Me.PositionWithoutType;
+                    Vector3 myPos = _entityCache.Me.PositionWT;
 
                     // Check if we're on the profile path, if not, we could be in a recalculated path after a blockage
                     if (MovementManager.CurrentPath.Count > 2)
@@ -117,7 +117,7 @@ namespace WholesomeDungeonCrawler.States
                     int currentMaNodeIndex = moveAlongPath.IndexOf(currentMANode);
                     if (currentMaNodeIndex > 0)
                     {
-                        if (WTPathFinder.PointDistanceToLine(moveAlongPath[currentMaNodeIndex - 1], moveAlongPath[currentMaNodeIndex], _entityCache.Me.PositionWithoutType) > 3f)
+                        if (WTPathFinder.PointDistanceToLine(moveAlongPath[currentMaNodeIndex - 1], moveAlongPath[currentMaNodeIndex], _entityCache.Me.PositionWT) > 3f)
                         {
                             // Too far from move along path
                             return false;
@@ -133,8 +133,8 @@ namespace WholesomeDungeonCrawler.States
                         _linesAllPathsInfront = MoveHelper.GetFrontLinesOnPath(_profileManager.CurrentDungeonProfile.AllMoveAlongNodes, int.MaxValue);
                         foreach (IWoWPlayer player in _entityCache.ListGroupMember)
                         {
-                            if (MoveHelper.PositionIsAlongPath(player.PositionWithoutType, _linesAllPathsInfront)
-                                && myPos.DistanceTo(player.PositionWithoutType) >= 10)
+                            if (MoveHelper.PositionIsAlongPath(player.PositionWT, _linesAllPathsInfront)
+                                && myPos.DistanceTo(player.PositionWT) >= 10)
                             {
                                 Logger.LogOnce($"{player.Name} is ahead. Forcing path");
                                 return false;
@@ -145,9 +145,9 @@ namespace WholesomeDungeonCrawler.States
                     // FOLLOWER - Check for tank along the line in front
                     if (!_entityCache.IAmTank && _entityCache.TankUnit != null)
                     {
-                        Vector3 tankPos = _entityCache.TankUnit.PositionWithoutType;
+                        Vector3 tankPos = _entityCache.TankUnit.PositionWT;
 
-                        if (_entityCache.Me.PositionWithoutType.DistanceTo(tankPos) < 10
+                        if (_entityCache.Me.PositionWT.DistanceTo(tankPos) < 10
                             && moveAlongStep.GetMoveAlongPath.Last().DistanceTo(myPos) > 15)
                         {
                             // We're next to the tank. stop
@@ -229,9 +229,9 @@ namespace WholesomeDungeonCrawler.States
                     if ((unit.Reaction >= Reaction.Neutral && !Lists.NeutralsToAttackDuringPathCheck.Contains(unit.Entry))
                         || Lists.MobsToIgnoreDuringPathCheck.Contains(unit.Entry)
                         || unreachableMobsGuid.Contains(unit.Guid)
-                        || unit.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) > _detectionRadius // in radius?
-                        || pathToUnitLength + segmentStart.DistanceTo(unit.PositionWithoutType) > _detectionPathDistance // not too far?
-                        || WTPathFinder.PointDistanceToLine(segmentStart, segmentEnd, unit.PositionWithoutType) > 20)
+                        || unit.PositionWT.DistanceTo(_entityCache.Me.PositionWT) > _detectionRadius // in radius?
+                        || pathToUnitLength + segmentStart.DistanceTo(unit.PositionWT) > _detectionPathDistance // not too far?
+                        || WTPathFinder.PointDistanceToLine(segmentStart, segmentEnd, unit.PositionWT) > 20)
                     {
                         continue;
                     }
@@ -240,22 +240,22 @@ namespace WholesomeDungeonCrawler.States
                     TraceLineResult positiveUnitLoS = _losCache.Where(result =>
                             result.Unit.Guid == unit.Guid
                             && result.IsVisibleAndReachable
-                            && unit.PositionWithoutType.DistanceTo(result.End) < 3f // double check for patrols
+                            && unit.PositionWT.DistanceTo(result.End) < 3f // double check for patrols
                             && segmentLength + result.Distance < _detectionPathDistance)
                         .FirstOrDefault();
                     if (positiveUnitLoS != null)
                     {
-                        _dangerTraceline = (segmentStart, positiveUnitLoS.Unit.PositionWithoutType);
+                        _dangerTraceline = (segmentStart, positiveUnitLoS.Unit.PositionWT);
                         return (positiveUnitLoS.Unit, segmentLength + positiveUnitLoS.Distance);
                     }
 
                     // Check the cache for any result for this traceline, cache it if not existant
                     TraceLineResult losResult = _losCache
-                        .Where(tsResult => tsResult.Start.DistanceTo(segmentStart) < 3f && tsResult.End.DistanceTo(unit.PositionWithoutType) < 3f)
+                        .Where(tsResult => tsResult.Start.DistanceTo(segmentStart) < 3f && tsResult.End.DistanceTo(unit.PositionWT) < 3f)
                         .FirstOrDefault();
                     if (losResult == null)
                     {
-                        losResult = new TraceLineResult(segmentStart, unit.PositionWithoutType, unit);
+                        losResult = new TraceLineResult(segmentStart, unit.PositionWT, unit);
                         _losCache.Add(losResult);
 
                         if (losResult.PathLength <= 0 && !unreachableMobsGuid.Contains(unit.Guid))
@@ -274,7 +274,7 @@ namespace WholesomeDungeonCrawler.States
                         pathToUnitLength += losResult.PathLength;
                         if (pathToUnitLength < _detectionPathDistance)
                         {
-                            _dangerTraceline = (segmentStart, unit.PositionWithoutType);
+                            _dangerTraceline = (segmentStart, unit.PositionWT);
                             return (unit, pathToUnitLength);
                         }
                     }
@@ -316,13 +316,13 @@ namespace WholesomeDungeonCrawler.States
         }
 
         private bool MyTeamIsAround => _entityCache.ListGroupMember.Length == _entityCache.ListPartyMemberNames.Count
-                    && _entityCache.ListGroupMember.All(member => member.PositionWithoutType.DistanceTo(_entityCache.Me.PositionWithoutType) < 15);
+                    && _entityCache.ListGroupMember.All(member => member.PositionWT.DistanceTo(_entityCache.Me.PositionWT) < 15);
 
         private void DrawEventAOEPathAhead()
         {
             if (_unitOnPath.unit != null)
             {
-                Radar3D.DrawCircle(_unitOnPath.unit.PositionWithoutType, 0.4f, Color.Red, true, 200);
+                Radar3D.DrawCircle(_unitOnPath.unit.PositionWT, 0.4f, Color.Red, true, 200);
             }
 
             for (int i = 0; i < _linesToCheck.Count - 1; i++)
