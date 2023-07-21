@@ -170,6 +170,7 @@
     <Compile Include="States\Dead.cs" />
     <Compile Include="States\DeadDive.cs" />
     <Compile Include="States\AvoidAOE.cs" />
+    <Compile Include="States\AntiStuck.cs" />
     <Compile Include="States\ForceWaitCombatFlagsDisappear.cs" />
     <Compile Include="States\ForceOOCHeal.cs" />
     <Compile Include="States\LoadingScreenLock.cs" />

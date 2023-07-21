@@ -111,11 +111,11 @@ namespace WholesomeDungeonCrawler.Profiles
             int nbPTS = _profileSteps.Count(step => step is PullToSafeSpotStep);
             for (int i = _profileSteps.Count - 1; i >= 0; i--)
             {
-                if (_profileSteps[i] is PullToSafeSpotStep pullToSafeSpotStep 
+                if (_profileSteps[i] is PullToSafeSpotStep pullToSafeSpotStep
                     && i < _profileSteps.Count - 1
-                    && !(_profileSteps[i+1] is RegroupModel))
+                    && !(_profileSteps[i + 1] is RegroupModel))
                 {
-                    _profileSteps.Insert(i+1, new RegroupStep(new RegroupModel() { Name = $"PTS Regroup {nbPTS--} (auto)", RegroupSpot = pullToSafeSpotStep.SafeSportCenter }, entityCache, partyChatManager));
+                    _profileSteps.Insert(i + 1, new RegroupStep(new RegroupModel() { Name = $"PTS Regroup {nbPTS--} (auto)", RegroupSpot = pullToSafeSpotStep.SafeSportCenter }, entityCache, partyChatManager));
                 }
             }
 
@@ -143,7 +143,7 @@ namespace WholesomeDungeonCrawler.Profiles
             }
 
             // Clear all dungeon crawler offmesh connections
-            int removed =OffMeshConnections.MeshConnection.RemoveAll(con => con.Name.StartsWith("WDCOMS - "));
+            int removed = OffMeshConnections.MeshConnection.RemoveAll(con => con.Name.StartsWith("WDCOMS - "));
             if (removed > 0)
             {
                 Logger.Log($"Cleared {removed} crawler offmesh connections");
@@ -210,15 +210,31 @@ namespace WholesomeDungeonCrawler.Profiles
                     Vector3 closestNodeFromThisPath = moveAlongStep.GetMoveAlongPath
                         .OrderBy(node => node.DistanceTo(_entityCache.Me.PositionWT))
                         .First();
-                    stepDistances[i] = WTPathFinder.CalculatePathTotalDistance(_entityCache.Me.PositionWT, closestNodeFromThisPath);
-                    Logger.LogDebug($"Closest spot from {moveAlongStep.Name} is {stepDistances[i]} yards away");
+                    if (closestNodeFromThisPath.DistanceTo(_entityCache.Me.PositionWT) < 50)
+                    {
+                        stepDistances[i] = WTPathFinder.CalculatePathTotalDistance(_entityCache.Me.PositionWT, closestNodeFromThisPath);
+                        Logger.LogDebug($"Closest spot from {moveAlongStep.Name} is {stepDistances[i]} yards away");
+                    }
+                    else
+                    {
+                        stepDistances[i] = float.MaxValue;
+                        Logger.LogDebug($"Closest spot from {moveAlongStep.Name} is too far away");
+                    }
                 }
 
                 if (_profileSteps[i] is RegroupStep)
                 {
                     RegroupStep regroupStep = (RegroupStep)_profileSteps[i];
-                    stepDistances[i] = WTPathFinder.CalculatePathTotalDistance(_entityCache.Me.PositionWT, regroupStep.RegroupSpot);
-                    Logger.LogDebug($"Closest spot from {regroupStep.Name} is {stepDistances[i]} yards away");
+                    if (regroupStep.RegroupSpot.DistanceTo(_entityCache.Me.PositionWT) < 50)
+                    {
+                        stepDistances[i] = WTPathFinder.CalculatePathTotalDistance(_entityCache.Me.PositionWT, regroupStep.RegroupSpot);
+                        Logger.LogDebug($"Closest spot from {regroupStep.Name} is {stepDistances[i]} yards away");
+                    }
+                    else
+                    {
+                        stepDistances[i] = float.MaxValue;
+                        Logger.LogDebug($"Closest spot from {regroupStep.Name} is too far away");
+                    }
                 }
             }
 
