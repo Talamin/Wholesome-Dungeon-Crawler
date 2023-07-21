@@ -76,12 +76,14 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         private void OnFightHandler(WoWUnit currentTarget, CancelEventArgs canceable)
         {
+            Stopwatch stopwatch = Stopwatch.StartNew();
             if (_entityCache.EnemiesAttackingGroup.Length > 0
                 && !AnEnemyIsStandingStill
                 && !_entityCache.EnemiesAttackingGroup.Any(e => PositionInSafeSpotFightRange(e.PositionWT))
                 && _entityCache.ListGroupMember.All(g => g.TargetGuid <= 0 || !g.Target.IsAttackable))
             {
                 Logger.LogOnce($"SafeSpot pull. Canceled fight");
+                Logger.Log($"It took {stopwatch.ElapsedMilliseconds}ms to cancel the fight");
                 canceable.Cancel = true;
                 return;
             }
@@ -168,12 +170,11 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 // Go to safe spot
                 if (myPos.DistanceTo(_safeSpotCenter) > 3f && !MovementManager.InMovement)
                 {
+                    Stopwatch stopwatch = Stopwatch.StartNew();
                     Logger.Log($"Going to safe spot");
-                    /*
                     List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, _safeSpotCenter);
                     MovementManager.Go(WTPathFinder.PathFromClosestPoint(WTPathFinder.PathFromClosestPoint(pathToSafeSpot)));
-                    */
-                    GoToTask.ToPosition(_safeSpotCenter);
+                    Logger.Log($"It took {stopwatch.ElapsedMilliseconds}ms to calculate path to safe spot");
                     return;
                 }
 
