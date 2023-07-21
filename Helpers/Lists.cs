@@ -121,7 +121,7 @@ namespace WholesomeDungeonCrawler.Helpers
             { 26918, new SpecialPrio(26763, TargetPriority.High) }, // Chaotic Rift (Anomalus, Nexus)
             { 30176, new SpecialPrio(29309, TargetPriority.High) }, // Ahn'kahar Guardian (Elder Nadox, Old Kingdom)
             { 30385, new SpecialPrio(29310, TargetPriority.High) }, // Twilight Volunteer (Jedoga Shadowseer, Old Kingdom)
-            { 28619, new SpecialPrio(28684, TargetPriority.High) }, // Web Wrap (Krik'thir, Azjol Nerub)
+            { 28619, new SpecialPrio(0, TargetPriority.High) }, // Web Wrap (Krik'thir, Azjol Nerub)
             { 28734, new SpecialPrio(28684, TargetPriority.High) }, // Anubar Skirmisher (Krik'thir, Azjol Nerub)
             { 23965, new SpecialPrio(23953, TargetPriority.High) }, // Frost Tomb (Prince Kelesth, Utgard Keep)
             { 23775, new SpecialPrio(23682, TargetPriority.High) }, // Head of the Horseman (Haloween Event)

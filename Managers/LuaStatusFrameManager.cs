@@ -1,4 +1,6 @@
-﻿using robotManager.Helpful;
+﻿
+using robotManager.Helpful;
+using System;
 using System.Collections.Generic;
 using System.Timers;
 using WholesomeDungeonCrawler.ProductCache;
@@ -212,79 +214,95 @@ namespace WholesomeDungeonCrawler.Managers
 
         public void UpdateFrame()
         {
-            string allLua = "";
-
-            // Dungeon Name
-            string dungeonName = _profileManager.CurrentDungeonProfile != null ? _profileManager.CurrentDungeonProfile.FileName : "N/A";
-            if (dungeonName != _dungeonName)
+            try
             {
-                allLua += @$"
-                    wdcrawler.dungeontext:SetText(""{dungeonName}"")";
-                _dungeonName = dungeonName;
-            }
+                string allLua = "";
 
-            // Tank Name
-            string tankName = _entityCache.TankUnit != null ? _entityCache.TankUnit.Name : "N/A";
-            if (tankName != _tankName)
-            {
-                allLua += @$"
-                    wdcrawler.followingtext:SetText(""{tankName}"")";
-                _tankName = tankName;
-            }
-
-            // Status
-            string loggingStatus = Logging.Status;
-            if (_loggingStatus != loggingStatus)
-            {
-                allLua += @$"
-                    wdcrawler.statustext:SetText(""{loggingStatus}"")";
-                _loggingStatus = loggingStatus;
-            }
-
-            // State
-            string currentState = _cache.CurrentState;
-            if (currentState != _currentState)
-            {
-                allLua += @$"
-                    wdcrawler.statetext:SetText(""{_cache.CurrentState}"")";
-                _currentState = currentState;
-            }
-
-            int currentNumberOfSteps = 0;
-
-            if (_profileManager.CurrentDungeonProfile != null)
-            {
-                List<IStep> allSteps = _profileManager.CurrentDungeonProfile.GetAllSteps;
-                currentNumberOfSteps = allSteps.Count;
-                int stepsBasePosition = -140;
-                IStep currentStep = _profileManager.CurrentDungeonProfile.CurrentStep;
-
-                // Detect change in the step list
-                if (currentNumberOfSteps != _lastNumberOfSteps
-                    || _lastStepCompletion != currentStep.IsCompleted
-                    || _lastStepName != currentStep.Name)
+                // Dungeon Name
+                string dungeonName = _profileManager.CurrentDungeonProfile != null ? _profileManager.CurrentDungeonProfile.FileName : "N/A";
+                if (dungeonName != _dungeonName)
                 {
-                    // Delete all previous steps
-                    for (int i = 0; i < 100; i++)
-                    {
-                        allLua += $@"
-                            if wdcrawler.allstepsText{i} then
-                                wdcrawler.allstepsText{i}:SetText("""")
-                            end
-                            ";
-                    }
+                    allLua += @$"
+                    wdcrawler.dungeontext:SetText(""{dungeonName}"")";
+                    _dungeonName = dungeonName;
+                }
 
-                    for (int i = 0; i < currentNumberOfSteps; i++)
+                // Tank Name
+                string tankName = _entityCache.TankUnit != null ? _entityCache.TankUnit.Name : "N/A";
+                if (tankName != _tankName)
+                {
+                    allLua += @$"
+                    wdcrawler.followingtext:SetText(""{tankName}"")";
+                    _tankName = tankName;
+                }
+
+                // Status
+                string loggingStatus = Logging.Status;
+                if (_loggingStatus != loggingStatus)
+                {
+                    allLua += @$"
+                    wdcrawler.statustext:SetText(""{loggingStatus}"")";
+                    _loggingStatus = loggingStatus;
+                }
+
+                // State
+                string currentState = _cache.CurrentState;
+                if (currentState != _currentState)
+                {
+                    allLua += @$"
+                    wdcrawler.statetext:SetText(""{_cache.CurrentState}"")";
+                    _currentState = currentState;
+                }
+
+                int currentNumberOfSteps;
+
+                if (_profileManager.CurrentDungeonProfile != null
+                    && _profileManager.CurrentDungeonProfile.CurrentStep != null)
+                {
+                    List<IStep> allSteps = _profileManager.CurrentDungeonProfile.GetAllSteps;
+                    currentNumberOfSteps = allSteps.Count;
+                    int stepsBasePosition = -140;
+                    IStep currentStep = _profileManager.CurrentDungeonProfile.CurrentStep;
+
+                    // Detect change in the step list
+                    if (currentNumberOfSteps != _lastNumberOfSteps
+                        || _lastStepCompletion != currentStep.IsCompleted
+                        || _lastStepName != currentStep.Name)
                     {
-                        // step text color
-                        string color = "1, 1, 1, 1";
-                        if (allSteps[i].IsCompleted) color = "0.5, 0.5, 0.5";
-                        if (allSteps[i] == currentStep)
+                        // Delete all previous steps
+                        for (int i = 0; i < 100; i++)
                         {
-                            color = "0.5, 0.5, 1";
+                            allLua += $@"
+                                if wdcrawler.allstepsText{i} then
+                                    wdcrawler.allstepsText{i}:SetText("""")
+                                end
+                                ";
                         }
 
                         allLua += $@"
+                                wdcrawler.allsteps:SetText(""Steps ({allSteps.Count}):"")
+                            ";
+
+                        // Steps autoscroll
+                        int currentStepIndex = allSteps.IndexOf(currentStep);
+                        int size = 4;
+                        int indexStart = currentStepIndex - size;
+                        int startOffset = indexStart < 0 ? 0 - indexStart : 0;
+                        int range = System.Math.Min(size * 2 + 1, currentNumberOfSteps);
+                        List<IStep> stepsToDisplay = new List<IStep>(allSteps.GetRange(indexStart + startOffset, range));
+                        int stepsToDisplayLength = stepsToDisplay.Count;
+
+                        for (int i = 0; i < stepsToDisplayLength; i++)
+                        {
+                            // step text color
+                            string color = "1, 1, 1, 1";
+                            if (stepsToDisplay[i].IsCompleted) color = "0.5, 0.5, 0.5";
+                            if (stepsToDisplay[i] == currentStep)
+                            {
+                                color = "0.5, 0.5, 1";
+                            }
+
+                            allLua += $@"
                             if not wdcrawler.allstepsText{i} then
                                 wdcrawler.allstepsText{i} = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
                                 wdcrawler.allstepsText{i}:ClearAllPoints()
@@ -294,104 +312,108 @@ namespace WholesomeDungeonCrawler.Managers
                             if not wdcrawler.allstepsText{i}:IsVisible() then
                                 wdcrawler.allstepsText{i}:Show()                            
                             end
-                            wdcrawler.allstepsText{i}:SetText(""{allSteps[i].Name}"")
+                            wdcrawler.allstepsText{i}:SetText(""{allSteps.IndexOf(stepsToDisplay[i]) + 1}. {stepsToDisplay[i].Name}"")
                             wdcrawler.allstepsText{i}:SetTextColor({color})";
 
-                        stepsBasePosition -= 17;
-                    }
-                }
+                            stepsBasePosition -= 17;
+                        }
 
-                // Timer text
-                bool shouldShowTimer = false;
-                if (currentStep != null)
-                {
-                    // Defend spot timer
-                    if (currentStep is DefendSpotStep defendSpotStep)
+                        // Frame height
+                        allLua += @$"
+                            wdcrawler:SetHeight({_defaultFrameHeight + 17 * stepsToDisplayLength})";
+                    }
+
+                    // Timer text
+                    bool shouldShowTimer = false;
+                    if (currentStep != null)
                     {
-                        shouldShowTimer = true;
-                        double timeLeft = defendSpotStep.GetTimeLeft;
-                        if (timeLeft > 0)
+                        // Defend spot timer
+                        if (currentStep is DefendSpotStep defendSpotStep)
                         {
-                            allLua += $@"
+                            shouldShowTimer = true;
+                            double timeLeft = defendSpotStep.GetTimeLeft;
+                            if (timeLeft > 0)
+                            {
+                                allLua += $@"
                                     wdcrawlerTimer.defTimerText:SetText(""Defend spot timer : {ReadableTime(timeLeft)}"")
                                     wdcrawlerTimer.defTimerText:SetTextColor(0.9, 0.7, 0, 0.9)
                                     wdcrawlerTimer:Show();
                                 ";
-                        }
-                        else
-                        {
-                            allLua += $@"
+                            }
+                            else
+                            {
+                                allLua += $@"
                                     wdcrawlerTimer.defTimerText:SetText(""Defend spot timer : --:--"")
                                     wdcrawlerTimer.defTimerText:SetTextColor(0.4, 0.4, 0.4)
                                 ";
+                            }
                         }
-                    }
-                    // Condtion Timer
-                    if (currentStep.StepCompleteConditionModel.ConditionType == Helpers.CompleteConditionType.Timer)
-                    {
-                        shouldShowTimer = true;
-                        double condTimeLeft = currentStep.StepCompleteConditionModel.GetTimerTimeLeft;
-                        if (condTimeLeft > 0)
+                        // Condtion Timer
+                        if (currentStep.StepCompleteConditionModel != null
+                            && currentStep.StepCompleteConditionModel.ConditionType == Helpers.CompleteConditionType.Timer)
                         {
-                            allLua += $@"
+                            shouldShowTimer = true;
+                            double condTimeLeft = currentStep.StepCompleteConditionModel.GetTimerTimeLeft;
+                            if (condTimeLeft > 0)
+                            {
+                                allLua += $@"
                                 wdcrawlerTimer.condTimerText:SetText(""Condition timer : {ReadableTime(condTimeLeft)}"")
                                 wdcrawlerTimer.condTimerText:SetTextColor(0.9, 0.7, 0, 0.9)
                                 wdcrawlerTimer:Show();
                             ";
-                        }
-                        else
-                        {
-                            allLua += $@"
+                            }
+                            else
+                            {
+                                allLua += $@"
                                 wdcrawlerTimer.condTimerText:SetText(""Condition timer : --:--"")
                                 wdcrawlerTimer.condTimerText:SetTextColor(0.4, 0.4, 0.4)
                             ";
+                            }
                         }
                     }
+
+                    if (!shouldShowTimer)
+                    {
+                        allLua += $@"
+                            wdcrawlerTimer:Hide();
+                        ";
+
+                    }
+
+                    _lastStepName = currentStep == null ? "" : currentStep.Name;
+                    _lastStepCompletion = currentStep == null ? false : currentStep.IsCompleted;
+                    _lastNumberOfSteps = currentNumberOfSteps;
                 }
-                if (!shouldShowTimer)
+                else // CurrentDungeonProfile is null
                 {
                     allLua += $@"
                             wdcrawlerTimer:Hide();
                         ";
 
-                }
-
-                // Frame height
-                if (currentNumberOfSteps != _lastNumberOfSteps)
-                {
-                    allLua += @$"
-                    wdcrawler:SetHeight({_defaultFrameHeight + 17 * currentNumberOfSteps})";
-                }
-
-                _lastStepName = currentStep.Name;
-                _lastStepCompletion = currentStep.IsCompleted;
-                _lastNumberOfSteps = currentNumberOfSteps;
-            }
-            else // CurrentDungeonProfile is null
-            {
-                allLua += $@"
-                            wdcrawlerTimer:Hide();
-                        ";
-
-                if (_lastNumberOfSteps > 0)
-                {
-                    for (int i = 0; i < _lastNumberOfSteps; i++)
+                    if (_lastNumberOfSteps > 0)
                     {
-                        allLua += $@"
+                        for (int i = 0; i < _lastNumberOfSteps; i++)
+                        {
+                            allLua += $@"
                         if wdcrawler.allstepsText{i} and wdcrawler.allstepsText{i}:IsVisible() then
                             wdcrawler.allstepsText{i}:Hide()
                         end";
+                        }
                     }
                 }
-            }
 
-            if (!string.IsNullOrEmpty(allLua))
-            {
-                //Logging.Write(allLua);
-                Lua.LuaDoString($@"
+                if (!string.IsNullOrEmpty(allLua))
+                {
+                    //Logging.Write(allLua);
+                    Lua.LuaDoString($@"
                     if wdcrawler then
                         {allLua}
                     end");
+                }
+            }
+            catch (Exception ex)
+            {
+                Logging.WriteError(ex.ToString());
             }
         }
 
