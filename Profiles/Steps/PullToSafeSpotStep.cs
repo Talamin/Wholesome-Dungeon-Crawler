@@ -10,6 +10,7 @@ using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeToolbox;
 using wManager.Events;
 using wManager.Wow.Bot.Tasks;
+using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -82,7 +83,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             if (_entityCache.EnemiesAttackingGroup.Length > 0
                 && !AnEnemyIsStandingStill
                 && !_entityCache.EnemiesAttackingGroup.Any(e => PositionInSafeSpotFightRange(e.PositionWT))
-                && _entityCache.ListGroupMember.All(g => g.TargetGuid <= 0 || !g.Target.IsAttackable))
+                && _entityCache.ListGroupMember.All(g => g.TargetGuid <= 0 || g.Reaction > Reaction.Hostile))
             {
                 Logger.LogOnce($"FIGHT START SafeSpot pull. Canceled fight");
                 Logger.Log($"It took {stopwatch.ElapsedMilliseconds}ms to cancel the fight");
@@ -248,6 +249,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                                 if (myPos.DistanceTo(unit.Position) < 40
                                     && !TraceLine.TraceLineGo(myPos, unit.Position))
                                 {
+                                    MovementManager.StopMove();
                                     Logger.Log($"Taking aggro on {unitToPull.Name}");
                                     Fight.StartFight(unit.Guid);
                                     break;
