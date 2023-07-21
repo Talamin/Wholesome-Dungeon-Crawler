@@ -88,22 +88,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         private void OnObjectManagerPulse()
         {
-            Vector3 myPos = _entityCache.Me.PositionWT;
-            // Crazy pull
-            if (_entityCache.IAmTank
-                && _entityCache.EnemiesAttackingGroup.Length <= 0)
-            {
-                foreach (WoWUnit unit in _enemiesToPull)
-                {
-                    if (myPos.DistanceTo(unit.Position) < 27
-                        && !TraceLine.TraceLineGo(myPos, unit.Position))
-                    {
-                        Fight.StartFight(unit.Guid);
-                        break;
-                    }
-                }
-            }
-
             Stopwatch stopwatch = Stopwatch.StartNew();
             // Detect Standing still enemies
             if (_entityCache.EnemiesAttackingGroup.Length > 0)
@@ -143,6 +127,22 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             }
 
             Vector3 myPos = _entityCache.Me.PositionWT;
+
+            // Safety pull
+            if (_entityCache.IAmTank
+                && _entityCache.EnemiesAttackingGroup.Length <= 0)
+            {
+                foreach (WoWUnit unit in _enemiesToPull)
+                {
+                    if (myPos.DistanceTo(unit.Position) < 27
+                        && !TraceLine.TraceLineGo(myPos, unit.Position))
+                    {
+                        Logger.LogError($"CRAZY PULL");
+                        Fight.StartFight(unit.Guid);
+                        break;
+                    }
+                }
+            }
 
             // if an enemy is in the safe spot
             IWoWUnit enemyClosestFromSafeSpot = _entityCache.EnemyUnitsList
@@ -243,6 +243,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
                         if (teammatesAtSafeSpot)
                         {
+                            /*
                             // Stop to pull
                             if (unitToPull.Position.DistanceTo(myPos) < 50)
                             {
@@ -250,7 +251,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                                 Fight.StartFight(unitToPull.Guid);
                                 return;
                             }
-
+                            */
                             if (!MovementManager.InMovement)
                             {
                                 Logger.Log($"Pulling {unitToPull.Name} to safe spot");
