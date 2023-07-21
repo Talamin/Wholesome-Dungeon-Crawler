@@ -65,6 +65,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             Radar3D.OnDrawEvent += DrawEventPathManager;
             FightEvents.OnFightLoop += OnFightHandler;
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
+            FightEvents.OnFightStart += OnFightHandler;
         }
 
         public override void Dispose()
@@ -72,6 +73,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             Radar3D.OnDrawEvent -= DrawEventPathManager;
             ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
             FightEvents.OnFightLoop -= OnFightHandler;
+            FightEvents.OnFightStart -= OnFightHandler;
         }
 
         private void OnFightHandler(WoWUnit currentTarget, CancelEventArgs canceable)
@@ -82,7 +84,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 && !_entityCache.EnemiesAttackingGroup.Any(e => PositionInSafeSpotFightRange(e.PositionWT))
                 && _entityCache.ListGroupMember.All(g => g.TargetGuid <= 0 || !g.Target.IsAttackable))
             {
-                Logger.LogOnce($"SafeSpot pull. Canceled fight");
+                Logger.LogOnce($"FIGHT START SafeSpot pull. Canceled fight");
                 Logger.Log($"It took {stopwatch.ElapsedMilliseconds}ms to cancel the fight");
                 canceable.Cancel = true;
                 return;
@@ -173,7 +175,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     Stopwatch stopwatch = Stopwatch.StartNew();
                     Logger.Log($"Going to safe spot");
                     List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, _safeSpotCenter);
-                    MovementManager.Go(WTPathFinder.PathFromClosestPoint(WTPathFinder.PathFromClosestPoint(pathToSafeSpot)));
+                    MovementManager.Go(pathToSafeSpot);
                     Logger.Log($"It took {stopwatch.ElapsedMilliseconds}ms to calculate path to safe spot");
                     return;
                 }
