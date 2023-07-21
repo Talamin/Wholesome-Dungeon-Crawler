@@ -88,6 +88,22 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         private void OnObjectManagerPulse()
         {
+            Vector3 myPos = _entityCache.Me.PositionWT;
+            // Crazy pull
+            if (_entityCache.IAmTank
+                && _entityCache.EnemiesAttackingGroup.Length <= 0)
+            {
+                foreach (IWoWUnit unit in _enemiesToPull)
+                {
+                    if (myPos.DistanceTo(unit.PositionWT) < 27
+                        && !TraceLine.TraceLineGo(myPos, unit.PositionWT))
+                    {
+                        Fight.StartFight(unit.Guid);
+                        break;
+                    }
+                }
+            }
+
             Stopwatch stopwatch = Stopwatch.StartNew();
             // Detect Standing still enemies
             if (_entityCache.EnemiesAttackingGroup.Length > 0)
