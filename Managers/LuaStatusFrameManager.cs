@@ -286,9 +286,10 @@ namespace WholesomeDungeonCrawler.Managers
                         // Steps autoscroll
                         int currentStepIndex = allSteps.IndexOf(currentStep);
                         int size = 4;
-                        int indexStart = currentStepIndex - size;
-                        int startOffset = indexStart < 0 ? 0 - indexStart : 0;
+                        int indexStart = System.Math.Max(currentStepIndex - size, 0);
+                        int startOffset = indexStart <= 0 ? 0 - indexStart : 0;
                         int range = System.Math.Min(size * 2 + 1, currentNumberOfSteps - indexStart);
+                        //Logging.WriteError($"currentNumberOfSteps {currentNumberOfSteps}, indexStart {indexStart}, startOffset {startOffset}, range {range}");
                         List<IStep> stepsToDisplay = new List<IStep>(allSteps.GetRange(indexStart + startOffset, range));
                         int stepsToDisplayLength = stepsToDisplay.Count;
 
