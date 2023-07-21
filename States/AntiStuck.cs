@@ -34,7 +34,7 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
+                if (!Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause
                     || !_cache.IsInInstance
                     || !_entityCache.Me.IsValid
                     || Fight.InFight

@@ -50,8 +50,22 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (Lua.LuaDoString<bool>($"return StaticPopup{i}Text:IsVisible();"))
                 {
-                    string resText = Lua.LuaDoString<string>($"return StaticPopup{i}Text:GetText();");
-                    if (resText != null && resText.Contains("wants to resurrect you"))
+                    for (int j = 1; j <= 2; j++)
+                    {
+                        string buttonText = Lua.LuaDoString<string>($"return StaticPopup{i}Button{j}:GetText();");
+                        if (buttonText != null
+                            && buttonText.Contains("Use Soulstone")
+                            && Lua.LuaDoString<bool>($"return StaticPopup{i}Button{j}:IsVisible();"))
+                        {
+                            Logger.LogOnce("Using soulstone");
+                            Lua.LuaDoString($"StaticPopup{i}Button{j}:Click();");
+                            _forceReleaseTimer = null;
+                            return;
+                        }
+                    }
+
+                    string frameText = Lua.LuaDoString<string>($"return StaticPopup{i}Text:GetText();");
+                    if (frameText != null && frameText.Contains("wants to resurrect you"))
                     {
                         Logger.LogOnce("Accepting party resurrection");
                         Lua.LuaDoString($"StaticPopup{i}Button1:Click();");
@@ -59,16 +73,6 @@ namespace WholesomeDungeonCrawler.States
                         return;
                     }
                 }
-            }
-
-            if (_entityCache.Me.Auras.ContainsKey(20762)) // Soulstone
-            {
-                Logger.LogOnce("Accepting soulstone resurrection");
-                for (int i = 1; i <= 3; i++)
-                {
-                    Lua.LuaDoString($"StaticPopup{i}Button1:Click();");
-                }
-                return;
             }
 
             if (_entityCache.Me.Auras.ContainsKey(8326)) // Ghost
