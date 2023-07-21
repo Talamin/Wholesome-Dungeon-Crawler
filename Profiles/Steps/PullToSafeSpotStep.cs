@@ -1,7 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
@@ -9,7 +8,6 @@ using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeToolbox;
 using wManager.Events;
-using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
@@ -79,14 +77,13 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         private void OnFightHandler(WoWUnit currentTarget, CancelEventArgs canceable)
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
             if (_entityCache.EnemiesAttackingGroup.Length > 0
                 && !AnEnemyIsStandingStill
                 && !_entityCache.EnemiesAttackingGroup.Any(e => PositionInSafeSpotFightRange(e.PositionWT))
                 && _entityCache.ListGroupMember.All(g => g.TargetGuid <= 0 || g.Reaction > Reaction.Hostile))
             {
-                Logger.LogOnce($"FIGHT START SafeSpot pull. Canceled fight");
-                Logger.Log($"It took {stopwatch.ElapsedMilliseconds}ms to cancel the fight");
+                // This doesn't detach 
+                Logger.LogError($"PTS Handler");
                 canceable.Cancel = true;
                 return;
             }
@@ -94,7 +91,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         private void OnObjectManagerPulse()
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
             // Detect Standing still enemies
             if (_entityCache.EnemiesAttackingGroup.Length > 0)
             {
@@ -173,11 +169,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 // Go to safe spot
                 if (myPos.DistanceTo(_safeSpotCenter) > 3f && !MovementManager.InMovement)
                 {
-                    Stopwatch stopwatch = Stopwatch.StartNew();
                     Logger.Log($"Going to safe spot");
                     List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, _safeSpotCenter);
                     MovementManager.Go(pathToSafeSpot);
-                    Logger.Log($"It took {stopwatch.ElapsedMilliseconds}ms to calculate path to safe spot");
                     return;
                 }
 
@@ -252,7 +246,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                                     MovementManager.StopMove();
                                     Logger.Log($"Taking aggro on {unitToPull.Name}");
                                     Fight.StartFight(unit.Guid);
-                                    break;
+                                    return;
                                 }
                             }
 

@@ -531,6 +531,8 @@ namespace WholesomeDungeonCrawler.Managers
             new KnownAOE(23997, 8f, _everyone),
             // Cloud of Disease (Scholomance)
             new KnownAOE(17742, 8f, _everyone),
+            // Impale - Anub Arak (Azjol Nerub)
+            new KnownAOE(29184, 5f, _everyone),
         };
         /*
         private readonly Dictionary<int, float> _knowAOEs = new Dictionary<int, float> // { Entry, Radius }
