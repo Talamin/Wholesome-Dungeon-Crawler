@@ -78,7 +78,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             if (_entityCache.EnemiesAttackingGroup.Length > 0
                 && !AnEnemyIsStandingStill
                 && !_entityCache.EnemiesAttackingGroup.Any(e => PositionInSafeSpotFightRange(e.PositionWT))
-                && _entityCache.ListGroupMember.All(g => g.TargetGuid == 0 || !g.Target.IsAttackable))
+                && _entityCache.ListGroupMember.All(g => g.TargetGuid <= 0 || !g.Target.IsAttackable))
             {
                 Logger.LogOnce($"SafeSpot pull. Canceled fight");
                 canceable.Cancel = true;
@@ -230,7 +230,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                             // Stop to pull
                             if (unitToPull.Position.DistanceTo(myPos) < 50)
                             {
-                                Logger.Log($"Attacking {unitToPull.Name}");
+                                Logger.Log($"Taking aggro on {unitToPull.Name}");
                                 Fight.StartFight(unitToPull.Guid);
                                 return;
                             }
@@ -254,6 +254,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             {
                 if (_entityCache.EnemiesAttackingGroup.Length <= 0)
                 {
+                    Interact.ClearTarget();
                     // Go to safe spot
                     if (myPos.DistanceTo(_safeSpotCenter) > 3f && !MovementManager.InMovement)
                     {
