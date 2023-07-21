@@ -288,7 +288,7 @@ namespace WholesomeDungeonCrawler.Managers
                         int size = 4;
                         int indexStart = currentStepIndex - size;
                         int startOffset = indexStart < 0 ? 0 - indexStart : 0;
-                        int range = System.Math.Min(size * 2 + 1, currentNumberOfSteps);
+                        int range = System.Math.Min(size * 2 + 1, currentNumberOfSteps - indexStart);
                         List<IStep> stepsToDisplay = new List<IStep>(allSteps.GetRange(indexStart + startOffset, range));
                         int stepsToDisplayLength = stepsToDisplay.Count;
 
