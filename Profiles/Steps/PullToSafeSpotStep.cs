@@ -83,7 +83,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 && _entityCache.ListGroupMember.All(g => g.TargetGuid <= 0 || g.Reaction > Reaction.Hostile))
             {
                 // This doesn't detach 
-                Logger.LogError($"PTS Handler");
+                //Logger.LogError($"PTS Handler");
                 canceable.Cancel = true;
                 return;
             }
