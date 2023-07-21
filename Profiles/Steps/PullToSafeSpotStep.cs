@@ -128,22 +128,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
             Vector3 myPos = _entityCache.Me.PositionWT;
 
-            // Safety pull
-            if (_entityCache.IAmTank
-                && _entityCache.EnemiesAttackingGroup.Length <= 0)
-            {
-                foreach (WoWUnit unit in _enemiesToPull)
-                {
-                    if (myPos.DistanceTo(unit.Position) < 27
-                        && !TraceLine.TraceLineGo(myPos, unit.Position))
-                    {
-                        Logger.LogError($"CRAZY PULL");
-                        Fight.StartFight(unit.Guid);
-                        break;
-                    }
-                }
-            }
-
             // if an enemy is in the safe spot
             IWoWUnit enemyClosestFromSafeSpot = _entityCache.EnemyUnitsList
                 .OrderBy(e => e.PositionWT.DistanceTo(_safeSpotCenter))
@@ -252,6 +236,17 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                                 return;
                             }
                             */
+                            foreach (WoWUnit unit in _enemiesToPull)
+                            {
+                                if (myPos.DistanceTo(unit.Position) < 40
+                                    && !TraceLine.TraceLineGo(myPos, unit.Position))
+                                {
+                                    Logger.Log($"Taking aggro on {unitToPull.Name}");
+                                    Fight.StartFight(unit.Guid);
+                                    break;
+                                }
+                            }
+
                             if (!MovementManager.InMovement)
                             {
                                 Logger.Log($"Pulling {unitToPull.Name} to safe spot");
