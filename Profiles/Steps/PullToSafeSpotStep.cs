@@ -108,7 +108,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             // Detect Standing still enemies
             if (_entityCache.EnemiesAttackingGroup.Length > 0)
             {
-                foreach (IWoWUnit unit in _entityCache.EnemiesAttackingGroup)
+                foreach (WoWUnit unit in _entityCache.EnemiesAttackingGroup)
                 {
                     if (_pulledEnemiesDic.TryGetValue(unit.Guid, out PulledEnemy enemyPulled))
                     {
