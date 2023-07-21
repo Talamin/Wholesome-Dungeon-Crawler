@@ -259,7 +259,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                             if (!MovementManager.InMovement)
                             {
                                 Logger.Log($"Pulling {unitToPull.Name} to safe spot");
-                                MovementManager.Go(WTPathFinder.PathFromClosestPoint(closestEntry.Value));
+                                List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, _safeSpotCenter);
+                                MovementManager.Go(pathToSafeSpot);
+                                //MovementManager.Go(WTPathFinder.PathFromClosestPoint(closestEntry.Value));
                                 return;
                             }
                         }
