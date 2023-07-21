@@ -9,6 +9,7 @@ using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeToolbox;
 using wManager.Events;
+using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -168,8 +169,11 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 if (myPos.DistanceTo(_safeSpotCenter) > 3f && !MovementManager.InMovement)
                 {
                     Logger.Log($"Going to safe spot");
+                    /*
                     List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, _safeSpotCenter);
                     MovementManager.Go(WTPathFinder.PathFromClosestPoint(WTPathFinder.PathFromClosestPoint(pathToSafeSpot)));
+                    */
+                    GoToTask.ToPosition(_safeSpotCenter);
                     return;
                 }
 
