@@ -31,6 +31,7 @@ namespace WholesomeDungeonCrawler.States
                 if (!Conditions.InGameAndConnected
                     || !wManagerSetting.CurrentSetting.LootMobs
                     || !_entitycache.Me.IsValid
+                    || _entitycache.Me.InCombatFlagOnly
                     || Fight.InFight)
                 {
                     return false;

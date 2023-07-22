@@ -47,7 +47,10 @@ namespace WholesomeDungeonCrawler.GUI
 
         public ProfileModel CurrentProfile
         {
-            get { return _currentProfile; }
+            get 
+            { 
+                return _currentProfile;
+            }
             set
             {
                 _currentProfile = value;
@@ -121,6 +124,28 @@ namespace WholesomeDungeonCrawler.GUI
             cbFaction.SelectedItem = CurrentProfile.Faction;
 
             cbDungeon.SelectedValue = CurrentProfile.DungeonName;
+
+            md5 = MD5.Create();
+            EnableRadar();
+        }
+
+        private void EnableRadar()
+        {
+            if (!_radarRunning)
+            {
+                Radar3D.Pulse();
+                Radar3D.OnDrawEvent += new Radar3D.OnDrawHandler(Monitor);
+                Radar3D.OnDrawEvent += new Radar3D.OnDrawHandler(psControl.Monitor);
+                _radarRunning = true;
+            }
+        }
+
+        private void DisableRadar()
+        {
+            Radar3D.OnDrawEvent -= new Radar3D.OnDrawHandler(Monitor);
+            Radar3D.OnDrawEvent -= new Radar3D.OnDrawHandler(psControl.Monitor);
+            Radar3D.Stop();
+            _radarRunning = false;
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)
@@ -185,11 +210,10 @@ namespace WholesomeDungeonCrawler.GUI
             {
                 if (dgProfileSteps.SelectedItem != null)
                 {
-                    //psControl = new ProfileStep();
-                    //Debugger.Launch();
                     if (((StepModel)dgProfileSteps.SelectedItem).CompleteCondition == null)
                         ((StepModel)dgProfileSteps.SelectedItem).CompleteCondition = new StepCompleteConditionModel();
                     psControl.SelectedItem = (StepModel)dgProfileSteps.SelectedItem;
+                    psControl.chkRecordPath.IsChecked = false;
 
                     if (psControl.SelectedItem is MoveAlongPathModel)
                     {
@@ -214,18 +238,11 @@ namespace WholesomeDungeonCrawler.GUI
 
             if (!_radarRunning)
             {
-                md5 = MD5.Create();
-                Radar3D.Pulse();
-                Radar3D.OnDrawEvent += new Radar3D.OnDrawHandler(Monitor);
-                Radar3D.OnDrawEvent += new Radar3D.OnDrawHandler(psControl.Monitor);
-                _radarRunning = true;
+                EnableRadar();
             }
             else
             {
-                Radar3D.OnDrawEvent -= new Radar3D.OnDrawHandler(Monitor);
-                Radar3D.OnDrawEvent -= new Radar3D.OnDrawHandler(psControl.Monitor);
-                Radar3D.Stop();
-                _radarRunning = false;
+                DisableRadar();
             }
         }
 
@@ -727,10 +744,7 @@ namespace WholesomeDungeonCrawler.GUI
             var result = await this.ShowMessageAsync("", "Are you sure you want to close?", MessageDialogStyle.AffirmativeAndNegative, _basicDialogSettings);
             this.closeMe = result == MessageDialogResult.Affirmative;
 
-            Radar3D.OnDrawEvent -= new Radar3D.OnDrawHandler(Monitor);
-            Radar3D.OnDrawEvent -= new Radar3D.OnDrawHandler(psControl.Monitor);
-            Radar3D.Stop();
-            _radarRunning = false;
+            DisableRadar();
 
             if (this.closeMe)
             {

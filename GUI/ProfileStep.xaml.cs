@@ -25,10 +25,13 @@ namespace WholesomeDungeonCrawler.GUI
         private StepModel selectedItem;
         private static Timer addVectorTimer;
         private static Vector3 selectedMAPNode;
-        private static StepModel _currentMAPModel;
+
         public StepModel SelectedItem
         {
-            get { return selectedItem; }
+            get
+            {
+                return selectedItem;
+            }
             set
             {
                 selectedItem = value;
@@ -50,6 +53,7 @@ namespace WholesomeDungeonCrawler.GUI
             addVectorTimer.AutoReset = true;
             addVectorTimer.Enabled = true;
             cbConditionType.ItemsSource = Enum.GetValues(typeof(CompleteConditionType));
+            chkRecordPath.IsChecked = false;
         }
 
         private void AddVectorTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -60,15 +64,8 @@ namespace WholesomeDungeonCrawler.GUI
                 {
                     Dispatcher.Invoke(() =>
                     {
-                        if (_currentMAPModel != selectedItem)
-                        {
-                            _currentMAPModel = selectedItem;
-                            chkRecordPath.IsChecked = false;
-                            return;
-                        }
-
-                        if (IsVisible 
-                            && (bool)chkRecordPath.IsChecked 
+                        if (IsVisible
+                            && (bool)chkRecordPath.IsChecked
                             && (fpsCollection.Count == 0 || fpsCollection.LastOrDefault().DistanceTo(ObjectManager.Me.Position) > 8))
                         {
                             fpsCollection.Add(ObjectManager.Me.Position);
