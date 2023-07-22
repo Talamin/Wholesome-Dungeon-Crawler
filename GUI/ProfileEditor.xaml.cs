@@ -251,23 +251,24 @@ namespace WholesomeDungeonCrawler.GUI
                         {
                             Radar3D.DrawCircle(ptssModel.ZoneToClearPosition, 2f, Color.Red, true, 100);
                             Radar3D.DrawCircle(ptssModel.ZoneToClearPosition, ptssModel.ZoneToClearRadius, Color.Red, false, 100);
+
+                            foreach (WoWUnit unit in ObjectManager.GetWoWUnitAttackables())
+                            {
+                                if (unit != null
+                                    && unit.Position.DistanceTo(ptssModel.ZoneToClearPosition) <= ptssModel.ZoneToClearRadius
+                                    && unit.Position.Z <= ptssModel.ZoneToClearPosition.Z + ptssModel.ZoneToClearZLimit
+                                    && unit.Position.Z >= ptssModel.ZoneToClearPosition.Z - ptssModel.ZoneToClearZLimit
+                                    && unit.IsAttackable)
+                                {
+                                    Radar3D.DrawCircle(unit.Position, 1f, Color.Red, true, 100);
+                                    Radar3D.DrawLine(ptssModel.ZoneToClearPosition, unit.Position, Color.Red, 100);
+                                }
+                            }
                         }
                         if (ptssModel.SafeSpotPosition != null
                             && ptssModel.ZoneToClearPosition != null)
                         {
                             Radar3D.DrawLine(ptssModel.SafeSpotPosition, ptssModel.ZoneToClearPosition, Color.MediumBlue, 100);
-                        }
-                        foreach (WoWUnit unit in ObjectManager.GetWoWUnitAttackables())
-                        {
-                            if (unit != null 
-                                && unit.Position.DistanceTo(ptssModel.ZoneToClearPosition) <= ptssModel.ZoneToClearRadius
-                                && unit.Position.Z <= ptssModel.ZoneToClearPosition.Z + ptssModel.ZoneToClearZLimit
-                                && unit.Position.Z >= ptssModel.ZoneToClearPosition.Z - ptssModel.ZoneToClearZLimit
-                                && unit.IsAttackable)
-                            {
-                                Radar3D.DrawCircle(unit.Position, 1f, Color.Red, true, 100);
-                                Radar3D.DrawLine(ptssModel.ZoneToClearPosition, unit.Position, Color.Red, 100);
-                            }
                         }
                     }
 

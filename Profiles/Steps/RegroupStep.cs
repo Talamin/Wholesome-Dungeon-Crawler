@@ -210,10 +210,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         private void CompleteStep()
         {
-            if (!_entityCache.IAmTank)
-            {
-                Thread.Sleep(1000);
-            }
+            Thread.Sleep(2000);
             Logger.Log("Everyone is ready");
             _partyChatManager.SetRegroupStep(null);
             IsCompleted = true;

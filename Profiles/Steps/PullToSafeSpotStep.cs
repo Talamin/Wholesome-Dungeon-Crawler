@@ -236,10 +236,10 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                                 return;
                             }
                             */
-                            foreach (WoWUnit unit in _enemiesToPull)
+                            foreach (IWoWUnit unit in _entityCache.EnemyUnitsList)
                             {
-                                if (myPos.DistanceTo(unit.Position) < 40
-                                    && !TraceLine.TraceLineGo(myPos, unit.Position))
+                                if (myPos.DistanceTo(unit.PositionWT) < 30
+                                    && !TraceLine.TraceLineGo(myPos, unit.PositionWT))
                                 {
                                     MovementManager.StopMove();
                                     Logger.Log($"Taking aggro on {unitToPull.Name}");
