@@ -174,6 +174,10 @@ namespace WholesomeDungeonCrawler.Profiles
         public void Dispose()
         {
             _entityCache.ClearNpcListIdToDefend();
+            foreach (IStep step in GetAllSteps)
+            {
+                step.Dispose();
+            }
         }
 
         public void SetCurrentStep(IStep step)

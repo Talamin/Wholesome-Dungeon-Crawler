@@ -331,7 +331,8 @@ namespace WholesomeDungeonCrawler.GUI
                     }
 
                     // Draw moveAlong paths
-                    if (psControl.SelectedItem is MoveAlongPathModel mapModel)
+                    if (psControl.SelectedItem is MoveAlongPathModel mapModel
+                        && mapModel.Path != null)
                     {
                         var previousVector = new Vector3();
                         foreach (Vector3 node in mapModel.Path)
@@ -405,7 +406,7 @@ namespace WholesomeDungeonCrawler.GUI
             }
             catch (Exception e)
             {
-                Logger.LogError($"Failed to run the Monitor() function. {e.Message}");
+                Logger.LogError(e.ToString());
             }
         }
 
@@ -724,6 +725,11 @@ namespace WholesomeDungeonCrawler.GUI
             if (this.closeMe) return;
             var result = await this.ShowMessageAsync("", "Are you sure you want to close?", MessageDialogStyle.AffirmativeAndNegative, _basicDialogSettings);
             this.closeMe = result == MessageDialogResult.Affirmative;
+
+            Radar3D.OnDrawEvent -= new Radar3D.OnDrawHandler(Monitor);
+            Radar3D.OnDrawEvent -= new Radar3D.OnDrawHandler(psControl.Monitor);
+            Radar3D.Stop();
+            _radarRunning = false;
 
             if (this.closeMe)
             {

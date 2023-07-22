@@ -37,7 +37,7 @@ namespace WholesomeDungeonCrawler.States
                 if (!Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause
                     || !_cache.IsInInstance
                     || !_entityCache.Me.IsValid
-                    || Fight.InFight
+                    || _entityCache.EnemiesAttackingGroup.Length > 0
                     || !_profileManager.ProfileIsRunning)
                 {
                     _antiStuckTimer = null;

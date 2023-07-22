@@ -89,7 +89,8 @@ namespace WholesomeDungeonCrawler.Helpers
 
         }.OrderBy(dungeon => dungeon.Name).ToList();
 
-        // These mobs will only be ignored during path check (they won't be pulled). The group will still defend against them is attacked.
+        // These mobs will only be ignored during MoveAlongPath checks (they won't be pulled).
+        // The group will still defend against them is attacked.
         public static readonly HashSet<int> MobsToIgnoreDuringPathCheck = new HashSet<int>
         {
             26793, // Crystalline Frayer (Nexus)
@@ -101,6 +102,9 @@ namespace WholesomeDungeonCrawler.Helpers
             7309, // Earthen Custodian
             7077, // Earthen Hallshaper
             7076, // Earthen Guardian
+            17822, // Landen Stilwell (SFK Jail)
+            3850, // Sorcerer Ashcrombe (SFK Jail)
+            3849, // Deathstalker Adamant (SFK Jail)
         };
 
         // These neutral mobs will be pulled when navigating the dungeon as if they were hostile
@@ -110,7 +114,7 @@ namespace WholesomeDungeonCrawler.Helpers
             3653, // Kresh (Wailing Caverns)
         };
 
-        // These mobs will have a higher target priority (only during fights and if they are actively engaged with your team)
+        // These mobs will have a different target priority (only during fights and if they are actively engaged with your team)
         public static readonly Dictionary<int, SpecialPrio> SpecialPrioTargets = new Dictionary<int, SpecialPrio>
         {
             // High
@@ -138,7 +142,8 @@ namespace WholesomeDungeonCrawler.Helpers
             { 2520, new SpecialPrio(0, TargetPriority.Low, true) }, // Remote-Controlled Golem (Deadmines)
     };
 
-        // These mobs will be completely ignored in the entity cache. Careful with this one, the group won't even defend against them
+        // These mobs will be completely ignored in the entity cache.
+        // Careful with this one, the group won't even defend against them.
         public static readonly HashSet<int> IgnoredMobs = new HashSet<int>
         {
             191016, // Seed Pod (Nexus)

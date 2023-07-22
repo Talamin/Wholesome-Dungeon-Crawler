@@ -61,7 +61,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public override void Initialize()
         {
             if (!Radar3D.IsLaunched) Radar3D.Pulse();
-            Radar3D.OnDrawEvent += DrawEventPathManager;
+            Radar3D.OnDrawEvent += OnDrawEvent;
             FightEvents.OnFightLoop += OnFightHandler;
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             FightEvents.OnFightStart += OnFightHandler;
@@ -69,7 +69,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Dispose()
         {
-            Radar3D.OnDrawEvent -= DrawEventPathManager;
+            Radar3D.OnDrawEvent -= OnDrawEvent;
             ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
             FightEvents.OnFightLoop -= OnFightHandler;
             FightEvents.OnFightStart -= OnFightHandler;
@@ -82,8 +82,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 && !_entityCache.EnemiesAttackingGroup.Any(e => PositionInSafeSpotFightRange(e.PositionWT))
                 && _entityCache.ListGroupMember.All(g => g.TargetGuid <= 0 || g.Reaction > Reaction.Hostile))
             {
-                // This doesn't detach 
-                //Logger.LogError($"PTS Handler");
                 canceable.Cancel = true;
                 return;
             }
@@ -295,7 +293,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             }
         }
 
-        private void DrawEventPathManager()
+        private void OnDrawEvent()
         {
             Radar3D.DrawCircle(_safeSpotCenter, _safeSpotRadius, Color.Green, false, 50);
             Radar3D.DrawCircle(_safeSpotCenter, 1, Color.Green, true, 50);
