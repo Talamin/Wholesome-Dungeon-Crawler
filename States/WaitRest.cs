@@ -10,7 +10,7 @@ namespace WholesomeDungeonCrawler.States
 {
     class WaitRest : State
     {
-        public override string DisplayName { get; set; } = "Wait - Rest";
+        public override string DisplayName { get; set; } = "Wait / Rest";
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private Timer _logTimer = new Timer();
@@ -25,10 +25,7 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.IsValid
-                    || Fight.InFight
-                    || _entityCache.EnemiesAttackingGroup.Length > 0
+                if (_entityCache.EnemiesAttackingGroup.Length > 0
                     || !_cache.IsInInstance)
                 {
                     return false;

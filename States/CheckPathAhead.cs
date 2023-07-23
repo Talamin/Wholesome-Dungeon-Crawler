@@ -1,5 +1,6 @@
 ﻿using robotManager.FiniteStateMachine;
 using robotManager.Helpful;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -65,14 +66,11 @@ namespace WholesomeDungeonCrawler.States
                 _pointsAlongPathSegments.Clear();
                 _unitOnPath = (null, 0);
 
-                if (!_entityCache.Me.IsValid
-                    || _entityCache.EnemiesAttackingGroup.Length > 0
-                    || Fight.InFight
+                if (_entityCache.EnemiesAttackingGroup.Length > 0
                     || !_cache.IsInInstance
                     || !_profileManager.ProfileIsRunning
                     || MovementManager.CurrentPath == null
-                    || MovementManager.CurrentPath.Count <= 0
-                    || !Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause)
+                    || MovementManager.CurrentPath.Count <= 0)
                 {
                     return false;
                 }
@@ -320,43 +318,55 @@ namespace WholesomeDungeonCrawler.States
 
         private void DrawEventAOEPathAhead()
         {
-            if (_unitOnPath.unit != null)
+            try
             {
-                Radar3D.DrawCircle(_unitOnPath.unit.PositionWT, 0.4f, Color.Red, true, 200);
-            }
+                if (_unitOnPath.unit != null)
+                {
+                    Radar3D.DrawCircle(_unitOnPath.unit.PositionWT, 0.4f, Color.Red, true, 200);
+                }
 
-            for (int i = 0; i < _linesToCheck.Count - 1; i++)
-            {
-                Radar3D.DrawLine(_linesToCheck[i], _linesToCheck[i + 1], Color.PaleTurquoise, 150);
-            }
-            /*
-            foreach ((Vector3 a, Vector3 b) line in _linesAllPathsInfront)
-            {
-                Radar3D.DrawLine(line.a, line.b, Color.GreenYellow, 255);
-            }
-            foreach ((Vector3 a, Vector3 b) line in _linesAllPathsBehind)
-            {
-                Radar3D.DrawLine(line.a, line.b, Color.IndianRed, 255);
-            }
-            */
-            foreach (Vector3 point in _pointsAlongPathSegments)
-            {
-                Radar3D.DrawCircle(point, 0.2f, Color.Green, true, 150);
-            }
+                List<Vector3> linesToCheck = new List<Vector3>(_linesToCheck);
+                for (int i = 0; i < linesToCheck.Count - 1; i++)
+                {
+                    if (linesToCheck[i] != null && linesToCheck[i + 1] != null)
+                    {
+                        Radar3D.DrawLine(linesToCheck[i], linesToCheck[i + 1], Color.PaleTurquoise, 150);
+                    }
+                }
+                /*
+                foreach ((Vector3 a, Vector3 b) line in _linesAllPathsInfront)
+                {
+                    Radar3D.DrawLine(line.a, line.b, Color.GreenYellow, 255);
+                }
+                foreach ((Vector3 a, Vector3 b) line in _linesAllPathsBehind)
+                {
+                    Radar3D.DrawLine(line.a, line.b, Color.IndianRed, 255);
+                }
+                */
+                List<Vector3> pointsAlongSegments = new List<Vector3>(_pointsAlongPathSegments);
+                foreach (Vector3 point in pointsAlongSegments)
+                {
+                    Radar3D.DrawCircle(point, 0.2f, Color.Green, true, 150);
+                }
 
-            if (_dangerTraceline.a != null && _dangerTraceline.b != null)
-            {
-                Radar3D.DrawCircle(_dangerTraceline.a, 0.4f, Color.Red, false, 200);
-                Radar3D.DrawLine(_dangerTraceline.a, _dangerTraceline.b, Color.Red, 200);
+                if (_dangerTraceline.a != null && _dangerTraceline.b != null)
+                {
+                    Radar3D.DrawCircle(_dangerTraceline.a, 0.4f, Color.Red, false, 200);
+                    Radar3D.DrawLine(_dangerTraceline.a, _dangerTraceline.b, Color.Red, 200);
+                }
+                /*
+                foreach (TraceLineResult result in _losCache)
+                {
+                    if (result.IsVisibleAndReachable)
+                        Radar3D.DrawLine(result.Start, result.End, Color.Green, 200);
+                    else
+                        Radar3D.DrawLine(result.Start, result.End, Color.Red, 200);
+                }*/
             }
-            /*
-            foreach (TraceLineResult result in _losCache)
+            catch (Exception ex)
             {
-                if (result.IsVisibleAndReachable)
-                    Radar3D.DrawLine(result.Start, result.End, Color.Green, 200);
-                else
-                    Radar3D.DrawLine(result.Start, result.End, Color.Red, 200);
-            }*/
+                Logger.LogError(ex.ToString());
+            }
         }
     }
 }

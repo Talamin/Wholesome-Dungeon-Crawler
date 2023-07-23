@@ -12,7 +12,7 @@ namespace WholesomeDungeonCrawler.States
 {
     class SlaveCombat : State
     {
-        public override string DisplayName => "InFight";
+        public override string DisplayName => "Follower Combat";
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
@@ -34,10 +34,7 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.IsValid
-                    || !_cache.IsInInstance
-                    || Fight.InFight
+                if (!_cache.IsInInstance
                     || _entityCache.IAmTank)
                 {
                     return false;

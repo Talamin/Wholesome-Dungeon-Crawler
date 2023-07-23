@@ -34,9 +34,7 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause
-                    || !_cache.IsInInstance
-                    || !_entityCache.Me.IsValid
+                if (!_cache.IsInInstance
                     || _entityCache.EnemiesAttackingGroup.Length > 0
                     || !_profileManager.ProfileIsRunning)
                 {

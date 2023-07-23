@@ -1,4 +1,5 @@
 ﻿using robotManager.Helpful;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -75,18 +76,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             FightEvents.OnFightStart -= OnFightHandler;
         }
 
-        private void OnFightHandler(WoWUnit currentTarget, CancelEventArgs canceable)
-        {
-            if (_entityCache.EnemiesAttackingGroup.Length > 0
-                && !AnEnemyIsStandingStill
-                && !_entityCache.EnemiesAttackingGroup.Any(e => PositionInSafeSpotFightRange(e.PositionWT))
-                && _entityCache.ListGroupMember.All(g => g.TargetGuid <= 0 || g.Reaction > Reaction.Hostile))
-            {
-                canceable.Cancel = true;
-                return;
-            }
-        }
-
         private void OnObjectManagerPulse()
         {
             // Detect Standing still enemies
@@ -128,7 +117,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
             Vector3 myPos = _entityCache.Me.PositionWT;
 
-            // if an enemy is in the safe spot
+            // If an enemy is in the safe spot
             IWoWUnit enemyClosestFromSafeSpot = _entityCache.EnemyUnitsList
                 .OrderBy(e => e.PositionWT.DistanceTo(_safeSpotCenter))
                 .FirstOrDefault(e => PositionInSafeSpotFightRange(e.PositionWT));
@@ -195,7 +184,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                                 Logger.Log($"Adjusted {enemy.Name} path (enemy is patroling)");
                             }
                         }
-                        else // add path to dic
+                        else // Add path to dic
                         {
                             List<Vector3> pathToEnemy = PathFinder.FindPath(_safeSpotCenter, enemy.Position);
                             _pathsToEnemiesToPull.Add(enemy.Guid, pathToEnemy);
@@ -214,7 +203,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                             .Where(unit => unit.Guid == closestEntry.Key)
                             .FirstOrDefault();
 
-                        // unit is absent or dead, remove path from dictionary
+                        // Unit is absent or dead, remove path from dictionary
                         if (unitToPull == null || unitToPull.IsDead)
                         {
                             _pathsToEnemiesToPull.Remove(closestEntry.Key);
@@ -227,19 +216,11 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
                         if (teammatesAtSafeSpot)
                         {
-                            /*
-                            // Stop to pull
-                            if (unitToPull.Position.DistanceTo(myPos) < 50)
+                            // Attack enemy in sight
+                            foreach (WoWUnit unit in _enemiesToPull)
                             {
-                                Logger.Log($"Taking aggro on {unitToPull.Name}");
-                                Fight.StartFight(unitToPull.Guid);
-                                return;
-                            }
-                            */
-                            foreach (IWoWUnit unit in _entityCache.EnemyUnitsList)
-                            {
-                                if (myPos.DistanceTo(unit.PositionWT) < 30
-                                    && !TraceLine.TraceLineGo(myPos, unit.PositionWT))
+                                if (myPos.DistanceTo(unit.Position) < 30
+                                    && !TraceLine.TraceLineGo(myPos, unit.Position))
                                 {
                                     MovementManager.StopMove();
                                     Logger.Log($"Taking aggro on {unitToPull.Name}");
@@ -248,6 +229,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                                 }
                             }
 
+                            // Move toward enemy to pull
                             if (!MovementManager.InMovement)
                             {
                                 Logger.Log($"Pulling {unitToPull.Name} to safe spot");
@@ -259,6 +241,15 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                         {
                             //Logger.LogOnce($"Waiting for the team to regroup at safe spot");
                         }
+                        return;
+                    }
+                }
+                else
+                {
+                    // Aggro during pull, return to safespot
+                    if (MovementManager.CurrentPath.Last() != _safeSpotCenter)
+                    {
+                        MovementManager.StopMove();
                         return;
                     }
                 }
@@ -293,31 +284,50 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             }
         }
 
+        private void OnFightHandler(WoWUnit currentTarget, CancelEventArgs canceable)
+        {
+            if (_entityCache.EnemiesAttackingGroup.Length > 0
+                && !AnEnemyIsStandingStill
+                && _entityCache.EnemiesAttackingGroup.All(e => !PositionInSafeSpotFightRange(e.PositionWT))
+                && _entityCache.ListGroupMember.All(g => g.TargetGuid <= 0 || g.Target.Reaction > Reaction.Hostile))
+            {
+                canceable.Cancel = true;
+                return;
+            }
+        }
+
         private void OnDrawEvent()
         {
-            Radar3D.DrawCircle(_safeSpotCenter, _safeSpotRadius, Color.Green, false, 50);
-            Radar3D.DrawCircle(_safeSpotCenter, 1, Color.Green, true, 50);
-            Radar3D.DrawCircle(_zoneToClearPosition, _zoneToClearRadius, Color.Red, false, 50);
-            Radar3D.DrawCircle(_zoneToClearPosition, 1, Color.Red, true, 50);
-
-            foreach (IWoWUnit unit in _entityCache.EnemiesAttackingGroup)
+            try
             {
-                if (PositionInSafeSpotFightRange(unit.PositionWT))
+                Radar3D.DrawCircle(_safeSpotCenter, _safeSpotRadius, Color.Green, false, 50);
+                Radar3D.DrawCircle(_safeSpotCenter, 1, Color.Green, true, 50);
+                Radar3D.DrawCircle(_zoneToClearPosition, _zoneToClearRadius, Color.Red, false, 50);
+                Radar3D.DrawCircle(_zoneToClearPosition, 1, Color.Red, true, 50);
+
+                foreach (IWoWUnit unit in _entityCache.EnemiesAttackingGroup)
                 {
-                    Radar3D.DrawLine(_entityCache.Me.PositionWT, unit.PositionWT, Color.Purple);
-                    Radar3D.DrawCircle(unit.PositionWT, 0.5f, Color.Purple, true, 100);
+                    if (PositionInSafeSpotFightRange(unit.PositionWT))
+                    {
+                        Radar3D.DrawLine(_entityCache.Me.PositionWT, unit.PositionWT, Color.Purple);
+                        Radar3D.DrawCircle(unit.PositionWT, 0.5f, Color.Purple, true, 100);
+                    }
+                    else
+                    {
+                        Radar3D.DrawLine(_entityCache.Me.PositionWT, unit.PositionWT, Color.White);
+                        Radar3D.DrawCircle(unit.PositionWT, 0.5f, Color.White, true, 100);
+                    }
                 }
-                else
+
+                foreach (IWoWUnit unit in _enemiesStandingStill)
                 {
-                    Radar3D.DrawLine(_entityCache.Me.PositionWT, unit.PositionWT, Color.White);
-                    Radar3D.DrawCircle(unit.PositionWT, 0.5f, Color.White, true, 100);
+                    Radar3D.DrawLine(_entityCache.Me.PositionWT, unit.PositionWT, Color.Yellow);
+                    Radar3D.DrawCircle(unit.PositionWT, 0.7f, Color.Yellow, false, 100);
                 }
             }
-
-            foreach (IWoWUnit unit in _enemiesStandingStill)
+            catch (Exception ex)
             {
-                Radar3D.DrawLine(_entityCache.Me.PositionWT, unit.PositionWT, Color.Yellow);
-                Radar3D.DrawCircle(unit.PositionWT, 0.7f, Color.Yellow, false, 100);
+                Logger.LogError(ex.ToString());
             }
         }
 

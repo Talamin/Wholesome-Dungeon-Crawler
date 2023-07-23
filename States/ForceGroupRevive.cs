@@ -42,10 +42,7 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.IsValid
-                    || Fight.InFight
-                    || _entityCache.EnemiesAttackingGroup.Length > 0
+                if (_entityCache.EnemiesAttackingGroup.Length > 0
                     || !_cache.IsInInstance
                     || !_rezzClasses.ContainsKey(_entityCache.Me.WoWClass)
                     || !SpellManager.KnowSpell(_rezzClasses[_entityCache.Me.WoWClass])

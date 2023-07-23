@@ -5,14 +5,13 @@ using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
-using wManager.Wow.ObjectManager;
 using Timer = robotManager.Helpful.Timer;
 
 namespace WholesomeDungeonCrawler.States
 {
     class GroupProposal : State, IState
     {
-        public override string DisplayName => "GroupProposal Accept";
+        public override string DisplayName => "Group Proposal Accept";
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private Timer _timer = new Timer();
@@ -28,9 +27,6 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!_timer.IsReady
-                    || !Conditions.InGameAndConnected
-                    || !ObjectManager.Me.IsValid
-                    || Fight.InFight
                     || _entityCache.ListPartyMemberNames.Count() < 4)
                 {
                     return false;

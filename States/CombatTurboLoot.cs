@@ -28,9 +28,7 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !wManagerSetting.CurrentSetting.LootMobs
-                    || !_entityCache.Me.IsValid
+                if (!wManagerSetting.CurrentSetting.LootMobs
                     || _entityCache.EnemiesAttackingGroup.Length <= 0)
                 {
                     return false;

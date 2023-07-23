@@ -12,7 +12,7 @@ namespace WholesomeDungeonCrawler.States
 {
     class GroupQueue : State, IState
     {
-        public override string DisplayName => "GroupQueue";
+        public override string DisplayName => "Group Queue";
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly int _selectedDungeonId;
@@ -28,10 +28,7 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.IsValid
-                    || Fight.InFight
-                    || _entityCache.Me.Auras.Any(y => y.Key == 71041)
+                if (_entityCache.Me.Auras.Any(y => y.Key == 71041)
                     || _cache.IsInInstance
                     || _entityCache.ListPartyMemberNames.Count() < 4
                     || !_entityCache.IAmTank)

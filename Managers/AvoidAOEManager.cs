@@ -414,32 +414,39 @@ namespace WholesomeDungeonCrawler.Managers
 
         private void DrawEventAOE()
         {
-            foreach (DangerZone dangerZone in _dangerZones)
+            try
             {
-                Radar3D.DrawCircle(dangerZone.Position, dangerZone.Radius, Color.IndianRed, false, 150);
-            }
-
-            if (_currentDangerZone != null)
-            {
-                Radar3D.DrawCircle(_currentDangerZone.Position, _currentDangerZone.Radius, Color.IndianRed, true, 30);
-            }
-
-            if (_currentforcedSafeZone != null)
-            {
-                Radar3D.DrawCircle(_currentforcedSafeZone.ZoneCenter, _currentforcedSafeZone.Radius, Color.Blue, false, 30);
-            }
-            /*
-            foreach (Vector3 safeSpot in _safeSpots)
-            {
-                Radar3D.DrawCircle(safeSpot, 0.2f, Color.Blue, true, 100);
-            }
-            */
-            if (_escapePath != null && _escapePath.Count > 1)
-            {
-                for (int i = 0; i < _escapePath.Count - 1; i++)
+                foreach (DangerZone dangerZone in _dangerZones)
                 {
-                    Radar3D.DrawLine(_escapePath[i], _escapePath[i + 1], Color.ForestGreen);
+                    Radar3D.DrawCircle(dangerZone.Position, dangerZone.Radius, Color.IndianRed, false, 150);
                 }
+
+                if (_currentDangerZone != null)
+                {
+                    Radar3D.DrawCircle(_currentDangerZone.Position, _currentDangerZone.Radius, Color.IndianRed, true, 30);
+                }
+
+                if (_currentforcedSafeZone != null)
+                {
+                    Radar3D.DrawCircle(_currentforcedSafeZone.ZoneCenter, _currentforcedSafeZone.Radius, Color.Blue, false, 30);
+                }
+                /*
+                foreach (Vector3 safeSpot in _safeSpots)
+                {
+                    Radar3D.DrawCircle(safeSpot, 0.2f, Color.Blue, true, 100);
+                }
+                */
+                if (_escapePath != null && _escapePath.Count > 1)
+                {
+                    for (int i = 0; i < _escapePath.Count - 1; i++)
+                    {
+                        Radar3D.DrawLine(_escapePath[i], _escapePath[i + 1], Color.ForestGreen);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.ToString());
             }
         }
 

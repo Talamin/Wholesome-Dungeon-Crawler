@@ -23,11 +23,6 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected)
-                {
-                    return false;
-                }
-
                 return _cache.InLoadingScreen;
             }
         }

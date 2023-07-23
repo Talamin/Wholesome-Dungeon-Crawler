@@ -61,8 +61,14 @@ public class Main : IProduct
                 PluginsManager.LoadAllPlugins();
                 WTSettings.AddRecommendedOffmeshConnections();
                 WTTransport.AddRecommendedTransportsOffmeshes();
-                wManagerSetting.CurrentSetting.WallDistancePathFinder = 1;
-                wManagerSetting.CurrentSetting.Save();
+
+                if (wManagerSetting.CurrentSetting.CloseIfPlayerTeleported == true
+                    || wManagerSetting.CurrentSetting.WallDistancePathFinder != 1)
+                {
+                    wManagerSetting.CurrentSetting.CloseIfPlayerTeleported = false;
+                    wManagerSetting.CurrentSetting.WallDistancePathFinder = 1;
+                    wManagerSetting.CurrentSetting.Save();
+                }
                 IsStarted = true;
             }
         }

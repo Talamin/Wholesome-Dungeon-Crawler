@@ -38,13 +38,8 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !_cache.IsInInstance
-                    || !_entityCache.Me.IsValid
-                    || _entityCache.Me.IsDead
-                    || Fight.InFight
+                if (!_cache.IsInInstance
                     || _entityCache.EnemiesAttackingGroup.Length > 0
-                    //|| _cache.LootRollShow
                     || !_profileManager.ProfileIsRunning
                     || _profileManager.CurrentDungeonProfile.CurrentStep is LeaveDungeonStep
                     || _entityCache.ListGroupMember.Count() == 0 && _entityCache.ListPartyMemberNames.Count() == 0) // Not if you're alone
@@ -54,7 +49,7 @@ namespace WholesomeDungeonCrawler.States
 
                 if (_profileManager.CurrentDungeonProfile.CurrentStep is RegroupStep)
                 {
-                    // Gnomeregan / Uldaman exception to match entrances
+                    // Exception for multiple entrances (like Gnomeregan)
                     if (_profileManager.CurrentDungeonProfile.MapId == 90
                         || _profileManager.CurrentDungeonProfile.MapId == 70
                         || _profileManager.CurrentDungeonProfile.MapId == 329)

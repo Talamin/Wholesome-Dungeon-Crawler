@@ -11,7 +11,7 @@ namespace WholesomeDungeonCrawler.States
 {
     class TankCombat : State
     {
-        public override string DisplayName => "TankCombat";
+        public override string DisplayName => "Tank Combat";
 
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
@@ -32,9 +32,7 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.IsValid
-                    || !_cache.IsInInstance
+                if (!_cache.IsInInstance
                     || !_entityCache.IAmTank)
                 {
                     return false;

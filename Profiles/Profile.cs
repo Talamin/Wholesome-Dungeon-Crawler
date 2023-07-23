@@ -1,6 +1,7 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.Models;
@@ -8,6 +9,7 @@ using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles.Steps;
 using WholesomeToolbox;
 using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
 using static WholesomeDungeonCrawler.Profiles.Steps.RegroupStep;
 using static wManager.Wow.Class.Npc;
 using static wManager.Wow.Helpers.PathFinder;
@@ -153,9 +155,31 @@ namespace WholesomeDungeonCrawler.Profiles
             foreach (OffMeshConnection omConnection in profileModel.OffMeshConnections)
             {
                 if (omConnection == null || omConnection.Path.Count <= 0) continue;
+                /*
+                // Add swim action
+                for (int i = 0; i < omConnection.Path.Count; i++)
+                {
+                    if (omConnection.Path[i].Type == "Swimming")
+                    {
+                        omConnection.Path[i].Action = $@"
+                            c#: 
+                            Logging.Write(""Swim? "" + wManager.Wow.ObjectManager.ObjectManager.Me.IsSwimming);
+                            Lua.LuaDoString(""SitStandOrDescendStart();"");
+                            Thread.Sleep(100);
+                            Lua.LuaDoString(""DescendStop();"");
+                        ";
+                    }
+                }
+
+                foreach (Vector3 point in omConnection.Path)
+                {
+                    Logger.LogError($"{point.Type} {point.Action}");
+                }
+                */
                 omConnection.Name = $"WDCOMS - {FileName} - {omConnection.Name}";
                 if (!OffMeshConnections.MeshConnection.Exists(con => con.Name == omConnection.Name))
                 {
+                    omConnection.TryToUseEvenIfCanFindPathSuccess = true;
                     OffMeshConnections.Add(omConnection);
                     Logger.Log($"Addded offmesh connection [{omConnection.Name}]");
                 }

@@ -31,12 +31,8 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !_cache.IsRunningForcedTownRun
+                if (!_cache.IsRunningForcedTownRun
                     || !_stateTimer.IsReady
-                    || !_entityCache.Me.IsValid
-                    || _entityCache.Me.IsDead
-                    || Fight.InFight
                     || _profileManager.CurrentDungeonProfile != null
                     || _cache.IsInInstance
                     || !Lua.LuaDoString<bool>("return MiniMapLFGFrameIcon:IsVisible()"))

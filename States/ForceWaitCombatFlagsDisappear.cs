@@ -32,10 +32,7 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.IsValid
-                    || Fight.InFight
-                    || !_cache.IsInInstance
+                if (!_cache.IsInInstance
                     || !_bannedTimer.IsReady)
                 {
                     return false;

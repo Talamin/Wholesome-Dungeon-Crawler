@@ -28,11 +28,8 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !wManagerSetting.CurrentSetting.LootMobs
-                    || !_entitycache.Me.IsValid
-                    || _entitycache.Me.InCombatFlagOnly
-                    || Fight.InFight)
+                if (!wManagerSetting.CurrentSetting.LootMobs
+                    || _entitycache.Me.InCombatFlagOnly)
                 {
                     return false;
                 }

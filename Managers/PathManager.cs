@@ -1,6 +1,8 @@
 ﻿using robotManager.Helpful;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.Managers
@@ -34,21 +36,28 @@ namespace WholesomeDungeonCrawler.Managers
 
         private void DrawEventPathManager()
         {
-            if (_nextPathNode != null)
+            try
             {
-                Radar3D.DrawCircle(_nextPathNode, 0.4f, Color.Blue, true, 200);
-            }
-
-            if (_neighboringNodes != null)
-            {
-                foreach (Vector3 node in _neighboringNodes)
+                if (_nextPathNode != null)
                 {
-                    if (_nextPathNode != null && node == _nextPathNode)
-                    {
-                        continue;
-                    }
-                    Radar3D.DrawCircle(node, 0.6f, Color.LawnGreen, false, 50);
+                    Radar3D.DrawCircle(_nextPathNode, 0.4f, Color.Blue, true, 200);
                 }
+
+                if (_neighboringNodes != null)
+                {
+                    foreach (Vector3 node in _neighboringNodes)
+                    {
+                        if (_nextPathNode != null && node == _nextPathNode)
+                        {
+                            continue;
+                        }
+                        Radar3D.DrawCircle(node, 0.6f, Color.LawnGreen, false, 50);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.ToString());
             }
         }
     }

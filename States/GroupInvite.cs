@@ -6,7 +6,6 @@ using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
-using wManager.Wow.ObjectManager;
 using Timer = robotManager.Helpful.Timer;
 
 namespace WholesomeDungeonCrawler.States
@@ -29,9 +28,6 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!timer.IsReady
-                    || !Conditions.InGameAndConnected
-                    || !ObjectManager.Me.IsValid
-                    || Fight.InFight
                     || _cache.IsInInstance
                     || !_entityCache.IAmTank)
                 {

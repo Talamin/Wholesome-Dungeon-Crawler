@@ -10,7 +10,7 @@ namespace WholesomeDungeonCrawler.States
 {
     class GroupQueueAccept : State, IState
     {
-        public override string DisplayName => "GroupQueue Accept";
+        public override string DisplayName => "Group Queue Accept";
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private Timer timer = new Timer();
@@ -26,9 +26,6 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!timer.IsReady
-                    || !Conditions.InGameAndConnected
-                    || !_entityCache.Me.IsValid
-                    || Fight.InFight
                     || _cache.IsInInstance
                     || _entityCache.ListPartyMemberNames.Count() < 4)
                 {

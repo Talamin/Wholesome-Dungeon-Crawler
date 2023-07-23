@@ -19,7 +19,9 @@ namespace WholesomeDungeonCrawler.States
         private int _currentContinent = -1;
         private bool _recordDead = ObjectManager.Me.IsDead;
 
-        public LoadUnloadProfile(ICache iCache, IEntityCache EntityCache, IProfileManager profilemanager)
+        public LoadUnloadProfile(ICache iCache, 
+            IEntityCache EntityCache, 
+            IProfileManager profilemanager)
         {
             _cache = iCache;
             _entityCache = EntityCache;
@@ -30,22 +32,9 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.IsValid
-                    || Fight.InFight)
-                {
-                    return false;
-                }
-
                 bool continentChanged = _currentContinent != Usefuls.ContinentId;
                 _currentContinent = Usefuls.ContinentId;
-                /*
-                if (ObjectManager.Me.Position.DistanceTo(new robotManager.Helpful.Vector3(0, 0, 0)) < 5)
-                {
-                    Logger.LogError($"In void. Delaying profile load/unload.");
-                    return false;
-                }
-                */
+
                 // Alive to dead, keep loaded profile for death run
                 if (_entityCache.Me.IsDead && _entityCache.Me.Auras.ContainsKey(8326))
                 {

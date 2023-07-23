@@ -21,9 +21,7 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.IsValid
-                    || _entityCache.Me.Swimming
+                if (_entityCache.Me.Swimming
                     || !_entityCache.Me.IsDead
                     || !MovementManager.InMovement)
                 {

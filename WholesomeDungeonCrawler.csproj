@@ -171,8 +171,10 @@
     <Compile Include="States\DeadDive.cs" />
     <Compile Include="States\AvoidAOE.cs" />
     <Compile Include="States\AntiStuck.cs" />
+    <Compile Include="States\DungeonRegen.cs" />
     <Compile Include="States\ForceWaitCombatFlagsDisappear.cs" />
     <Compile Include="States\ForceOOCHeal.cs" />
+    <Compile Include="States\Unconnected.cs" />
     <Compile Include="States\LoadingScreenLock.cs" />
     <Compile Include="States\LoadUnloadProfile.cs" />
     <Compile Include="States\RejoinDungeonAfterForcedTownRun.cs" />

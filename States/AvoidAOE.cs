@@ -28,10 +28,8 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !_cache.IsInInstance
+                if (!_cache.IsInInstance
                     || _entityCache.Me.IsDead
-                    || !_entityCache.Me.IsValid
                     || !_avoidAOEManager.ShouldReposition)
                 {
                     return false;

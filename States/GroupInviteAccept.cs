@@ -4,13 +4,12 @@ using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache;
 using wManager.Wow.Helpers;
-using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
     class GroupInviteAccept : State, IState
     {
-        public override string DisplayName => "Group Accept";
+        public override string DisplayName => "Group Invitation Accept";
         private readonly ICache _cache;
         private Timer _stateTimer = new Timer();
         private string _tankName = WholesomeDungeonCrawlerSettings.CurrentSetting.TankName.ToLower().Trim();
@@ -25,10 +24,7 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !ObjectManager.Me.IsValid
-                    || Fight.InFight
-                    || !_stateTimer.IsReady
+                if (!_stateTimer.IsReady
                     || _cache.IsInInstance)
                 {
 

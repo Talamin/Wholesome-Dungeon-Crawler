@@ -30,14 +30,9 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.IsValid
-                    || _entityCache.Me.IsDead
-                    || Fight.InFight
-                    || !_profileManager.ProfileIsRunning
+                if (!_profileManager.ProfileIsRunning
                     || _profileManager.CurrentDungeonProfile.GetCurrentStepIndex > 0
-                    || !_cache.IsInInstance
-                    /*|| _cache.LootRollShow*/)
+                    || !_cache.IsInInstance)
                 {
                     return false;
                 }

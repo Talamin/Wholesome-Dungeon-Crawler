@@ -1,25 +1,19 @@
 ﻿using robotManager.FiniteStateMachine;
-using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
-using WholesomeDungeonCrawler.ProductCache.Entity;
-using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
 {
     class DungeonLogic : State, IState
     {
-        public override string DisplayName => "DungeonLogic";
+        public override string DisplayName => "Running Dungeon Step";
 
-        private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
         private readonly ICache _cache;
 
-        public DungeonLogic(IEntityCache iEntityCache,
-            IProfileManager profilemanager,
+        public DungeonLogic(IProfileManager profilemanager,
             ICache cache)
         {
-            _entityCache = iEntityCache;
             _profileManager = profilemanager;
             _cache = cache;
         }
@@ -28,16 +22,8 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.IsValid
-                    || Fight.InFight
-                    || !_cache.IsInInstance
-                    || !_profileManager.ProfileIsRunning)
-                {
-                    return false;
-                }
-
-                return true;
+                return _cache.IsInInstance
+                    && _profileManager.ProfileIsRunning;
             }
         }
 

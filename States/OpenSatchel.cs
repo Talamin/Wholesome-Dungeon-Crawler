@@ -24,15 +24,12 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!_stateTimer.IsReady
-                    || _cache.IsInInstance
-                    || !Conditions.InGameAndConnected
-                    || !ObjectManager.Me.IsValid
-                    || Fight.InFight)
+                    || _cache.IsInInstance)
                 {
                     return false;
                 }
 
-                _stateTimer = new Timer(5000);
+                _stateTimer = new Timer(1000);
 
                 return Bag.GetBagItem().Exists(item => item.Name.Contains("Satchel of"));
             }

@@ -44,10 +44,7 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.IsValid
-                    || Fight.InFight
-                    || !_cache.IsInInstance
+                if (!_cache.IsInInstance
                     || _entityCache.EnemiesAttackingGroup.Length > 0
                     || _entityCache.ListGroupMember.All(unit => unit.HealthPercent > _healThreshold)
                     || _entityCache.ListGroupMember.Any(unit => unit.IsDead))

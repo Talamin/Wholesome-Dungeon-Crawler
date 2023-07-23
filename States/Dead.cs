@@ -23,7 +23,8 @@ namespace WholesomeDungeonCrawler.States
         private robotManager.Helpful.Timer _forceReleaseTimer = null;
         private int _forceReleaseTimeInSeconds = 180;
 
-        public Dead(IEntityCache iEntityCache, IProfileManager profilemanager)
+        public Dead(IEntityCache iEntityCache, 
+            IProfileManager profilemanager)
         {
             _entityCache = iEntityCache;
             _profileManager = profilemanager;
@@ -34,12 +35,6 @@ namespace WholesomeDungeonCrawler.States
         {
             get
             {
-                if (!Conditions.InGameAndConnected
-                    || !_entityCache.Me.IsValid)
-                {
-                    return false;
-                }
-
                 return _entityCache.Me.IsDead;
             }
         }

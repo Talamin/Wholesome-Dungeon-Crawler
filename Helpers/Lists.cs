@@ -140,7 +140,7 @@ namespace WholesomeDungeonCrawler.Helpers
             // Low
             { 8996, new SpecialPrio(0, TargetPriority.Low, true) }, // Voidwalker minion (Ragefire Chasm)
             { 2520, new SpecialPrio(0, TargetPriority.Low, true) }, // Remote-Controlled Golem (Deadmines)
-    };
+    }   ;
 
         // These mobs will be completely ignored in the entity cache.
         // Careful with this one, the group won't even defend against them.
