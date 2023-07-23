@@ -289,7 +289,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             if (_entityCache.EnemiesAttackingGroup.Length > 0
                 && !AnEnemyIsStandingStill
                 && _entityCache.EnemiesAttackingGroup.All(e => !PositionInSafeSpotFightRange(e.PositionWT))
-                && _entityCache.ListGroupMember.All(g => g.TargetGuid <= 0 || g.Target.Reaction > Reaction.Hostile))
+                && _entityCache.ListGroupMember.All(g => g.TargetGuid <= 0 || g.WowUnit.TargetObject.Reaction > Reaction.Hostile))
             {
                 canceable.Cancel = true;
                 return;

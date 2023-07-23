@@ -56,130 +56,144 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
         private void OnObjectManagerPulse()
         {
-            Stopwatch watch = Stopwatch.StartNew();
-            WoWLocalPlayer me;
-            IWoWLocalPlayer cachedMe;
-            IWoWUnit cachedTarget, cachedPet;
-            List<WoWUnit> units;
-            List<WoWPlayer> playerUnits;
-
-            if (!Conditions.InGameAndConnected)
+            try
             {
-                return;
-            }
+                Stopwatch watchTotal = Stopwatch.StartNew();
+                Stopwatch watchInit = Stopwatch.StartNew();
+                WoWLocalPlayer me;
+                IWoWLocalPlayer cachedMe;
+                IWoWUnit cachedTarget, cachedPet;
+                List<WoWUnit> units;
+                List<WoWPlayer> playerUnits;
 
-            lock (cacheLock)
-            {
-                me = ObjectManager.Me;
-                cachedMe = Cache(me);
-
-                cachedTarget = Cache(new WoWUnit(0));
-                var targetObjectBaseAddress = ObjectManager.GetObjectByGuid(me.Target).GetBaseAddress;
-                if (targetObjectBaseAddress != 0)
+                if (!Conditions.InGameAndConnected)
                 {
-                    var target = new WoWUnit(targetObjectBaseAddress);
-                    cachedTarget = Cache(target);
+                    return;
                 }
 
-                cachedPet = Cache(ObjectManager.Pet);
-                units = ObjectManager.GetObjectWoWUnit();
-                playerUnits = ObjectManager.GetObjectWoWPlayer();
-            }
-
-            var enemyAttackingGroup = new List<IWoWUnit>();
-            var enemyUnits = new List<IWoWUnit>();
-            var listGroupMember = new List<IWoWPlayer>();
-            var groupPets = new List<IWoWUnit>();
-
-            var targetGuid = cachedTarget.Guid;
-            var playerPosition = cachedMe.PositionWT;
-
-            IWoWPlayer tankUnit = null;
-
-            foreach (WoWPlayer play in playerUnits)
-            {
-                IWoWPlayer cachedplayer = Cache(play);
-                if (_listPartyMemberGuid.Contains(cachedplayer.Guid))
+                lock (cacheLock)
                 {
-                    listGroupMember.Add(cachedplayer);
-                    if (cachedplayer.Guid == _tankGuid)
+                    me = ObjectManager.Me;
+                    cachedMe = Cache(me);
+
+                    cachedTarget = Cache(new WoWUnit(0));
+                    var targetObjectBaseAddress = ObjectManager.GetObjectByGuid(me.Target).GetBaseAddress;
+                    if (targetObjectBaseAddress != 0)
                     {
-                        tankUnit = cachedplayer;
+                        var target = new WoWUnit(targetObjectBaseAddress);
+                        cachedTarget = Cache(target);
+                    }
+
+                    cachedPet = Cache(ObjectManager.Pet);
+                    units = ObjectManager.GetObjectWoWUnit();
+                    playerUnits = ObjectManager.GetObjectWoWPlayer();
+                }
+
+                long initTime = watchInit.ElapsedMilliseconds;
+                Stopwatch playersWatch = Stopwatch.StartNew();
+
+                var enemyAttackingGroup = new List<IWoWUnit>();
+                var enemyUnits = new List<IWoWUnit>();
+                var listGroupMember = new List<IWoWPlayer>();
+                var groupPets = new List<IWoWUnit>();
+
+                var targetGuid = cachedTarget.Guid;
+                var playerPosition = cachedMe.PositionWT;
+
+                IWoWPlayer tankUnit = null;
+
+                foreach (WoWPlayer play in playerUnits)
+                {
+                    IWoWPlayer cachedplayer = Cache(play);
+                    if (_listPartyMemberGuid.Contains(cachedplayer.Guid))
+                    {
+                        listGroupMember.Add(cachedplayer);
+                        if (cachedplayer.Guid == _tankGuid)
+                        {
+                            tankUnit = cachedplayer;
+                        }
                     }
                 }
-            }
 
-            ListGroupMember = listGroupMember.ToArray();
+                ListGroupMember = listGroupMember.ToArray();
 
-            NpcsToDefend.Clear();
-            LootableUnits.Clear();
-            TankUnit = tankUnit;
+                long playersTime = playersWatch.ElapsedMilliseconds;
+                Stopwatch enemiesWatch = Stopwatch.StartNew();
 
-            List<ulong> allTeamGuids = new List<ulong>();
-            allTeamGuids.Add(cachedMe.Guid);
-            allTeamGuids.AddRange(GroupPets.Select(gp => gp.Guid));
-            allTeamGuids.AddRange(ListGroupMember.Select(lgm => lgm.Guid));
+                NpcsToDefend.Clear();
+                LootableUnits.Clear();
+                TankUnit = tankUnit;
 
-            foreach (WoWUnit unit in units)
-            {
-                // Ignored mobs from list
-                if (Lists.IgnoredMobs.Contains(unit.Entry))
+                List<ulong> allTeamGuids = new List<ulong>();
+                allTeamGuids.Add(cachedMe.Guid);
+                allTeamGuids.AddRange(GroupPets.Select(gp => gp.Guid));
+                allTeamGuids.AddRange(ListGroupMember.Select(lgm => lgm.Guid));
+
+                foreach (WoWUnit unit in units)
                 {
-                    continue;
-                }
-
-                ulong unitGuid = unit.Guid;
-                IWoWUnit cachedUnit = unitGuid == targetGuid ? cachedTarget : Cache(unit);
-                bool? cachedReachable = unitGuid == targetGuid ? true : (bool?)null;
-                Vector3 unitPosition = unit.PositionWithoutType;
-
-                if (_listPartyMemberGuid.Contains(unit.PetOwnerGuid) || unit.IsMyPet)
-                {
-                    groupPets.Add(cachedUnit);
-                    continue;
-                }
-
-                if (unit.IsAlive && _npcToDefendEntries.Contains(unit.Entry))
-                {
-                    NpcsToDefend.Add(cachedUnit);
-                    continue;
-                }
-
-                if (!unit.IsAlive && unit.IsLootable)
-                {
-                    LootableUnits.Add(cachedUnit);
-                }
-
-                if (!unit.IsAlive || unit.NotSelectable)
-                {
-                    continue;
-                }
-
-                if (unit.Level > 1
-                    && unit.Reaction <= Reaction.Neutral
-                    && unit.PositionWithoutType.DistanceTo(playerPosition) <= 70)
-                {
-                    enemyUnits.Add(cachedUnit);
-
-                    if (unit.Target != 0
-                        && allTeamGuids.Contains(unit.Target))
+                    // Ignored mobs from list
+                    if (Lists.IgnoredMobs.Contains(unit.Entry))
                     {
-                        enemyAttackingGroup.Add(cachedUnit);
+                        continue;
+                    }
+
+                    ulong unitGuid = unit.Guid;
+                    IWoWUnit cachedUnit = unitGuid == targetGuid ? cachedTarget : Cache(unit);
+                    bool? cachedReachable = unitGuid == targetGuid ? true : (bool?)null;
+                    Vector3 unitPosition = unit.PositionWithoutType;
+
+                    if (_listPartyMemberGuid.Contains(unit.PetOwnerGuid) || unit.IsMyPet)
+                    {
+                        groupPets.Add(cachedUnit);
+                        continue;
+                    }
+
+                    if (unit.IsAlive && _npcToDefendEntries.Contains(unit.Entry))
+                    {
+                        NpcsToDefend.Add(cachedUnit);
+                        continue;
+                    }
+
+                    if (!unit.IsAlive && unit.IsLootable)
+                    {
+                        LootableUnits.Add(cachedUnit);
+                    }
+
+                    if (!unit.IsAlive || unit.NotSelectable)
+                    {
+                        continue;
+                    }
+
+                    if (unit.Level > 1
+                        && unit.Reaction <= Reaction.Neutral
+                        && unit.PositionWithoutType.DistanceTo(playerPosition) <= 70)
+                    {
+                        enemyUnits.Add(cachedUnit);
+                        ulong unitTargetGuid = unit.Target;
+                        if (unitTargetGuid != 0
+                            && allTeamGuids.Contains(unitTargetGuid))
+                        {
+                            enemyAttackingGroup.Add(cachedUnit);
+                        }
                     }
                 }
+
+                Me = cachedMe;
+                Target = cachedTarget;
+                Pet = cachedPet;
+
+                EnemiesAttackingGroup = enemyAttackingGroup.ToArray();
+                EnemyUnitsList = enemyUnits.ToArray();
+                GroupPets = groupPets.ToArray();
+
+                long enemiesTime = enemiesWatch.ElapsedMilliseconds;
+
+                if (watchTotal.ElapsedMilliseconds > 100)
+                    Logger.LogError($"Ent: {watchTotal.ElapsedMilliseconds}ms - [init: {initTime}] [players: {playersTime}] [{enemyUnits.Count} enemies: {enemiesTime}]");
             }
-
-            Me = cachedMe;
-            Target = cachedTarget;
-            Pet = cachedPet;
-
-            EnemiesAttackingGroup = enemyAttackingGroup.ToArray();
-            EnemyUnitsList = enemyUnits.ToArray();
-            GroupPets = groupPets.ToArray();
-
-            if (watch.ElapsedMilliseconds > 100)
+            catch (Exception ex)
             {
-                Logger.LogError($"Entity cache pulse took {watch.ElapsedMilliseconds}");
+                Logger.LogError(ex.ToString());
             }
         }
 
@@ -249,7 +263,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"CachePartyMembersInfo() => {e}");
+                    Logger.LogError(e.ToString());
                 }
             }
         }

@@ -1,5 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
@@ -33,10 +34,11 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public uint GetBaseAddress { get; }
         public bool Fleeing { get; }
         public WoWUnit WowUnit { get; }
-        public WoWUnit Target { get; }
+        //public WoWUnit Target { get; }
 
         public CachedWoWUnit(WoWUnit unit)
         {
+            //Stopwatch stopwatch = Stopwatch.StartNew();
             Name = unit.Name;
             Entry = unit.Entry;
             Guid = unit.Guid;
@@ -59,10 +61,10 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             TargetGuid = unit.Target;
             Fleeing = unit.Fleeing;
             WowUnit = unit;
-            Target = unit.TargetObject;
+
+            //Target = unit.TargetObject; // too slow
 
             GetBaseAddress = unit.GetBaseAddress;
-
 
             var auras = new Dictionary<uint, IAura>();
             foreach (var aura in BuffManager.GetAuras(unit.GetBaseAddress))

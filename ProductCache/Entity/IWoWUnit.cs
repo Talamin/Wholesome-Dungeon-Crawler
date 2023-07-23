@@ -33,6 +33,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         bool HasDrinkBuff { get; }
         bool HasFoodBuff { get; }
         WoWUnit WowUnit { get; }
-        WoWUnit Target { get; }
+        //WoWUnit Target { get; } // too slow
 }
 }
