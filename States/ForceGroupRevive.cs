@@ -70,6 +70,11 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
+            if (_entityCache.Me.HasDrinkBuff
+                || _entityCache.Me.HasFoodBuff)
+            {
+                return;
+            }
 
             string spell = _rezzClasses[_entityCache.Me.WoWClass];
             Vector3 myPos = _entityCache.Me.PositionWT;

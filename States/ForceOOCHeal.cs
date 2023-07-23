@@ -69,7 +69,9 @@ namespace WholesomeDungeonCrawler.States
         public override void Run()
         {
             // Healer Logic
-            if (_iAmHealer)
+            if (_iAmHealer
+                && !_entityCache.Me.HasFoodBuff
+                && !_entityCache.Me.HasDrinkBuff)
             {
                 Vector3 myPos = _entityCache.Me.PositionWT;
                 IWoWPlayer playerToHeal = _entityCache.ListGroupMember

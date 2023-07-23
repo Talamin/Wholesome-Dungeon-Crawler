@@ -204,18 +204,19 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             {
                 try
                 {
+                    //Stopwatch watch = Stopwatch.StartNew();
                     string pList = Lua.LuaDoString<string>(@"
-                    plist='';
-                    for i=1,4 do
-                        local unitName = UnitName('party'..i);
-                        local unitGuid = UnitGUID('party'..i);
-                        if unitName then
-                            plist = plist .. unitName .. '|' .. tonumber(unitGuid) ..',';
+                        plist='';
+                        for i=1,4 do
+                            local unitName = UnitName('party'..i);
+                            local unitGuid = UnitGUID('party'..i);
+                            if unitName then
+                                plist = plist .. unitName .. '|' .. tonumber(unitGuid) ..',';
+                            end
                         end
-                    end
-                    return plist;
-                ");
-
+                        return plist;
+                    ");
+                    //long luaTime = watch.ElapsedMilliseconds;
                     if (string.IsNullOrEmpty(pList))
                     {
                         ListPartyMemberNames.Clear();
@@ -251,6 +252,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                             continue;
                         }
                     }
+                    //long parseTime = watch.ElapsedMilliseconds;
 
                     if (!Enumerable.SequenceEqual(ListPartyMemberNames, partyNames)
                         || !Enumerable.SequenceEqual(_listPartyMemberGuid, partyGuids))
@@ -260,6 +262,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
                     ListPartyMemberNames = partyNames;
                     _listPartyMemberGuid = partyGuids;
+                    //Logger.LogError($"Party UP {watch.ElapsedMilliseconds} [lua {luaTime}] [parse [{parseTime}]] ");
                 }
                 catch (Exception e)
                 {
