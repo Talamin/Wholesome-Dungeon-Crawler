@@ -33,6 +33,7 @@ namespace WholesomeDungeonCrawler.Helpers
             new DungeonModel { Name="Blackrock Depths - Prison", DungeonId=30, MapId=230, ContinentId=0, EntranceLoc=new Vector3(-7177.132, -932.0781, 165.9823, "None"), Start=new Vector3(458.32, 26.52, -70.67339, "None")},
             new DungeonModel { Name="Blackrock Depths - Upper City", DungeonId=276, ContinentId=0, MapId=230, EntranceLoc=new Vector3(-7177.132, -932.0781, 165.9823, "None"), Start=new Vector3(872.8282, -232.221, -43.75124, "None")},
             new DungeonModel { Name="Blackrock Spire", DungeonId=32, MapId=229, ContinentId=0, EntranceLoc=new Vector3(-7522.83, -1233.157, 285.7446, "None") },
+            new DungeonModel { Name="Upper Blackrock Spire", DungeonId=44, MapId=229, ContinentId=0, EntranceLoc=new Vector3(-7522.83, -1233.157, 285.7446, "None") },
             new DungeonModel { Name="Dire Maul West", DungeonId=36, MapId=429, ContinentId=1, EntranceLoc=new Vector3(-3834.753, 1250.436, 160.226, "None"), Start=new Vector3(31.5609, 159.45, -3.4777, "None") },
             new DungeonModel { Name="Dire Maul North", DungeonId=38, MapId=429, ContinentId=1, EntranceLoc=new Vector3(-3520.973, 1073.685, 161.1654, "None"), Start=new Vector3(255.249, -16.0561, -2.58737, "None") },
             new DungeonModel { Name="Dire Maul East", DungeonId=34, MapId=429, ContinentId=1, EntranceLoc=new Vector3(-3980.82, 772.9068, 161.0013, "None"), Start=new Vector3(44.4499, -154.822, -2.71364, "None")},

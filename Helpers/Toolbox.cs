@@ -19,7 +19,7 @@ namespace WholesomeDungeonCrawler.Helpers
                     local instanceName = instanceInfo[1];
                     local numPlayers = instanceInfo[12];
                     local instanceDifficulty = instanceInfo[11]; -- 0 Normal, 1 Heroic
-                    if IsLFGDungeonJoinable(instanceId) and numPlayers == 5  then
+                    if IsLFGDungeonJoinable(instanceId) then
                         table.insert(result, instanceId .. ""$"" .. instanceName .. ""$"" .. numPlayers .. ""$"" .. instanceDifficulty)
                     end
                 end
@@ -35,13 +35,17 @@ namespace WholesomeDungeonCrawler.Helpers
                 int difficulty = int.Parse(instanceInfo[3]);
                 string type = difficulty == 0 ? "Normal" : "Heroic";
 
+                if (numPlayers > 5
+                    && dungeonId != 32) // LBRS is considered 15 men in LUA
+                    continue;
+
                 DungeonModel model = Lists.AllDungeons.Find(dungeon => dungeon.DungeonId == dungeonId);
-                    if (model == null)
-                    {
-                        Logger.LogError($"Couldn't find client dungeon {dungeonName} ({type}) with ID {dungeonId} in internal list (Lists.AllDungeons)");
-                        continue;
-                    }
-                    result.Add(model);
+                if (model == null)
+                {
+                    Logger.LogError($"Couldn't find client dungeon {dungeonName} ({type}) with ID {dungeonId} in internal list (Lists.AllDungeons)");
+                    continue;
+                }
+                result.Add(model);
             }
 
             return result;
