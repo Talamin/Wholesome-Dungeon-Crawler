@@ -262,12 +262,14 @@ namespace WholesomeDungeonCrawler.Managers
                 List<IWoWUnit> highPrios = new List<IWoWUnit>(_highPrioUnits);
                 foreach (IWoWUnit unit in highPrios)
                 {
-                    Radar3D.DrawCircle(unit.PositionWT, 1f, Color.Yellow, true, 30);
+                    if (unit != null)
+                        Radar3D.DrawCircle(unit.PositionWT, 1f, Color.Yellow, true, 30);
                 }
                 List<IWoWUnit> lowPrios = new List<IWoWUnit>(_lowPrioUnits);
                 foreach (IWoWUnit unit in lowPrios)
                 {
-                    Radar3D.DrawCircle(unit.PositionWT, 1f, Color.Red, true, 30);
+                    if (unit != null)
+                        Radar3D.DrawCircle(unit.PositionWT, 1f, Color.Red, true, 30);
                 }
             }
             catch (Exception ex)

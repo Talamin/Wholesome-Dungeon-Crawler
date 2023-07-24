@@ -60,6 +60,13 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 return;
             }
 
+            if (_entityCache.ListGroupMember.Any(m => m.WowUnit.IsCast))
+            {
+                MovementManager.StopMove();
+                Logger.LogOnce($"A party member is casting, waiting");
+                return;
+            }
+
             Vector3 lastPointOfPath = GetMoveAlongPath.Last();
 
             if ((MovementManager.CurrentMoveTo == null || MovementManager.CurrentMoveTo == lastPointOfPath)
