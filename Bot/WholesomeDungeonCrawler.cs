@@ -64,6 +64,7 @@ namespace WholesomeDungeonCrawler.Bot
                 {
                     new Relogger(),
                     new Unconnected(_entityCache),
+                    new ForceIsCastSwitch(_entityCache),
                     new Pause(),
                     new LoadingScreenLock(_cache, _entityCache),
                     new LoadUnloadProfile(_cache, _entityCache, _profileManager),

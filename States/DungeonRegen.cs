@@ -28,8 +28,8 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (_entityCache.Me.Swimming
-                    || ObjectManager.Me.IsCast
-                    || _entityCache.EnemiesAttackingGroup.Length > 0)
+                    || _entityCache.EnemiesAttackingGroup.Length > 0
+                    || ObjectManager.Me.IsMounted)
                 {
                     return false;
                 }
@@ -124,6 +124,7 @@ namespace WholesomeDungeonCrawler.States
                 && !_entityCache.Me.HasFoodBuff
                 && !string.IsNullOrEmpty(_selectedFood))
             {
+                ObjectManager.Me.ForceIsCast = true;
                 Logger.LogOnce($"Eating {_selectedFood} ({ItemsManager.GetItemCountByNameLUA(_selectedFood)} in bags)");
                 ItemsManager.UseItem(_selectedFood);
                 Thread.Sleep(1000);
@@ -134,13 +135,13 @@ namespace WholesomeDungeonCrawler.States
                 && !_entityCache.Me.HasDrinkBuff
                 && !string.IsNullOrEmpty(_selectedDrink))
             {
+                ObjectManager.Me.ForceIsCast = true;
                 Logger.LogOnce($"Drinking {_selectedDrink} ({ItemsManager.GetItemCountByNameLUA(_selectedDrink)} in bags)");
                 ItemsManager.UseItem(_selectedDrink);
                 Thread.Sleep(1000);
                 return;
             }
         }
-
 
         private readonly List<string> _allDrinks = new List<string>()
         {
