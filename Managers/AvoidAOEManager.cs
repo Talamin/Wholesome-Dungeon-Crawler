@@ -540,6 +540,10 @@ namespace WholesomeDungeonCrawler.Managers
             new KnownAOE(17742, 8f, _everyone),
             // Impale - Anub Arak (Azjol Nerub)
             new KnownAOE(29184, 5f, _everyone),
+             // Freezing Cloud - Skaldi (Utgarde Pinacle)
+            new KnownAOE(60020, 7f, _everyone),
+            // Living Mojo Puddle - Drakkari Colossus (Gundrak)
+            new KnownAOE(59451, 3f, _everyone),
         };
         /*
         private readonly Dictionary<int, float> _knowAOEs = new Dictionary<int, float> // { Entry, Radius }
