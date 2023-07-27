@@ -106,6 +106,10 @@ namespace WholesomeDungeonCrawler.Helpers
             3850, // Sorcerer Ashcrombe (SFK Jail)
             3849, // Deathstalker Adamant (SFK Jail)
             29834, // Drakari Frenzy (Gundrak)
+            29266, // Xevozz (Violet Hold)
+            29312, // Lavanthor (Violet Hold)
+            29316, // Moragg (Violet Hold)
+            29313, // Ichoron (Violet Hold)
         };
 
         // These neutral mobs will be pulled when navigating the dungeon as if they were hostile

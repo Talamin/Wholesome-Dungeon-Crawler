@@ -25,6 +25,7 @@ namespace WholesomeDungeonCrawler.Bot
         private ILuaStatusFrameManager _luaStatusFrameManager;
         private IPathManager _pathManager;
         private IAvoidAOEManager _avoidAOEManager;
+        private IAvoidAOEManager _avoidSpellsManager;
         private CheckPathAhead _checkPathAheadState;
 
         internal bool InitialSetup()
@@ -37,6 +38,8 @@ namespace WholesomeDungeonCrawler.Bot
                 _entityCache.Initialize();
                 _avoidAOEManager = new AvoidAOEManager(_entityCache, _cache);
                 _avoidAOEManager.Initialize();
+                _avoidSpellsManager = new AvoidSpellsManager(_entityCache, _cache);
+                _avoidSpellsManager.Initialize();
                 _pathManager = new PathManager();
                 _pathManager.Initialize();
                 _partyChatManager = new PartyChatManager();
@@ -69,6 +72,7 @@ namespace WholesomeDungeonCrawler.Bot
                     new LoadUnloadProfile(_cache, _entityCache, _profileManager),
                     new AntiStuck(_cache, _entityCache, _profileManager),
                     new AvoidAOE(_entityCache, _avoidAOEManager, _cache),
+                    new AvoidSpells(_entityCache, _avoidSpellsManager, _cache),
                     new DeadDive(_entityCache),
                     new Dead(_entityCache, _profileManager),
                     new ForceRegroup(_cache, _entityCache, _profileManager),

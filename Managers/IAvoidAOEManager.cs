@@ -1,7 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
 using WholesomeDungeonCrawler.ProductCache;
-using static WholesomeDungeonCrawler.Managers.AvoidAOEManager;
 
 namespace WholesomeDungeonCrawler.Managers
 {

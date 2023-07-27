@@ -103,6 +103,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\Toolbox.cs" />
+    <Compile Include="Managers\AvoidSpellsManager.cs" />
     <Compile Include="Managers\AvoidAOEManager.cs" />
     <Compile Include="Managers\IAvoidAOEManager.cs" />
     <Compile Include="Managers\ILuaStatusFrameManager.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="States\AvoidSpells.cs" />
     <Compile Include="States\CheckPathAhead.cs" />
     <Compile Include="States\Dead.cs" />
     <Compile Include="States\DeadDive.cs" />
