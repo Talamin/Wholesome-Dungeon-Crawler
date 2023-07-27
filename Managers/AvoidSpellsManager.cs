@@ -8,20 +8,20 @@ using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Policy;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Managers.ManagedEvents;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeToolbox;
 using wManager.Events;
 using wManager.Wow;
 using wManager.Wow.Class;
-using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 using wManager.Wow.Patchables;
 
 namespace WholesomeDungeonCrawler.Managers
 {
-    internal class AvoidSpellsManager : IAvoidAOEManager
+    internal partial class AvoidSpellsManager : IAvoidAOEManager
     {
         private readonly IEntityCache _entityCache;
         private readonly ICache _cache;
@@ -31,18 +31,18 @@ namespace WholesomeDungeonCrawler.Managers
         private List<Vector3> _escapePath;
         private LFGRoles _myRole = CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole;
 
-        public bool ShouldReposition => _escapePath != null && (PositionInDangerZone(_entityCache.Me.PositionWT, _currentDangerZone) || !PositionInSafeZone(_entityCache.Me.PositionWT, _currentforcedSafeZone));
+        public bool ShouldReposition => _escapePath != null && (_currentDangerZone.PositionInDangerZone(_entityCache.Me.PositionWT) || !PositionInSafeZone(_entityCache.Me.PositionWT, _currentforcedSafeZone));
         private ForcedSafeZone _currentforcedSafeZone;
         private DangerZone _currentDangerZone;
         public List<Vector3> GetEscapePath => _escapePath;
 
-        private static readonly List<LFGRoles> _everyone = new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS };
-        private static readonly List<LFGRoles> _meleeOnly = new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.MDPS };
-        private static readonly List<LFGRoles> _rangedOnly = new List<LFGRoles>() { LFGRoles.Heal, LFGRoles.RDPS };
-        private static readonly List<LFGRoles> _everyoneExceptTank = new List<LFGRoles>() { LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS };
+        
 
-        private readonly SortedSet<int> relevantEnemyIds = new SortedSet<int>();
-        private readonly Lookup<int, KnownSpell> enemiesSpells; 
+        private readonly SortedSet<int> relevantSpellEnemyIds = new SortedSet<int>();
+        private readonly SortedSet<int> relevantBuffEnemyIds = new SortedSet<int>();
+
+        private readonly Lookup<int, EnemySpell> enemiesSpells; 
+        private readonly Lookup<int, EnemyBuff> enemiesBuffs; 
         public AvoidSpellsManager(
             IEntityCache entityCache,
             ICache cache)
@@ -50,13 +50,16 @@ namespace WholesomeDungeonCrawler.Managers
             _entityCache = entityCache;
             _cache = cache;
 
-            foreach (KnownSpell knownpell in _knownSpells)
+            foreach (EnemySpell es in EventList.GetEnemySpells)
             {
-                relevantEnemyIds.Add(knownpell.UnitId);
+                relevantSpellEnemyIds.Add(es.UnitId);
             }
-
-            enemiesSpells = (Lookup<int, KnownSpell>)_knownSpells.ToLookup(ks => ks.UnitId, ks => ks);
-
+            foreach (EnemyBuff eb in EventList.GetEnemyBuffs)
+            {
+                relevantBuffEnemyIds.Add(eb.UnitId);
+            }
+            enemiesSpells = (Lookup<int, EnemySpell>)EventList.GetEnemySpells.ToLookup(es => es.UnitId, es => es);
+            enemiesBuffs = (Lookup<int, EnemyBuff>)EventList.GetEnemyBuffs.ToLookup(eb => eb.UnitId, eb => eb);
         }
 
         public void Initialize()
@@ -100,36 +103,35 @@ namespace WholesomeDungeonCrawler.Managers
 
             foreach (IWoWUnit unit in _entityCache.EnemiesAttackingGroup)
             {
-                if (relevantEnemyIds.Contains(unit.Entry))
+                if (relevantSpellEnemyIds.Contains(unit.Entry))
                 {
                     if (unit.WowUnit.IsCast || unit.WowUnit.CastingTimeLeft > 0)
                     {
-                        foreach (KnownSpell spell in enemiesSpells[unit.Entry])
+                        foreach (EnemySpell spell in enemiesSpells[unit.Entry])
                         {
-                            if (spell.Id == unit.WowUnit.CastingSpellId)
+                            if (spell.SpellId == unit.WowUnit.CastingSpellId)
                             {
-                                AddDangerZone(unit, spell.Radius);
+                                AddDangerZone(unit, spell);
                             }
                         }
-                            
-                    }
-                    
-                    foreach (KnownSpell spell in enemiesSpells[unit.Entry])
-                    {
-                    if (unit.WowUnit.HaveBuff((uint)spell.Id))
-                    {                        
-                            AddDangerZone(unit, spell.Radius);                        
-                    }
 
+                    }
+                }
+                    
+                if (relevantBuffEnemyIds.Contains(unit.Entry))
+                {
+                    foreach (EnemyBuff spell in enemiesBuffs[unit.Entry])
+                    {
+                        if (unit.WowUnit.HaveBuff((uint)spell.SpellId))
+                        {                        
+                             AddDangerZone(unit, spell);                        
+                        }
                     }
                 }
             }
 
-
             Vector3 myPos = _entityCache.Me.PositionWT;
-
-         
-
+        
             // Is current fight a Forced Safe Zone fight?
             ForcedSafeZone forcedSafeZone = null;
             foreach (IWoWUnit enemy in _entityCache.EnemiesAttackingGroup)
@@ -143,7 +145,7 @@ namespace WholesomeDungeonCrawler.Managers
             _currentforcedSafeZone = forcedSafeZone;
 
             // In danger zone
-            _currentDangerZone = _dangerZones.Find(dangerZone => PositionInDangerZone(myPos, dangerZone));
+            _currentDangerZone = _dangerZones.Find(dangerZone => dangerZone.PositionInDangerZone(myPos));
             bool inSafeZone = PositionInSafeZone(myPos, _currentforcedSafeZone);
             if (_currentDangerZone != null || !inSafeZone)
             {
@@ -173,7 +175,7 @@ namespace WholesomeDungeonCrawler.Managers
                         for (int x = -range; x <= range; x += 5)
                         {
                             Vector3 gridPosition = referenceGridPosition + new Vector3(x, y, 0);
-                            if (_dangerZones.Any(dangerZone => PositionInDangerZone(gridPosition, dangerZone, 4)))
+                            if (_dangerZones.Any(dangerZone => dangerZone.PositionInDangerZone(gridPosition, 4)))
                             {
                                 nbSpotsInDangerZone++;
                                 continue;
@@ -279,7 +281,7 @@ namespace WholesomeDungeonCrawler.Managers
 
             // Cancel moves into danger zones
             DangerZone dangerZoneOnTheWay = _dangerZones.Where(dangerZone =>
-                PositionInDangerZone(path.Last(), dangerZone))
+                dangerZone.PositionInDangerZone(path.Last()))
                 .FirstOrDefault();
             if (!ShouldReposition && dangerZoneOnTheWay != null)
             {
@@ -315,7 +317,7 @@ namespace WholesomeDungeonCrawler.Managers
             if (!ShouldReposition)
             {
                 DangerZone dangerZoneOnTheWay = _dangerZones.Where(dangerZone =>
-                    PositionInDangerZone(node, dangerZone))
+                    dangerZone.PositionInDangerZone(node))
                     .FirstOrDefault();
                 if (dangerZoneOnTheWay != null)
                 {
@@ -334,10 +336,7 @@ namespace WholesomeDungeonCrawler.Managers
             }
         }
 
-        private bool PositionInDangerZone(Vector3 position, DangerZone zone, int margin = 0)
-        {
-            return zone != null && zone.Position.DistanceTo(position) < zone.Radius + margin;
-        }
+
 
         private bool PositionInSafeZone(Vector3 position, ForcedSafeZone fsz, int margin = 0)
         {
@@ -356,9 +355,13 @@ namespace WholesomeDungeonCrawler.Managers
             //wManagerSetting.AddBlackListZone(wowObject.Position, radius, (ContinentId)Usefuls.ContinentId, isSessionBlacklist: true);
             //_blackListCache.Add((wowObject.Guid, wowObject.Position));
         }
-        private void AddDangerZone(IWoWUnit unit, float radius)
+        private void AddDangerZone(IWoWUnit unit, EnemySpell spell)
         {
-            _dangerZones.Add(new DangerZone(unit, radius));
+            _dangerZones.Add(new DangerZone(unit, spell));
+        }
+        private void AddDangerZone(IWoWUnit unit, EnemyBuff buff)
+        {
+            _dangerZones.Add(new DangerZone(unit, buff));
         }
 
         private void RemoveDangerZone(ulong objectGuid)
@@ -419,32 +422,6 @@ namespace WholesomeDungeonCrawler.Managers
             }
         }
 
-        public class DangerZone
-        {
-            public Vector3 Position { get; private set; }
-            public float Radius { get; private set; }
-            public ulong Guid { get; private set; }
-            public string Name { get; private set; }
-            public WoWObjectType ObjectType { get; private set; }
-
-            public DangerZone(WoWObject wowObject, float radius)
-            {
-                Position = wowObject.Position;
-                Guid = wowObject.Guid;
-                Name = string.IsNullOrEmpty(wowObject.Name) ? "Unknown object" : wowObject.Name;
-                ObjectType = wowObject.Type;
-                Radius = radius;
-            }
-            public DangerZone(IWoWUnit unit, float radius)
-            {
-                Position = unit.WowUnit.Position;
-                Guid = unit.Guid;
-                Name = string.IsNullOrEmpty(unit.Name) ? "Unknown object" : unit.Name;
-                ObjectType = WoWObjectType.Unit;
-                Radius = radius;
-            }
-        }
-
         private class ForcedSafeZone
         {
             public int BossId { get; private set; }
@@ -465,39 +442,10 @@ namespace WholesomeDungeonCrawler.Managers
             new ForcedSafeZone(18371, new Vector3(-51.94074, -163.6697, 26.36175, "None"), 40),
         };
 
-        private struct KnownSpell
-        {
-            public int UnitId { get; private set; }
-            public int Id { get; private set; }
-            public float Radius { get; private set; }
-            public List<LFGRoles> AffectedRoles { get; private set; }
-            public Func<bool> Condition { get; private set; }
-            public bool IsConditionMet => Condition == null || Condition();
 
-            public KnownSpell(int unitId, int id, float radius, List<LFGRoles> affectedRoles, Func<bool> condition = null)
-            {
-                UnitId = unitId;
-                Id = id;
-                Radius = radius;
-                AffectedRoles = affectedRoles;
-                Condition = condition;
-            }
-        }       
-
-        private Dictionary<int, KnownSpell> _knownSpellsDic = new Dictionary<int, KnownSpell>();
+        private Dictionary<int, EnemySpell> _knownSpellsDic = new Dictionary<int, EnemySpell>();
        
-        private readonly List<KnownSpell> _knownSpells = new List<KnownSpell>()
-        {
-            // Gundrak - Gal'Drath - Whirling Slash
-
-            new KnownSpell(29306, 59824, 6, _everyone ),
-            // Azure Magus, Frost bolt (the nexus) test spell
-            //new KnownSpell(26722, 56775, 25, _everyone ), 
-            // Azure Warder, Mana shield(the nexus) test spell
-            new KnownSpell(26716, 56778, 6, _everyone ),
-            
-
-        };
+        
         /*
         private readonly Dictionary<int, float> _knowAOEs = new Dictionary<int, float> // { Entry, Radius }
         {
