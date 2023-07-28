@@ -343,18 +343,6 @@ namespace WholesomeDungeonCrawler.Managers
             return fsz == null || fsz.ZoneCenter.DistanceTo(position) < fsz.Radius + margin;
         }
 
-        private void AddDangerZone(WoWObject wowObject, float radius)
-        {
-            if (_dangerZones.Any(dangerZone => dangerZone.Guid == wowObject.Guid && dangerZone.Position.DistanceTo(wowObject.Position) < 1f))
-            {
-                return;
-            }
-
-            RemoveDangerZone(wowObject.Guid);
-            _dangerZones.Add(new DangerZone(wowObject, radius));
-            //wManagerSetting.AddBlackListZone(wowObject.Position, radius, (ContinentId)Usefuls.ContinentId, isSessionBlacklist: true);
-            //_blackListCache.Add((wowObject.Guid, wowObject.Position));
-        }
         private void AddDangerZone(IWoWUnit unit, EnemySpell spell)
         {
             _dangerZones.Add(new DangerZone(unit, spell));
@@ -390,24 +378,16 @@ namespace WholesomeDungeonCrawler.Managers
             {
                 foreach (DangerZone dangerZone in _dangerZones)
                 {
-                    Radar3D.DrawCircle(dangerZone.Position, dangerZone.Radius, Color.IndianRed, false, 150);
+                    dangerZone.Draw(Color.IndianRed, false, 150);
                 }
 
-                if (_currentDangerZone != null)
-                {
-                    Radar3D.DrawCircle(_currentDangerZone.Position, _currentDangerZone.Radius, Color.IndianRed, true, 30);
-                }
+                _currentDangerZone?.Draw(Color.IndianRed, true, 30);
 
                 if (_currentforcedSafeZone != null)
                 {
                     Radar3D.DrawCircle(_currentforcedSafeZone.ZoneCenter, _currentforcedSafeZone.Radius, Color.Blue, false, 30);
                 }
-                /*
-                foreach (Vector3 safeSpot in _safeSpots)
-                {
-                    Radar3D.DrawCircle(safeSpot, 0.2f, Color.Blue, true, 100);
-                }
-                */
+                
                 if (_escapePath != null && _escapePath.Count > 1)
                 {
                     for (int i = 0; i < _escapePath.Count - 1; i++)

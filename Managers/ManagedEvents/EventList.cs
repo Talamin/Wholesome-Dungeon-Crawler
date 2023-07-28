@@ -18,20 +18,19 @@ namespace WholesomeDungeonCrawler.Managers.ManagedEvents
         {
             
             // Azure Magus, Frost bolt (the nexus) test spell
-            new EnemySpell(26722, 56775,Shape.Cone45, 25, _everyone ), 
+            new EnemySpell(26722, 56775, Shape.Cone45, 10, _everyone ), 
            
             // Ingvar the Plunderer, Dark Smash, Utgarde Pinacle
             new EnemySpell(23954, 59709, Shape.Cone45, 10, _everyone ),
              // Ingvar the Plunderer, Smash, Utgarde Pinacle
             new EnemySpell(23954, 59706, Shape.Cone45, 10, _everyone ),
 
-
         };
 
         public static readonly List<EnemyBuff> GetEnemyBuffs = new List<EnemyBuff>()
         { 
             // Azure Warder, Mana shield(the nexus) test spell
-            new EnemyBuff(26716, 56778, Shape.Circle, 15, _everyone ),
+            new EnemyBuff(26716, 56778, Shape.Circle, 10, _everyone ),
             
             // Gundrak - Gal'Drath - Whirling Slash
             new EnemyBuff(29306, 59824, Shape.Circle, 7, _everyone ),

@@ -113,6 +113,7 @@
     <Compile Include="Managers\ILuaStatusFrameManager.cs" />
     <Compile Include="Managers\IPathManager.cs" />
     <Compile Include="Managers\LuaStatusFrameManager.cs" />
+    <Compile Include="Managers\ManagedEvents\IAvoidableEvent.cs" />
     <Compile Include="Managers\PathManager.cs" />
     <Compile Include="Managers\ManagedEvents\Shape.cs" />
     <Compile Include="ProductCache\Cache.cs" />

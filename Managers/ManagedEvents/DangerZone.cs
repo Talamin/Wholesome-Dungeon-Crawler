@@ -1,55 +1,62 @@
-﻿using robotManager.Helpful;
+﻿using MahApps.Metro.Controls;
+using robotManager.Helpful;
+using System;
+using System.Drawing;
+using System.Drawing.Printing;
+using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Managers.ManagedEvents;
 using WholesomeDungeonCrawler.ProductCache.Entity;
+using wManager.Wow.Class;
 using wManager.Wow.Enums;
+using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
+using static WholesomeDungeonCrawler.Managers.AvoidAOEManager;
 
 namespace WholesomeDungeonCrawler.Managers
 {    
-        public class DangerZone
+    public class DangerZone
+    {
+        public Vector3 DangerPosition { get; private set; }
+        public float Radius { get; private set; }
+        public ulong Guid { get; private set; }
+        public string Name { get; private set; }
+        public WoWObjectType ObjectType { get; private set; }            
+
+        public IAvoidableEvent Danger;
+
+        public DangerZone(WoWObject wowObject, float radius)
         {
-            public Vector3 Position { get; private set; }
-            public float Radius { get; private set; }
-            public ulong Guid { get; private set; }
-            public string Name { get; private set; }
-            public WoWObjectType ObjectType { get; private set; }            
-            public EnemySpell Spell { get; private set; }
-            public EnemyBuff Buff{ get; private set; }
-            public DangerZone(WoWObject wowObject, float radius)
-            {
-                Position = wowObject.Position;
-                Guid = wowObject.Guid;
-                Name = string.IsNullOrEmpty(wowObject.Name) ? "Unknown object" : wowObject.Name;
-                ObjectType = wowObject.Type;
-                Radius = radius;
+            DangerPosition = wowObject.Position;
+            Guid = wowObject.Guid;
+            Name = string.IsNullOrEmpty(wowObject.Name) ? "Unknown object" : wowObject.Name;
+            ObjectType = wowObject.Type;
+            Radius = radius;
                 
-            }
-            public DangerZone(IWoWUnit unit, EnemySpell spell)
-            {
-                Position = unit.WowUnit.Position;
-                Guid = unit.Guid;
-                Name = string.IsNullOrEmpty(unit.Name) ? "Unknown object" : unit.Name;
-                ObjectType = WoWObjectType.Unit;                
-                Spell = spell;
-            }
-            public DangerZone(IWoWUnit unit, EnemyBuff buff)
-            {
-                Position = unit.WowUnit.Position;
-                Guid = unit.Guid;
-                Name = string.IsNullOrEmpty(unit.Name) ? "Unknown object" : unit.Name;
-                ObjectType = WoWObjectType.Unit;
-                Buff = buff;
-            }
-            public bool PositionInDangerZone(Vector3 position, int margin = 0)
-            {
-            if (Spell != null)
-            {
-                return Position.DistanceTo(position) < Spell.Size + margin;
-            } else if (Buff != null)
-            {
-                return Position.DistanceTo(position) < Buff.Size + margin;
-            }
-            else
-                return Position.DistanceTo(position) < Radius + margin;
-            }
         }
+        public DangerZone(IWoWUnit unit, EnemySpell spell)
+        {
+            DangerPosition = unit.WowUnit.Position;
+            Guid = unit.Guid;
+            Name = string.IsNullOrEmpty(unit.Name) ? "Unknown object" : unit.Name;
+            ObjectType = WoWObjectType.Unit;                
+            Danger = spell;
+        }
+        public DangerZone(IWoWUnit unit, EnemyBuff buff)
+        {
+            DangerPosition = unit.WowUnit.Position;
+            Guid = unit.Guid;
+            Name = string.IsNullOrEmpty(unit.Name) ? "Unknown object" : unit.Name;
+            ObjectType = WoWObjectType.Unit;
+            Danger = buff;
+        }
+        public bool PositionInDangerZone(Vector3 playerPosition, int margin = 0)
+        {
+            return Danger.PositionInDanger(playerPosition, DangerPosition, margin);
+        }
+
+        public void Draw(Color color, bool filled, int alpha)
+        {
+            Danger.Draw(DangerPosition, color, filled, alpha);
+        }       
     }
+}

@@ -1,10 +1,15 @@
 ﻿using System.Collections.Generic;
 using System;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Managers.ManagedEvents;
+using robotManager.Helpful;
+using System.Drawing.Printing;
+using System.Drawing;
+using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.Managers
 {
-    public class EnemyBuff
+    public class EnemyBuff : IAvoidableEvent
     {
         public int UnitId { get; private set; }
         public int SpellId { get; private set; }
@@ -22,6 +27,16 @@ namespace WholesomeDungeonCrawler.Managers
             Size = size;
             AffectedRoles = affectedRoles;
             Condition = condition;
+        }
+
+        public bool PositionInDanger(Vector3 playerPosition, Vector3 dangerPosition, int margin = 0)
+        {
+            return playerPosition.DistanceTo(dangerPosition) < Size + margin;
+        }
+
+        public void Draw(Vector3 position, Color color, bool filled, int alpha)
+        {
+            Radar3D.DrawCircle(position, Size, color, filled, alpha);
         }
     }
 }
