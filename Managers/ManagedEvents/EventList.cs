@@ -18,7 +18,7 @@ namespace WholesomeDungeonCrawler.Managers.ManagedEvents
         {
             
             // Azure Magus, Frost bolt (the nexus) test spell
-            new EnemySpell(26722, 56775, Shape.Cone45, 10, _everyone ), 
+            new EnemySpell(26722, 56775, Shape.Cone90, 10, _everyone ), 
            
             // Ingvar the Plunderer, Dark Smash, Utgarde Pinacle
             new EnemySpell(23954, 59709, Shape.Cone45, 10, _everyone ),
