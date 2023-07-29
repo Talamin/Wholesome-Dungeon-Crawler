@@ -359,6 +359,8 @@ namespace WholesomeDungeonCrawler.GUI
                             {
                                 previousVector = node;
                             }
+                            if (mapModel.IgnoreFightsDuringPath)
+                                Radar3D.DrawCircle(node, 1.5f, Color.Ivory, false, 200);
                             Radar3D.DrawCircle(node, 1f, randomColor, true, 200);
                             Radar3D.DrawLine(node, previousVector, randomColor, 200);
                             previousVector = node;

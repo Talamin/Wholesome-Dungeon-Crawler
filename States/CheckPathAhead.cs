@@ -78,9 +78,9 @@ namespace WholesomeDungeonCrawler.States
                 Stopwatch watch = Stopwatch.StartNew();
 
                 // Only check path during move along step
-                if (_profileManager.CurrentDungeonProfile.CurrentStep is MoveAlongPathStep)
+                if (_profileManager.CurrentDungeonProfile.CurrentStep is MoveAlongPathStep moveAlongStep
+                    && !moveAlongStep.IgnoreFightsDuringPath)
                 {
-                    MoveAlongPathStep moveAlongStep = (MoveAlongPathStep)_profileManager.CurrentDungeonProfile.CurrentStep;
                     List<Vector3> moveAlongPath = moveAlongStep.GetMoveAlongPath;
                     List<Vector3> currentMMPath = MovementManager.CurrentPath;
                     Vector3 myPos = _entityCache.Me.PositionWT;

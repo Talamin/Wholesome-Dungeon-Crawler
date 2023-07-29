@@ -125,9 +125,16 @@ namespace WholesomeDungeonCrawler.States
                 && !string.IsNullOrEmpty(_selectedFood))
             {
                 ObjectManager.Me.ForceIsCast = true;
-                Logger.LogOnce($"Eating {_selectedFood} ({ItemsManager.GetItemCountByNameLUA(_selectedFood)} in bags)");
                 ItemsManager.UseItem(_selectedFood);
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
+                if (_entityCache.Me.HasFoodBuff)
+                {
+                    Logger.LogOnce($"Eating {_selectedFood} ({ItemsManager.GetItemCountByNameLUA(_selectedFood)} left in bags)");
+                }
+                else
+                {
+                    ObjectManager.Me.ForceIsCast = false;
+                }
                 return;
             }
 
@@ -136,9 +143,16 @@ namespace WholesomeDungeonCrawler.States
                 && !string.IsNullOrEmpty(_selectedDrink))
             {
                 ObjectManager.Me.ForceIsCast = true;
-                Logger.LogOnce($"Drinking {_selectedDrink} ({ItemsManager.GetItemCountByNameLUA(_selectedDrink)} in bags)");
                 ItemsManager.UseItem(_selectedDrink);
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
+                if (_entityCache.Me.HasDrinkBuff)
+                {
+                    Logger.LogOnce($"Drinking {_selectedDrink} ({ItemsManager.GetItemCountByNameLUA(_selectedDrink)} left in bags)");
+                }
+                else
+                {
+                    ObjectManager.Me.ForceIsCast = false;
+                }
                 return;
             }
         }

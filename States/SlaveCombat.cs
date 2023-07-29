@@ -45,11 +45,15 @@ namespace WholesomeDungeonCrawler.States
                     Interact.ClearTarget();
                 }
 
-                // Block state if pulling to safe spot
-                if (_profileManager.ProfileIsRunning
-                    && _profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep)
+                // Block state if pulling to safe spot or MAP with ignore fights
+                if (_profileManager.ProfileIsRunning)
                 {
-                    return false;
+                    if (_profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep)
+                        return false;
+
+                    if (_profileManager.CurrentDungeonProfile.CurrentStep is MoveAlongPathStep mapStep
+                        && mapStep.IgnoreFightsDuringPath)
+                        return false;
                 }
 
                 Target = null;

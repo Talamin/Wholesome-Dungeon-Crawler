@@ -138,6 +138,7 @@ namespace WholesomeDungeonCrawler.Helpers
             { 598, new SpecialPrio(0, TargetPriority.High, true) }, // Defias Miner (Deadmines)
             { 11582, new SpecialPrio(0, TargetPriority.High, true) }, // Dark Summoner (Scholomance)
             { 4292, new SpecialPrio(0, TargetPriority.High, true) }, // Scarlet Protector (Armory)
+            { 4303, new SpecialPrio(0, TargetPriority.High, true) }, // Scarlet Abott (Cathedral)
             // Low
             { 8996, new SpecialPrio(0, TargetPriority.Low, true) }, // Voidwalker minion (Ragefire Chasm)
             { 2520, new SpecialPrio(0, TargetPriority.Low, true) }, // Remote-Controlled Golem (Deadmines)

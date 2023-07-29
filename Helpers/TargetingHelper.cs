@@ -7,7 +7,7 @@ namespace WholesomeDungeonCrawler.Helpers
 {
     class TargetingHelper
     {
-        public static void SwitchTargetAndFight(IWoWUnit unit, CancelEventArgs canceable, string reason)
+        public static void SwitchTargetAndFight(WoWUnit unit, CancelEventArgs canceable, string reason)
         {
             Logger.LogOnce($"Switching target to {unit.Name} ({reason})");
             canceable.Cancel = true;

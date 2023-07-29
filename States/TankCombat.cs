@@ -38,11 +38,15 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                // Block state if pulling to safe spot
-                if (_profileManager.ProfileIsRunning
-                    && _profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep)
+                // Block state if pulling to safe spot or MAP with ignore fights
+                if (_profileManager.ProfileIsRunning)
                 {
-                    return false;
+                    if (_profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep)
+                        return false;
+
+                    if (_profileManager.CurrentDungeonProfile.CurrentStep is MoveAlongPathStep mapStep
+                        && mapStep.IgnoreFightsDuringPath)
+                        return false;
                 }
 
                 if (_entityCache.Target.IsDead)
@@ -81,7 +85,7 @@ namespace WholesomeDungeonCrawler.States
                 if (attackerMe != null)
                 {
                     _foundtarget = attackerMe;
-                    Logger.Log($"Attacking: {_foundtarget.Name} is attacking Me, switching");
+                    Logger.Log($"Attacking: {_foundtarget.Name} is attacking me, switching");
                     return true;
                 }
 

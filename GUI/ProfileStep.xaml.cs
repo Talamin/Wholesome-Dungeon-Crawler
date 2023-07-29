@@ -141,17 +141,7 @@ namespace WholesomeDungeonCrawler.GUI
                 txtInteractPos.Text = TextBoxVectorConverter.GetStringFromVector3(nearestGO.Position);
             }
         }
-        /*
-        private void btnGotoGetCurrentPos_Click(object sender, RoutedEventArgs e)
-        {
-            var currentPos = ObjectManager.Me.Position;
-            if (currentPos != null)
-            {
-                ((GoToModel)this.SelectedItem).TargetPosition = currentPos;
-                txtGoToTargetPos.Text = TextBoxVectorConverter.GetStringFromVector3(currentPos);
-            }
-        }
-        */
+
         private void btnGetNearestGOFlags_Click(object sender, RoutedEventArgs e)
         {
             var nearestGO = ObjectManager.GetNearestWoWGameObject(ObjectManager.GetObjectWoWGameObject());
@@ -235,26 +225,7 @@ namespace WholesomeDungeonCrawler.GUI
                 txtDefendSpotTargetPos.Text = TextBoxVectorConverter.GetStringFromVector3(currentPos);
             }
         }
-        /*
-        private void btnPickupObjectGetNearestGO_Click(object sender, RoutedEventArgs e)
-        {
-            var nearestGO = ObjectManager.GetNearestWoWGameObject(ObjectManager.GetObjectWoWGameObject());
-            if (nearestGO != null)
-            {
-                txtPickupObjectObjectId.Value = nearestGO.Entry;
-            }
-        }
-        
-        private void btnPickupObjectGetNearestGOPos_Click(object sender, RoutedEventArgs e)
-        {
-            var nearestGO = ObjectManager.GetNearestWoWGameObject(ObjectManager.GetObjectWoWGameObject());
-            if (nearestGO != null)
-            {
-                ((PickupObjectModel)this.SelectedItem).ExpectedPosition = nearestGO.Position;
-                txtPickupObjectPos.Text = TextBoxVectorConverter.GetStringFromVector3(nearestGO.Position);
-            }
-        }
-        */
+
         private void btnGetFollowUnitId_Click(object sender, RoutedEventArgs e)
         {
             var target = ObjectManager.Target;

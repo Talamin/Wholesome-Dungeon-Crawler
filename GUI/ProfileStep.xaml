@@ -67,14 +67,19 @@
                                 <StackPanel Orientation="Horizontal"  Margin="5">
                                     <Button x:Name="btnAddVector" Content="Add" Margin="0 5 5 5" Click="btnAddVector_Click"/>
                                     <Button x:Name="btnDeleteVector" Content="Delete" Margin="0 5 5 5" Click="btnDeleteVector_Click"/>
-                                    <Controls:ToggleSwitch x:Name="chkRecordPath" OnLabel="Record Path" OffLabel="Record Path" IsChecked="False" />
+                                </StackPanel>
+                                <StackPanel>
+                                    <Controls:ToggleSwitch x:Name="chkRecordPath" OnLabel="Record Path" OffLabel="Record Path" IsChecked="False" Margin="10 5" />                                    
+                                </StackPanel>
+                                <StackPanel>
+                                    <Controls:ToggleSwitch x:Name="chkIgnoreMAPFights" IsChecked="{Binding SelectedItem.IgnoreFightsDuringPath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Ignore fights during path" OffLabel="Ignore fights during path" Margin="10 5"/>
                                 </StackPanel>
                             </StackPanel>
 
                         </GroupBox>
-                    </StackPanel>
-                
+                    </StackPanel>                
                 </StackPanel>
+                
                 <!--InteractWith-->
                 <StackPanel>
                     <StackPanel.Style>
@@ -96,7 +101,6 @@
                         </GroupBox.Background>
                         <StackPanel>
                             <StackPanel Orientation="Horizontal"  Margin="5">
-                                <!--<Controls:NumericUpDown x:Name="txtInteractO" Controls:TextBoxHelper.Watermark="ObjectId" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.ObjectId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />-->
                                 <StackPanel Orientation="Horizontal"  Margin="5">
                                     <TextBox Name="txtInteractO" MinWidth="170" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Object Entries" Margin="5">
                                         <TextBox.Text>
@@ -127,52 +131,11 @@
                             </StackPanel>
                             <StackPanel Orientation="Horizontal"  Margin="5">
                                 <Controls:NumericUpDown x:Name="txtInteractD" Controls:TextBoxHelper.Watermark="Interact distance" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.InteractDistance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                <!--<Controls:NumericUpDown ToolTip="Item ID to pickup on interact. Leave at 0 if none." x:Name="txtPickupObjectItemId" Controls:TextBoxHelper.Watermark="Loot Item ID" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="10 5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.ItemId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />-->
                             </StackPanel>
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
-                <!--GoTo-->
-                <!--
-                <StackPanel>
-                    <StackPanel.Style>
-                        <Style TargetType="StackPanel">
-                            <Setter Property="Visibility" Value="Collapsed"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem, Converter={StaticResource TypeConverter}}" Value="GoToModel">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </StackPanel.Style>
-                    <GroupBox Header="GoTo Step" BorderBrush="{x:Null}">
-                        <GroupBox.Background>
-                            <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
-                                <GradientStop Color="#FF34e89e" Offset="0"/>
-                                <GradientStop Color="#FF0f3443" Offset="1"/>
-                            </LinearGradientBrush>
-                        </GroupBox.Background>
-                        <StackPanel>
-
-                            <StackPanel Orientation="Horizontal"  Margin="5">
-                                <TextBox Name="txtGoToTargetPos" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="GoTo Position" Margin="5">
-                                    <TextBox.Text>
-                                        <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.TargetPosition" Converter="{StaticResource TextBoxVectorConverter}">
-                                            <Binding.ValidationRules>
-                                                <local:VectorValidation/>
-                                            </Binding.ValidationRules>
-                                        </Binding>
-                                    </TextBox.Text>
-                                </TextBox>
-                                <Button x:Name="btnGotoGetCurrentPos" Content="Get Current Position" Margin="5" Click="btnGotoGetCurrentPos_Click" />
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal"  Margin="5">
-                                <Controls:NumericUpDown x:Name="txtGoToPrecision" Controls:TextBoxHelper.Watermark="Precision" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.Precision, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                            </StackPanel>
-                        </StackPanel>
-                    </GroupBox>
-                </StackPanel>
-                -->
+                
                 <!--TalkToUnit-->
                 <StackPanel>
                     <StackPanel.Style>
@@ -214,6 +177,7 @@
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
+                
                 <!--DefendSpot-->
                 <StackPanel>
                     <StackPanel.Style>

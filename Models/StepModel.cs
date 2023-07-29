@@ -55,6 +55,7 @@ namespace WholesomeDungeonCrawler.Models
     public class MoveAlongPathModel : StepModel
     {
         public List<Vector3> Path { get; set; }
+        public bool IgnoreFightsDuringPath { get; set; }
     }
 
     public class TalkToUnitModel : StepModel

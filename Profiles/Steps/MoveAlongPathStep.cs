@@ -1,11 +1,13 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeToolbox;
+using wManager.Events;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
@@ -23,6 +25,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private static bool FirstLaunch = false;
 
         public override string Name { get; }
+        public bool IgnoreFightsDuringPath { get; }
 
         public List<Vector3> GetMoveAlongPath => _moveAlongPathModel.Path;
 
@@ -36,13 +39,36 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _entityCache = entityCache;
             _pathManager = pathManager;
             _stepIndex = mapStepIndex;
+            IgnoreFightsDuringPath = stepModel.IgnoreFightsDuringPath;
             Name = stepModel.Name;
             FirstLaunch = true;
         }
 
-        public override void Initialize() { }
+        public override void Initialize()
+        {
+            if (IgnoreFightsDuringPath)
+            {
+                FightEvents.OnFightLoop += OnFightHandler;
+                FightEvents.OnFightStart += OnFightHandler;
+            }
 
-        public override void Dispose() { }
+        }
+
+        public override void Dispose()
+        {
+            if (IgnoreFightsDuringPath)
+            {
+                FightEvents.OnFightLoop -= OnFightHandler;
+                FightEvents.OnFightStart -= OnFightHandler;
+            }
+        }
+
+        private void OnFightHandler(WoWUnit currentTarget, CancelEventArgs canceable)
+        {
+            Logger.Log($"Fight canceled by MAP step (IgnoreFightsDuringPath is true)");
+            canceable.Cancel = true;
+            return;
+        }
 
         public override void Run()
         {
@@ -163,7 +189,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     return;
                 }
 
-                if (_nextNode != null 
+                if (_nextNode != null
                     && GetMoveAlongPath.Contains(_nextNode))
                 {
                     List<Vector3> currentPath = MovementManager.CurrentPath;

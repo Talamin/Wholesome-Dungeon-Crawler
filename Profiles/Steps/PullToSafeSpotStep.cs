@@ -63,8 +63,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         {
             if (!Radar3D.IsLaunched) Radar3D.Pulse();
             Radar3D.OnDrawEvent += OnDrawEvent;
-            FightEvents.OnFightLoop += OnFightHandler;
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
+            FightEvents.OnFightLoop += OnFightHandler;
             FightEvents.OnFightStart += OnFightHandler;
         }
 
