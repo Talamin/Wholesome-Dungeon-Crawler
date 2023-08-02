@@ -90,7 +90,7 @@ namespace WholesomeDungeonCrawler.Managers
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             MovementEvents.OnMovementPulse += MovementEventsOnMovementPulse;
             MovementEvents.OnMoveToPulse += MovementsEventsOnMoveToPulse;
-            FightEvents.OnFightStart += FightEventsOnFightStart;
+            FightEvents.OnFightStart += FightEventsOnFightStart;            
         }
 
         public void Dispose()
@@ -416,9 +416,11 @@ namespace WholesomeDungeonCrawler.Managers
         {
             try
             {
-                foreach (DangerZone dangerZone in _dangerZones)
+                List<DangerZone> dangerZones = new List<DangerZone>(_dangerZones);
+                foreach (DangerZone dangerZone in dangerZones)
                 {
-                    Radar3D.DrawCircle(dangerZone.Position, dangerZone.Radius, Color.IndianRed, false, 150);
+                    if (dangerZones != null)
+                        Radar3D.DrawCircle(dangerZone.Position, dangerZone.Radius, Color.IndianRed, false, 150);
                 }
 
                 if (_currentDangerZone != null)

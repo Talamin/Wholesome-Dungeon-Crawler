@@ -14,6 +14,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
     {
         private FollowUnitModel _followUnitModel;
         private readonly IEntityCache _entityCache;
+        private WoWUnit _unitToEscort;
+
         public override string Name { get; }
 
         public FollowUnitStep(FollowUnitModel followUnitModel, IEntityCache entityCache) : base(followUnitModel.CompleteCondition)
@@ -30,10 +32,11 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public override void Run()
         {
             {
-                WoWUnit foundUnit = ObjectManager.GetObjectWoWUnit().FirstOrDefault(unit => unit.Entry == _followUnitModel.UnitId);
+                _unitToEscort = ObjectManager.GetObjectWoWUnit()
+                    .FirstOrDefault(unit => unit.IsAlive && unit.Entry == _followUnitModel.UnitId);
                 Vector3 myPosition = _entityCache.Me.PositionWT;
 
-                if (foundUnit == null)
+                if (_unitToEscort == null)
                 {
                     if (myPosition.DistanceTo(_followUnitModel.ExpectedStartPosition) >= 15)
                     {
@@ -57,34 +60,45 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 }
                 else
                 {
-                    if (foundUnit.Position.DistanceTo(_followUnitModel.ExpectedEndPosition) < 15
+                    Vector3 escortPosition = _unitToEscort.PositionWithoutType;
+                    if (escortPosition.DistanceTo(_followUnitModel.ExpectedEndPosition) < 15
                         && EvaluateCompleteCondition())
                     {
-                        Logger.Log($"[Step {_followUnitModel.Name}]: {foundUnit.Name} has reached their destination");
+                        Logger.Log($"[Step {_followUnitModel.Name}]: {_unitToEscort.Name} has reached their destination");
                         IsCompleted = true;
                         return;
                     }
 
-                    Vector3 targetPosition = foundUnit.PositionWithoutType;
-                    float followDistance = 20;
-
-                    foreach (IWoWUnit unit in _entityCache.EnemyUnitsList)
+                    IWoWUnit unitToDefendAgainst = ShouldDefendAgainst();
+                    if (unitToDefendAgainst != null)
                     {
-                        if (unit.TargetGuid == foundUnit.Guid)
-                        {
-                            Logger.Log($"Defending Follow Unit against {unit.Name}");
-                            ObjectManager.Me.Target = unit.Guid;
-                            Fight.StartFight(unit.Guid, false);
-                        }
+                        Logger.Log($"Defending {_unitToEscort.Name} against {unitToDefendAgainst.Name}");
+                        ObjectManager.Me.Target = unitToDefendAgainst.Guid;
+                        Fight.StartFight(unitToDefendAgainst.Guid, false);
                     }
 
                     if (!MovementManager.InMovement &&
-                        _entityCache.Me.PositionWT.DistanceTo(targetPosition) > followDistance)
+                        _entityCache.Me.PositionWT.DistanceTo(escortPosition) > 15)
                     {
-                        GoToTask.ToPosition(targetPosition);
+                        GoToTask.ToPosition(escortPosition);
                     }
                 }
             }
+        }
+
+        public IWoWUnit ShouldDefendAgainst()
+        {
+            if (_unitToEscort == null) return null;
+            foreach (IWoWUnit unit in _entityCache.EnemyUnitsList)
+            {
+                if (unit.TargetGuid > 0 && unit.TargetGuid == _unitToEscort.Guid)
+                {
+                    Logger.Log($"Defending Follow Unit against {unit.Name}");
+                    ObjectManager.Me.Target = unit.Guid;
+                    Fight.StartFight(unit.Guid, false);
+                }
+            }
+            return null;
         }
     }
 }

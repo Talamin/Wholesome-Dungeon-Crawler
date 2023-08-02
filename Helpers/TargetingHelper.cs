@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
@@ -7,12 +8,20 @@ namespace WholesomeDungeonCrawler.Helpers
 {
     class TargetingHelper
     {
-        public static void SwitchTargetAndFight(WoWUnit unit, CancelEventArgs canceable, string reason)
+        public static void SwitchTargetAndFight(IWoWUnit unit, CancelEventArgs canceable, string reason)
         {
-            Logger.LogOnce($"Switching target to {unit.Name} ({reason})");
-            canceable.Cancel = true;
-            ObjectManager.Me.Target = unit.Guid;
-            Fight.StartFight(unit.Guid, false);
+            try
+            {
+                if (unit == null || unit.IsDead) return;
+                Logger.LogOnce($"Switching target to {unit.Name} ({reason})");
+                canceable.Cancel = true;
+                ObjectManager.Me.Target = unit.Guid;
+                Fight.StartFight(unit.Guid, false);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e.ToString());
+            }
         }
 
         public enum TargetPriority

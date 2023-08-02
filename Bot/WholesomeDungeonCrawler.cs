@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
@@ -26,6 +27,20 @@ namespace WholesomeDungeonCrawler.Bot
         private IPathManager _pathManager;
         private IAvoidAOEManager _avoidAOEManager;
         private CheckPathAhead _checkPathAheadState;
+        private Stopwatch _stopWatchState = Stopwatch.StartNew();
+        private int _lastCheckedStateIndex;
+
+        private void BeforeStateHandler(Engine engine, State state, CancelEventArgs cancelable)
+        {
+            if (_stopWatchState.ElapsedMilliseconds > 110)
+            {
+                Logger.LogError($"{engine.States[_lastCheckedStateIndex].DisplayName} took {_stopWatchState.ElapsedMilliseconds}ms");
+            }
+            Logger.Log($"CHECKING {state.DisplayName}");
+            int stateIndex = engine.States.IndexOf(state);
+            _lastCheckedStateIndex = stateIndex;
+            _stopWatchState.Restart();
+        }
 
         internal bool InitialSetup()
         {
@@ -58,13 +73,14 @@ namespace WholesomeDungeonCrawler.Bot
 
                 EventsLuaWithArgs.OnEventsLuaStringWithArgs += OnEventsLuaStringWithArgs;
                 OthersEvents.OnMount += OnMount;
+                //FiniteStateMachineEvents.OnBeforeCheckIfNeedToRunState += BeforeStateHandler;
 
                 // List of states, top of the list is highest priority
                 State[] states = new State[]
                 {
                     new Relogger(),
                     new Unconnected(_entityCache),
-                    new ForceIsCastSwitch(_entityCache),
+                    //new IsCastSwitch(_entityCache),
                     new Pause(),
                     new LoadingScreenLock(_cache, _entityCache),
                     new LoadUnloadProfile(_cache, _entityCache, _profileManager),
@@ -73,15 +89,15 @@ namespace WholesomeDungeonCrawler.Bot
                     new DeadDive(_entityCache),
                     new Dead(_entityCache, _profileManager),
                     new ForceRegroup(_cache, _entityCache, _profileManager),
-                    new MyMacro(),
-                    new DungeonRegen(_entityCache),
-                    new ForceOOCHeal(_cache, _entityCache),
-                    new ForceWaitCombatFlagsDisappear(_cache, _entityCache),
+                    //new MyMacro(),
+                    new Regen(_entityCache, _profileManager),
+                    new OOCHeal(_cache, _entityCache),
+                    new WaitCombatFlagsDisappear(_cache, _entityCache),
                     new CombatTurboLoot(_entityCache),
                     new SlaveCombat(_cache, _entityCache, _profileManager),
                     new TankCombat(_cache, _entityCache, _profileManager),
                     //new Regeneration(),
-                    new ForceGroupRevive(_cache, _entityCache),
+                    new GroupRevive(_cache, _entityCache),
                     new WaitRest(_cache, _entityCache),
                     new TurboLoot(_entityCache),
                     _checkPathAheadState,
@@ -171,11 +187,11 @@ namespace WholesomeDungeonCrawler.Bot
                     break;
                 case "START_LOOT_ROLL":
                 case "CANCEL_LOOT_ROLL":
-                    /*
-                case "CONFIRM_LOOT_ROLL":
-                    _cache.CacheLootRollShow();
-                    break;
-                    */
+                /*
+            case "CONFIRM_LOOT_ROLL":
+                _cache.CacheLootRollShow();
+                break;
+                */
                 case "PARTY_MEMBERS_CHANGED":
                 case "PARTY_MEMBER_DISABLE":
                 case "PARTY_MEMBER_ENABLE":
@@ -189,6 +205,10 @@ namespace WholesomeDungeonCrawler.Bot
                 case "INSTANCE_LOCK_START":
                     _cache.CacheInLoadingScreen(id);
                     break;
+                case "PLAYER_LEVEL_UP":
+                    SpellManager.UpdateSpellBook();
+                    CustomClass.ResetCustomClass();
+                    break;
             }
         }
 
@@ -196,6 +216,7 @@ namespace WholesomeDungeonCrawler.Bot
         {
             try
             {
+                //FiniteStateMachineEvents.OnBeforeCheckIfNeedToRunState -= BeforeStateHandler;
                 EventsLuaWithArgs.OnEventsLuaStringWithArgs -= OnEventsLuaStringWithArgs;
                 OthersEvents.OnMount -= OnMount;
                 _avoidAOEManager?.Dispose();

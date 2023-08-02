@@ -272,6 +272,7 @@ namespace WholesomeDungeonCrawler.GUI
                             foreach (WoWUnit unit in ObjectManager.GetWoWUnitAttackables())
                             {
                                 if (unit != null
+                                    && ptssModel.ZoneToClearPosition != null
                                     && unit.Position.DistanceTo(ptssModel.ZoneToClearPosition) <= ptssModel.ZoneToClearRadius
                                     && unit.Position.Z <= ptssModel.ZoneToClearPosition.Z + ptssModel.ZoneToClearZLimit
                                     && unit.Position.Z >= ptssModel.ZoneToClearPosition.Z - ptssModel.ZoneToClearZLimit
@@ -310,6 +311,19 @@ namespace WholesomeDungeonCrawler.GUI
                     // Draw defend spot
                     if (psControl.SelectedItem is DefendSpotModel dsModel)
                     {
+                        foreach (WoWUnit unit in ObjectManager.GetWoWUnitAttackables())
+                        {
+                            if (unit != null
+                                && dsModel.DefendPosition != null
+                                && unit.Position.DistanceTo(dsModel.DefendPosition) <= dsModel.DefendSpotRadius
+                                && unit.Position.Z <= dsModel.DefendPosition.Z + dsModel.DefendSpotZLimit
+                                && unit.Position.Z >= dsModel.DefendPosition.Z - dsModel.DefendSpotZLimit
+                                && unit.IsAttackable)
+                            {
+                                Radar3D.DrawCircle(unit.Position, 1f, Color.Red, true, 100);
+                                Radar3D.DrawLine(dsModel.DefendPosition, unit.Position, Color.Red, 100);
+                            }
+                        }
                         if (dsModel.DefendPosition != null)
                         {
                             Radar3D.DrawCircle(dsModel.DefendPosition, dsModel.DefendSpotRadius, Color.MediumVioletRed, false, 200);
@@ -478,6 +492,15 @@ namespace WholesomeDungeonCrawler.GUI
             }
         }
 
+        private void InsertStepIntoList(StepModel stepModel)
+        {
+            int index = CurrentProfile.StepModels.Count;
+            if (psControl.SelectedItem != null)
+                index = CurrentProfile.StepModels.IndexOf(psControl.SelectedItem) + 1;
+            StepCollection.Insert(index, stepModel);
+            CurrentProfile.StepModels = StepCollection.ToList();
+        }
+
         private async void miMoveAlongPathStep_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -486,8 +509,7 @@ namespace WholesomeDungeonCrawler.GUI
                 if (x != null)
                 {
                     MoveAlongPathModel stepModel = new MoveAlongPathModel() { Name = x, Path = new List<Vector3>() };
-                    StepCollection.Add(stepModel);
-                    CurrentProfile.StepModels = StepCollection.ToList();
+                    InsertStepIntoList(stepModel);
                 }
             }
             catch (Exception ex)
@@ -505,8 +527,7 @@ namespace WholesomeDungeonCrawler.GUI
                 if (x != null)
                 {
                     InteractWithModel stepModel = new InteractWithModel() { Name = x, InteractDistance = 3 };
-                    StepCollection.Add(stepModel);
-                    CurrentProfile.StepModels = StepCollection.ToList();
+                    InsertStepIntoList(stepModel);
                 }
             }
             catch (Exception ex)
@@ -524,8 +545,7 @@ namespace WholesomeDungeonCrawler.GUI
                 if (x != null)
                 {
                     TalkToUnitModel stepModel = new TalkToUnitModel() { Name = x };
-                    StepCollection.Add(stepModel);
-                    CurrentProfile.StepModels = StepCollection.ToList();
+                    InsertStepIntoList(stepModel);
                 }
             }
             catch (Exception ex)
@@ -543,8 +563,7 @@ namespace WholesomeDungeonCrawler.GUI
                 if (x != null)
                 {
                     DefendSpotModel stepModel = new DefendSpotModel() { Name = x };
-                    StepCollection.Add(stepModel);
-                    CurrentProfile.StepModels = StepCollection.ToList();
+                    InsertStepIntoList(stepModel);
                 }
             }
             catch (Exception ex)
@@ -562,8 +581,7 @@ namespace WholesomeDungeonCrawler.GUI
                 if (x != null)
                 {
                     FollowUnitModel stepModel = new FollowUnitModel() { Name = x };
-                    StepCollection.Add(stepModel);
-                    CurrentProfile.StepModels = StepCollection.ToList();
+                    InsertStepIntoList(stepModel);
                 }
             }
             catch (Exception ex)
@@ -581,8 +599,7 @@ namespace WholesomeDungeonCrawler.GUI
                 if (x != null)
                 {
                     PullToSafeSpotModel stepModel = new PullToSafeSpotModel() { Name = x };
-                    StepCollection.Add(stepModel);
-                    CurrentProfile.StepModels = StepCollection.ToList();
+                    InsertStepIntoList(stepModel);
                 }
             }
             catch (Exception ex)
@@ -600,8 +617,7 @@ namespace WholesomeDungeonCrawler.GUI
                 if (x != null)
                 {
                     LeaveDungeonModel stepModel = new LeaveDungeonModel() { Name = x };
-                    StepCollection.Add(stepModel);
-                    CurrentProfile.StepModels = StepCollection.ToList();
+                    InsertStepIntoList(stepModel);
                 }
             }
             catch (Exception ex)
@@ -619,8 +635,7 @@ namespace WholesomeDungeonCrawler.GUI
                 if (x != null)
                 {
                     RegroupModel stepModel = new RegroupModel() { Name = x };
-                    StepCollection.Add(stepModel);
-                    CurrentProfile.StepModels = StepCollection.ToList();
+                    InsertStepIntoList(stepModel);
                 }
             }
             catch (Exception ex)
@@ -638,8 +653,7 @@ namespace WholesomeDungeonCrawler.GUI
                 if (x != null)
                 {
                     JumpToStepModel stepModel = new JumpToStepModel() { Name = x };
-                    StepCollection.Add(stepModel);
-                    CurrentProfile.StepModels = StepCollection.ToList();
+                    InsertStepIntoList(stepModel);
                 }
             }
             catch (Exception ex)

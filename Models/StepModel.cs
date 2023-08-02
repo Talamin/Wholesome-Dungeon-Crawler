@@ -79,6 +79,8 @@ namespace WholesomeDungeonCrawler.Models
         public Vector3 DefendPosition { get; set; }
         public int Timer { get; set; }
         public int DefendSpotRadius { get; set; } = 30;
+        public int DefendSpotZLimit { get; set; } = 5;
+        public bool ResetTimerOnCombat { get; set; }
     }
 
     public class FollowUnitModel : StepModel
@@ -105,9 +107,6 @@ namespace WholesomeDungeonCrawler.Models
 
     public class PullToSafeSpotModel : StepModel
     {
-        public readonly float DEFAULT_MELEE_FIGHT_RANGE = 7f;
-        public readonly float DEFAULT_RANGED_FIGHT_RANGE = 15f;
-
         public Vector3 SafeSpotPosition { get; set; }
         public int SafeSpotRadius { get; set; } = 10;
         public Vector3 ZoneToClearPosition { get; set; }

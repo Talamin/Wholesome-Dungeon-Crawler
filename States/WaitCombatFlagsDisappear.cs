@@ -1,6 +1,5 @@
 ﻿using robotManager.FiniteStateMachine;
 using System.Linq;
-using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
@@ -9,7 +8,7 @@ using Timer = robotManager.Helpful.Timer;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class ForceWaitCombatFlagsDisappear : State, IState
+    class WaitCombatFlagsDisappear : State, IState
     {
         public override string DisplayName => "Waiting for party combat flags to wear off";
         private Timer _timerUntilBan = null;
@@ -20,7 +19,7 @@ namespace WholesomeDungeonCrawler.States
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
 
-        public ForceWaitCombatFlagsDisappear(
+        public WaitCombatFlagsDisappear(
             ICache iCache,
             IEntityCache entityCache)
         {
@@ -71,7 +70,6 @@ namespace WholesomeDungeonCrawler.States
         {
             Logger.LogOnce($"Waiting for party combat flags to wear off (max {_waitTime}s)");
             MovementManager.StopMove();
-            Thread.Sleep(1000);
         }
     }
 }

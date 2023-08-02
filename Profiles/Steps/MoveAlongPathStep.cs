@@ -86,7 +86,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 return;
             }
 
-            if (_entityCache.ListGroupMember.Any(m => m.WowUnit.IsCast))
+            if (_entityCache.ListGroupMember.Any(m => m.WowUnit.IsCast)
+                && _entityCache.EnemiesAttackingGroup.Length <= 0)
             {
                 MovementManager.StopMove();
                 Logger.LogOnce($"A party member is casting, waiting");

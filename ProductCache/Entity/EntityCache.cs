@@ -15,6 +15,8 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
     internal class EntityCache : IEntityCache
     {
         private object cacheLock = new object();
+        private bool IAmShaman;
+
         public EntityCache()
         {
         }
@@ -25,6 +27,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         }
         public void Initialize()
         {
+            IAmShaman = ObjectManager.Me.WowClass == WoWClass.Shaman;
             CachePartyMembersInfo();
             OnObjectManagerPulse();
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
@@ -60,7 +63,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             {
                 Stopwatch watchTotal = Stopwatch.StartNew();
                 Stopwatch watchInit = Stopwatch.StartNew();
-                WoWLocalPlayer me;
                 IWoWLocalPlayer cachedMe;
                 IWoWUnit cachedTarget, cachedPet;
                 List<WoWUnit> units;
@@ -73,18 +75,11 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
                 lock (cacheLock)
                 {
-                    me = ObjectManager.Me;
-                    cachedMe = Cache(me);
-
-                    cachedTarget = Cache(new WoWUnit(0));
-                    var targetObjectBaseAddress = ObjectManager.GetObjectByGuid(me.Target).GetBaseAddress;
-                    if (targetObjectBaseAddress != 0)
-                    {
-                        var target = new WoWUnit(targetObjectBaseAddress);
-                        cachedTarget = Cache(target);
-                    }
-
-                    cachedPet = Cache(ObjectManager.Pet);
+                    cachedMe = Cache(ObjectManager.Me);
+                    //Stopwatch watchTarget = Stopwatch.StartNew();
+                    cachedTarget = ObjectManager.Target.Guid != 0 ? Cache(ObjectManager.Target) : Cache(new WoWUnit(0)); // Is occasionally slow with shaman for some reason
+                    //if (watchTarget.ElapsedMilliseconds > 50) Logger.LogError($"Target took {watchTarget.ElapsedMilliseconds}");
+                    cachedPet = IAmShaman ? Cache(new WoWUnit(0)) : Cache(ObjectManager.Pet);
                     units = ObjectManager.GetObjectWoWUnit();
                     playerUnits = ObjectManager.GetObjectWoWPlayer();
                 }
@@ -184,12 +179,12 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
                 EnemiesAttackingGroup = enemyAttackingGroup.ToArray();
                 EnemyUnitsList = enemyUnits.ToArray();
-                GroupPets = groupPets.ToArray();
+                GroupPets = groupPets.ToArray(); // Also contains totems
 
                 long enemiesTime = enemiesWatch.ElapsedMilliseconds;
 
                 if (watchTotal.ElapsedMilliseconds > 100)
-                    Logger.LogError($"Ent: {watchTotal.ElapsedMilliseconds}ms - [init: {initTime}] [players: {playersTime}] [{enemyUnits.Count} enemies: {enemiesTime}]");
+                    Logger.LogError($"[init: {initTime}] [players: {playersTime}] [{enemyUnits.Count} enemies: {enemiesTime}]");
             }
             catch (Exception ex)
             {

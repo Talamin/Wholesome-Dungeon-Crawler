@@ -24,9 +24,9 @@ namespace WholesomeDungeonCrawler.Helpers
             new DungeonModel { Name="Razorfen Kraul", DungeonId=16, MapId=47, ContinentId=1, EntranceLoc=new Vector3(-4459.325, -1657.642, 81.80143, "None") },
             new DungeonModel { Name="Razorfen Downs", DungeonId=20, MapId=129, ContinentId=1, EntranceLoc=new Vector3(-4662.351, -2533.959, 82.09897, "None")},
             new DungeonModel { Name="Uldaman", DungeonId=22, MapId=70, ContinentId=0, EntranceLoc=new Vector3(-6059.759, -2955.001, 209.769, "None") },
-            new DungeonModel { Name="Maraudon - Foulspore Cavern", MapId=349, ContinentId=1, EntranceLoc=new Vector3(-1478.906, 2616.896, 75.71483, "None") },
-            new DungeonModel { Name="Maraudon - The Wicked Grotto", MapId=349, ContinentId=1, EntranceLoc=new Vector3(-1184.009, 2868.457, 85.56033, "None") },
-            new DungeonModel { Name="Maraudon - Earth Song Falls", MapId=349, ContinentId=1, EntranceLoc=new Vector3(-1184.009, 2868.457, 85.56033, "None") },
+            new DungeonModel { Name="Maraudon - Foulspore Cavern", DungeonId=26, MapId=349, ContinentId=1, EntranceLoc=new Vector3(-1478.906, 2616.896, 75.71483, "None") }, // orange
+            new DungeonModel { Name="Maraudon - The Wicked Grotto", DungeonId=272, MapId=349, ContinentId=1, EntranceLoc=new Vector3(-1184.009, 2868.457, 85.56033, "None") }, // purple
+            new DungeonModel { Name="Maraudon - Earth Song Falls", DungeonId=273, MapId=349, ContinentId=1, EntranceLoc=new Vector3(-1184.009, 2868.457, 85.56033, "None") },
             new DungeonModel { Name="Zul'Farrak", DungeonId=24, MapId=209, ContinentId=1, EntranceLoc=new Vector3(-6790.196, -2891.261, 8.902938, "None") },
             new DungeonModel { Name="The Temple of Atal'Hakkar", DungeonId=28, MapId=109, ContinentId=0, EntranceLoc=new Vector3(-10169.46, -3997.184, -113.8935, "None") },
             new DungeonModel { Name="Blackrock Depths - Prison", DungeonId=30, MapId=230, ContinentId=0, EntranceLoc=new Vector3(-7177.132, -932.0781, 165.9823, "None") },
@@ -139,6 +139,7 @@ namespace WholesomeDungeonCrawler.Helpers
             { 11582, new SpecialPrio(0, TargetPriority.High, true) }, // Dark Summoner (Scholomance)
             { 4292, new SpecialPrio(0, TargetPriority.High, true) }, // Scarlet Protector (Armory)
             { 4303, new SpecialPrio(0, TargetPriority.High, true) }, // Scarlet Abott (Cathedral)
+            { 5650, new SpecialPrio(0, TargetPriority.High, true) }, // Sandfury Witch Doctor (Zul'Farak)
             // Low
             { 8996, new SpecialPrio(0, TargetPriority.Low, true) }, // Voidwalker minion (Ragefire Chasm)
             { 2520, new SpecialPrio(0, TargetPriority.Low, true) }, // Remote-Controlled Golem (Deadmines)

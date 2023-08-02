@@ -13,7 +13,7 @@ using Timer = robotManager.Helpful.Timer;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class ForceGroupRevive : State, IState
+    class GroupRevive : State, IState
     {
         public override string DisplayName => "Group Revive";
 
@@ -30,7 +30,7 @@ namespace WholesomeDungeonCrawler.States
 
         private Dictionary<string, Timer> _playerRezTimer = new Dictionary<string, Timer>(); // player name -> associated Timer
 
-        public ForceGroupRevive(
+        public GroupRevive(
             ICache iCache,
             IEntityCache entityCache)
         {
@@ -45,9 +45,9 @@ namespace WholesomeDungeonCrawler.States
                 if (_entityCache.EnemiesAttackingGroup.Length > 0
                     || !_cache.IsInInstance
                     || !_rezzClasses.ContainsKey(_entityCache.Me.WoWClass)
+                    || !_entityCache.ListGroupMember.Any(unit => unit.IsDead)
                     || !SpellManager.KnowSpell(_rezzClasses[_entityCache.Me.WoWClass])
-                    || !SpellManager.SpellUsableLUA(_rezzClasses[_entityCache.Me.WoWClass])
-                    || !_entityCache.ListGroupMember.Any(unit => unit.IsDead))
+                    || !SpellManager.SpellUsableLUA(_rezzClasses[_entityCache.Me.WoWClass]))
                 {
                     return false;
                 }

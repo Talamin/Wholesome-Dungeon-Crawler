@@ -286,13 +286,21 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         private void OnFightHandler(WoWUnit currentTarget, CancelEventArgs canceable)
         {
-            if (_entityCache.EnemiesAttackingGroup.Length > 0
-                && !AnEnemyIsStandingStill
-                && _entityCache.EnemiesAttackingGroup.All(e => !PositionInSafeSpotFightRange(e.PositionWT))
-                && _entityCache.ListGroupMember.All(g => g.TargetGuid <= 0 || g.WowUnit.TargetObject.Reaction > Reaction.Hostile))
+            try
             {
-                canceable.Cancel = true;
-                return;
+                if (_entityCache.EnemiesAttackingGroup.Length > 0
+                    && !AnEnemyIsStandingStill
+                    && _entityCache.EnemiesAttackingGroup.All(e => !PositionInSafeSpotFightRange(e.PositionWT))
+                    && _entityCache.ListGroupMember.All(g => g.TargetGuid <= 0 || g.WowUnit.TargetObject.Reaction > Reaction.Hostile))
+                {
+                    Logger.Log($"Cancelling fight (Pull Step)");
+                    canceable.Cancel = true;
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(e.ToString());
             }
         }
 

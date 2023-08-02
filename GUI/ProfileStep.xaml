@@ -213,6 +213,8 @@
                             </StackPanel>
                             <Controls:NumericUpDown x:Name="txtDefendSpotRadius" Controls:TextBoxHelper.Watermark="Defend radius" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="10 5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.DefendSpotRadius, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <Controls:NumericUpDown x:Name="txtDefendSpotTimer" Controls:TextBoxHelper.Watermark="Duration in seconds" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="10 5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.Timer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Controls:NumericUpDown x:Name="txtDefendSpotZLimit" Controls:TextBoxHelper.Watermark="Z Limit" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="10 5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.DefendSpotZLimit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Controls:ToggleSwitch x:Name="chkDefendSpotResetTimerOnCombat" IsChecked="{Binding SelectedItem.ResetTimerOnCombat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Reset Timer on combat" OffLabel="Reset Timer on combat" Margin="10 5"/>
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>

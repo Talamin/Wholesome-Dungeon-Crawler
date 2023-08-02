@@ -1,17 +1,17 @@
-﻿using robotManager.FiniteStateMachine;
+﻿/*using robotManager.FiniteStateMachine;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class ForceIsCastSwitch : State
+    class IsCastSwitch : State
     {
         public override string DisplayName => "ForceIsCast switch";
 
         private readonly IEntityCache _entityCache;
 
-        public ForceIsCastSwitch(
+        public IsCastSwitch(
             IEntityCache EntityCache)
         {
             _entityCache = EntityCache;
@@ -20,7 +20,7 @@ namespace WholesomeDungeonCrawler.States
         /* 
          * The sole purpose of this state is to reenable ForceIsCast after regen
          * It should be a top prio state to make sure we always reenable it in time
-         */
+         *//*
         public override bool NeedToRun
         {
             get
@@ -40,3 +40,4 @@ namespace WholesomeDungeonCrawler.States
         public override void Run() { }
     }
 }
+*/

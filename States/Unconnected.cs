@@ -8,7 +8,7 @@ namespace WholesomeDungeonCrawler.States
 {
     class Unconnected : State, IState
     {
-        public override string DisplayName => "Forced Stop";
+        public override string DisplayName => "Unconnected";
         private readonly IEntityCache _entityCache;
 
         public Unconnected(IEntityCache entityCache)

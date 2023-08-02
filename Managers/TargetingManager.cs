@@ -47,222 +47,239 @@ namespace WholesomeDungeonCrawler.Managers
 
         public void OnFightHandler(WoWUnit currentTarget, CancelEventArgs canceable)
         {
-            if (currentTarget == null)
+            try
             {
-                return;
-            }
-
-            if (_entityCache.Target.IsDead)
-            {
-                Interact.ClearTarget();
-            }
-
-            if (_entityCache.ListGroupMember.Any(member => member.HasDrinkBuff || member.HasFoodBuff)
-                && _entityCache.EnemiesAttackingGroup.Length <= 0)
-            {
-                Logger.LogOnce($"Cancelling fight because someone needs regeneration");
-                canceable.Cancel = true;
-                MovementManager.StopMove();
-                return;
-            }
-
-            Vector3 myPos = _entityCache.Me.PositionWT;
-
-            if (_entityCache.IAmTank)
-            {
-                // Don't override pull step combat
-                if (_profileManager.ProfileIsRunning
-                    && _profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep pullStep)
+                if (currentTarget == null)
                 {
-                    if (!pullStep.PositionInSafeSpotFightRange(_entityCache.Me.PositionWT))
-                        return;
-                }
-
-                // Don't chase fleers
-                if (_entityCache.Target != null
-                    && _entityCache.Target.Fleeing
-                    && _entityCache.EnemiesAttackingGroup.Count() > 0)
-                {
-                    Logger.LogOnce($"Target is fleeing. Canceled fight");
-                    canceable.Cancel = true;
-                    Interact.ClearTarget();
                     return;
                 }
 
-                // NPC is currently being tanked or fleeing, lets check there isn't anyone more important
-                if (_entityCache.Target == null || _entityCache.Target.TargetGuid == _entityCache.Me.Guid)
+                if (_entityCache.Target.IsDead)
                 {
-                    // Check for escort NPCs being targeted
-                    IWoWUnit unitTargetingEscort = _entityCache.EnemyUnitsList
-                        .Where(unit => _entityCache.NpcsToDefend.Exists(npcToDefend => npcToDefend.Guid == unit.TargetGuid))
-                        .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
-                        .FirstOrDefault();
-                    if (unitTargetingEscort != null && unitTargetingEscort.Guid != _entityCache.Target.Guid)
+                    Interact.ClearTarget();
+                }
+
+                ulong myTargetGuid = _entityCache.Me.TargetGuid;
+                Vector3 myPos = _entityCache.Me.PositionWT;
+                IWoWUnit myTarget = _entityCache.Target;
+                IWoWPlayer tankUnit = _entityCache.TankUnit;
+
+                if (_entityCache.ListGroupMember.Any(member => member.HasDrinkBuff || member.HasFoodBuff)
+                    && _entityCache.EnemiesAttackingGroup.Length <= 0)
+                {
+                    Logger.LogOnce($"Cancelling fight because someone needs regeneration");
+                    canceable.Cancel = true;
+                    MovementManager.StopMove();
+                    return;
+                }
+
+                if (_entityCache.IAmTank)
+                {
+                    // Don't override pull step combat
+                    if (_profileManager.ProfileIsRunning
+                        && _profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep pullStep)
                     {
-                        SwitchTargetAndFight(unitTargetingEscort.WowUnit, canceable, "Protecting NPC");
+                        if (!pullStep.PositionInSafeSpotFightRange(myPos))
+                        {
+                            return;
+                        }
+                    }
+
+                    // Don't chase fleers
+                    if (myTarget != null
+                        && myTarget.Fleeing
+                        && _entityCache.EnemiesAttackingGroup.Count() > 0)
+                    {
+                        Logger.LogOnce($"Target is fleeing. Canceled fight");
+                        canceable.Cancel = true;
+                        Interact.ClearTarget();
                         return;
                     }
 
-                    // Check for untanked units
-                    IWoWUnit untankedUnit = _entityCache.EnemiesAttackingGroup
-                        .Where(unit => unit.TargetGuid != _entityCache.Me.Guid
-                            && unit.PositionWT.DistanceTo(myPos) <= 60)
-                        .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
-                        .FirstOrDefault();
-                    if (untankedUnit != null && untankedUnit.Guid != _entityCache.Target.Guid)
+                    // NPC is currently being tanked or fleeing, lets check there isn't anyone more important
+                    if (myTarget == null || myTarget.TargetGuid == _entityCache.Me.Guid)
                     {
-                        SwitchTargetAndFight(untankedUnit.WowUnit, canceable, "Protecting group member");
-                        return;
-                    }
+                        // Check for escort NPCs being targeted
+                        IWoWUnit unitTargetingEscort = _entityCache.EnemyUnitsList
+                            .Where(unit => _entityCache.NpcsToDefend.Exists(npcToDefend => npcToDefend.Guid == unit.TargetGuid))
+                            .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
+                            .FirstOrDefault();
+                        if (unitTargetingEscort != null && unitTargetingEscort.Guid != myTargetGuid)
+                        {
+                            SwitchTargetAndFight(unitTargetingEscort, canceable, "Protecting NPC");
+                            return;
+                        }
 
-                    // Everything is being tanked, switch tank target to lowest HP mob
-                    IWoWUnit weakestEnemy = _entityCache.EnemiesAttackingGroup
-                        .Where(unit => unit.PositionWT.DistanceTo(myPos) <= 60)
-                        .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
-                        .FirstOrDefault();
-                    if (weakestEnemy != null
-                        && weakestEnemy.Guid != _entityCache.Me.TargetGuid
-                        && _entityCache.Target != null
-                        && _entityCache.Target.Health / weakestEnemy.Health > MIN_TARGET_SWAP_RATIO
-                        && _entityCache.Target.Health - weakestEnemy.Health > MIN_TARGET_SWAP_HP)
-                    {
-                        SwitchTargetAndFight(weakestEnemy.WowUnit, canceable, "Lowest HP");
-                        return;
-                    }
+                        // Check for untanked units
+                        IWoWUnit untankedUnit = _entityCache.EnemiesAttackingGroup
+                            .Where(unit => unit.TargetGuid != _entityCache.Me.Guid
+                                && unit.PositionWT.DistanceTo(myPos) <= 60)
+                            .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
+                            .FirstOrDefault();
+                        if (untankedUnit != null && untankedUnit.Guid != myTargetGuid)
+                        {
+                            SwitchTargetAndFight(untankedUnit, canceable, "Protecting group member");
+                            return;
+                        }
 
-                    // No current or priority targets, get closest enemy in combat
-                    if (_entityCache.Target == null)
-                    {
-                        IWoWUnit closestEnemy = _entityCache.EnemiesAttackingGroup
+                        // Everything is being tanked, switch tank target to lowest HP mob
+                        IWoWUnit weakestEnemy = _entityCache.EnemiesAttackingGroup
                             .Where(unit => unit.PositionWT.DistanceTo(myPos) <= 60)
                             .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
                             .FirstOrDefault();
-                        if (closestEnemy != null && closestEnemy.Guid != _entityCache.Me.TargetGuid)
+                        if (weakestEnemy != null
+                            && weakestEnemy.Guid != myTargetGuid
+                            && myTarget != null
+                            && myTarget.Health / weakestEnemy.Health > MIN_TARGET_SWAP_RATIO
+                            && myTarget.Health - weakestEnemy.Health > MIN_TARGET_SWAP_HP)
                         {
-                            SwitchTargetAndFight(closestEnemy.WowUnit, canceable, "Closest");
+                            SwitchTargetAndFight(weakestEnemy, canceable, "Lowest HP");
                             return;
+                        }
 
+                        // No current or priority targets, get closest enemy in combat
+                        if (myTarget == null)
+                        {
+                            IWoWUnit closestEnemy = _entityCache.EnemiesAttackingGroup
+                                .Where(unit => unit.PositionWT.DistanceTo(myPos) <= 60)
+                                .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
+                                .FirstOrDefault();
+                            if (closestEnemy != null && closestEnemy.Guid != myTargetGuid)
+                            {
+                                SwitchTargetAndFight(closestEnemy, canceable, "Closest");
+                                return;
+
+                            }
+                        }
+                    }
+                }
+                else
+                {                    
+                    // Healer, stick with tank target if possible
+                    if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Heal
+                        && tankUnit != null
+                        && tankUnit.TargetGuid > 0
+                        && myTargetGuid > 0)
+                    {
+                        IWoWUnit unitTargetedByTank = _entityCache.EnemiesAttackingGroup
+                            .Where(unit => unit.Guid == tankUnit.TargetGuid)
+                            .FirstOrDefault();
+                        if (unitTargetedByTank != null && unitTargetedByTank.Guid != myTargetGuid)
+                        {
+                            SwitchTargetAndFight(unitTargetedByTank, canceable, "Sticking with tank target");
+                            return;
+                        }
+                    }
+                    
+                    // Melee DPS - Don't chase fleers
+                    if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.MDPS
+                        && myTarget != null
+                        && myTarget.Fleeing
+                        && _entityCache.EnemiesAttackingGroup.Count() > 0)
+                    {
+                        Logger.LogOnce($"Target is fleeing. Canceled fight (melee)");
+                        canceable.Cancel = true;
+                        Interact.ClearTarget();
+                        return;
+                    }
+
+                    // Record enmey lists by priority
+                    _lowPrioUnits.Clear();
+                    _highPrioUnits.Clear();
+                    List<IWoWUnit> filteredEnemies = new List<IWoWUnit>(_entityCache.EnemyUnitsList);
+                    foreach (IWoWUnit enemy in filteredEnemies)
+                    {
+                        if (Lists.SpecialPrioTargets.TryGetValue(enemy.Entry, out SpecialPrio prio))
+                        {
+                            if (prio.WhenAttackingGroup && !enemy.IsAttackingGroup) continue;
+                            if (prio.WhenInFightWith > 0 && !filteredEnemies.Any(ifEnemy => ifEnemy.IsAttackingGroup && ifEnemy.Entry == prio.WhenInFightWith)) continue;
+                            if (prio.TargetPriority == TargetPriority.Low) _lowPrioUnits.Add(enemy);
+                            if (prio.TargetPriority == TargetPriority.High) _highPrioUnits.Add(enemy);
+                        }
+                    }
+
+                    // If other units are fighting
+                    if (_entityCache.EnemiesAttackingGroup.Count() > _lowPrioUnits.Count)
+                    {
+                        // We're targeting a low prio, cancel fight
+                        if (_lowPrioUnits.Any(lpu => myTargetGuid == lpu.Guid))
+                        {
+                            IWoWUnit newUnit = _entityCache.EnemiesAttackingGroup
+                                .Where(enemy => !_lowPrioUnits.Exists(en => en.Guid == enemy.Guid))
+                                .OrderBy(enemy => enemy.HealthPercent)
+                                .FirstOrDefault();
+                            if (newUnit != null)
+                            {
+                                SwitchTargetAndFight(newUnit, canceable, "Target was low priority");
+                                return;
+                            }
+                        }
+                        // We remove all the low prios from the filtered list
+                        filteredEnemies.RemoveAll(fe => _lowPrioUnits.Exists(lpu => lpu.Entry == fe.Entry));
+                    }
+
+                    // DPS - Handle prios
+                    if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.RDPS
+                        || WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.MDPS)
+                    {
+                        if (_highPrioUnits.Count > 0)
+                        {
+                            IWoWUnit prioTarget = _highPrioUnits
+                                .OrderBy(unit => unit.HealthPercent)
+                                .FirstOrDefault();
+                            if (prioTarget.Guid != myTargetGuid)
+                            {
+                                SwitchTargetAndFight(prioTarget, canceable, "High priority target");
+                                return;
+                            }
+                        }
+                    }
+
+                    // Ranged DPS - Kill fleers
+                    if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.RDPS)
+                    {
+                        IWoWUnit fleer = _entityCache.EnemyUnitsList
+                            .Where(unit => unit.Fleeing && unit.PositionWT.DistanceTo(myPos) <= 60)
+                            .OrderBy(e => e.HealthPercent)
+                            .FirstOrDefault();
+                        if (fleer != null && fleer.Guid != myTargetGuid)
+                        {
+                            SwitchTargetAndFight(fleer, canceable, "Target is fleeing");
+                            return;
+                        }
+                    }
+
+                    if (myTarget == null)
+                    {
+                        // Assist tank
+                        if (tankUnit != null)
+                        {
+                            IWoWUnit unitTargetedByTank = filteredEnemies
+                                .Where(unit => unit.TargetGuid == tankUnit.Guid)
+                                .FirstOrDefault();
+                            if (unitTargetedByTank != null && unitTargetedByTank.Guid != myTargetGuid)
+                            {
+                                SwitchTargetAndFight(unitTargetedByTank, canceable, "Assisting tank");
+                                return;
+                            }
+                        }
+
+                        // Assist any Groupmember if Tank is not here
+                        IWoWUnit unitAttackingMember = filteredEnemies
+                            .Where(unit => unit.PositionWT.DistanceTo(myPos) <= 60)
+                            .OrderBy(unit => unit.HealthPercent)
+                            .FirstOrDefault();
+                        if (unitAttackingMember != null && unitAttackingMember.Guid != myTargetGuid)
+                        {
+                            SwitchTargetAndFight(unitAttackingMember, canceable, "Assisting group member");
+                            return;
                         }
                     }
                 }
             }
-            else
+            catch (Exception e)
             {
-                // Healer, stick with tank target if possible
-                if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Heal
-                    && _entityCache.TankUnit != null
-                    && _entityCache.TankUnit.TargetGuid > 0
-                    && _entityCache.Me.TargetGuid != _entityCache.TankUnit.TargetGuid)
-                {
-                    SwitchTargetAndFight(_entityCache.TankUnit.WowUnit.TargetObject, canceable, "Sticking with tank target");
-                    return;
-                }
-
-                // Melee DPS - Don't chase fleers
-                if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.MDPS
-                    && _entityCache.Target != null
-                    && _entityCache.Target.Fleeing
-                    && _entityCache.EnemiesAttackingGroup.Count() > 0)
-                {
-                    Logger.LogOnce($"Target is fleeing. Canceled fight (melee)");
-                    canceable.Cancel = true;
-                    Interact.ClearTarget();
-                    return;
-                }
-
-                // Record enmey lists by priority
-                _lowPrioUnits.Clear();
-                _highPrioUnits.Clear();
-                List<IWoWUnit> filteredEnemies = new List<IWoWUnit>(_entityCache.EnemyUnitsList);
-                foreach (IWoWUnit enemy in filteredEnemies)
-                {
-                    if (Lists.SpecialPrioTargets.TryGetValue(enemy.Entry, out SpecialPrio prio))
-                    {
-                        if (prio.WhenAttackingGroup && !enemy.IsAttackingGroup) continue;
-                        if (prio.WhenInFightWith > 0 && !filteredEnemies.Any(ifEnemy => ifEnemy.IsAttackingGroup && ifEnemy.Entry == prio.WhenInFightWith)) continue;
-                        if (prio.TargetPriority == TargetPriority.Low) _lowPrioUnits.Add(enemy);
-                        if (prio.TargetPriority == TargetPriority.High) _highPrioUnits.Add(enemy);
-                    }
-                }
-
-                // If other units are fighting
-                if (_entityCache.EnemiesAttackingGroup.Count() > _lowPrioUnits.Count)
-                {
-                    // We're targeting a low prio, cancel fight
-                    if (_lowPrioUnits.Any(lpu => _entityCache.Me.TargetGuid == lpu.Guid))
-                    {
-                        IWoWUnit newUnit = _entityCache.EnemiesAttackingGroup
-                            .Where(enemy => !_lowPrioUnits.Exists(en => en.Guid == enemy.Guid))
-                            .OrderBy(enemy => enemy.HealthPercent)
-                            .FirstOrDefault();
-                        if (newUnit != null)
-                        {
-                            SwitchTargetAndFight(newUnit.WowUnit, canceable, "Target was low priority");
-                            return;
-                        }
-                    }
-                    // We remove all the low prios from the filtered list
-                    filteredEnemies.RemoveAll(fe => _lowPrioUnits.Exists(lpu => lpu.Entry == fe.Entry));
-                }
-
-                // DPS - Handle prios
-                if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.RDPS
-                    || WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.MDPS)
-                {
-                    if (_highPrioUnits.Count > 0)
-                    {
-                        IWoWUnit prioTarget = _highPrioUnits
-                            .OrderBy(unit => unit.HealthPercent)
-                            .FirstOrDefault();
-                        if (prioTarget.Guid != _entityCache.Me.TargetGuid)
-                        {
-                            SwitchTargetAndFight(prioTarget.WowUnit, canceable, "High priority target");
-                            return;
-                        }
-                    }
-                }
-
-                // Ranged DPS - Kill fleers
-                if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.RDPS)
-                {
-                    IWoWUnit fleer = _entityCache.EnemyUnitsList
-                        .Where(unit => unit.Fleeing && unit.PositionWT.DistanceTo(myPos) <= 60)
-                        .OrderBy(e => e.HealthPercent)
-                        .FirstOrDefault();
-                    if (fleer != null && fleer.Guid != _entityCache.Me.TargetGuid)
-                    {
-                        SwitchTargetAndFight(fleer.WowUnit, canceable, "Target is fleeing");
-                        return;
-                    }
-                }
-
-                if (_entityCache.Target == null)
-                {
-                    // Assist tank
-                    if (_entityCache.TankUnit != null)
-                    {
-                        IWoWUnit unitTargetedByTank = filteredEnemies
-                            .Where(unit => unit.TargetGuid == _entityCache.TankUnit.Guid)
-                            .OrderBy(unit => unit.HealthPercent)
-                            .FirstOrDefault();
-                        if (unitTargetedByTank != null && unitTargetedByTank.Guid != _entityCache.Me.TargetGuid)
-                        {
-                            SwitchTargetAndFight(unitTargetedByTank.WowUnit, canceable, "Assisting tank");
-                            return;
-                        }
-                    }
-
-                    // Assist any Groupmember if Tank is not here
-                    IWoWUnit unitAttackingMember = filteredEnemies
-                        .Where(unit => unit.PositionWT.DistanceTo(myPos) <= 60)
-                        .OrderBy(unit => unit.HealthPercent)
-                        .FirstOrDefault();
-                    if (unitAttackingMember != null && unitAttackingMember.Guid != _entityCache.Me.TargetGuid)
-                    {
-                        SwitchTargetAndFight(unitAttackingMember.WowUnit, canceable, "Assisting group member");
-                        return;
-                    }
-                }
+                Logger.LogError(e.ToString());
             }
         }
 

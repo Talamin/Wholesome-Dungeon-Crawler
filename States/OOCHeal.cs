@@ -12,7 +12,7 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class ForceOOCHeal : State, IState
+    class OOCHeal : State, IState
     {
         public override string DisplayName => "Force Heal";
 
@@ -30,7 +30,7 @@ namespace WholesomeDungeonCrawler.States
             { WoWClass.Shaman, new List<string>() { "Lesser Healing Wave", "Healing Wave" } }
         };
 
-        public ForceOOCHeal(
+        public OOCHeal(
             ICache iCache,
             IEntityCache entityCache)
         {
@@ -46,8 +46,7 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (!_cache.IsInInstance
                     || _entityCache.EnemiesAttackingGroup.Length > 0
-                    || _entityCache.ListGroupMember.All(unit => unit.HealthPercent > _healThreshold)
-                    || _entityCache.ListGroupMember.Any(unit => unit.IsDead))
+                    || !_entityCache.ListGroupMember.Any(unit => unit.IsValid && !unit.IsDead && unit.HealthPercent < _healThreshold))
                 {
                     return false;
                 }

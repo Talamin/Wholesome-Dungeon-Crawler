@@ -3,24 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Managers;
+using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
+using WholesomeDungeonCrawler.Profiles.Steps;
 using wManager;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
-    class DungeonRegen : State, IState
+    class Regen : State, IState
     {
         public override string DisplayName => "Dungeon Regen";
 
         private readonly IEntityCache _entityCache;
+        private readonly IProfileManager _profileManager;
         private string _selectedFood;
         private string _selectedDrink;
 
-        public DungeonRegen(IEntityCache iEntityCache)
+        public Regen(IEntityCache iEntityCache, IProfileManager profileManager)
         {
             _entityCache = iEntityCache;
+            _profileManager = profileManager;
         }
 
         public override bool NeedToRun
@@ -30,6 +35,22 @@ namespace WholesomeDungeonCrawler.States
                 if (_entityCache.Me.Swimming
                     || _entityCache.EnemiesAttackingGroup.Length > 0
                     || ObjectManager.Me.IsMounted)
+                {
+                    return false;
+                }
+
+                // Interrupt regen if defend spot attacked
+                if (_profileManager.ProfileIsRunning
+                    && _profileManager.CurrentDungeonProfile.CurrentStep is DefendSpotStep defendSpotStep
+                    && defendSpotStep.ShouldDefendAgainst != null)
+                {
+                    return false;
+                }
+
+                // Interrupt regen if escorted unit attacked
+                if (_profileManager.ProfileIsRunning
+                    && _profileManager.CurrentDungeonProfile.CurrentStep is FollowUnitStep followUnitStep
+                    && followUnitStep.ShouldDefendAgainst() != null)
                 {
                     return false;
                 }
@@ -86,7 +107,7 @@ namespace WholesomeDungeonCrawler.States
             Thread.Sleep(500);
             MovementManager.StopMove();
 
-            // We get stats from LUA because wrobot returns obsolete health/mana info
+            // We get stats from LUA because wrobot's object manager returns obsolete health/mana info
             // Note: This is why sometimes wrobot keeps drinking despite being full mana
             int[] realStats = Lua.LuaDoString<int[]>($@"
                 local result = {{}};
@@ -102,13 +123,14 @@ namespace WholesomeDungeonCrawler.States
             int currentMana = realStats[2];
             int maxMana = realStats[3];
             int currentHealthPercent = currentHealth / maxHealth * 100;
-            int currentManaPercent = currentMana / maxMana * 100;
+            int currentManaPercent = maxMana > 0 ? currentMana / maxMana * 100 : 100;
 
             // Currently eating
             if (_entityCache.Me.HasFoodBuff
                 && currentHealthPercent >= 99)
             {
                 Lua.LuaDoString($"CancelUnitBuff('player', 'Food');");
+                Thread.Sleep(1000); // Avoid retrigger
                 return;
             }
 
@@ -117,6 +139,7 @@ namespace WholesomeDungeonCrawler.States
                 && currentManaPercent >= 99)
             {
                 Lua.LuaDoString($"CancelUnitBuff('player', 'Drink');");
+                Thread.Sleep(1000); // Avoid retrigger
                 return;
             }
 
@@ -124,16 +147,11 @@ namespace WholesomeDungeonCrawler.States
                 && !_entityCache.Me.HasFoodBuff
                 && !string.IsNullOrEmpty(_selectedFood))
             {
-                ObjectManager.Me.ForceIsCast = true;
                 ItemsManager.UseItem(_selectedFood);
-                Thread.Sleep(500);
+                Thread.Sleep(1000);
                 if (_entityCache.Me.HasFoodBuff)
                 {
                     Logger.LogOnce($"Eating {_selectedFood} ({ItemsManager.GetItemCountByNameLUA(_selectedFood)} left in bags)");
-                }
-                else
-                {
-                    ObjectManager.Me.ForceIsCast = false;
                 }
                 return;
             }
@@ -142,16 +160,11 @@ namespace WholesomeDungeonCrawler.States
                 && !_entityCache.Me.HasDrinkBuff
                 && !string.IsNullOrEmpty(_selectedDrink))
             {
-                ObjectManager.Me.ForceIsCast = true;
                 ItemsManager.UseItem(_selectedDrink);
-                Thread.Sleep(500);
+                Thread.Sleep(1000);
                 if (_entityCache.Me.HasDrinkBuff)
                 {
                     Logger.LogOnce($"Drinking {_selectedDrink} ({ItemsManager.GetItemCountByNameLUA(_selectedDrink)} left in bags)");
-                }
-                else
-                {
-                    ObjectManager.Me.ForceIsCast = false;
                 }
                 return;
             }

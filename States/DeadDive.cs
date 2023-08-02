@@ -29,8 +29,8 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 return _entityCache.Me.Auras.ContainsKey(8326) 
-                    && MovementManager.CurrentPath.Find(x=> x == MovementManager.CurrentMoveTo) != null 
-                    && MovementManager.CurrentPath.Find(x=> x == MovementManager.CurrentMoveTo).Type == "Swimming";
+                    && MovementManager.CurrentPath.Find(x => x == MovementManager.CurrentMoveTo) != null 
+                    && MovementManager.CurrentPath.Find(x => x == MovementManager.CurrentMoveTo).Type == "Swimming";
             }
         }
 

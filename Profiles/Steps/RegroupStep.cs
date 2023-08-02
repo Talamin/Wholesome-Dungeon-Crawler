@@ -160,7 +160,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     Task.Run(async delegate
                     {
                         int delay = 1000;
-                        int maxWaitMs = delay * 15;
+                        int maxWaitMs = delay * 60;
                         while (maxWaitMs > 0 && _entityCache.ListGroupMember.Any(m => m.PositionWT.DistanceTo(RegroupSpot) < 5f))
                         {
                             maxWaitMs -= delay;

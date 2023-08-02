@@ -41,6 +41,7 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
+            Thread.Sleep(1000);
             for (int i = 1; i <= 3; i++)
             {
                 if (Lua.LuaDoString<bool>($"return StaticPopup{i}Text:IsVisible();"))
