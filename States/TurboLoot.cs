@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache.Entity;
+using WholesomeToolbox;
 using wManager;
 using wManager.Wow.Helpers;
 
@@ -84,7 +85,7 @@ namespace WholesomeDungeonCrawler.States
             {
                 MovementManager.StopMove();
                 List<Vector3> pathToCorpse = PathFinder.FindPath(myPos, corpsePos, out bool resultSuccess);
-                if (resultSuccess)
+                if (resultSuccess && WTPathFinder.CalculatePathTotalDistance(pathToCorpse) < myPos.DistanceTo(corpsePos) * 1.5)
                 {
                     MovementManager.Go(pathToCorpse);
                 }

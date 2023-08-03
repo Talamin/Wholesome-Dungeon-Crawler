@@ -202,7 +202,8 @@ namespace WholesomeDungeonCrawler.States
 
         private void DrawEventDeadState()
         {
-            if (_profileManager.ProfileIsRunning) 
+            if (_profileManager.ProfileIsRunning
+                && _entityCache.Me.IsDead) 
             {
                 foreach (DeathRun deathRunPath in _profileManager.CurrentDungeonProfile.DeathRunPaths)
                 {

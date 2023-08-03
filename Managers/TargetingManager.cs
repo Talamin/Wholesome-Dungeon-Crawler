@@ -154,21 +154,23 @@ namespace WholesomeDungeonCrawler.Managers
                     }
                 }
                 else
-                {                    
+                {
                     // Healer, stick with tank target if possible
-                    if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Heal
-                        && tankUnit != null
-                        && tankUnit.TargetGuid > 0
-                        && myTargetGuid > 0)
+                    if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Heal)
                     {
-                        IWoWUnit unitTargetedByTank = _entityCache.EnemiesAttackingGroup
-                            .Where(unit => unit.Guid == tankUnit.TargetGuid)
-                            .FirstOrDefault();
-                        if (unitTargetedByTank != null && unitTargetedByTank.Guid != myTargetGuid)
+                        if (tankUnit != null
+                            && tankUnit.TargetGuid > 0
+                            && myTargetGuid > 0)
                         {
-                            SwitchTargetAndFight(unitTargetedByTank, canceable, "Sticking with tank target");
-                            return;
+                            IWoWUnit unitTargetedByTank = _entityCache.EnemiesAttackingGroup
+                                .Where(unit => unit.Guid == tankUnit.TargetGuid)
+                                .FirstOrDefault();
+                            if (unitTargetedByTank != null && unitTargetedByTank.Guid != myTargetGuid)
+                            {
+                                SwitchTargetAndFight(unitTargetedByTank, canceable, "Sticking with tank target");
+                            }
                         }
+                        return;
                     }
                     
                     // Melee DPS - Don't chase fleers
