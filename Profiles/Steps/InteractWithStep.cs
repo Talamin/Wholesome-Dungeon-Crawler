@@ -8,6 +8,7 @@ using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
+using static wManager.Wow.Class.Npc;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {
@@ -17,14 +18,17 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private readonly IEntityCache _entityCache;
         private float _interactDistance;
         private Vector3 _expectedPosition;
-        public override string Name { get; }
         private List<int> _objectIds = new List<int>();
+
+        public override string Name { get; }
+        public override FactionType StepFaction { get; }
 
         public InteractWithStep(InteractWithModel interactWithModel, IEntityCache entityCache) : base(interactWithModel.CompleteCondition)
         {
             _interactWithModel = interactWithModel;
             _entityCache = entityCache;
             Name = interactWithModel.Name;
+            StepFaction = interactWithModel.StepFaction;
             _interactDistance = interactWithModel.InteractDistance < 3.5f ? 3.5f : interactWithModel.InteractDistance;
             _expectedPosition = interactWithModel.ExpectedPosition;
             string[] objectsIds = interactWithModel.ObjectId.Split(';');

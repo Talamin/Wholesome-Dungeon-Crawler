@@ -23,14 +23,17 @@ namespace WholesomeDungeonCrawler.States
             {
                 if (_entityCache.Me.Swimming
                     || !_entityCache.Me.IsDead
-                    || !MovementManager.InMovement)
+                    || !MovementManager.InMovement
+                    || !_entityCache.Me.Auras.ContainsKey(8326))
                 {
                     return false;
                 }
-
+                /*
                 return _entityCache.Me.Auras.ContainsKey(8326) 
                     && MovementManager.CurrentPath.Find(x => x == MovementManager.CurrentMoveTo) != null 
-                    && MovementManager.CurrentPath.Find(x => x == MovementManager.CurrentMoveTo).Type == "Swimming";
+                    && MovementManager.CurrentPath.Find(x => x == MovementManager.CurrentMoveTo).Type == "Swimming";*/
+                return MovementManager.CurrentMoveTo != null
+                    && MovementManager.CurrentMoveTo.Type == "Swimming";
             }
         }
 

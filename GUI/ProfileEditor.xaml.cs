@@ -19,6 +19,7 @@ using System.Windows.Forms;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.Models;
+using WholesomeDungeonCrawler.Profiles;
 using wManager.Wow.Class;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
@@ -30,33 +31,20 @@ namespace WholesomeDungeonCrawler.GUI
     /// </summary>
     public partial class ProfileEditor : INotifyPropertyChanged
     {
+        private static System.Timers.Timer _addDeathrunVectorTimer;
         public OpenFileDialog OpenFileDialog1;
         private static ProfileModel _currentProfile;
         public event PropertyChangedEventHandler PropertyChanged;
-        public ObservableCollection<StepModel> StepCollection { get; set; }
-        public ObservableCollection<Vector3> DeathrunCollection { get; set; }
-        private static System.Timers.Timer _addDeathrunVectorTimer;
-        public ObservableCollection<PathFinder.OffMeshConnection> OffMeshCollection { get; set; }
-        public ObservableCollection<Vector3> OffMeshPathCollection { get; set; }
-
-        private JsonSerializerSettings _jsonSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
-
         private MetroDialogSettings _basicDialogSettings;
         private MetroDialogSettings _addDialogSettings;
         private bool _radarRunning = false;
+        private JsonSerializerSettings _jsonSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
 
-        public ProfileModel CurrentProfile
-        {
-            get 
-            { 
-                return _currentProfile;
-            }
-            set
-            {
-                _currentProfile = value;
-                OnPropertyChanged();
-            }
-        }
+        public ObservableCollection<StepModel> StepCollection { get; set; }
+        public ObservableCollection<DeathRun> DeathrunCollection { get; set; }
+        public ObservableCollection<Vector3> CurrentDeathrunCollection { get; set; }
+        public ObservableCollection<PathFinder.OffMeshConnection> OffMeshCollection { get; set; }
+        public ObservableCollection<Vector3> OffMeshPathCollection { get; set; }
 
         public ProfileEditor()
         {
@@ -71,11 +59,25 @@ namespace WholesomeDungeonCrawler.GUI
             Setup();
         }
 
+        #region General
+        public ProfileModel CurrentProfile
+        {
+            get
+            {
+                return _currentProfile;
+            }
+            set
+            {
+                _currentProfile = value;
+                OnPropertyChanged();
+            }
+        }
+
         private void ReInitializeProfile()
         {
             CurrentProfile = new ProfileModel();
             CurrentProfile.StepModels = new List<StepModel>();
-            CurrentProfile.DeathRunPath = new List<Vector3>();
+            CurrentProfile.DeathRunPaths = new List<DeathRun>();
             CurrentProfile.OffMeshConnections = new List<PathFinder.OffMeshConnection>();
         }
 
@@ -106,57 +108,85 @@ namespace WholesomeDungeonCrawler.GUI
             };
             #endregion
 
+            // Step list setup
             StepCollection = new ObservableCollection<StepModel>(CurrentProfile.StepModels);
             dgProfileSteps.ItemsSource = StepCollection;
 
-            DeathrunCollection = new ObservableCollection<Vector3>(CurrentProfile.DeathRunPath);
-            dgDeathrun.ItemsSource = DeathrunCollection;
+            // Deathruns setup
+            DeathrunCollection = new ObservableCollection<DeathRun>(CurrentProfile.DeathRunPaths);
             _addDeathrunVectorTimer = new System.Timers.Timer(200);
-            _addDeathrunVectorTimer.Elapsed += AddDeathrunVectorTimer_Elapsed;
             _addDeathrunVectorTimer.AutoReset = true;
             _addDeathrunVectorTimer.Enabled = true;
+            // Converter for old profiles
+            if (CurrentProfile.DeathRunPath != null && CurrentProfile.DeathRunPath.Count > 0)
+            {
+                Logger.LogError($"Old profile detected. Converting single deathrun into list.");
+                DeathRun drToAdd = new DeathRun(CurrentProfile.ProfileName + " [Converted]", CurrentProfile.DeathRunPath);
+                DeathrunCollection.Add(drToAdd);
+                CurrentProfile.DeathRunPaths.Add(drToAdd);
+                CurrentProfile.DeathRunPath = null; // delete old DR
+            }
+            deathRunsList.ItemsSource = DeathrunCollection;
+            _addDeathrunVectorTimer.Elapsed += AddDeathrunVectorTimer_Elapsed;
 
+            // Offmesh setup
             OffMeshCollection = new ObservableCollection<PathFinder.OffMeshConnection>(CurrentProfile.OffMeshConnections);
             dgOffmeshList.ItemsSource = OffMeshCollection;
             cbOffMeshDirection.ItemsSource = Enum.GetValues(typeof(PathFinder.OffMeshConnectionType));
 
-            cbFaction.ItemsSource = Enum.GetValues(typeof(Npc.FactionType));
-            cbFaction.SelectedItem = CurrentProfile.Faction;
-
+            //Dungeon combobox setup
             cbDungeon.SelectedValue = CurrentProfile.DungeonName;
 
             md5 = MD5.Create();
             EnableRadar();
         }
 
-        private void EnableRadar()
-        {
-            if (!_radarRunning)
-            {
-                Radar3D.Pulse();
-                Radar3D.OnDrawEvent += new Radar3D.OnDrawHandler(Monitor);
-                Radar3D.OnDrawEvent += new Radar3D.OnDrawHandler(psControl.Monitor);
-                _radarRunning = true;
-            }
-        }
-
-        private void DisableRadar()
-        {
-            Radar3D.OnDrawEvent -= new Radar3D.OnDrawHandler(Monitor);
-            Radar3D.OnDrawEvent -= new Radar3D.OnDrawHandler(psControl.Monitor);
-            Radar3D.Stop();
-            _radarRunning = false;
-        }
-
         protected void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+        #endregion
+
+        #region Top Menu
+        protected override async void OnClosing(CancelEventArgs e)
+        {
+            if (e.Cancel) return;
+            e.Cancel = !this.closeMe;
+            if (this.closeMe) return;
+            var result = await this.ShowMessageAsync("", "Are you sure you want to close?", MessageDialogStyle.AffirmativeAndNegative, _basicDialogSettings);
+            this.closeMe = result == MessageDialogResult.Affirmative;
+
+            DisableRadar();
+
+            if (this.closeMe)
+            {
+                this.Close();
+            }
         }
 
         private void btnNewProfile_Click(object sender, RoutedEventArgs e)
         {
             ReInitializeProfile();
             Setup();
+        }
+
+        private async void btnLoadProfile_Click(object sender, RoutedEventArgs e)
+        {
+            if (OpenFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                try
+                {
+                    //Debugger.Launch();
+                    var filePath = OpenFileDialog1.FileName;
+                    CurrentProfile = JsonConvert.DeserializeObject<ProfileModel>(File.ReadAllText(filePath), _jsonSettings);
+                    Setup();
+                }
+                catch (Exception ex)
+                {
+                    await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                        $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
+                }
+            }
         }
 
         private async void btnSaveProfile_Click(object sender, RoutedEventArgs e)
@@ -191,7 +221,7 @@ namespace WholesomeDungeonCrawler.GUI
                 var rootpath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/{ProfileManager.ProfilesDirectoryName}/{dungeon.Name}");
 
                 var output = JsonConvert.SerializeObject(CurrentProfile, Formatting.Indented, _jsonSettings);
-                var path = $@"{rootpath.FullName}\{CurrentProfile.ProfileName.Replace(" ", "_")}_{CurrentProfile.Faction}.json";
+                var path = $@"{rootpath.FullName}\{CurrentProfile.ProfileName.Replace(" ", "_")}.json";
                 File.WriteAllText(path, output);
                 Setup();
 
@@ -203,47 +233,43 @@ namespace WholesomeDungeonCrawler.GUI
                 $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
+        #endregion
 
-        private async void dgProfileSteps_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            try
-            {
-                if (dgProfileSteps.SelectedItem != null)
-                {
-                    if (((StepModel)dgProfileSteps.SelectedItem).CompleteCondition == null)
-                        ((StepModel)dgProfileSteps.SelectedItem).CompleteCondition = new StepCompleteConditionModel();
-                    psControl.SelectedItem = (StepModel)dgProfileSteps.SelectedItem;
-                    psControl.chkRecordPath.IsChecked = false;
-
-                    if (psControl.SelectedItem is MoveAlongPathModel)
-                    {
-                        psControl.fpsCollection = new ObservableCollection<Vector3>(((MoveAlongPathModel)psControl.SelectedItem).Path);
-                        psControl.dgFPS.ItemsSource = psControl.fpsCollection;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
-            }
-
-        }
-
+        #region Radar
         private MD5 md5;
         private bool closeMe;
+
+        private void EnableRadar()
+        {
+            if (!_radarRunning)
+            {
+                Radar3D.Pulse();
+                Radar3D.OnDrawEvent += new Radar3D.OnDrawHandler(Monitor);
+                Radar3D.OnDrawEvent += new Radar3D.OnDrawHandler(psControl.Monitor);
+                btnToggleOverlay.Content = "Radar is ON";
+                _radarRunning = true;
+            }
+        }
+
+        private void DisableRadar()
+        {
+            if (_radarRunning)
+            {
+                Radar3D.OnDrawEvent -= new Radar3D.OnDrawHandler(Monitor);
+                Radar3D.OnDrawEvent -= new Radar3D.OnDrawHandler(psControl.Monitor);
+                Radar3D.Stop();
+                btnToggleOverlay.Content = "Radar is OFF";
+                _radarRunning = false;
+            }
+        }
 
         private void btnToggleOverlay_Click(object sender, RoutedEventArgs e)
         {
 
             if (!_radarRunning)
-            {
                 EnableRadar();
-            }
             else
-            {
                 DisableRadar();
-            }
         }
 
         public void Monitor()
@@ -399,41 +425,41 @@ namespace WholesomeDungeonCrawler.GUI
                             Radar3D.DrawLine(psControl.SelectedItem.CompleteCondition.LOSPositionVectorFrom, psControl.SelectedItem.CompleteCondition.LOSPositionVectorTo, Color.Magenta, 200);
                         }
                     }
+                }
 
-                    // Draw death run paths
-                    Color deadcolour = Color.Red;
+                // Draw death run paths
+                if (CurrentDeathrunCollection != null
+                    && CurrentDeathrunCollection.Count > 0)
+                {
                     Vector3 deadpreviousVector = new Vector3();
-                    if (CurrentProfile.DeathRunPath != null)
+                    foreach (Vector3 node in CurrentDeathrunCollection)
                     {
-                        foreach (Vector3 node in CurrentProfile.DeathRunPath)
+                        if (deadpreviousVector == new Vector3())
                         {
-                            if (deadpreviousVector == new Vector3())
-                            {
-                                deadpreviousVector = node;
-                            }
-                            Radar3D.DrawCircle(node, 1f, deadcolour, true, 200);
-                            Radar3D.DrawLine(node, deadpreviousVector, deadcolour, 200);
                             deadpreviousVector = node;
                         }
+                        Radar3D.DrawCircle(node, 1f, Color.Red, true, 200);
+                        Radar3D.DrawLine(node, deadpreviousVector, Color.Red, 200);
+                        deadpreviousVector = node;
                     }
+                }
 
-                    // Draw offmesh connections
-                    if (CurrentProfile.OffMeshConnections != null)
+                // Draw offmesh connections
+                if (CurrentProfile.OffMeshConnections != null)
+                {
+                    foreach (var offmesh in CurrentProfile.OffMeshConnections)
                     {
-                        foreach (var offmesh in CurrentProfile.OffMeshConnections)
+                        Color offmeshcolour = Color.Green;
+                        Vector3 offmeshcpreviousVector = new Vector3();
+                        foreach (var vec in offmesh.Path)
                         {
-                            Color offmeshcolour = Color.Green;
-                            Vector3 offmeshcpreviousVector = new Vector3();
-                            foreach (var vec in offmesh.Path)
+                            if (offmeshcpreviousVector == new Vector3())
                             {
-                                if (offmeshcpreviousVector == new Vector3())
-                                {
-                                    offmeshcpreviousVector = vec;
-                                }
-                                Radar3D.DrawCircle(vec, 1f, offmeshcolour, true, 200);
-                                Radar3D.DrawLine(vec, offmeshcpreviousVector, offmeshcolour, 200);
                                 offmeshcpreviousVector = vec;
                             }
+                            Radar3D.DrawCircle(vec, 1f, offmeshcolour, true, 200);
+                            Radar3D.DrawLine(vec, offmeshcpreviousVector, offmeshcolour, 200);
+                            offmeshcpreviousVector = vec;
                         }
                     }
                 }
@@ -443,6 +469,9 @@ namespace WholesomeDungeonCrawler.GUI
                 Logger.LogError(e.ToString());
             }
         }
+        #endregion
+
+        #region Steps tab
 
         private void cbDungeon_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -454,26 +483,77 @@ namespace WholesomeDungeonCrawler.GUI
             }
         }
 
-        private async void btnLoadProfile_Click(object sender, RoutedEventArgs e)
+        private async void dgProfileSteps_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (OpenFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            try
             {
-                try
+                if (dgProfileSteps.SelectedItem != null)
                 {
-                    //Debugger.Launch();
-                    var filePath = OpenFileDialog1.FileName;
-                    CurrentProfile = JsonConvert.DeserializeObject<ProfileModel>(File.ReadAllText(filePath), _jsonSettings);
-                    Setup();
+                    if (((StepModel)dgProfileSteps.SelectedItem).CompleteCondition == null)
+                        ((StepModel)dgProfileSteps.SelectedItem).CompleteCondition = new StepCompleteConditionModel();
+                    psControl.SelectedItem = (StepModel)dgProfileSteps.SelectedItem;
+                    psControl.chkRecordPath.IsChecked = false;
+
+                    if (psControl.SelectedItem is MoveAlongPathModel)
+                    {
+                        psControl.fpsCollection = new ObservableCollection<Vector3>(((MoveAlongPathModel)psControl.SelectedItem).Path);
+                        psControl.dgFPS.ItemsSource = psControl.fpsCollection;
+                    }
                 }
-                catch (Exception ex)
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
+            }
+
+        }
+
+        private async void btnMoveStepUp_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                StepModel currentStep = (StepModel)dgProfileSteps.SelectedItem;
+                if (currentStep != null)
                 {
-                    await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                        $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
+                    ObservableCollection<StepModel> allSteps = (ObservableCollection<StepModel>)dgProfileSteps.ItemsSource;
+                    int currentStepIndex = allSteps.IndexOf(currentStep);
+                    if (currentStepIndex > 0)
+                    {
+                        allSteps.Move(currentStepIndex, currentStepIndex - 1);
+                        CurrentProfile.StepModels = allSteps.ToList();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
 
-        #region Add Steps
+        private async void btnMoveStepDown_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                StepModel currentStep = (StepModel)dgProfileSteps.SelectedItem;
+                if (currentStep != null)
+                {
+                    ObservableCollection<StepModel> allSteps = (ObservableCollection<StepModel>)dgProfileSteps.ItemsSource;
+                    int currentStepIndex = allSteps.IndexOf(currentStep);
+                    if (currentStepIndex < allSteps.Count - 1)
+                    {
+                        allSteps.Move(currentStepIndex, currentStepIndex + 1);
+                        CurrentProfile.StepModels = allSteps.ToList();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
+            }
+        }
 
         private void btnAddStep_Click(object sender, RoutedEventArgs e)
         {
@@ -665,21 +745,94 @@ namespace WholesomeDungeonCrawler.GUI
 
         #endregion
 
-        #region Add Deathrun
+        #region Deathruns tab
+
+        private async void deathRunsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                chkRecordDeathRunPath.IsChecked = false;
+                if (deathRunsList.SelectedIndex >= 0)
+                {
+                    DeathRun selectedDr = deathRunsList.SelectedItem as DeathRun;
+                    CurrentDeathrunCollection = new ObservableCollection<Vector3>(selectedDr.Path);
+                    dgSelectedDeathrun.ItemsSource = CurrentDeathrunCollection;
+                }
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                        $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
+            }
+        }
+
+        private void btnAddNewDeathrun_Click(object sender, RoutedEventArgs e)
+        {
+            DeathrunCollection.Add(new DeathRun(Usefuls.SubMapZoneName ?? Usefuls.MapZoneName, new List<Vector3>()));
+            CurrentProfile.DeathRunPaths = DeathrunCollection.ToList();
+        }
+
+        private void btnDeleteDeathrun_Click(object sender, RoutedEventArgs e)
+        {
+            DeathRun selectedDr = deathRunsList.SelectedItem as DeathRun;
+            if (selectedDr != null)
+            {
+                DeathrunCollection.Remove(selectedDr);
+                CurrentProfile.DeathRunPaths = DeathrunCollection.ToList();
+            }
+        }
+
         private void btnAddDeathRunVector_Click(object sender, RoutedEventArgs e)
         {
-            DeathrunCollection.Add(ObjectManager.Me.Position);
-            CurrentProfile.DeathRunPath = DeathrunCollection.ToList();
+            DeathRun selectedDr = (DeathRun)deathRunsList.SelectedItem;
+            if (selectedDr != null)
+            {
+                CurrentDeathrunCollection.Add(ObjectManager.Me.Position);
+                DeathRun deathRunToReplace = CurrentProfile.DeathRunPaths.FirstOrDefault(deathRun => deathRun.Path == selectedDr.Path);
+                if (deathRunToReplace != null)
+                    CurrentProfile.DeathRunPaths.FirstOrDefault(deathRun => deathRun.Path == selectedDr.Path).Path = CurrentDeathrunCollection.ToList();
+            }
         }
 
         private void btnDeleteDeathRunVector_Click(object sender, RoutedEventArgs e)
         {
-            if (dgDeathrun.SelectedItem != null)
+            DeathRun selectedDr = (DeathRun)deathRunsList.SelectedItem;
+            Vector3 selectedVector = (Vector3)dgSelectedDeathrun.SelectedItem;
+            if (selectedDr != null && selectedVector != null)
             {
-                DeathrunCollection.Remove((Vector3)dgDeathrun.SelectedItem);
-                CurrentProfile.DeathRunPath = DeathrunCollection.ToList();
+                CurrentDeathrunCollection.Remove(selectedVector);
+                DeathRun deathRunToReplace = CurrentProfile.DeathRunPaths.FirstOrDefault(deathRun => deathRun.Path == selectedDr.Path);
+                if (deathRunToReplace != null)
+                    CurrentProfile.DeathRunPaths.FirstOrDefault(deathRun => deathRun.Path == selectedDr.Path).Path = CurrentDeathrunCollection.ToList();
             }
         }
+
+        private async void AddDeathrunVectorTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            try
+            {
+                this.Dispatcher.Invoke(() =>
+                {
+                    DeathRun selectedDr = (DeathRun)deathRunsList.SelectedItem;
+                    if (selectedDr != null
+                        && gbDeathruns.IsVisible
+                        && (bool)chkRecordDeathRunPath.IsChecked
+                        && (CurrentDeathrunCollection.Count == 0 || CurrentDeathrunCollection.LastOrDefault().DistanceTo(ObjectManager.Me.Position) > 8))
+                    {
+                        CurrentDeathrunCollection.Add(ObjectManager.Me.Position);
+                        DeathRun deathRunToReplace = CurrentProfile.DeathRunPaths.FirstOrDefault(deathRun => deathRun.Path == selectedDr.Path);
+                        if (deathRunToReplace != null)
+                            CurrentProfile.DeathRunPaths.FirstOrDefault(deathRun => deathRun.Path == selectedDr.Path).Path = CurrentDeathrunCollection.ToList();
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                        $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
+            }
+        }
+        /*
 
         private async void AddDeathrunVectorTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -692,7 +845,7 @@ namespace WholesomeDungeonCrawler.GUI
                     && (DeathrunCollection.Count == 0 || DeathrunCollection.LastOrDefault().DistanceTo(ObjectManager.Me.Position) > 8))
                     {
                         DeathrunCollection.Add(ObjectManager.Me.Position);
-                        CurrentProfile.DeathRunPath = DeathrunCollection.ToList();
+                        CurrentProfile.DeathRunPaths = DeathrunCollection.ToList();
                     }
                 });
             }
@@ -702,9 +855,10 @@ namespace WholesomeDungeonCrawler.GUI
                         $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
+        */
         #endregion
 
-        #region Add Offmesh
+        #region Offmesh Tab
         private void btnOcAdd_Click(object sender, RoutedEventArgs e)
         {
             OffMeshCollection.Add(new PathFinder.OffMeshConnection() { Name = Usefuls.SubMapZoneName ?? Usefuls.MapZoneName, ContinentId = CurrentProfile.MapId, TryToUseEvenIfCanFindPathSuccess = true, Type = PathFinder.OffMeshConnectionType.Unidirectional });
@@ -751,72 +905,9 @@ namespace WholesomeDungeonCrawler.GUI
             }
         }
         #endregion
-
-        protected override async void OnClosing(CancelEventArgs e)
-        {
-            if (e.Cancel) return;
-            e.Cancel = !this.closeMe;
-            if (this.closeMe) return;
-            var result = await this.ShowMessageAsync("", "Are you sure you want to close?", MessageDialogStyle.AffirmativeAndNegative, _basicDialogSettings);
-            this.closeMe = result == MessageDialogResult.Affirmative;
-
-            DisableRadar();
-
-            if (this.closeMe)
-            {
-                this.Close();
-            }
-        }
-
-        private async void btnMoveStepUp_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                StepModel currentStep = (StepModel)dgProfileSteps.SelectedItem;
-                if (currentStep != null)
-                {
-                    ObservableCollection<StepModel> allSteps = (ObservableCollection<StepModel>)dgProfileSteps.ItemsSource;
-                    int currentStepIndex = allSteps.IndexOf(currentStep);
-                    if (currentStepIndex > 0)
-                    {
-                        allSteps.Move(currentStepIndex, currentStepIndex - 1);
-                        CurrentProfile.StepModels = allSteps.ToList();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
-            }
-        }
-
-        private async void btnMoveStepDown_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                StepModel currentStep = (StepModel)dgProfileSteps.SelectedItem;
-                if (currentStep != null)
-                {
-                    ObservableCollection<StepModel> allSteps = (ObservableCollection<StepModel>)dgProfileSteps.ItemsSource;
-                    int currentStepIndex = allSteps.IndexOf(currentStep);
-                    if (currentStepIndex < allSteps.Count - 1)
-                    {
-                        allSteps.Move(currentStepIndex, currentStepIndex + 1);
-                        CurrentProfile.StepModels = allSteps.ToList();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
-                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
-            }
-        }
-
     }
 
-    #region ValueConverters
+    #region Converters & Validation rules
     public class VisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

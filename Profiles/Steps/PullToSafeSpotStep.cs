@@ -12,6 +12,7 @@ using wManager.Events;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
+using static wManager.Wow.Class.Npc;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {
@@ -30,6 +31,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private List<WoWUnit> _enemiesToPull = new List<WoWUnit>();
 
         public override string Name { get; }
+        public override FactionType StepFaction { get; }
+
         public bool PositionInSafeSpotFightRange(Vector3 position) =>
             position.DistanceTo(_safeSpotCenter) <= _safeSpotRadius
             && !TraceLine.TraceLineGo(_safeSpotCenter, position);
@@ -41,6 +44,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             IEntityCache entityCache) : base(pullToSafeSpotModel.CompleteCondition)
         {
             Name = pullToSafeSpotModel.Name;
+            StepFaction = pullToSafeSpotModel.StepFaction;
             _pullToSafeSpotModel = pullToSafeSpotModel;
             _entityCache = entityCache;
             _safeSpotRadius = pullToSafeSpotModel.SafeSpotRadius;

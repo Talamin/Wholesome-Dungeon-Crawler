@@ -56,6 +56,7 @@
                     <Setter Property="Controls:ControlsHelper.HeaderFontWeight" Value="Bold" />
                 </Style>
             </Controls:MetroAnimatedTabControl.Resources>
+            <!-- Steps tab -->
             <Controls:MetroTabItem Header="Steps">
                 <StackPanel Margin="5" >
 
@@ -70,7 +71,6 @@
                             <TextBox x:Name="txtProfileName" Controls:TextBoxHelper.Watermark="Profile Name" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding CurrentProfile.ProfileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             <ComboBox x:Name="cbDungeon" Margin="5" Controls:TextBoxHelper.UseFloatingWatermark="True" SelectedValue="{Binding CurrentProfile.DungeonName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" SelectionChanged="cbDungeon_SelectionChanged"
                                       Controls:TextBoxHelper.Watermark="Dungeon" />
-                            <ComboBox x:Name="cbFaction" Margin="5" Controls:TextBoxHelper.UseFloatingWatermark="True" SelectedValue="{Binding CurrentProfile.Faction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.Watermark="Faction" />
                             <DataGrid x:Name="dgProfileSteps" Margin="5" AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="150" SelectionChanged="dgProfileSteps_SelectionChanged">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Step Name" Binding="{Binding Name}" />
@@ -106,27 +106,66 @@
                     </StackPanel>
                 </StackPanel>
             </Controls:MetroTabItem>
-            <Controls:MetroTabItem Header="Deathrun" Visibility="{Binding SelectedIndex, Converter={StaticResource ComboboxConverter}, ElementName=cbDungeon}" >
-                <StackPanel Margin="5" >
-                    <GroupBox x:Name="gbDeathRun" Header="Death run path" BorderBrush="{x:Null}">
+
+            <!-- Deathruns tab -->
+            <Controls:MetroTabItem Header="Deathruns" Visibility="{Binding SelectedIndex, Converter={StaticResource ComboboxConverter}, ElementName=cbDungeon}" >
+                <StackPanel Margin="5">
+                    <DataGrid x:Name="deathRunsList" Margin="5" CanUserAddRows="False" AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="300" SelectionChanged="deathRunsList_SelectionChanged">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Name" Binding="{Binding Path=Name}" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <StackPanel Orientation="Horizontal"  Margin="5">
+                        <Button x:Name="btnAddNewDeathrun" Content="Add" Margin="0 0 5 0" Click="btnAddNewDeathrun_Click"/>
+                        <Button x:Name="btnDeleteDeathrun" Content="Delete" Margin="0 0 5 0" Click="btnDeleteDeathrun_Click"/>
+                    </StackPanel>
+                    <GroupBox x:Name="gbDeathruns" Header="Deathruns" BorderBrush="{x:Null}" Margin="10" Visibility="{Binding ElementName=deathRunsList, Path=SelectedItem, Converter={StaticResource VisibilityConverter}}">
                         <GroupBox.Background>
                             <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
                                 <GradientStop Color="#FF34e89e" Offset="0"/>
                                 <GradientStop Color="#FF0f3443" Offset="1"/>
                             </LinearGradientBrush>
                         </GroupBox.Background>
-
                         <StackPanel>
-                            <DataGrid x:Name="dgDeathrun" Margin="5" CanUserAddRows="False" IsReadOnly="True" MaxHeight="300"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBox Controls:TextBoxHelper.Watermark="Deathrun Name" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding ElementName=deathRunsList, Path=SelectedItem.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                            <DataGrid x:Name="dgSelectedDeathrun" Margin="5" IsReadOnly="True" MaxHeight="300" />
                             <StackPanel Orientation="Horizontal"  Margin="5">
-                                <Button x:Name="btnAddDeathRunVector" Content="Add" Margin="0 5 5 5" Click="btnAddDeathRunVector_Click" />
-                                <Button x:Name="btnDeleteDeathRunVector" Content="Delete" Margin="0 5 5 5" Click="btnDeleteDeathRunVector_Click"  />
+                                <Button x:Name="btnAddDeathRunVector" Content="Add" Margin="0 0 5 0" Click="btnAddDeathRunVector_Click"/>
+                                <Button x:Name="btnDeleteDeathRunVector" Content="Delete" Margin="0 0 5 0" Click="btnDeleteDeathRunVector_Click"/>
                                 <Controls:ToggleSwitch x:Name="chkRecordDeathRunPath" OnLabel="Record Path" OffLabel="Record Path" IsChecked="False"/>
                             </StackPanel>
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
             </Controls:MetroTabItem>
+                <!--
+            <Controls:MetroTabItem Header="Deathruns" Visibility="{Binding SelectedIndex, Converter={StaticResource ComboboxConverter}, ElementName=cbDungeon}" >
+                <StackPanel Margin="5" >
+                    <GroupBox x:Name="gbDeathRun" Header="Death run paths" BorderBrush="{x:Null}">
+                        <GroupBox.Background>
+                            <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                                <GradientStop Color="#FF34e89e" Offset="0"/>
+                                <GradientStop Color="#FF0f3443" Offset="1"/>
+                            </LinearGradientBrush>
+                        </GroupBox.Background>
+                        
+                        <StackPanel>
+                            <StackPanel>
+                                <DataGrid x:Name="dgDeathrun" Margin="5" CanUserAddRows="False" IsReadOnly="True" MaxHeight="300"/>
+                                <StackPanel Orientation="Horizontal"  Margin="5">
+                                    <Button x:Name="btnAddDeathRunVector" Content="Add" Margin="0 5 5 5" Click="btnAddDeathRunVector_Click" />
+                                    <Button x:Name="btnDeleteDeathRunVector" Content="Delete" Margin="0 5 5 5" Click="btnDeleteDeathRunVector_Click"  />
+                                    <Controls:ToggleSwitch x:Name="chkRecordDeathRunPath" OnLabel="Record Path" OffLabel="Record Path" IsChecked="False"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+            </Controls:MetroTabItem>
+            -->
+            <!-- Offmesh connections tab -->
             <Controls:MetroTabItem Header="Offmesh Connections" Visibility="{Binding SelectedIndex, Converter={StaticResource ComboboxConverter}, ElementName=cbDungeon}">
                 <StackPanel Margin="5">
                     <DataGrid x:Name="dgOffmeshList" Margin="5" CanUserAddRows="False" AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="300" SelectionChanged="dgOffmeshList_SelectionChanged">
@@ -154,8 +193,7 @@
                                           Margin="5"/>
                                 <TextBox Controls:TextBoxHelper.Watermark="Continent ID" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Text="{Binding ElementName=dgOffmeshList,Path=SelectedItem.ContinentId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </StackPanel>
-                            <DataGrid x:Name="dgOffmeshPath" Margin="5" IsReadOnly="True" MaxHeight="300">
-                            </DataGrid>
+                            <DataGrid x:Name="dgOffmeshPath" Margin="5" IsReadOnly="True" MaxHeight="300" />
                             <StackPanel Orientation="Horizontal"  Margin="5">
                                 <Button x:Name="btnOCPAdd" Content="Add" Margin="0 0 5 0" Click="btnOCPAdd_Click"/>
                                 <Button x:Name="btnOCPDelete" Content="Delete" Margin="0 0 5 0" Click="btnOCPDelete_Click"/>

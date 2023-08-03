@@ -1,6 +1,7 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
 using WholesomeDungeonCrawler.Helpers;
+using static wManager.Wow.Class.Npc;
 
 namespace WholesomeDungeonCrawler.Models
 {
@@ -8,6 +9,7 @@ namespace WholesomeDungeonCrawler.Models
     {
         public string Name { get; set; }
         public StepCompleteConditionModel CompleteCondition { get; set; }
+        public FactionType StepFaction { get; set; } = FactionType.Neutral;
         public bool HasCompleteCondition => CompleteCondition != null && CompleteCondition.ConditionType != CompleteConditionType.None;
     }
 

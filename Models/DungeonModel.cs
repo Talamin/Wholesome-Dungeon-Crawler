@@ -10,5 +10,6 @@ namespace WholesomeDungeonCrawler.Models
         public int ContinentId { get; set; }
         public Vector3 EntranceLoc { get; set; }
         public bool IsHeroic { get; set; }
+        public bool IsRaid { get; set; }
     }
 }

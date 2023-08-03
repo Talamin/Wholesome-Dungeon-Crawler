@@ -108,11 +108,12 @@ namespace WholesomeDungeonCrawler.GUI
                 Content = $"Random Dungeon",
                 Foreground = Brushes.Wheat
             });
-            foreach (DungeonModel dungeonModel in availableDungeons.OrderBy(d => d.IsHeroic))
+            foreach (DungeonModel dungeonModel in availableDungeons.OrderBy(d => d.IsHeroic).OrderBy(d => d.IsRaid))
             {
                 DirectoryInfo profilePath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/{ProfileManager.ProfilesDirectoryName}/{dungeonModel.Name}");
                 int profilecount = profilePath.GetFiles().Count();
                 string suffix = "";
+                int nbProfilesFound = 0;
                 SolidColorBrush textColor = Brushes.White;
                 if (profilecount <= 0)
                 {
@@ -121,6 +122,7 @@ namespace WholesomeDungeonCrawler.GUI
                 }
                 else
                 {
+                    nbProfilesFound++;
                     List<FileInfo> files = profilePath.GetFiles().ToList();
                     files.RemoveAll(file => !file.Name.EndsWith(".json"));
                     foreach (FileInfo file in files)
@@ -138,17 +140,16 @@ namespace WholesomeDungeonCrawler.GUI
                             Logger.LogError($"{ex}");
                             return;
                         }
-                        if (deserializedProfile.Faction == wManager.Wow.Class.Npc.FactionType.Neutral) suffix += " N";
-                        else if (deserializedProfile.Faction == wManager.Wow.Class.Npc.FactionType.Alliance) suffix += " A";
-                        else if (deserializedProfile.Faction == wManager.Wow.Class.Npc.FactionType.Horde) suffix += " H";
+                        suffix = $"{nbProfilesFound} PROFILES";
                     }
                 }
                 string prefix = dungeonModel.IsHeroic ? "[Heroic] " : "";
+                prefix = dungeonModel.IsRaid ? "[Raid] " : "";
 
                 WDCComboboxItem item = new WDCComboboxItem()
                 {
                     Key = dungeonModel.DungeonId,
-                    Content = $"{prefix}{dungeonModel.Name} ({dungeonModel.DungeonId}) -{suffix}",
+                    Content = $"{prefix}{dungeonModel.Name} ({dungeonModel.DungeonId}) - {suffix}",
                     Foreground = textColor
                 };
                 cbSelectDungeon.Items.Add(item);

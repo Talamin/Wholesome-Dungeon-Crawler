@@ -1,4 +1,5 @@
 ﻿using WholesomeDungeonCrawler.Models;
+using static wManager.Wow.Class.Npc;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {
@@ -9,6 +10,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private IProfile _profile;
 
         public override string Name { get; }
+        public override FactionType StepFaction { get; }
 
         public JumpToStepStep(JumpToStepModel jumpToStepModel, IProfile profile) : base(jumpToStepModel.CompleteCondition)
         {
@@ -16,6 +18,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _stepToJumpTo = _jumpToStepModel.StepToJumpTo;
             _profile = profile;
             Name = _jumpToStepModel.Name;
+            StepFaction = _jumpToStepModel.StepFaction;
         }
 
         public override void Initialize() { }

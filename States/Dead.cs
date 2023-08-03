@@ -1,12 +1,14 @@
 ﻿using robotManager.FiniteStateMachine;
 using robotManager.Helpful;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
+using WholesomeDungeonCrawler.Profiles;
 using WholesomeToolbox;
 using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Enums;
@@ -28,6 +30,18 @@ namespace WholesomeDungeonCrawler.States
         {
             _entityCache = iEntityCache;
             _profileManager = profilemanager;
+        }
+
+        public void Initalize()
+        {
+            if (!Radar3D.IsLaunched) Radar3D.Pulse();
+            Radar3D.OnDrawEvent += DrawEventDeadState;
+        }
+
+        public void Dispose()
+        {
+            Radar3D.OnDrawEvent += DrawEventDeadState;
+            Radar3D.Stop();
         }
 
         private List<WoWClass> _rezzClasses = new List<WoWClass> { WoWClass.Druid, WoWClass.Paladin, WoWClass.Priest, WoWClass.Shaman };
@@ -79,26 +93,60 @@ namespace WholesomeDungeonCrawler.States
                     return;
                 }
 
-                if (_profileManager.CurrentDungeonProfile?.DeathRunPath != null
-                    && _profileManager.CurrentDungeonProfile.DeathRunPath.Count > 0)
+                if (_profileManager.ProfileIsRunning
+                    && _profileManager.CurrentDungeonProfile.DeathRunPaths.Count > 0
+                    && _profileManager.CurrentDungeonProfile.DeathRunPaths.Any(dr => dr.Path.Count > 0))
                 {
-                    Logger.Log("Running profile's death run");
-                    List<Vector3> adjustedDeathPath = WTPathFinder.PathFromClosestPoint(_profileManager.CurrentDungeonProfile.DeathRunPath);
-                    if (_profileManager.CurrentDungeonProfile.DungeonModel != null)
+                    DeathRun closestDeathRun = null;
+                    float closestDistance = float.MaxValue;
+                    Vector3 myPos = _entityCache.Me.PositionWT;
+                    foreach (DeathRun deathRun in  _profileManager.CurrentDungeonProfile.DeathRunPaths)
                     {
-                        adjustedDeathPath.Add(_profileManager.CurrentDungeonProfile.DungeonModel.EntranceLoc);
+                        if (deathRun.Path.Count <= 0)
+                        {
+                            Logger.LogError($"WARNING: The deathrun path {deathRun.Name} in your profile is empty!");
+                            continue;
+                        }
+
+                        Vector3 closestNode = deathRun.Path.OrderBy(node => node.DistanceTo(myPos)).FirstOrDefault();
+                        if (closestNode != null
+                            && closestNode.DistanceTo(myPos) < closestDistance)
+                        {
+                            closestDeathRun = deathRun;
+                            closestDistance = closestNode.DistanceTo(myPos);
+                        }
                     }
-                    MovementManager.Go(adjustedDeathPath, false);
+
+                    if (closestDeathRun != null)
+                    {
+                        if (closestDistance > 30)
+                            Logger.LogError($"WARNING: The closest deathrun {closestDeathRun.Name} is {closestDistance} yards away. Is that correct?");
+                        Logger.Log($"Running profile's death run called {closestDeathRun.Name}");
+                        List<Vector3> adjustedDeathPath = WTPathFinder.PathFromClosestPoint(closestDeathRun.Path);
+                        if (_profileManager.CurrentDungeonProfile?.DungeonModel?.EntranceLoc != null)
+                        {
+                            adjustedDeathPath.Add(_profileManager.CurrentDungeonProfile.DungeonModel.EntranceLoc);
+                        }
+                        MovementManager.Go(adjustedDeathPath, false);
+                    }
+                    else
+                    {
+                        Logger.LogOnce($"ERROR: Couldn't find closest deathrun", true);
+                    }
                 }
                 else
                 {
                     DungeonModel dungeon = Lists.AllDungeons.Where(x => x.ContinentId == Usefuls.ContinentId)
                             .OrderBy(dungeon => dungeon.EntranceLoc.DistanceTo(_entityCache.Me.PositionCorpse))
                             .FirstOrDefault();
-                    Logger.Log("No profile death run found, using pathfinder towards EntranceLoc.");
-                    if (dungeon != null)
+                    if (dungeon != null && dungeon.EntranceLoc != null)
                     {
+                        Logger.Log("No profile death run found, using pathfinder towards EntranceLoc.");
                         GoToTask.ToPosition(dungeon.EntranceLoc, skipIfCannotMakePath: false);
+                    }
+                    else
+                    {
+                        Logger.LogOnce("No profile death run found and no EntranceLoc defined.", true);
                     }
                 }
             }
@@ -148,6 +196,25 @@ namespace WholesomeDungeonCrawler.States
                 else
                 {
                     ReleaseCorpse("No one can resurrect me");
+                }
+            }
+        }
+
+        private void DrawEventDeadState()
+        {
+            if (_profileManager.ProfileIsRunning) 
+            {
+                foreach (DeathRun deathRunPath in _profileManager.CurrentDungeonProfile.DeathRunPaths)
+                {
+                    List<Vector3> deathRun = deathRunPath.Path;
+                    for (int i = 0; i < deathRun.Count - 1; i++)
+                    {
+                        if (deathRun[i] != null && deathRun[i + 1] != null)
+                        {
+                            Radar3D.DrawLine(deathRun[i], deathRun[i + 1], Color.Red, 150);
+                        }
+                    }
+
                 }
             }
         }

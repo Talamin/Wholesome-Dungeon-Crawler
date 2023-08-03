@@ -7,6 +7,7 @@ using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Events;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
+using static wManager.Wow.Class.Npc;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {
@@ -20,6 +21,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private bool _resetTimerOnCombat;
 
         public override string Name { get; }
+        public override FactionType StepFaction { get; }
         public double GetTimeLeft => _stepTimer == null || _stepTimer.IsReady ? 0 : _stepTimer.TimeLeft();
         public IWoWUnit ShouldDefendAgainst => _entityCache.EnemyUnitsList
                 .Where(unit => unit.PositionWT.DistanceTo(_defendSpotModel.DefendPosition) <= _defendSpotRadius
@@ -36,6 +38,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _timeToWaitInMilliseconds = _defendSpotModel.Timer * 1000;
             _resetTimerOnCombat = _defendSpotModel.ResetTimerOnCombat;
             Name = _defendSpotModel.Name;
+            StepFaction = _defendSpotModel.StepFaction;
         }
 
         public override void Initialize()

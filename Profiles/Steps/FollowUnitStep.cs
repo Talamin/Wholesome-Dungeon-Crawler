@@ -7,6 +7,7 @@ using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
+using static wManager.Wow.Class.Npc;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {
@@ -17,12 +18,14 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private WoWUnit _unitToEscort;
 
         public override string Name { get; }
+        public override FactionType StepFaction { get; }
 
         public FollowUnitStep(FollowUnitModel followUnitModel, IEntityCache entityCache) : base(followUnitModel.CompleteCondition)
         {
             _followUnitModel = followUnitModel;
             _entityCache = entityCache;
             Name = followUnitModel.Name;
+            StepFaction = followUnitModel.StepFaction;
         }
 
         public override void Initialize() { }

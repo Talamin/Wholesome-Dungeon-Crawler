@@ -39,8 +39,10 @@
                     <StackPanel>
                         <TextBox x:Name="txtStepName" Controls:TextBoxHelper.Watermark="Step Name" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" 
                                  Text="{Binding SelectedItem.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <ComboBox x:Name="cbStepFaction" Margin="5" Controls:TextBoxHelper.UseFloatingWatermark="True" SelectedValue="{Binding SelectedItem.StepFaction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.Watermark="Step faction" />
                     </StackPanel>
                 </GroupBox>
+                
                 <!--MoveAlongPath-->
                 <StackPanel>
                     <StackPanel>

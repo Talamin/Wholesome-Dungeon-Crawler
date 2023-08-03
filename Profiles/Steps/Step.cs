@@ -5,6 +5,7 @@ using WholesomeDungeonCrawler.Models;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
+using static wManager.Wow.Class.Npc;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {
@@ -13,6 +14,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public bool IsCompleted { get; protected set; }
         public abstract string Name { get; }
         public StepCompleteConditionModel StepCompleteConditionModel { get; private set; }
+        public abstract FactionType StepFaction { get; }
 
         public Step(StepCompleteConditionModel stepCompleteCondition)
         {

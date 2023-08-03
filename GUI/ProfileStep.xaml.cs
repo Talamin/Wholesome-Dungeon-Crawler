@@ -9,8 +9,10 @@ using System.Windows;
 using System.Windows.Controls;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
+using wManager.Wow.Class;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
+using static wManager.Wow.Helpers.PathFinderClass.FindPathPacket;
 using MessageBox = System.Windows.Forms.MessageBox;
 using Timer = System.Timers.Timer;
 using UserControl = System.Windows.Controls.UserControl;
@@ -54,6 +56,7 @@ namespace WholesomeDungeonCrawler.GUI
             addVectorTimer.Enabled = true;
             cbConditionType.ItemsSource = Enum.GetValues(typeof(CompleteConditionType));
             chkRecordPath.IsChecked = false;
+            cbStepFaction.ItemsSource = Enum.GetValues(typeof(Npc.FactionType));
         }
 
         private void AddVectorTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)

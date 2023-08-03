@@ -13,10 +13,9 @@ namespace WholesomeDungeonCrawler.Profiles
         bool ProfileIsCompleted { get; }
         string FileName { get; }
         int MapId { get; }
-        List<Vector3> DeathRunPath { get; }
+        List<DeathRun> DeathRunPaths { get; }
         Dictionary<IStep, List<Vector3>> DungeonPath { get; }
         List<Vector3> AllMoveAlongNodes { get; }
-        FactionType FactionType { get; }
         List<IStep> GetAllSteps { get; }
         int GetCurrentStepIndex { get; }
         DungeonModel DungeonModel { get; }

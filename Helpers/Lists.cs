@@ -87,6 +87,9 @@ namespace WholesomeDungeonCrawler.Helpers
             new DungeonModel { Name="Halls of Lightning", IsHeroic = true, DungeonId=212, MapId=602, ContinentId=571, EntranceLoc=new Vector3(9192.92, -1388.867, 1110.215, "Flying") },
             new DungeonModel { Name="The Nexus", IsHeroic = true, DungeonId=226, MapId=576, ContinentId=571, EntranceLoc=new Vector3(3906.412, 6985.285, 69.4881, "None") },
 
+            // Raids
+            new DungeonModel { Name="Molten Core", IsRaid = true, MapId=409 },
+
         }.OrderBy(dungeon => dungeon.Name).ToList();
 
         // These mobs will only be ignored during MoveAlongPath checks (they won't be pulled).
@@ -143,6 +146,7 @@ namespace WholesomeDungeonCrawler.Helpers
             // Low
             { 8996, new SpecialPrio(0, TargetPriority.Low, true) }, // Voidwalker minion (Ragefire Chasm)
             { 2520, new SpecialPrio(0, TargetPriority.Low, true) }, // Remote-Controlled Golem (Deadmines)
+            { 8317, new SpecialPrio(0, TargetPriority.Low, true) }, // Atal'ai Deathwalker's Spirit (Temple)
     }   ;
 
         // These mobs will be completely ignored in the entity cache.

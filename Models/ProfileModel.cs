@@ -1,7 +1,8 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
-using wManager.Wow.Class;
+using WholesomeDungeonCrawler.Profiles;
 using wManager.Wow.Helpers;
+using static wManager.Wow.Class.Npc;
 
 namespace WholesomeDungeonCrawler.Models
 {
@@ -11,9 +12,10 @@ namespace WholesomeDungeonCrawler.Models
         public int MapId { get; set; }
         public string ProfileName { get; set; }
         public string DungeonName { get; set; }
-        public Npc.FactionType Faction { get; set; }
-        public List<Vector3> DeathRunPath { get; set; }
+        public List<DeathRun> DeathRunPaths { get; set; } = new List<DeathRun>();
         public List<PathFinder.OffMeshConnection> OffMeshConnections { get; set; }
         public DungeonModel DungeonModel { get; set; }
+
+        public List<Vector3> DeathRunPath { get; set; } // Obsolete, only used to convert old profiles with one single deathrun
     }
 }

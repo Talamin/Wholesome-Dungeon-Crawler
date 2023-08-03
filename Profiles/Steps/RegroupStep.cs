@@ -8,6 +8,7 @@ using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
+using static wManager.Wow.Class.Npc;
 using Timer = robotManager.Helpful.Timer;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
@@ -17,8 +18,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private RegroupModel _regroupModel;
         private readonly IEntityCache _entityCache;
         private readonly IPartyChatManager _partyChatManager;
-        public override string Name { get; }
-        public Vector3 RegroupSpot { get; private set; }
         private Timer _readyCheckTimer = new Timer();
         private int _foodMin;
         private int _drinkMin;
@@ -27,12 +26,17 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private bool _receivedChatSystemReady;
         private RegroupRaidIcons _stepIcon;
 
+        public override string Name { get; }
+        public override FactionType StepFaction { get; }
+        public Vector3 RegroupSpot { get; private set; }
+
         public RegroupStep(RegroupModel regroupModel, IEntityCache entityCache, IPartyChatManager partyChatManager) : base(regroupModel.CompleteCondition)
         {
             _partyChatManager = partyChatManager;
             _regroupModel = regroupModel;
             _entityCache = entityCache;
             Name = regroupModel.Name;
+            StepFaction = regroupModel.StepFaction;
             RegroupSpot = regroupModel.RegroupSpot;
             _foodMin = wManager.wManagerSetting.CurrentSetting.FoodPercent;
             _drinkMin = wManager.wManagerSetting.CurrentSetting.DrinkPercent;

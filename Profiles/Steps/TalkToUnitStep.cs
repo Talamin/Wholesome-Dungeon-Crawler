@@ -6,6 +6,7 @@ using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Bot.Tasks;
 using wManager.Wow.ObjectManager;
+using static wManager.Wow.Class.Npc;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {
@@ -14,12 +15,14 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private TalkToUnitModel _talkToUnitModel;
         private readonly IEntityCache _entityCache;
         public override string Name { get; }
+        public override FactionType StepFaction { get; }
 
         public TalkToUnitStep(TalkToUnitModel talkToUnitModel, IEntityCache entityCache) : base(talkToUnitModel.CompleteCondition)
         {
             _talkToUnitModel = talkToUnitModel;
             _entityCache = entityCache;
             Name = talkToUnitModel.Name;
+            StepFaction = talkToUnitModel.StepFaction;
         }
 
         public override void Initialize() { }

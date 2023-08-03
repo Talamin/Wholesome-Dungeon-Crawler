@@ -26,9 +26,11 @@ namespace WholesomeDungeonCrawler.Bot
         private ILuaStatusFrameManager _luaStatusFrameManager;
         private IPathManager _pathManager;
         private IAvoidAOEManager _avoidAOEManager;
-        private CheckPathAhead _checkPathAheadState;
         private Stopwatch _stopWatchState = Stopwatch.StartNew();
         private int _lastCheckedStateIndex;
+
+        private CheckPathAhead _checkPathAheadState;
+        private Dead _deadState;
 
         private void BeforeStateHandler(Engine engine, State state, CancelEventArgs cancelable)
         {
@@ -70,6 +72,8 @@ namespace WholesomeDungeonCrawler.Bot
 
                 _checkPathAheadState = new CheckPathAhead(_entityCache, _partyChatManager, _cache, _profileManager);
                 _checkPathAheadState.Initialize();
+                _deadState = new Dead(_entityCache, _profileManager);
+                _deadState.Initalize();
 
                 EventsLuaWithArgs.OnEventsLuaStringWithArgs += OnEventsLuaStringWithArgs;
                 OthersEvents.OnMount += OnMount;
@@ -87,7 +91,7 @@ namespace WholesomeDungeonCrawler.Bot
                     new AntiStuck(_cache, _entityCache, _profileManager),
                     new AvoidAOE(_entityCache, _avoidAOEManager, _cache),
                     new DeadDive(_entityCache),
-                    new Dead(_entityCache, _profileManager),
+                    _deadState,
                     new ForceRegroup(_cache, _entityCache, _profileManager),
                     //new MyMacro(),
                     new Regen(_entityCache, _profileManager),
@@ -221,6 +225,7 @@ namespace WholesomeDungeonCrawler.Bot
                 OthersEvents.OnMount -= OnMount;
                 _avoidAOEManager?.Dispose();
                 _checkPathAheadState?.Dispose();
+                _deadState?.Dispose();
                 _partyChatManager?.Dispose();
                 _fsm?.StopEngine();
                 _cache?.Dispose();

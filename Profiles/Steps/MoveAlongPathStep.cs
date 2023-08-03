@@ -10,6 +10,7 @@ using WholesomeToolbox;
 using wManager.Events;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
+using static wManager.Wow.Class.Npc;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
 {
@@ -25,6 +26,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private static bool FirstLaunch = false;
 
         public override string Name { get; }
+        public override FactionType StepFaction { get; }
         public bool IgnoreFightsDuringPath { get; }
 
         public List<Vector3> GetMoveAlongPath => _moveAlongPathModel.Path;
@@ -42,6 +44,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             IgnoreFightsDuringPath = stepModel.IgnoreFightsDuringPath;
             Name = stepModel.Name;
             FirstLaunch = true;
+            StepFaction = stepModel.StepFaction;
         }
 
         public override void Initialize()

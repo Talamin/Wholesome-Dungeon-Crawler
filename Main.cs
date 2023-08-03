@@ -10,7 +10,9 @@ using WholesomeDungeonCrawler.Helpers;
 using WholesomeToolbox;
 using wManager;
 using wManager.Plugin;
+using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
 
 public class Main : IProduct
 {
@@ -43,6 +45,12 @@ public class Main : IProduct
                 return;
             }
             */
+
+            if (ObjectManager.Me.Faction == 35)
+            {
+                Logger.LogError($"WARNING: You are you in GM mode. Unexpected behavior will happen.");
+            }
+
             if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Unknown)
             {
                 Logger.LogError($"You must select a role in the product settings first!");

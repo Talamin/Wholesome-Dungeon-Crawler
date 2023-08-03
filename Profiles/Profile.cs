@@ -1,15 +1,13 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.Models;
+using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles.Steps;
 using WholesomeToolbox;
-using wManager.Wow.Helpers;
-using wManager.Wow.ObjectManager;
 using static WholesomeDungeonCrawler.Profiles.Steps.RegroupStep;
 using static wManager.Wow.Class.Npc;
 using static wManager.Wow.Helpers.PathFinder;
@@ -20,16 +18,15 @@ namespace WholesomeDungeonCrawler.Profiles
     {
         private readonly IEntityCache _entityCache;
         private readonly IPartyChatManager _partyChatManager;
-        private readonly IProfileManager _profileManager;
+        private readonly ICache _cache;
         private List<IStep> _profileSteps = new List<IStep>();
         private IStep _currentStep;
-        public List<PathFinder.OffMeshConnection> OffMeshConnectionsList = new List<PathFinder.OffMeshConnection>();
+        public List<OffMeshConnection> OffMeshConnectionsList = new List<OffMeshConnection>();
 
         public int MapId { get; }
-        public List<Vector3> DeathRunPath { get; private set; } = new List<Vector3>();
+        public List<DeathRun> DeathRunPaths { get; private set; } = new List<DeathRun>();
         public Dictionary<IStep, List<Vector3>> DungeonPath { get; private set; } = new Dictionary<IStep, List<Vector3>>();
         public List<Vector3> AllMoveAlongNodes { get; private set; } = new List<Vector3>();
-        public FactionType FactionType { get; private set; }
         public string FileName { get; private set; }
         public int GetCurrentStepIndex => _profileSteps.IndexOf(_currentStep);
         public bool ProfileIsCompleted => _profileSteps.All(p => p.IsCompleted);
@@ -42,13 +39,19 @@ namespace WholesomeDungeonCrawler.Profiles
                 IPathManager pathManager,
                 IPartyChatManager partyChatManager,
                 IProfileManager profileManager,
+                ICache cache,
                 string fileName)
         {
             _entityCache = entityCache;
+            _cache = cache;
             _partyChatManager = partyChatManager;
-            _profileManager = profileManager;
             FileName = fileName;
             DungeonModel = profileModel.DungeonModel;
+
+            // Remove step not from your faction
+            profileModel.StepModels.RemoveAll(step => 
+                step.StepFaction == FactionType.Horde && _cache.IAmAlliance
+                || step.StepFaction == FactionType.Alliance && !_cache.IAmAlliance);
 
             for (int i = 0; i < profileModel.StepModels.Count; i++)
             {
@@ -139,9 +142,9 @@ namespace WholesomeDungeonCrawler.Profiles
 
             AllMoveAlongNodes.RemoveAll(node => node == null);
 
-            foreach (Vector3 point in profileModel.DeathRunPath)
+            foreach (DeathRun deathRun in profileModel.DeathRunPaths)
             {
-                DeathRunPath.Add(point);
+                DeathRunPaths.Add(deathRun);
             }
 
             // Clear all dungeon crawler offmesh connections
@@ -188,7 +191,6 @@ namespace WholesomeDungeonCrawler.Profiles
             OffMeshConnections.AddRange(profileModel.OffMeshConnections);
 
             MapId = profileModel.MapId;
-            FactionType = profileModel.Faction;
         }
 
         public void Initialize()
@@ -367,6 +369,18 @@ namespace WholesomeDungeonCrawler.Profiles
             SetCurrentStep(stepToGo);
 
             return true;
+        }
+    }
+
+    public class DeathRun
+    {
+        public string Name { get; set; }
+        public List<Vector3> Path { get; set; } = new List<Vector3>();
+
+        public DeathRun(string name, List<Vector3> path)
+        {
+            Path = path;
+            Name = name;
         }
     }
 }

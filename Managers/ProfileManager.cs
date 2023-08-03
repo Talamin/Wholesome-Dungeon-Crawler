@@ -11,7 +11,6 @@ using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles;
 using WholesomeDungeonCrawler.Profiles.Steps;
 using wManager.Wow.Helpers;
-using static wManager.Wow.Class.Npc;
 
 namespace WholesomeDungeonCrawler.Managers
 {
@@ -123,12 +122,6 @@ namespace WholesomeDungeonCrawler.Managers
                                 continue;
                             }
 
-                            if (deserializedProfile.Faction == FactionType.Alliance && !_cache.IAmAlliance
-                                || deserializedProfile.Faction == FactionType.Horde && _cache.IAmAlliance)
-                            {
-                                continue;
-                            }
-
                             deserializedProfile.DungeonModel = dungeonModel; // assign dungeon model for future use
 
                             profileModels.Add(deserializedProfile);
@@ -195,13 +188,13 @@ namespace WholesomeDungeonCrawler.Managers
                 }
 
                 // A profile has been found
-                string fileName = $"{chosenModel.ProfileName.Replace(" ", "_")}_{chosenModel.Faction}";
+                string fileName = $"{chosenModel.ProfileName.Replace(" ", "_")}";
                 Logger.Log($"Selected {fileName} by closest node from the {chosenModel.DungeonName} folder.");
-                _currentProfile = new Profile(chosenModel, _entityCache, _pathManager, _partyChatManager, this, fileName);
+                _currentProfile = new Profile(chosenModel, _entityCache, _pathManager, _partyChatManager, this, _cache, fileName);
                 string log = $"Dungeon Profile loaded: {chosenModel.ProfileName}, ";
                 log += $"MapID {chosenModel.MapId}, ";
                 log += $"{chosenModel.StepModels.Count()} steps, ";
-                log += $"{chosenModel.DeathRunPath.Count()} deathrun nodes, ";
+                log += $"{chosenModel.DeathRunPaths.Count()} deathruns, ";
                 log += $"{chosenModel.OffMeshConnections.Count()} offmesh connections, ";
                 log += $"Dungeon model ID: {chosenModel.DungeonModel?.DungeonId}";
                 Logger.Log(log);

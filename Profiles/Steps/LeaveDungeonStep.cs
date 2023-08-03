@@ -5,6 +5,7 @@ using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Helpers;
+using static wManager.Wow.Class.Npc;
 using Timer = robotManager.Helpful.Timer;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
@@ -15,7 +16,6 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private readonly IEntityCache _entityCache;
         private readonly IPartyChatManager _partyChatManager;
         private readonly IProfileManager _profileManager;
-        public override string Name { get; }
         private Timer _readyCheckTimer = new Timer();
         private int _foodMin;
         private int _drinkMin;
@@ -23,6 +23,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private readonly int _readyTargetIndex = 2;
         private bool _imPartyLeader;
         private bool _receivedChatSystemReady;
+
+        public override string Name { get; }
+        public override FactionType StepFaction { get; }
 
         public LeaveDungeonStep(LeaveDungeonModel leaveDungeonModel, 
             IEntityCache entityCache,
@@ -34,6 +37,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _leaveDungeonModel = leaveDungeonModel;
             _entityCache = entityCache;
             Name = leaveDungeonModel.Name;
+            StepFaction = leaveDungeonModel.StepFaction;
             _foodMin = wManager.wManagerSetting.CurrentSetting.FoodPercent;
             _drinkMin = wManager.wManagerSetting.CurrentSetting.DrinkPercent;
             _drinkAllowed = wManager.wManagerSetting.CurrentSetting.RestingMana;
