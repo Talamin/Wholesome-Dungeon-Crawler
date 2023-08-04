@@ -1,6 +1,7 @@
 ﻿using MahApps.Metro.Controls.Dialogs;
 using Newtonsoft.Json;
 using robotManager.Helpful;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -29,130 +30,137 @@ namespace WholesomeDungeonCrawler.GUI
 
         private void Setup()
         {
-            ObservableCollection<string> partyMemberCollection = new ObservableCollection<string>(CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers);
-            dgParty.ItemsSource = partyMemberCollection;
-            txtErrorChooseRoleFirst.Visibility = System.Windows.Visibility.Collapsed;
-
-            addDialogSettings = new MetroDialogSettings()
+            try
             {
-                AffirmativeButtonText = "Add",
-                NegativeButtonText = "Cancel",
-                AnimateHide = true,
-                AnimateShow = true,
-                ColorScheme = MetroDialogColorScheme.Accented
-            };
+                ObservableCollection<string> partyMemberCollection = new ObservableCollection<string>(CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers);
+                dgParty.ItemsSource = partyMemberCollection;
+                txtErrorChooseRoleFirst.Visibility = System.Windows.Visibility.Collapsed;
 
-            basicDialogSettings = new MetroDialogSettings()
-            {
-                AnimateHide = true,
-                AnimateShow = true,
-                ColorScheme = MetroDialogColorScheme.Accented
-            };
-
-            btnAddPartyMember.Click += async (sender, e) =>
-            {
-                if (partyMemberCollection.Count >= 4)
+                addDialogSettings = new MetroDialogSettings()
                 {
-                    await this.ShowMessageAsync("Warning", "Cannot add more than 4 players to invite.", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    AffirmativeButtonText = "Add",
+                    NegativeButtonText = "Cancel",
+                    AnimateHide = true,
+                    AnimateShow = true,
+                    ColorScheme = MetroDialogColorScheme.Accented
+                };
+
+                basicDialogSettings = new MetroDialogSettings()
+                {
+                    AnimateHide = true,
+                    AnimateShow = true,
+                    ColorScheme = MetroDialogColorScheme.Accented
+                };
+
+                btnAddPartyMember.Click += async (sender, e) =>
+                {
+                    if (partyMemberCollection.Count >= 4)
+                    {
+                        await this.ShowMessageAsync("Warning", "Cannot add more than 4 players to invite.", MessageDialogStyle.Affirmative, basicDialogSettings);
+                    }
+
+                    var x = await this.ShowInputAsync("Add", "Party Member Name", addDialogSettings);
+                    if (x != null)
+                    {
+                        partyMemberCollection.Add(x);
+                        CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers = partyMemberCollection.ToList();
+                    }
+
+                };
+
+                btnDeletePartyMember.Click += (sender, e) =>
+                {
+                    if (dgParty.SelectedIndex >= 0)
+                    {
+                        partyMemberCollection.Remove(dgParty.SelectedValue.ToString());
+                        CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers = partyMemberCollection.ToList();
+                    }
+                };
+
+                if (CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Unknown)
+                {
+                    tbTankName.Visibility = System.Windows.Visibility.Collapsed;
+                    spPartyGrid.Visibility = System.Windows.Visibility.Collapsed;
+                    txtErrorChooseRoleFirst.Visibility = System.Windows.Visibility.Visible;
                 }
 
-                var x = await this.ShowInputAsync("Add", "Party Member Name", addDialogSettings);
-                if (x != null)
+                if (CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Tank)
                 {
-                    partyMemberCollection.Add(x);
-                    CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers = partyMemberCollection.ToList();
-                }
-
-            };
-
-            btnDeletePartyMember.Click += (sender, e) =>
-            {
-                if (dgParty.SelectedIndex >= 0)
-                {
-                    partyMemberCollection.Remove(dgParty.SelectedValue.ToString());
-                    CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers = partyMemberCollection.ToList();
-                }
-            };
-
-            if (CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Unknown)
-            {
-                tbTankName.Visibility = System.Windows.Visibility.Collapsed;
-                spPartyGrid.Visibility = System.Windows.Visibility.Collapsed;
-                txtErrorChooseRoleFirst.Visibility = System.Windows.Visibility.Visible;
-            }
-
-            if (CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Tank)
-            {
-                CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.TankName = ObjectManager.Me.Name;
-                tbTankName.Visibility = System.Windows.Visibility.Collapsed;
-                cbSelectDungeon.Visibility = System.Windows.Visibility.Visible;
-                spPartyGrid.Visibility = System.Windows.Visibility.Visible;
-            }
-            else
-            {
-                tbTankName.Visibility = System.Windows.Visibility.Visible;
-                spPartyGrid.Visibility = System.Windows.Visibility.Collapsed;
-                cbSelectDungeon.Visibility = System.Windows.Visibility.Collapsed;
-            }
-
-            // dungeon selection
-            List<DungeonModel> availableDungeons = Toolbox.GetListAvailableDungeons();
-            cbSelectDungeon.Items.Clear();
-            cbSelectDungeon.SelectedValuePath = "Key";
-            //cbSelectDungeon.DisplayMemberPath = "Value";
-
-            //cbSelectDungeon.Items.Add(new KeyValuePair<int, string>(-1, "Random Dungeon"));
-            cbSelectDungeon.Items.Add(new WDCComboboxItem()
-            {
-                Key = -1,
-                Content = $"Random Dungeon",
-                Foreground = Brushes.Wheat
-            });
-            foreach (DungeonModel dungeonModel in availableDungeons.OrderBy(d => d.IsHeroic).OrderBy(d => d.IsRaid))
-            {
-                DirectoryInfo profilePath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/{ProfileManager.ProfilesDirectoryName}/{dungeonModel.Name}");
-                int profilecount = profilePath.GetFiles().Count();
-                string suffix = "";
-                int nbProfilesFound = 0;
-                SolidColorBrush textColor = Brushes.White;
-                if (profilecount <= 0)
-                {
-                    suffix = " NO PROFILE";
-                    textColor = Brushes.Gray;
+                    CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.TankName = ObjectManager.Me.Name;
+                    tbTankName.Visibility = System.Windows.Visibility.Collapsed;
+                    cbSelectDungeon.Visibility = System.Windows.Visibility.Visible;
+                    spPartyGrid.Visibility = System.Windows.Visibility.Visible;
                 }
                 else
                 {
-                    nbProfilesFound++;
-                    List<FileInfo> files = profilePath.GetFiles().ToList();
-                    files.RemoveAll(file => !file.Name.EndsWith(".json"));
-                    foreach (FileInfo file in files)
-                    {
-                        ProfileModel deserializedProfile = null;
-                        try
-                        {
-                            deserializedProfile = JsonConvert.DeserializeObject<ProfileModel>(
-                                File.ReadAllText(file.FullName),
-                                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
-                        }
-                        catch (JsonSerializationException ex)
-                        {
-                            Logger.LogError($"There was an error when trying to deserialize the profile {file.FullName}.");
-                            Logger.LogError($"{ex}");
-                            return;
-                        }
-                        suffix = $"{nbProfilesFound} PROFILES";
-                    }
+                    tbTankName.Visibility = System.Windows.Visibility.Visible;
+                    spPartyGrid.Visibility = System.Windows.Visibility.Collapsed;
+                    cbSelectDungeon.Visibility = System.Windows.Visibility.Collapsed;
                 }
-                string prefix = dungeonModel.IsHeroic ? "[Heroic] " : "";
-                prefix = dungeonModel.IsRaid ? "[Raid] " : "";
 
-                WDCComboboxItem item = new WDCComboboxItem()
+                // dungeon selection
+                List<DungeonModel> availableDungeons = Toolbox.GetListAvailableDungeons();
+                cbSelectDungeon.Items.Clear();
+                cbSelectDungeon.SelectedValuePath = "Key";
+                //cbSelectDungeon.DisplayMemberPath = "Value";
+
+                //cbSelectDungeon.Items.Add(new KeyValuePair<int, string>(-1, "Random Dungeon"));
+                cbSelectDungeon.Items.Add(new WDCComboboxItem()
                 {
-                    Key = dungeonModel.DungeonId,
-                    Content = $"{prefix}{dungeonModel.Name} ({dungeonModel.DungeonId}) - {suffix}",
-                    Foreground = textColor
-                };
-                cbSelectDungeon.Items.Add(item);
+                    Key = -1,
+                    Content = $"Random Dungeon",
+                    Foreground = Brushes.Wheat
+                });
+                foreach (DungeonModel dungeonModel in availableDungeons.OrderBy(d => d.IsHeroic).OrderBy(d => d.IsRaid))
+                {
+                    DirectoryInfo profilePath = Directory.CreateDirectory($@"{Others.GetCurrentDirectory}/Profiles/{ProfileManager.ProfilesDirectoryName}/{dungeonModel.Name}");
+                    int profilecount = profilePath.GetFiles().Count();
+                    string suffix = "";
+                    int nbProfilesFound = 0;
+                    SolidColorBrush textColor = Brushes.White;
+                    if (profilecount <= 0)
+                    {
+                        suffix = " NO PROFILE";
+                        textColor = Brushes.Gray;
+                    }
+                    else
+                    {
+                        nbProfilesFound++;
+                        List<FileInfo> files = profilePath.GetFiles().ToList();
+                        files.RemoveAll(file => !file.Name.EndsWith(".json"));
+                        foreach (FileInfo file in files)
+                        {
+                            ProfileModel deserializedProfile = null;
+                            try
+                            {
+                                deserializedProfile = JsonConvert.DeserializeObject<ProfileModel>(
+                                    File.ReadAllText(file.FullName),
+                                    new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
+                            }
+                            catch (JsonSerializationException ex)
+                            {
+                                Logger.LogError($"There was an error when trying to deserialize the profile {file.FullName}.");
+                                Logger.LogError($"{ex}");
+                                return;
+                            }
+                            suffix = $"{nbProfilesFound} PROFILES";
+                        }
+                    }
+                    string prefix = dungeonModel.IsHeroic ? "[Heroic] " : "";
+                    prefix = dungeonModel.IsRaid ? "[Raid] " : "";
+
+                    WDCComboboxItem item = new WDCComboboxItem()
+                    {
+                        Key = dungeonModel.DungeonId,
+                        Content = $"{prefix}{dungeonModel.Name} ({dungeonModel.DungeonId}) - {suffix}",
+                        Foreground = textColor
+                    };
+                    cbSelectDungeon.Items.Add(item);
+                }
+            }
+            catch (Exception e)
+            { 
+                Logger.LogError(e.ToString());
             }
         }
 

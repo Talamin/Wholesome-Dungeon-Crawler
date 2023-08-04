@@ -28,6 +28,7 @@ namespace WholesomeDungeonCrawler.Helpers
 
             foreach (string instance in availableInstances)
             {
+                if (string.IsNullOrEmpty(instance)) continue;
                 string[] instanceInfo = instance.Split('$');
                 int dungeonId = int.Parse(instanceInfo[0]);
                 string dungeonName = instanceInfo[1];
