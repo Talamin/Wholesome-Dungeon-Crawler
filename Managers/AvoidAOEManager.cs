@@ -111,7 +111,8 @@ namespace WholesomeDungeonCrawler.Managers
             // Sometimes the pathfinder will make a path through a wall
             // Need to detect when we're stuck, but not in place (in case of root spell)
             List<Vector3> currentPath = MovementManager.CurrentPath;
-            if (currentPath != null
+            if (_escapePath != null
+                && currentPath != null
                 && currentPath.Count > 0
                 && !_entityCache.Me.WowUnit.Rooted
                 && !_entityCache.Me.WowUnit.IsStunned)

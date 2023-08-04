@@ -108,6 +108,7 @@ namespace WholesomeDungeonCrawler.Helpers
             17822, // Landen Stilwell (SFK Jail)
             3850, // Sorcerer Ashcrombe (SFK Jail)
             3849, // Deathstalker Adamant (SFK Jail)
+            8130, // Sul'lithuz Hatchling (ZF)
         };
 
         // These neutral mobs will be pulled when navigating the dungeon as if they were hostile
