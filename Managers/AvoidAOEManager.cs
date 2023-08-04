@@ -29,6 +29,7 @@ namespace WholesomeDungeonCrawler.Managers
         private List<Vector3> _escapePath;
         //private List<(ulong guid, Vector3 position)> _blackListCache = new List<(ulong, Vector3)>();
         private LFGRoles _myRole = CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole;
+        private List<BannedSafeZone> _bannedSafeZones = new List<BannedSafeZone>();
 
         public bool ShouldReposition =>
             _escapePath != null
@@ -90,7 +91,8 @@ namespace WholesomeDungeonCrawler.Managers
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             MovementEvents.OnMovementPulse += MovementEventsOnMovementPulse;
             MovementEvents.OnMoveToPulse += MovementsEventsOnMoveToPulse;
-            FightEvents.OnFightStart += FightEventsOnFightStart;            
+            FightEvents.OnFightStart += FightEventsOnFightStart;
+            MovementEvents.OnSeemStuck += SeemStuckHandler;
         }
 
         public void Dispose()
@@ -101,6 +103,23 @@ namespace WholesomeDungeonCrawler.Managers
             MovementEvents.OnMovementPulse -= MovementEventsOnMovementPulse;
             MovementEvents.OnMoveToPulse -= MovementsEventsOnMoveToPulse;
             FightEvents.OnFightStart -= FightEventsOnFightStart;
+            MovementEvents.OnSeemStuck -= SeemStuckHandler;
+        }
+
+        private void SeemStuckHandler()
+        {
+            // Sometimes the pathfinder will make a path through a wall
+            // Need to detect when we're stuck, but not in place (in case of root spell)
+            List<Vector3> currentPath = MovementManager.CurrentPath;
+            if (currentPath != null
+                && currentPath.Count > 0
+                && !_entityCache.Me.WowUnit.Rooted
+                && !_entityCache.Me.WowUnit.IsStunned)
+            {
+                Logger.LogError($"We're stuck, trying another path");
+                _bannedSafeZones.Add(new BannedSafeZone(MovementManager.CurrentPath.Last()));
+                _escapePath = null;
+            }
         }
 
         private void AddDangerZone(WoWObject wowObject, float radius)
@@ -133,6 +152,7 @@ namespace WholesomeDungeonCrawler.Managers
         {
             Stopwatch watch = Stopwatch.StartNew();
             Vector3 myPos = _entityCache.Me.PositionWT;
+            _bannedSafeZones.RemoveAll(bsz => bsz.ShouldBeRemoved);
 
             List<WoWObject> objectList = ObjectManager.ObjectList.ToList();
 
@@ -159,7 +179,7 @@ namespace WholesomeDungeonCrawler.Managers
                     DynamicObject dObject = new DynamicObject(wowObject.GetBaseAddress);
                     Logger.LogOnce($"DYNAMIC: {dObject.Name} -> {dObject.Entry}", true);
                 }
-                if (debugOthers 
+                if (debugOthers
                     && wowObject.Type != WoWObjectType.Unit
                     && wowObject.Type != WoWObjectType.DynamicObject
                     && wowObject.Type != WoWObjectType.Player
@@ -167,7 +187,7 @@ namespace WholesomeDungeonCrawler.Managers
                 {
                     Logger.LogOnce($"WoWOBJECT: {wowObject.Name} -> {wowObject.Entry} - {wowObject.Position.DistanceTo(_entityCache.Me.PositionWT)}", true);
                 }
-                
+
                 if (_knowAOEsDic.TryGetValue(wowObject.Entry, out KnownAOE knownAOE))
                 {
                     switch (wowObject.Type)
@@ -257,6 +277,12 @@ namespace WholesomeDungeonCrawler.Managers
                                 nbSpotsOutsideFSZ++;
                                 continue;
                             }
+
+                            if (_bannedSafeZones.Any(bsz => bsz.Position.DistanceTo(gridPosition) < 3))
+                            {
+                                continue;
+                            }
+
                             nbSpotsFound++;
                             _safeSpots.Add(gridPosition);
                         }
@@ -445,6 +471,11 @@ namespace WholesomeDungeonCrawler.Managers
                         Radar3D.DrawLine(_escapePath[i], _escapePath[i + 1], Color.ForestGreen);
                     }
                 }
+
+                foreach (BannedSafeZone bsz in _bannedSafeZones)
+                {
+                    Radar3D.DrawCircle(bsz.Position, 3, Color.Red, true, 30);
+                }
             }
             catch (Exception ex)
             {
@@ -489,6 +520,19 @@ namespace WholesomeDungeonCrawler.Managers
             // Shirrak fight - Auchenai Crypt
             new ForcedSafeZone(18371, new Vector3(-51.94074, -163.6697, 26.36175, "None"), 40),
         };
+
+        private struct BannedSafeZone
+        {
+            private readonly Timer _timer;
+            public Vector3 Position { get; private set; }
+            public bool ShouldBeRemoved => _timer.IsReady;
+
+            public BannedSafeZone(Vector3 position)
+            {
+                Position = position;
+                _timer = new Timer(10 * 1000);
+            }
+        }
 
         private struct KnownAOE
         {
