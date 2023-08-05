@@ -1,7 +1,17 @@
 ﻿using robotManager.FiniteStateMachine;
+using robotManager.Helpful;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.Linq;
+using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
+using WholesomeDungeonCrawler.Managers.AvoidAOEHelpers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
+using WholesomeToolbox;
+using wManager.Events;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.States
@@ -14,6 +24,11 @@ namespace WholesomeDungeonCrawler.States
         private readonly IEntityCache _entityCache;
         private readonly ICache _cache;
 
+        private RepositionInfo _repositionInfo;
+        private List<Vector3> _escapePath;
+        private List<BannedSafeZone> _bannedSafeZones = new List<BannedSafeZone>();
+        Timer _banStateTimer = new Timer();
+
         public AvoidAOE(
             IEntityCache entityCache,
             IAvoidAOEManager avoidAOEManager,
@@ -24,24 +39,243 @@ namespace WholesomeDungeonCrawler.States
             _cache = cache;
         }
 
+        public void Initialize()
+        {
+            if (!Radar3D.IsLaunched) Radar3D.Pulse();
+            Radar3D.OnDrawEvent += DrawEventAOE;
+            MovementEvents.OnSeemStuck += SeemStuckHandler;
+        }
+
+        public void Dispose()
+        {
+            Radar3D.OnDrawEvent -= DrawEventAOE;
+            Radar3D.Stop();
+            MovementEvents.OnSeemStuck -= SeemStuckHandler;
+        }
+
         public override bool NeedToRun
         {
             get
             {
                 if (!_cache.IsInInstance
                     || _entityCache.Me.IsDead
-                    || !_avoidAOEManager.ShouldReposition)
+                    || !_banStateTimer.IsReady)
                 {
                     return false;
                 }
 
-                return true;
+                // If we receive a RepositionInfo from the manager, it means we need to reposition
+                _repositionInfo = _avoidAOEManager.RepositionInfo;
+                if (_repositionInfo == null)
+                {
+                    _escapePath = null;
+                }
+                return _repositionInfo != null;
             }
         }
 
         public override void Run()
         {
-            MovementManager.Go(_avoidAOEManager.GetEscapePath, false);
+            Vector3 myPos = _entityCache.Me.PositionWT;
+            _bannedSafeZones.RemoveAll(bsz => bsz.ShouldBeRemoved);
+            List<Vector3> currentPath = MovementManager.CurrentPath;
+
+            // We are repositioning
+            if (_escapePath != null)
+            {
+                if (!MovementManager.InMovement)
+                {
+                    MovementManager.Go(_escapePath);
+                    return;
+                }
+                // We are not on the right path, cancel
+                if (currentPath.Last() != _escapePath.Last())
+                {
+                    MovementManager.StopMove();
+                    Logger.Log($"Canceled path because it's not our escape route");
+                    MovementManager.Go(_escapePath);
+                    return;
+                }
+                else
+                {
+                    if (myPos.DistanceTo(currentPath.Last()) < 2f)
+                    {
+                        Logger.Log($"Safe spot reached.");
+                        MovementManager.StopMove();
+                        _escapePath = null;
+                    }
+                }
+                return;
+            }
+
+            Vector3 referenceGridPosition = myPos;
+            if (!_repositionInfo.InSafeZone)
+            {
+                referenceGridPosition = _repositionInfo.ForcedSafeZone.ZoneCenter;
+                Logger.LogOnce($"Trying to reposition into safe zone");
+            }
+            else
+            {
+                Logger.LogOnce($"Trying to escape {_repositionInfo.CurrentDangerZone.Name}");
+            }
+
+            Stopwatch gridWatch = Stopwatch.StartNew();
+            List<Vector3> safeSpots = new List<Vector3>();
+            int nbSpotsFound = 0;
+            int nbSpotsInDangerZone = 0;
+            int nbSpotsTooCloseToEnemy = 0;
+            int nbSpotsOutsideFSZ = 0;
+            int range = 50;
+
+            for (int y = -range; y <= range; y += 5)
+            {
+                for (int x = -range; x <= range; x += 5)
+                {
+                    Vector3 gridPosition = referenceGridPosition + new Vector3(x, y, 0);
+                    if (_repositionInfo.DangerZones.Any(dangerZone => dangerZone.PositionInDangerZone(gridPosition, 4)))
+                    {
+                        nbSpotsInDangerZone++;
+                        continue;
+                    }
+
+                    if (_entityCache.EnemyUnitsList.Any(enemy => enemy.TargetGuid <= 0 && gridPosition.DistanceTo(enemy.PositionWT) < 30)) // don't go towards unpulled enemies
+                    {
+                        nbSpotsTooCloseToEnemy++;
+                        continue;
+                    }
+
+                    if (_repositionInfo.ForcedSafeZone != null && !_repositionInfo.ForcedSafeZone.PositionInSafeZone(gridPosition, -4))
+                    {
+                        nbSpotsOutsideFSZ++;
+                        continue;
+                    }
+
+                    if (_bannedSafeZones.Any(bsz => bsz.Position.DistanceTo(gridPosition) < 3))
+                    {
+                        continue;
+                    }
+
+                    nbSpotsFound++;
+                    safeSpots.Add(gridPosition);
+                }
+            }
+
+            Logger.LogOnce($"Spots found: {nbSpotsFound} - In danger zone: {nbSpotsInDangerZone} - Enemy too close: {nbSpotsTooCloseToEnemy} - Outside forced safe zone {nbSpotsOutsideFSZ}");
+
+            if (safeSpots.Count <= 0)
+            {
+                Logger.LogError("Failed to find any safe spot!");
+                _banStateTimer = new Timer(5 * 1000);
+                return;
+            }
+
+            // Prefer a position nearby myself
+            IWoWPlayer tank = _entityCache.TankUnit;
+            List<Vector3> closestSpotsFromPreferred = safeSpots
+                .OrderBy(spot => myPos.DistanceTo(spot))
+                .ToList();
+            Stopwatch posWatch = Stopwatch.StartNew();
+            foreach (Vector3 spot in closestSpotsFromPreferred)
+            {
+                // Should always be in range of tank
+                if (tank != null && (tank.PositionWT.DistanceTo(spot) > 35))
+                {
+                    continue;
+                }
+
+                Vector3 spotPosition = new Vector3(spot.X, spot.Y, PathFinder.GetZPosition(spot));
+
+                // Check LoS with tank
+                if (tank != null && TraceLine.TraceLineGo(spotPosition + new Vector3(0, 0, 2), tank.PositionWT + new Vector3(0, 0, 2)))
+                {
+                    continue;
+                }
+
+                float straightLineDistance = myPos.DistanceTo(spotPosition);
+                List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, spotPosition, out bool foundPath, true);
+                if (foundPath)
+                {
+                    // Avoid big detours or fall off cliffs
+                    if (WTPathFinder.CalculatePathTotalDistance(pathToSafeSpot) > straightLineDistance * 1.6)
+                    {
+                        continue;
+                    }
+
+                    Logger.Log($"Found a path in {posWatch.ElapsedMilliseconds}ms");
+                    _escapePath = pathToSafeSpot;
+                    MovementManager.Go(_escapePath, false);
+                    return;
+                }
+            }
+            Logger.LogError($"No escape route found in {posWatch.ElapsedMilliseconds}ms!");
+            _banStateTimer = new Timer(5 * 1000);
+        }
+
+        private void SeemStuckHandler()
+        {
+            // Sometimes the pathfinder will make a path through a wall
+            // Need to detect when we're stuck, but not in place (in case of root spell)
+            List<Vector3> currentPath = MovementManager.CurrentPath;
+            if (_escapePath != null
+                && currentPath != null
+                && currentPath.Count > 0
+                && !_entityCache.Me.WowUnit.Rooted
+                && !_entityCache.Me.WowUnit.IsStunned)
+            {
+                Logger.LogError($"We're stuck, trying another path");
+                _bannedSafeZones.Add(new BannedSafeZone(MovementManager.CurrentPath.Last()));
+                _escapePath = null;
+            }
+        }
+
+        private void DrawEventAOE()
+        {
+            try
+            {
+                if (_repositionInfo != null)
+                {
+                    List<DangerZone> dangerZones = new List<DangerZone>(_repositionInfo.DangerZones);
+                    DangerZone currentDangerZone = _repositionInfo.CurrentDangerZone;
+                    ForcedSafeZone currentforcedSafeZone = _repositionInfo.ForcedSafeZone;
+                    foreach (DangerZone dangerZone in dangerZones)
+                    {
+                        if (dangerZones != null)
+                            Radar3D.DrawCircle(dangerZone.Position, dangerZone.Radius, Color.IndianRed, false, 150);
+                    }
+
+                    if (currentDangerZone != null)
+                    {
+                        Radar3D.DrawCircle(currentDangerZone.Position, currentDangerZone.Radius, Color.Orange, true, 30);
+                    }
+
+                    if (currentforcedSafeZone != null)
+                    {
+                        Radar3D.DrawCircle(currentforcedSafeZone.ZoneCenter, currentforcedSafeZone.Radius, Color.Blue, false, 30);
+                    }
+                    /*
+                    foreach (Vector3 safeSpot in _safeSpots)
+                    {
+                        Radar3D.DrawCircle(safeSpot, 0.2f, Color.Blue, true, 100);
+                    }
+                    */
+                    if (_escapePath != null && _escapePath.Count > 1)
+                    {
+                        for (int i = 0; i < _escapePath.Count - 1; i++)
+                        {
+                            Radar3D.DrawLine(_escapePath[i], _escapePath[i + 1], Color.ForestGreen);
+                        }
+                    }
+
+                    foreach (BannedSafeZone bsz in _bannedSafeZones)
+                    {
+                        Radar3D.DrawCircle(bsz.Position, 3, Color.Red, true, 30);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.ToString());
+            }
         }
     }
 }
