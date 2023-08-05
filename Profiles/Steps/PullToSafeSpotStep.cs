@@ -147,6 +147,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 _enemiesToPull = ObjectManager.GetObjectWoWUnit()
                 .Where(unit => unit.Position.Z <= _zoneToClearPosition.Z + _zoneToClearZLimit
                     && unit.Position.Z >= _zoneToClearPosition.Z - _zoneToClearZLimit
+                    && !Lists.MobsToIgnoreDuringSteps.Contains(unit.Entry)
                     && unit.IsAttackable
                     && unit.Reaction <= wManager.Wow.Enums.Reaction.Unfriendly)
                 .Where(unit => unit.Position.DistanceTo(_zoneToClearPosition) <= _zoneToClearRadius)

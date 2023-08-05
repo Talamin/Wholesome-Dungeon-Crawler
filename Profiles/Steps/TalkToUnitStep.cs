@@ -59,6 +59,13 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             }
             else
             {
+                if (foundUnit.IsDead)
+                {
+                    Logger.LogDebug($"[Step {_talkToUnitModel.Name}]: Unit {_talkToUnitModel.UnitId} is dead. Skipping");
+                    IsCompleted = true;
+                    return;
+                }
+
                 Vector3 targetPosition = foundUnit.PositionWithoutType;
                 float targetInteractDistance = foundUnit.InteractDistance;
                 GoToTask.ToPositionAndIntecractWithNpc(targetPosition, _talkToUnitModel.UnitId, _talkToUnitModel.GossipIndex);

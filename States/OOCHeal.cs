@@ -45,6 +45,8 @@ namespace WholesomeDungeonCrawler.States
             get
             {
                 if (!_cache.IsInInstance
+                    || _entityCache.Me.HasFoodBuff
+                    || _entityCache.Me.HasDrinkBuff
                     || _entityCache.EnemiesAttackingGroup.Length > 0
                     || !_entityCache.ListGroupMember.Any(unit => unit.IsValid && !unit.IsDead && unit.HealthPercent < _healThreshold))
                 {

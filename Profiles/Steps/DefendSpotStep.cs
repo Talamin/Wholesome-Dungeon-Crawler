@@ -25,6 +25,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public double GetTimeLeft => _stepTimer == null || _stepTimer.IsReady ? 0 : _stepTimer.TimeLeft();
         public IWoWUnit ShouldDefendAgainst => _entityCache.EnemyUnitsList
                 .Where(unit => unit.PositionWT.DistanceTo(_defendSpotModel.DefendPosition) <= _defendSpotRadius
+                    && !Lists.MobsToIgnoreDuringSteps.Contains(unit.Entry)
                     && unit.Reaction <= wManager.Wow.Enums.Reaction.Hostile)
                 .OrderBy(unit => unit.PositionWT.DistanceTo(_defendSpotModel.DefendPosition))
                 .FirstOrDefault();

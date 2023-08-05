@@ -92,9 +92,9 @@ namespace WholesomeDungeonCrawler.Helpers
 
         }.OrderBy(dungeon => dungeon.Name).ToList();
 
-        // These mobs will only be ignored during MoveAlongPath checks (they won't be pulled).
-        // The group will still defend against them is attacked.
-        public static readonly HashSet<int> MobsToIgnoreDuringPathCheck = new HashSet<int>
+        // These mobs will only be ignored during MoveAlongPath/DefendSpot/Pull/Escort checks (they won't be pulled).
+        // The group will still defend against them if attacked.
+        public static readonly HashSet<int> MobsToIgnoreDuringSteps = new HashSet<int>
         {
             26793, // Crystalline Frayer (Nexus)
             191016, // Seed Pod (Nexus)
@@ -109,6 +109,7 @@ namespace WholesomeDungeonCrawler.Helpers
             3850, // Sorcerer Ashcrombe (SFK Jail)
             3849, // Deathstalker Adamant (SFK Jail)
             8130, // Sul'lithuz Hatchling (ZF)
+            10096, // High Justice Grimstone (BRD)
         };
 
         // These neutral mobs will be pulled when navigating the dungeon as if they were hostile
@@ -116,6 +117,7 @@ namespace WholesomeDungeonCrawler.Helpers
         {
             4625, // Death's Head Ward Keeper (RFK)
             3653, // Kresh (Wailing Caverns)
+            //9499, // Plugger Spazzring (BRD)
         };
 
         // These mobs will have a different target priority (only during fights and if they are actively engaged with your team)

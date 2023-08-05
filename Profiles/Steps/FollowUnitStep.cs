@@ -36,7 +36,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         {
             {
                 _unitToEscort = ObjectManager.GetObjectWoWUnit()
-                    .FirstOrDefault(unit => unit.IsAlive && unit.Entry == _followUnitModel.UnitId);
+                    .FirstOrDefault(unit => 
+                        unit.IsAlive 
+                        && unit.Entry == _followUnitModel.UnitId);
                 Vector3 myPosition = _entityCache.Me.PositionWT;
 
                 if (_unitToEscort == null)
@@ -94,7 +96,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             if (_unitToEscort == null) return null;
             foreach (IWoWUnit unit in _entityCache.EnemyUnitsList)
             {
-                if (unit.TargetGuid > 0 && unit.TargetGuid == _unitToEscort.Guid)
+                if (unit.TargetGuid > 0 
+                    && unit.TargetGuid == _unitToEscort.Guid 
+                    && !Lists.MobsToIgnoreDuringSteps.Contains(unit.Entry))
                 {
                     Logger.Log($"Defending Follow Unit against {unit.Name}");
                     ObjectManager.Me.Target = unit.Guid;

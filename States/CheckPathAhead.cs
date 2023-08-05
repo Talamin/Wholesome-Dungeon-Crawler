@@ -225,7 +225,7 @@ namespace WholesomeDungeonCrawler.States
                 foreach (IWoWUnit unit in hostileUnits)
                 {
                     if ((unit.Reaction >= Reaction.Neutral && !Lists.NeutralsToAttackDuringPathCheck.Contains(unit.Entry))
-                        || Lists.MobsToIgnoreDuringPathCheck.Contains(unit.Entry)
+                        || Lists.MobsToIgnoreDuringSteps.Contains(unit.Entry)
                         || unreachableMobsGuid.Contains(unit.Guid)
                         || unit.PositionWT.DistanceTo(_entityCache.Me.PositionWT) > _detectionRadius // in radius?
                         || pathToUnitLength + segmentStart.DistanceTo(unit.PositionWT) > _detectionPathDistance // not too far?

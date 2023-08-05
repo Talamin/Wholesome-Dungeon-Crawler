@@ -13,7 +13,7 @@ namespace WholesomeDungeonCrawler.States
     class CombatTurboLoot : State, IState
     {
         public override string DisplayName => "Combat Turbo Looting";
-        private readonly int _lootRange = 5;
+        private readonly float _lootRange = 3.5f;
 
         private readonly IEntityCache _entityCache;
         private IWoWUnit _unitToLoot;
