@@ -104,16 +104,23 @@
   <ItemGroup>
     <Compile Include="Helpers\Toolbox.cs" />
     <Compile Include="Managers\AvoidAOEHelpers\BannedSafeZone.cs" />
+    <Compile Include="Managers\AvoidAOEHelpers\DangerObject.cs" />
     <Compile Include="Managers\AvoidAOEHelpers\DangerZone.cs" />
     <Compile Include="Managers\AvoidAOEHelpers\DynamicObject.cs" />
     <Compile Include="Managers\AvoidAOEHelpers\ForcedSafeZone.cs" />
     <Compile Include="Managers\AvoidAOEHelpers\KnownAOE.cs" />
     <Compile Include="Managers\AvoidAOEHelpers\RepositionInfo.cs" />
+    <Compile Include="Managers\AvoidAOEHelpers\DangerType.cs" />
     <Compile Include="Managers\AvoidAOEManager.cs" />
     <Compile Include="Managers\IAvoidAOEManager.cs" />
     <Compile Include="Managers\ILuaStatusFrameManager.cs" />
     <Compile Include="Managers\IPathManager.cs" />
     <Compile Include="Managers\LuaStatusFrameManager.cs" />
+    <Compile Include="Managers\AvoidAOEHelpers\DangerBuff.cs" />
+    <Compile Include="Managers\AvoidAOEHelpers\DangerSpell.cs" />
+    <Compile Include="Managers\AvoidAOEHelpers\DangerList.cs" />
+    <Compile Include="Managers\AvoidAOEHelpers\IAvoidableEvent.cs" />
+    <Compile Include="Managers\AvoidAOEHelpers\Shape.cs" />
     <Compile Include="Managers\PathManager.cs" />
     <Compile Include="ProductCache\Cache.cs" />
     <Compile Include="Helpers\ProductEnums.cs" />

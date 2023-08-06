@@ -66,11 +66,14 @@ namespace WholesomeDungeonCrawler.States
 
                 // If we receive a RepositionInfo from the manager, it means we need to reposition
                 _repositionInfo = _avoidAOEManager.RepositionInfo;
-                if (_repositionInfo == null)
+                if (_repositionInfo != null)
+                {                    
+                    return true;
+                } else
                 {
                     _escapePath = null;
-                }
-                return _repositionInfo != null;
+                }                
+                return false;
             }
         }
 

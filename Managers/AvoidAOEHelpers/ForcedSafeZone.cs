@@ -2,7 +2,7 @@
 
 namespace WholesomeDungeonCrawler.Managers.AvoidAOEHelpers
 {
-    internal class ForcedSafeZone
+    public class ForcedSafeZone
     {
         public int BossId { get; private set; }
         public Vector3 ZoneCenter { get; private set; }

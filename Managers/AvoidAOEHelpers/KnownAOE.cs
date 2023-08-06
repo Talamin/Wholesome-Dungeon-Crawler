@@ -4,7 +4,7 @@ using WholesomeDungeonCrawler.Helpers;
 
 namespace WholesomeDungeonCrawler.Managers.AvoidAOEHelpers
 {
-    internal class KnownAOE
+    public class KnownAOE
     {
         public int Id { get; private set; }
         public float Radius { get; private set; }

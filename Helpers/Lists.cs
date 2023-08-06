@@ -124,28 +124,34 @@ namespace WholesomeDungeonCrawler.Helpers
         public static readonly Dictionary<int, SpecialPrio> SpecialPrioTargets = new Dictionary<int, SpecialPrio>
         {
             // High
+            // Classic
+            { 23775, new SpecialPrio(23682, TargetPriority.High) }, // Head of the Horseman (Haloween Event)
+            { 598, new SpecialPrio(0, TargetPriority.High, true) }, // Defias Miner (Deadmines)
+            { 11582, new SpecialPrio(0, TargetPriority.High, true) }, // Dark Summoner (Scholomance)
+            { 4292, new SpecialPrio(0, TargetPriority.High, true) }, // Scarlet Protector (Armory)
+            { 4303, new SpecialPrio(0, TargetPriority.High, true) }, // Scarlet Abott (Cathedral)
+            // BC
             { 18176, new SpecialPrio(17941, TargetPriority.High) }, // Tainted Earthgrab Totem (Mennu, Slave Pens)
             { 20208, new SpecialPrio(17941, TargetPriority.High) }, // Mennu's Healing Ward (Mennu, Slave Pens)
             { 18177, new SpecialPrio(17941, TargetPriority.High) }, // Tainted Stoneskin Totem (Mennu, Slave Pens)
-            { 18179, new SpecialPrio(17941, TargetPriority.High) }, // Corrupted Nova Totem (Mennu, Slave Pens)
+            { 18179, new SpecialPrio(17941, TargetPriority.High) }, // Corrupted Nova Totem (Mennu, Slave Pens)                        
+            { 17917, new SpecialPrio(17797, TargetPriority.High) }, // Coilfang Water Elemental (Hydromancer Thespia, Steamvault)
+            { 17951, new SpecialPrio(17796, TargetPriority.High) }, // Steamrigger Mechanic (Mekgineer SteamRigger, Steamvault)
+            { 17954, new SpecialPrio(17798, TargetPriority.High) }, // Naga Distiller (Warlord Kalithresh, Steamvault)
+            { 24722, new SpecialPrio(24723, TargetPriority.High) }, // Fell Crystal (Selin FIreheart, Magister's Terrace)
+            { 24675, new SpecialPrio(24664, TargetPriority.High) }, // Phoenix egg (Kael'thas Sunstrider, Magister's Terrace)
+            { 24674, new SpecialPrio(24664, TargetPriority.High) }, // Phoenix (Kael'thas Sunstrider, Magister's Terrace)            
+            // Wotlk
+            { 5650, new SpecialPrio(0, TargetPriority.High, true) }, // Sandfury Witch Doctor (Zul'Farak)
             { 26918, new SpecialPrio(26763, TargetPriority.High) }, // Chaotic Rift (Anomalus, Nexus)
             { 30176, new SpecialPrio(29309, TargetPriority.High) }, // Ahn'kahar Guardian (Elder Nadox, Old Kingdom)
             { 30385, new SpecialPrio(29310, TargetPriority.High) }, // Twilight Volunteer (Jedoga Shadowseer, Old Kingdom)
             { 28619, new SpecialPrio(0, TargetPriority.High) }, // Web Wrap (Krik'thir, Azjol Nerub)
             { 28734, new SpecialPrio(28684, TargetPriority.High) }, // Anubar Skirmisher (Krik'thir, Azjol Nerub)
             { 23965, new SpecialPrio(23953, TargetPriority.High) }, // Frost Tomb (Prince Kelesth, Utgard Keep)
-            { 23775, new SpecialPrio(23682, TargetPriority.High) }, // Head of the Horseman (Haloween Event)
-            { 17917, new SpecialPrio(17797, TargetPriority.High) }, // Coilfang Water Elemental (Hydromancer Thespia, Steamvault)
-            { 17951, new SpecialPrio(17796, TargetPriority.High) }, // Steamrigger Mechanic (Mekgineer SteamRigger, Steamvault)
-            { 17954, new SpecialPrio(17798, TargetPriority.High) }, // Naga Distiller (Warlord Kalithresh, Steamvault)
-            { 24722, new SpecialPrio(24723, TargetPriority.High) }, // Fell Crystal (Selin FIreheart, Magister's Terrace)
-            { 24675, new SpecialPrio(24664, TargetPriority.High) }, // Phoenix egg (Kael'thas Sunstrider, Magister's Terrace)
-            { 24674, new SpecialPrio(24664, TargetPriority.High) }, // Phoenix (Kael'thas Sunstrider, Magister's Terrace)
-            { 598, new SpecialPrio(0, TargetPriority.High, true) }, // Defias Miner (Deadmines)
-            { 11582, new SpecialPrio(0, TargetPriority.High, true) }, // Dark Summoner (Scholomance)
-            { 4292, new SpecialPrio(0, TargetPriority.High, true) }, // Scarlet Protector (Armory)
-            { 4303, new SpecialPrio(0, TargetPriority.High, true) }, // Scarlet Abott (Cathedral)
-            { 5650, new SpecialPrio(0, TargetPriority.High, true) }, // Sandfury Witch Doctor (Zul'Farak)
+            { 36535, new SpecialPrio(36497, TargetPriority.High) }, // Corrupt Soul (Bronjahm , Forge of Souls)
+            
+
             { 14324, new SpecialPrio(11501, TargetPriority.High) }, // Cho'Rush the Observer (DM North)
             { 17540, new SpecialPrio(0, TargetPriority.High, true) }, // Fiendish Hound (Hellfire Ramparts)
             { 17537, new SpecialPrio(0, TargetPriority.High, true) }, // Vazruden (Hellfire Ramparts)
