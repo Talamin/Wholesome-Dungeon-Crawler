@@ -12,5 +12,6 @@ namespace WholesomeDungeonCrawler.Managers
         bool ProfileIsRunning { get; }
         void LoadProfile(bool safeWait);
         void UnloadCurrentProfile();
+        void UpdateAvailableDungeonList();
     }
 }

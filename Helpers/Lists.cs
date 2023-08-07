@@ -146,6 +146,7 @@ namespace WholesomeDungeonCrawler.Helpers
             { 4292, new SpecialPrio(0, TargetPriority.High, true) }, // Scarlet Protector (Armory)
             { 4303, new SpecialPrio(0, TargetPriority.High, true) }, // Scarlet Abott (Cathedral)
             { 5650, new SpecialPrio(0, TargetPriority.High, true) }, // Sandfury Witch Doctor (Zul'Farak)
+            { 14324, new SpecialPrio(11501, TargetPriority.High) }, // Cho'Rush the Observer (DM North)
             // Low
             { 8996, new SpecialPrio(0, TargetPriority.Low, true) }, // Voidwalker minion (Ragefire Chasm)
             { 2520, new SpecialPrio(0, TargetPriority.Low, true) }, // Remote-Controlled Golem (Deadmines)

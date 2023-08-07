@@ -215,6 +215,7 @@ namespace WholesomeDungeonCrawler.Bot
                 case "PLAYER_LEVEL_UP":
                     SpellManager.UpdateSpellBook();
                     CustomClass.ResetCustomClass();
+                    _profileManager?.UpdateAvailableDungeonList();
                     break;
             }
         }

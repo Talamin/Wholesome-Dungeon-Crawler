@@ -37,12 +37,10 @@ namespace WholesomeDungeonCrawler.Managers
         public void Initialize()
         {
             AvailableDungeons = Toolbox.GetListAvailableDungeons();
-            EventsLuaWithArgs.OnEventsLuaStringWithArgs += LuaEventHandler;
         }
 
         public void Dispose()
         {
-            EventsLuaWithArgs.OnEventsLuaStringWithArgs -= LuaEventHandler;
             if (_currentProfile != null)
             {
                 foreach (IStep step in _currentProfile.GetAllSteps)
@@ -215,14 +213,9 @@ namespace WholesomeDungeonCrawler.Managers
             _currentProfile = null;
         }
 
-        private void LuaEventHandler(string eventid, List<string> args)
+        public void UpdateAvailableDungeonList()
         {
-            switch (eventid)
-            {
-                case "PLAYER_LEVEL_UP":
-                    AvailableDungeons = Toolbox.GetListAvailableDungeons();
-                    break;
-            }
+            AvailableDungeons = Toolbox.GetListAvailableDungeons();
         }
     }
 }
