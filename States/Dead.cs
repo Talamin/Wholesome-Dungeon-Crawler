@@ -64,8 +64,7 @@ namespace WholesomeDungeonCrawler.States
                     {
                         string buttonText = Lua.LuaDoString<string>($"return StaticPopup{i}Button{j}:GetText();");
                         if (buttonText != null
-                            && buttonText.Contains("Use Soulstone")
-                            && buttonText.Contains("Reincarnation")
+                            && (buttonText.Contains("Use Soulstone") || buttonText.Contains("Reincarnation"))
                             && Lua.LuaDoString<bool>($"return StaticPopup{i}Button{j}:IsVisible();"))
                         {
                             Logger.LogOnce("Using soulstone/reincarnation");

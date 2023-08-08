@@ -21,7 +21,7 @@ namespace WholesomeDungeonCrawler.States
         private readonly int _healThreshold = 60; // Setting ?
         private readonly bool _iAmHealer;
         private string _healSPell = null;
-
+        
         private Dictionary<WoWClass, List<string>> _healClasses = new Dictionary<WoWClass, List<string>>
         {
             { WoWClass.Druid, new List<string>() { "Healing Touch" } },
@@ -29,15 +29,15 @@ namespace WholesomeDungeonCrawler.States
             { WoWClass.Priest, new List<string>() { "Flash Heal", "Heal", "Lesser Heal" } },
             { WoWClass.Shaman, new List<string>() { "Lesser Healing Wave", "Healing Wave" } }
         };
-
+        
         public OOCHeal(
             ICache iCache,
             IEntityCache entityCache)
         {
             _cache = iCache;
             _entityCache = entityCache;
-            _iAmHealer = _healClasses.ContainsKey(_entityCache.Me.WoWClass)
-                /*&& CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Heal*/;
+            _iAmHealer = /*_healClasses.ContainsKey(_entityCache.Me.WoWClass)
+                && */CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Heal;
         }
 
         public override bool NeedToRun
@@ -63,9 +63,7 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 // Others logic
-                return _entityCache.ListGroupMember.Any(player => player.IsValid
-                    && !player.IsDead
-                    && _healClasses.ContainsKey(player.WoWClass));
+                return true;
             }
         }
 
