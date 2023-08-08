@@ -24,7 +24,7 @@ namespace WholesomeDungeonCrawler.CrawlerSettings
             ProductName = "Wholesome Dungeon Crawler";
             TankName = "";
             GroupMembers = new List<string>();
-            LFGRole = LFGRoles.Unknown;
+            LFGRole = LFGRoles.Unspecified;
             SelectedDungeon = -1;
         }
 

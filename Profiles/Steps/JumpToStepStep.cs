@@ -1,4 +1,5 @@
-﻿using WholesomeDungeonCrawler.Models;
+﻿using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Models;
 using static wManager.Wow.Class.Npc;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
@@ -11,6 +12,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override string Name { get; }
         public override FactionType StepFaction { get; }
+        public override LFGRoles StepRole { get; }
 
         public JumpToStepStep(JumpToStepModel jumpToStepModel, IProfile profile) : base(jumpToStepModel.CompleteCondition)
         {
@@ -19,6 +21,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _profile = profile;
             Name = _jumpToStepModel.Name;
             StepFaction = _jumpToStepModel.StepFaction;
+            StepRole = _jumpToStepModel.StepRole;
+            PreEvaluationPass = EvaluateFactionCompletion() && EvaluateRoleCompletion();
         }
 
         public override void Initialize() { }
@@ -27,11 +31,17 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
+            if (!PreEvaluationPass)
+            {
+                MarkAsCompleted();
+                return;
+            }
+
             if (EvaluateCompleteCondition())
             {
                 _profile.JumpToStep(Name, _stepToJumpTo);
             }
-            IsCompleted = true;
+            MarkAsCompleted();
         }
     }
 }

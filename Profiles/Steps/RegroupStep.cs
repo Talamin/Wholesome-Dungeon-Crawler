@@ -28,6 +28,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override string Name { get; }
         public override FactionType StepFaction { get; }
+        public override LFGRoles StepRole { get; }
         public Vector3 RegroupSpot { get; private set; }
 
         public RegroupStep(RegroupModel regroupModel, IEntityCache entityCache, IPartyChatManager partyChatManager) : base(regroupModel.CompleteCondition)
@@ -37,11 +38,13 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _entityCache = entityCache;
             Name = regroupModel.Name;
             StepFaction = regroupModel.StepFaction;
+            StepRole = regroupModel.StepRole;
             RegroupSpot = regroupModel.RegroupSpot;
             _foodMin = wManager.wManagerSetting.CurrentSetting.FoodPercent;
             _drinkMin = wManager.wManagerSetting.CurrentSetting.DrinkPercent;
             _drinkAllowed = wManager.wManagerSetting.CurrentSetting.RestingMana;
             Lua.LuaDoString($"SetRaidTarget('player', 0)");
+            PreEvaluationPass = EvaluateFactionCompletion();
         }
 
         public override void Initialize() { }
@@ -62,6 +65,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
+            if (!PreEvaluationPass)
+            {
+                MarkAsCompleted();
+                return;
+            }
+
             _partyChatManager.SetRegroupStep(this);
 
             if (_entityCache.Me.IsDead || _entityCache.EnemiesAttackingGroup.Length > 0)
@@ -107,7 +116,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             if (_entityCache.ListPartyMemberNames.Count == 0)
             {
                 Logger.LogOnce($"Not in a group, skipping");
-                IsCompleted = true;
+                MarkAsCompleted();
                 return;
             }
 
@@ -217,7 +226,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             Thread.Sleep(2000);
             Logger.Log("Everyone is ready");
             _partyChatManager.SetRegroupStep(null);
-            IsCompleted = true;
+            MarkAsCompleted();
         }
     }
 }

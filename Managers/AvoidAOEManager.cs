@@ -138,7 +138,6 @@ namespace WholesomeDungeonCrawler.Managers
                             AddDangerZone(wowObject, knownAOE.Radius);
                             break;
                         default:
-                            Logger.LogError($"Invalid object type {wowObject.Type} for object with entry {wowObject.Entry} in AoE avoider.");
                             break;
                     }
                 }

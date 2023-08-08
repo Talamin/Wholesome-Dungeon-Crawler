@@ -32,6 +32,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override string Name { get; }
         public override FactionType StepFaction { get; }
+        public override LFGRoles StepRole { get; }
 
         public bool PositionInSafeSpotFightRange(Vector3 position) =>
             position.DistanceTo(_safeSpotCenter) <= _safeSpotRadius
@@ -45,6 +46,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         {
             Name = pullToSafeSpotModel.Name;
             StepFaction = pullToSafeSpotModel.StepFaction;
+            StepRole = pullToSafeSpotModel.StepRole;
             _pullToSafeSpotModel = pullToSafeSpotModel;
             _entityCache = entityCache;
             _safeSpotRadius = pullToSafeSpotModel.SafeSpotRadius;
@@ -52,6 +54,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _zoneToClearPosition = pullToSafeSpotModel.ZoneToClearPosition;
             _zoneToClearRadius = pullToSafeSpotModel.ZoneToClearRadius;
             _zoneToClearZLimit = pullToSafeSpotModel.ZoneToClearZLimit;
+            PreEvaluationPass = EvaluateFactionCompletion();
 
             if (_safeSpotCenter == null)
             {
@@ -112,14 +115,18 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
+            if (!PreEvaluationPass)
+            {
+                MarkAsCompleted();
+                return;
+            }
+
             if (_entityCache.Me.IsDead)
             {
                 MovementManager.StopMove();
                 MovementManager.StopMoveTo();
                 return;
             }
-
-            Vector3 myPos = _entityCache.Me.PositionWT;
 
             // If an enemy is in the safe spot
             IWoWUnit enemyClosestFromSafeSpot = _entityCache.EnemyUnitsList
@@ -159,10 +166,10 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             if (_entityCache.IAmTank)
             {
                 // Go to safe spot
-                if (myPos.DistanceTo(_safeSpotCenter) > 3f && !MovementManager.InMovement)
+                if (!IsUnitAtSafeSPot(_entityCache.Me) && !MovementManager.InMovement)
                 {
                     Logger.Log($"Going to safe spot");
-                    List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, _safeSpotCenter);
+                    List<Vector3> pathToSafeSpot = PathFinder.FindPath(_entityCache.Me.PositionWT, _safeSpotCenter);
                     MovementManager.Go(pathToSafeSpot);
                     return;
                 }
@@ -217,15 +224,15 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
                         // Start pulling
                         bool teammatesAtSafeSpot = _entityCache.ListGroupMember
-                            .All(m => m.Guid == _entityCache.Me.Guid || m.PositionWT.DistanceTo(_safeSpotCenter) <= 3f);
+                            .All(m => m.Guid == _entityCache.Me.Guid || IsUnitAtSafeSPot(m));
 
                         if (teammatesAtSafeSpot)
                         {
                             // Attack enemy in sight
                             foreach (WoWUnit unit in _enemiesToPull)
                             {
-                                if (myPos.DistanceTo(unit.Position) < 30
-                                    && !TraceLine.TraceLineGo(myPos, unit.Position))
+                                if (_entityCache.Me.PositionWT.DistanceTo(unit.Position) < 30
+                                    && !TraceLine.TraceLineGo(_entityCache.Me.PositionWT, unit.Position))
                                 {
                                     MovementManager.StopMove();
                                     Logger.Log($"Taking aggro on {unitToPull.Name}");
@@ -265,11 +272,11 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 {
                     Interact.ClearTarget();
                     // Go to safe spot
-                    if (myPos.DistanceTo(_safeSpotCenter) > 3f && !MovementManager.InMovement)
+                    if (!IsUnitAtSafeSPot(_entityCache.Me) && !MovementManager.InMovement)
                     {
                         Logger.Log($"Going to safe spot");
                         MovementManager.StopMove();
-                        List<Vector3> pathToSafeSpot = PathFinder.FindPath(myPos, _safeSpotCenter);
+                        List<Vector3> pathToSafeSpot = PathFinder.FindPath(_entityCache.Me.PositionWT, _safeSpotCenter);
                         MovementManager.Go(WTPathFinder.PathFromClosestPoint(WTPathFinder.PathFromClosestPoint(pathToSafeSpot)));
                         return;
                     }
@@ -279,15 +286,16 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             // Complete condition
             if (_enemiesToPull.Count <= 0
                 && _entityCache.EnemiesAttackingGroup.Length <= 0
-                && _entityCache.ListGroupMember.All(m => !m.InCombatFlagOnly && m.PositionWT.DistanceTo(_safeSpotCenter) <= 3f)
+                && _entityCache.ListGroupMember.All(m => !m.InCombatFlagOnly && IsUnitAtSafeSPot(m))
                 && EvaluateCompleteCondition())
             {
-                Logger.Log($"Checking complete condition");
                 _pulledEnemiesDic.Clear();
                 _pathsToEnemiesToPull.Clear();
-                IsCompleted = true;
+                MarkAsCompleted();
             }
         }
+
+        private bool IsUnitAtSafeSPot(IWoWUnit unit) => unit.PositionWT.DistanceTo(_safeSpotCenter) < 3.5f;
 
         private void OnFightHandler(WoWUnit currentTarget, CancelEventArgs canceable)
         {

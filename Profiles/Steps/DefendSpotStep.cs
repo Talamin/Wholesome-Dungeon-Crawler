@@ -22,6 +22,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override string Name { get; }
         public override FactionType StepFaction { get; }
+        public override LFGRoles StepRole { get; }
         public double GetTimeLeft => _stepTimer == null || _stepTimer.IsReady ? 0 : _stepTimer.TimeLeft();
         public IWoWUnit ShouldDefendAgainst => _entityCache.EnemyUnitsList
                 .Where(unit => unit.PositionWT.DistanceTo(_defendSpotModel.DefendPosition) <= _defendSpotRadius
@@ -40,6 +41,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _resetTimerOnCombat = _defendSpotModel.ResetTimerOnCombat;
             Name = _defendSpotModel.Name;
             StepFaction = _defendSpotModel.StepFaction;
+            StepRole = _defendSpotModel.StepRole;
+            PreEvaluationPass = EvaluateFactionCompletion() && EvaluateRoleCompletion();
         }
 
         public override void Initialize()
@@ -62,6 +65,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
+            if (!PreEvaluationPass)
+            {
+                MarkAsCompleted();
+                return;
+            }
+
             if (_stepTimer == null)
             {
                 _stepTimer = new Timer(_timeToWaitInMilliseconds);
@@ -87,7 +96,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 && _stepTimer.IsReady
                 && EvaluateCompleteCondition())
             {
-                IsCompleted = true;
+                MarkAsCompleted();
                 return;
             }
         }

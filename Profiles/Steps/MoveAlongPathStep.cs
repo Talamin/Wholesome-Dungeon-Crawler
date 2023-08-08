@@ -27,6 +27,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override string Name { get; }
         public override FactionType StepFaction { get; }
+        public override LFGRoles StepRole { get; }
         public bool IgnoreFightsDuringPath { get; }
 
         public List<Vector3> GetMoveAlongPath => _moveAlongPathModel.Path;
@@ -45,6 +46,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             Name = stepModel.Name;
             FirstLaunch = true;
             StepFaction = stepModel.StepFaction;
+            StepRole = stepModel.StepRole;
+            PreEvaluationPass = EvaluateFactionCompletion() && EvaluateRoleCompletion();
         }
 
         public override void Initialize()
@@ -75,10 +78,16 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
+            if (!PreEvaluationPass)
+            {
+                MarkAsCompleted();
+                return;
+            }
+
             if (GetMoveAlongPath.Count <= 0)
             {
                 Logger.LogError($"Step {Name} path is empty, skipping.");
-                IsCompleted = true;
+                MarkAsCompleted();
                 return;
             }
 
@@ -103,7 +112,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 && _entityCache.Me.PositionWT.DistanceTo(lastPointOfPath) < 2f
                 && EvaluateCompleteCondition())
             {
-                IsCompleted = true;
+                MarkAsCompleted();
                 return;
             }
 

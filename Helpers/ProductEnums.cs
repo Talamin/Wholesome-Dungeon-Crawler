@@ -1,14 +1,15 @@
 ﻿namespace WholesomeDungeonCrawler.Helpers
 {
+    // LFGRoles indexes are saved in profiles Never reuse obsolete role
     public enum LFGRoles
     {
-        Unknown,
-        MDPS,
-        RDPS,
-        Tank,
-        Heal
+        Unspecified = 0,
+        MDPS = 1,
+        RDPS = 2,
+        Tank = 3,
+        Heal = 4
     }
-
+    /*
     public enum LFGMode
     {
         abandonedInDungeon = 1, //LFG party disbanded, player still in dungeon.
@@ -18,7 +19,7 @@
         rolecheck = 5, //Querying groupmates to select their LFG roles before queuing.
         nil = 6 //Not in LFG.
     }
-
+    */
     // The condition type is recorded in the profiles by index. Never reuse an obsolete index
     public enum CompleteConditionType
     {

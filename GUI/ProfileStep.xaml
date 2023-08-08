@@ -40,6 +40,7 @@
                         <TextBox x:Name="txtStepName" Controls:TextBoxHelper.Watermark="Step Name" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" 
                                  Text="{Binding SelectedItem.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <ComboBox x:Name="cbStepFaction" Margin="5" Controls:TextBoxHelper.UseFloatingWatermark="True" SelectedValue="{Binding SelectedItem.StepFaction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.Watermark="Step faction" />
+                        <ComboBox x:Name="cbStepRole" Margin="5" Controls:TextBoxHelper.UseFloatingWatermark="True" SelectedValue="{Binding SelectedItem.StepRole, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Controls:TextBoxHelper.Watermark="Step role" />
                     </StackPanel>
                 </GroupBox>
                 

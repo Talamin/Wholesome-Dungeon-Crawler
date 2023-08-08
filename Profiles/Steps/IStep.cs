@@ -1,4 +1,5 @@
-﻿using WholesomeDungeonCrawler.Models;
+﻿using WholesomeDungeonCrawler.Helpers;
+using WholesomeDungeonCrawler.Models;
 using static wManager.Wow.Class.Npc;
 
 namespace WholesomeDungeonCrawler.Profiles.Steps
@@ -9,6 +10,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         abstract string Name { get; }
         StepCompleteConditionModel StepCompleteConditionModel { get; }
         abstract FactionType StepFaction { get; }
+        abstract LFGRoles StepRole { get; }
 
         void Run();
         void MarkAsCompleted();

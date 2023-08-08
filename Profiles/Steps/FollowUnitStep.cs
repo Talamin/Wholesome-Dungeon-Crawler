@@ -19,6 +19,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override string Name { get; }
         public override FactionType StepFaction { get; }
+        public override LFGRoles StepRole { get; }
 
         public FollowUnitStep(FollowUnitModel followUnitModel, IEntityCache entityCache) : base(followUnitModel.CompleteCondition)
         {
@@ -26,6 +27,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _entityCache = entityCache;
             Name = followUnitModel.Name;
             StepFaction = followUnitModel.StepFaction;
+            StepRole = followUnitModel.StepRole;
+            PreEvaluationPass = EvaluateFactionCompletion() && EvaluateRoleCompletion();
         }
 
         public override void Initialize() { }
@@ -34,59 +37,63 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
+            if (!PreEvaluationPass)
             {
-                _unitToEscort = ObjectManager.GetObjectWoWUnit()
-                    .FirstOrDefault(unit => 
-                        unit.IsAlive 
-                        && unit.Entry == _followUnitModel.UnitId);
-                Vector3 myPosition = _entityCache.Me.PositionWT;
+                MarkAsCompleted();
+                return;
+            }
 
-                if (_unitToEscort == null)
+            _unitToEscort = ObjectManager.GetObjectWoWUnit()
+                .FirstOrDefault(unit =>
+                    unit.IsAlive
+                    && unit.Entry == _followUnitModel.UnitId);
+            Vector3 myPosition = _entityCache.Me.PositionWT;
+
+            if (_unitToEscort == null)
+            {
+                if (myPosition.DistanceTo(_followUnitModel.ExpectedStartPosition) >= 15)
                 {
-                    if (myPosition.DistanceTo(_followUnitModel.ExpectedStartPosition) >= 15)
-                    {
-                        GoToTask.ToPosition(_followUnitModel.ExpectedStartPosition, 3.5f, false, context => IsCompleted);
-                    }
-                    else
-                    {
-                        if (_followUnitModel.SkipIfNotFound && EvaluateCompleteCondition())
-                        {
-                            Logger.Log($"[Step {_followUnitModel.Name}]: Skipping. Unit {_followUnitModel.UnitId} is not here or condition is complete.");
-                            IsCompleted = true;
-                            return;
-                        }
-                        else
-                        {
-                            Thread.Sleep(1000);
-                            Logger.Log($"[Step {_followUnitModel.Name}]: Unit {_followUnitModel.UnitId} is not around and SkipIfNotFound is false. Waiting.");
-                            return;
-                        }
-                    }
+                    GoToTask.ToPosition(_followUnitModel.ExpectedStartPosition, 3.5f, false, context => IsCompleted);
                 }
                 else
                 {
-                    Vector3 escortPosition = _unitToEscort.PositionWithoutType;
-                    if (escortPosition.DistanceTo(_followUnitModel.ExpectedEndPosition) < 15
-                        && EvaluateCompleteCondition())
+                    if (_followUnitModel.SkipIfNotFound && EvaluateCompleteCondition())
                     {
-                        Logger.Log($"[Step {_followUnitModel.Name}]: {_unitToEscort.Name} has reached their destination");
-                        IsCompleted = true;
+                        Logger.Log($"[Step {_followUnitModel.Name}]: Skipping. Unit {_followUnitModel.UnitId} is not here or condition is complete.");
+                        MarkAsCompleted();
                         return;
                     }
-
-                    IWoWUnit unitToDefendAgainst = ShouldDefendAgainst();
-                    if (unitToDefendAgainst != null)
+                    else
                     {
-                        Logger.Log($"Defending {_unitToEscort.Name} against {unitToDefendAgainst.Name}");
-                        ObjectManager.Me.Target = unitToDefendAgainst.Guid;
-                        Fight.StartFight(unitToDefendAgainst.Guid, false);
+                        Thread.Sleep(1000);
+                        Logger.Log($"[Step {_followUnitModel.Name}]: Unit {_followUnitModel.UnitId} is not around and SkipIfNotFound is false. Waiting.");
+                        return;
                     }
+                }
+            }
+            else
+            {
+                Vector3 escortPosition = _unitToEscort.PositionWithoutType;
+                if (escortPosition.DistanceTo(_followUnitModel.ExpectedEndPosition) < 15
+                    && EvaluateCompleteCondition())
+                {
+                    Logger.Log($"[Step {_followUnitModel.Name}]: {_unitToEscort.Name} has reached their destination");
+                    MarkAsCompleted();
+                    return;
+                }
 
-                    if (!MovementManager.InMovement &&
-                        _entityCache.Me.PositionWT.DistanceTo(escortPosition) > 15)
-                    {
-                        GoToTask.ToPosition(escortPosition);
-                    }
+                IWoWUnit unitToDefendAgainst = ShouldDefendAgainst();
+                if (unitToDefendAgainst != null)
+                {
+                    Logger.Log($"Defending {_unitToEscort.Name} against {unitToDefendAgainst.Name}");
+                    ObjectManager.Me.Target = unitToDefendAgainst.Guid;
+                    Fight.StartFight(unitToDefendAgainst.Guid, false);
+                }
+
+                if (!MovementManager.InMovement &&
+                    _entityCache.Me.PositionWT.DistanceTo(escortPosition) > 15)
+                {
+                    GoToTask.ToPosition(escortPosition);
                 }
             }
         }
@@ -96,8 +103,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             if (_unitToEscort == null) return null;
             foreach (IWoWUnit unit in _entityCache.EnemyUnitsList)
             {
-                if (unit.TargetGuid > 0 
-                    && unit.TargetGuid == _unitToEscort.Guid 
+                if (unit.TargetGuid > 0
+                    && unit.TargetGuid == _unitToEscort.Guid
                     && !Lists.MobsToIgnoreDuringSteps.Contains(unit.Entry))
                 {
                     Logger.Log($"Defending Follow Unit against {unit.Name}");

@@ -10,6 +10,7 @@ namespace WholesomeDungeonCrawler.Models
         public string Name { get; set; }
         public StepCompleteConditionModel CompleteCondition { get; set; }
         public FactionType StepFaction { get; set; } = FactionType.Neutral;
+        public LFGRoles StepRole { get; set; } = LFGRoles.Unspecified;
         public bool HasCompleteCondition => CompleteCondition != null && CompleteCondition.ConditionType != CompleteConditionType.None;
     }
 

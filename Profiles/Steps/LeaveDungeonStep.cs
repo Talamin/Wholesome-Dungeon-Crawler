@@ -26,6 +26,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override string Name { get; }
         public override FactionType StepFaction { get; }
+        public override LFGRoles StepRole { get; }
 
         public LeaveDungeonStep(LeaveDungeonModel leaveDungeonModel, 
             IEntityCache entityCache,
@@ -38,10 +39,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _entityCache = entityCache;
             Name = leaveDungeonModel.Name;
             StepFaction = leaveDungeonModel.StepFaction;
+            StepRole = leaveDungeonModel.StepRole;
             _foodMin = wManager.wManagerSetting.CurrentSetting.FoodPercent;
             _drinkMin = wManager.wManagerSetting.CurrentSetting.DrinkPercent;
             _drinkAllowed = wManager.wManagerSetting.CurrentSetting.RestingMana;
             Lua.LuaDoString($"SetRaidTarget('player', 0)");
+            PreEvaluationPass = EvaluateFactionCompletion() && EvaluateRoleCompletion();
         }
 
         public override void Initialize() { }
@@ -50,6 +53,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
+            if (!PreEvaluationPass)
+            {
+                MarkAsCompleted();
+                return;
+            }
+
             if (_entityCache.Me.IsDead || _entityCache.EnemiesAttackingGroup.Length > 0)
             {
                 IsCompleted = false;

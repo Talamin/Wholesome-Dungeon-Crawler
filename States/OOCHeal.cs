@@ -25,8 +25,8 @@ namespace WholesomeDungeonCrawler.States
         private Dictionary<WoWClass, List<string>> _healClasses = new Dictionary<WoWClass, List<string>>
         {
             { WoWClass.Druid, new List<string>() { "Healing Touch" } },
-            { WoWClass.Paladin, new List<string>() { "Holy Light" } },
-            { WoWClass.Priest, new List<string>() { "Heal", "Lesser Heal" } },
+            { WoWClass.Paladin, new List<string>() { "Flash of Light", "Holy Light" } },
+            { WoWClass.Priest, new List<string>() { "Flash Heal", "Heal", "Lesser Heal" } },
             { WoWClass.Shaman, new List<string>() { "Lesser Healing Wave", "Healing Wave" } }
         };
 
@@ -37,7 +37,7 @@ namespace WholesomeDungeonCrawler.States
             _cache = iCache;
             _entityCache = entityCache;
             _iAmHealer = _healClasses.ContainsKey(_entityCache.Me.WoWClass)
-                && CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Heal;
+                /*&& CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Heal*/;
         }
 
         public override bool NeedToRun
@@ -63,7 +63,9 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 // Others logic
-                return true;
+                return _entityCache.ListGroupMember.Any(player => player.IsValid
+                    && !player.IsDead
+                    && _healClasses.ContainsKey(player.WoWClass));
             }
         }
 

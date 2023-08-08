@@ -125,9 +125,10 @@ namespace WholesomeDungeonCrawler.States
                         List<Vector3> adjustedDeathPath = WTPathFinder.PathFromClosestPoint(closestDeathRun.Path);
                         if (_profileManager.CurrentDungeonProfile?.DungeonModel?.EntranceLoc != null)
                         {
+                            Logger.Log($"Adding EntranceLoc {_profileManager.CurrentDungeonProfile.DungeonModel.EntranceLoc} to end of path");
                             adjustedDeathPath.Add(_profileManager.CurrentDungeonProfile.DungeonModel.EntranceLoc);
                         }
-                        MovementManager.Go(adjustedDeathPath, false);
+                        MovementManager.Go(adjustedDeathPath);
                     }
                     else
                     {

@@ -5,7 +5,6 @@ using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
-using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 using static wManager.Wow.Class.Npc;
@@ -22,6 +21,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override string Name { get; }
         public override FactionType StepFaction { get; }
+        public override LFGRoles StepRole { get; }
 
         public InteractWithStep(InteractWithModel interactWithModel, IEntityCache entityCache) : base(interactWithModel.CompleteCondition)
         {
@@ -29,6 +29,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _entityCache = entityCache;
             Name = interactWithModel.Name;
             StepFaction = interactWithModel.StepFaction;
+            StepRole = interactWithModel.StepRole;
             _interactDistance = interactWithModel.InteractDistance < 3.5f ? 3.5f : interactWithModel.InteractDistance;
             _expectedPosition = interactWithModel.ExpectedPosition;
             string[] objectsIds = interactWithModel.ObjectId.Split(';');
@@ -36,6 +37,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             {
                 _objectIds.Add(int.Parse(objectId));
             }
+            PreEvaluationPass = EvaluateFactionCompletion() && EvaluateRoleCompletion();
         }
 
         public override void Initialize() { }
@@ -44,6 +46,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
+            if (!PreEvaluationPass)
+            {
+                MarkAsCompleted();
+                return;
+            }
+
             // Keep checking while we cast
             if (ObjectManager.Me.IsCast
                 && _interactWithModel.CompleteCondition.ConditionType != CompleteConditionType.None
@@ -61,12 +69,13 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 .FirstOrDefault();
 
             // Move close if we have an expected object position
-            if (!MovementManager.InMovement
-                && _expectedPosition != null
+            if (_expectedPosition != null
+                && !MovementManager.InMovement
                 && _entityCache.Me.PositionWT.DistanceTo(_expectedPosition) > _interactDistance + 5f)
             {
-                Logger.Log($"[{_interactWithModel.Name}] Moving to object's expected position {_expectedPosition} with interact distance {_interactDistance}");
-                GoToTask.ToPosition(_expectedPosition, _interactDistance);
+                Logger.LogOnce($"[{_interactWithModel.Name}] Moving to object's expected position {_expectedPosition} with interact distance {_interactDistance}");
+                List<Vector3> pathToObject = PathFinder.FindPath(_expectedPosition);
+                MovementManager.Go(pathToObject);
                 return;
             }
 
@@ -90,7 +99,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     if (_interactWithModel.SkipIfNotFound)
                     {
                         Logger.Log($"[{_interactWithModel.Name}] Couldn't find interactive object {string.Join(" or ", _objectIds)}. Condition is a PASS and skipping is allowed. Marking step as completed.");
-                        IsCompleted = true;
+                        MarkAsCompleted();
                     }
                     else
                     {
@@ -103,7 +112,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     if (_interactWithModel.SkipIfNotFound)
                     {
                         Logger.Log($"[{_interactWithModel.Name}] Couldn't find interactive object {string.Join(" or ", _objectIds)} and condition is a FAIL but skipping is allowed. Marking step as completed.");
-                        IsCompleted = true;
+                        MarkAsCompleted();
                     }
                     else
                     {
@@ -121,34 +130,26 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             if (realDistanceToObject <= _interactDistance)
             {
                 MovementManager.StopMove();
-                MovementManager.StopMoveTo();
                 if (_interactWithModel.CompleteCondition.ConditionType != CompleteConditionType.None
                     && EvaluateCompleteCondition())
                 {
                     Logger.Log($"[{_interactWithModel.Name}] Interaction with object {foundObject.Name} ({foundObject.Entry}) is complete");
-                    IsCompleted = true;
+                    MarkAsCompleted();
+                    return;
+                }
+            }
+            else
+            {
+                // Move to real object position
+                if (!MovementManager.InMovement)
+                {
+                    Logger.Log($"[{_interactWithModel.Name}] Object found. Moving to {foundObject.Name} ({foundObject.Entry}) - ({realDistanceToObject}/{_interactDistance})");
+                    List<Vector3> pathToObject = PathFinder.FindPath(foundObject.Position);
+                    MovementManager.Go(pathToObject);
                     return;
                 }
             }
 
-            // Move to real object position
-            if (!MovementManager.InMovement
-                && !MovementManager.InMoveTo
-                && realDistanceToObject > _interactDistance)
-            {
-                if (realDistanceToObject > _interactDistance + 5)
-                {
-                    Logger.Log($"[{_interactWithModel.Name}] Object found. Long move to {foundObject.Name} ({foundObject.Entry}) - ({realDistanceToObject}/{_interactDistance})");
-                    GoToTask.ToPosition(foundObject.Position, _interactDistance);
-                }
-                else
-                {
-                    Logger.Log($"[{_interactWithModel.Name}] Object found. Short move to {foundObject.Name} ({foundObject.Entry}) - ({realDistanceToObject}/{_interactDistance})");
-                    MovementManager.MoveTo(foundObject.Position);
-                }
-
-                return;
-            }
 
             // Interact with object
             if (!MovementManager.InMovement && !ObjectManager.Me.IsCast)
@@ -170,7 +171,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     && !ObjectManager.Me.IsCast)
                 {
                     Logger.Log($"[{_interactWithModel.Name}] Interaction with object {foundObject.Name} ({foundObject.Entry}) is complete (no conditions)");
-                    IsCompleted = true;
+                    MarkAsCompleted();
                     return;
                 }
             }

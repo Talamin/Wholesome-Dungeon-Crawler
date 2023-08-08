@@ -9,7 +9,6 @@ using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles.Steps;
 using WholesomeToolbox;
 using static WholesomeDungeonCrawler.Profiles.Steps.RegroupStep;
-using static wManager.Wow.Class.Npc;
 using static wManager.Wow.Helpers.PathFinder;
 
 namespace WholesomeDungeonCrawler.Profiles
@@ -47,11 +46,6 @@ namespace WholesomeDungeonCrawler.Profiles
             _partyChatManager = partyChatManager;
             FileName = fileName;
             DungeonModel = profileModel.DungeonModel;
-
-            // Remove step not from your faction
-            profileModel.StepModels.RemoveAll(step => 
-                step.StepFaction == FactionType.Horde && _cache.IAmAlliance
-                || step.StepFaction == FactionType.Alliance && !_cache.IAmAlliance);
 
             for (int i = 0; i < profileModel.StepModels.Count; i++)
             {
@@ -146,7 +140,16 @@ namespace WholesomeDungeonCrawler.Profiles
             {
                 DeathRunPaths.Add(deathRun);
             }
+            /*
+            // Remove steps not for your faction
+            _profileSteps.RemoveAll(step =>
+                step.StepFaction == FactionType.Horde && _cache.IAmAlliance
+                || step.StepFaction == FactionType.Alliance && !_cache.IAmAlliance);
 
+            // Remove steps not for your role
+            _profileSteps.RemoveAll(step => step.StepRole != LFGRoles.Unspecified
+                && step.StepRole != WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole);
+            */
             // Clear all dungeon crawler offmesh connections
             int removed = OffMeshConnections.MeshConnection.RemoveAll(con => con.Name.StartsWith("WDCOMS - "));
             if (removed > 0)
@@ -314,7 +317,6 @@ namespace WholesomeDungeonCrawler.Profiles
 
             if (CurrentStep.IsCompleted)
             {
-                Logger.Log($"Completed Current Step: {CurrentStep.Name}");
                 if (completedSteps == totalSteps)
                 {
                     Logger.Log("Profile is Done");

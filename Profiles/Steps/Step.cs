@@ -1,5 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Linq;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
 using wManager.Wow.Enums;
@@ -12,9 +13,11 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
     public abstract class Step : IStep
     {
         public bool IsCompleted { get; protected set; }
+        public bool PreEvaluationPass { get; protected set; } = true;
         public abstract string Name { get; }
         public StepCompleteConditionModel StepCompleteConditionModel { get; private set; }
         public abstract FactionType StepFaction { get; }
+        public abstract LFGRoles StepRole { get; }
 
         public Step(StepCompleteConditionModel stepCompleteCondition)
         {
@@ -24,6 +27,28 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public abstract void Run();
         public abstract void Initialize();
         public abstract void Dispose();
+
+        public bool EvaluateFactionCompletion()
+        {
+            if (StepRole != LFGRoles.Unspecified
+                && StepRole != WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole)
+            {
+                Logger.Log($"Step [{Name}] is not for your role. It will be skipped.");
+                return false;
+            }
+            return true;
+        }
+
+        public bool EvaluateRoleCompletion()
+        {
+            if (StepFaction == FactionType.Horde && ObjectManager.Me.IsAlliance
+                || StepFaction == FactionType.Alliance && !ObjectManager.Me.IsAlliance)
+            {
+                Logger.Log($"Step [{Name}] is not for your faction. It will be skipped.");
+                return false;
+            }
+            return true;
+        }
 
         public bool EvaluateCompleteCondition()
         {

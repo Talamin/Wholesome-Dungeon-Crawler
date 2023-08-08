@@ -51,7 +51,7 @@ public class Main : IProduct
                 Logger.LogError($"WARNING: You are you in GM mode. Unexpected behavior will happen.");
             }
 
-            if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Unknown)
+            if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Unspecified)
             {
                 Logger.LogError($"You must select a role in the product settings first!");
                 return;

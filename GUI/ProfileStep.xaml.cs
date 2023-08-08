@@ -57,6 +57,7 @@ namespace WholesomeDungeonCrawler.GUI
             cbConditionType.ItemsSource = Enum.GetValues(typeof(CompleteConditionType));
             chkRecordPath.IsChecked = false;
             cbStepFaction.ItemsSource = Enum.GetValues(typeof(Npc.FactionType));
+            cbStepRole.ItemsSource = Enum.GetValues(typeof(LFGRoles));
         }
 
         private void AddVectorTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)

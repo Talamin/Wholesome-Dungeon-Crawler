@@ -77,7 +77,7 @@ namespace WholesomeDungeonCrawler.GUI
                     }
                 };
 
-                if (CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Unknown)
+                if (CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Unspecified)
                 {
                     tbTankName.Visibility = System.Windows.Visibility.Collapsed;
                     spPartyGrid.Visibility = System.Windows.Visibility.Collapsed;

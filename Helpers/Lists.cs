@@ -35,12 +35,12 @@ namespace WholesomeDungeonCrawler.Helpers
             new DungeonModel { Name="Upper Blackrock Spire", DungeonId=44, MapId=229, ContinentId=0, EntranceLoc=new Vector3(-7522.83, -1233.157, 285.7446, "None") },
             new DungeonModel { Name="Dire Maul West", DungeonId=36, MapId=429, ContinentId=1, EntranceLoc=new Vector3(-3834.753, 1250.436, 160.226, "None") },
             new DungeonModel { Name="Dire Maul North", DungeonId=38, MapId=429, ContinentId=1, EntranceLoc=new Vector3(-3520.973, 1073.685, 161.1654, "None") },
-            new DungeonModel { Name="Dire Maul East", DungeonId=34, MapId=429, ContinentId=1, EntranceLoc=new Vector3(-3980.82, 772.9068, 161.0013, "None") },
+            new DungeonModel { Name="Dire Maul East", DungeonId=34, MapId=429, ContinentId=1, EntranceLoc=new Vector3(-3732.743, 934.5352, 160.9966, "None") },
             new DungeonModel { Name="Scholomance", DungeonId= 2, MapId=289, ContinentId=0, EntranceLoc=new Vector3(1280.767, -2549.763, 86.29783, "None") },
             new DungeonModel { Name="Stratholme - Main Gate", DungeonId=40, MapId=329, ContinentId=0, EntranceLoc=new Vector3(3237.718, -4055.83, 108.4676, "None") },
             new DungeonModel { Name="Stratholme - Service Entrance", DungeonId=274, MapId=329, ContinentId=0, EntranceLoc=new Vector3(3237.718, -4055.83, 108.4676, "None") },
-            new DungeonModel { Name="Hellfire Ramparts", DungeonId=136, MapId=543, ContinentId=530, EntranceLoc=new Vector3(-364.8607, 3083.738, -14.67881, "None") },
-            new DungeonModel { Name="The Blood Furnace", DungeonId=137, MapId=542, ContinentId=530, EntranceLoc=new Vector3(-306.7688, 3168.562, 29.87161, "None") },
+            new DungeonModel { Name="Hellfire Ramparts", DungeonId=136, MapId=543, ContinentId=530, EntranceLoc=new Vector3(-365.8618, 3087.007, -14.58022, "None") },
+            new DungeonModel { Name="The Blood Furnace", DungeonId=137, MapId=542, ContinentId=530, EntranceLoc=new Vector3(-307.8876, 3171.705, 28.40893, "None") },
             new DungeonModel { Name="The Slave Pens", DungeonId=140, MapId=547, ContinentId=530, EntranceLoc=new Vector3(741.4343, 7011.924, -73.0747, "None") },
             new DungeonModel { Name="The Underbog", DungeonId=146, MapId=546, ContinentId=530, EntranceLoc=new Vector3(783.4067, 6742.714, -72.53995, "None") },
             new DungeonModel { Name="Mana Tombs", DungeonId=148, MapId=557, ContinentId=530, EntranceLoc=new Vector3(-3069.809, 4943.236, -101.0472, "None") },
@@ -53,7 +53,7 @@ namespace WholesomeDungeonCrawler.Helpers
             new DungeonModel { Name="The Black Morass", DungeonId=171, MapId=269, ContinentId=530, EntranceLoc=new Vector3(-8768.379, -4164.33, -210.2725, "None") },
             new DungeonModel { Name="The Botanica", DungeonId=173, MapId=553, ContinentId=530, EntranceLoc=new Vector3(3417.226, 1480.172, 182.8366, "Flying") },
             new DungeonModel { Name="The Mechanar", DungeonId=172, MapId=554, ContinentId=530, EntranceLoc=new Vector3(2860.551, 1544.211, 252.159, "Flying") },
-            new DungeonModel { Name="The Shattered Halls", DungeonId=138, MapId=540, ContinentId=530, EntranceLoc=new Vector3(-310.0916, 3089.395, -4.094568, "None") },
+            new DungeonModel { Name="The Shattered Halls", DungeonId=138, MapId=540, ContinentId=530, EntranceLoc=new Vector3(-365.8618, 3087.007, -14.58022, "None") },
             new DungeonModel { Name="Magisters' Terrace", DungeonId=198, MapId=585, ContinentId=530, EntranceLoc=new Vector3(12881.7, -7342.356, 65.52691, "None") },
             new DungeonModel { Name="Utgarde Keep", DungeonId=202, MapId=574, ContinentId=571, EntranceLoc=new Vector3(1236.232, -4859.632, 41.24857, "None") },
             new DungeonModel { Name="The Nexus", DungeonId=225, MapId=576, ContinentId=571, EntranceLoc=new Vector3(3906.412, 6985.285, 69.4881, "None") },
@@ -147,6 +147,9 @@ namespace WholesomeDungeonCrawler.Helpers
             { 4303, new SpecialPrio(0, TargetPriority.High, true) }, // Scarlet Abott (Cathedral)
             { 5650, new SpecialPrio(0, TargetPriority.High, true) }, // Sandfury Witch Doctor (Zul'Farak)
             { 14324, new SpecialPrio(11501, TargetPriority.High) }, // Cho'Rush the Observer (DM North)
+            { 17540, new SpecialPrio(0, TargetPriority.High, true) }, // Fiendish Hound (Hellfire Ramparts)
+            { 17537, new SpecialPrio(0, TargetPriority.High, true) }, // Vazruden (Hellfire Ramparts)
+            { 17309, new SpecialPrio(0, TargetPriority.High, true) }, // Hellfire Watcher (Hellfire Ramparts)
             // Low
             { 8996, new SpecialPrio(0, TargetPriority.Low, true) }, // Voidwalker minion (Ragefire Chasm)
             { 2520, new SpecialPrio(0, TargetPriority.Low, true) }, // Remote-Controlled Golem (Deadmines)

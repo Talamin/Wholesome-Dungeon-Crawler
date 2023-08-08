@@ -64,11 +64,18 @@ namespace WholesomeDungeonCrawler.Managers
             // Dead, search for closest dungeon entrance
             if (imDead)
             {
-                DungeonModel closestDungeonByEntranceLoc = Lists.AllDungeons
-                    .OrderBy(x => _entityCache.Me.PositionCorpse.DistanceTo(x.EntranceLoc))
-                    .FirstOrDefault();
-                myContinentDungeons.Add(closestDungeonByEntranceLoc);
                 Logger.Log($"You're dead without a profile loaded. Looking for closest dungeon entrance");
+                List<DungeonModel> closestDungeons = Lists.AllDungeons
+                    .Where(model => model.ContinentId == Usefuls.ContinentId)
+                    .OrderBy(model => _entityCache.Me.PositionCorpse.DistanceTo(model.EntranceLoc))
+                    .ToList();
+                if (closestDungeons.Count <= 0)
+                {
+                    Logger.LogError($"ERROR: No model matches your continent ID {Usefuls.ContinentId}");
+                    return;
+                }
+                myContinentDungeons.Add(closestDungeons.First());
+                Logger.Log($"{closestDungeons.Count} dungeons found. Closest entrance is {closestDungeons.First().Name}.");
             }
             else
             {

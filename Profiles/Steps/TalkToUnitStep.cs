@@ -16,6 +16,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private readonly IEntityCache _entityCache;
         public override string Name { get; }
         public override FactionType StepFaction { get; }
+        public override LFGRoles StepRole { get; }
 
         public TalkToUnitStep(TalkToUnitModel talkToUnitModel, IEntityCache entityCache) : base(talkToUnitModel.CompleteCondition)
         {
@@ -23,6 +24,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             _entityCache = entityCache;
             Name = talkToUnitModel.Name;
             StepFaction = talkToUnitModel.StepFaction;
+            StepRole = talkToUnitModel.StepRole;
+            PreEvaluationPass = EvaluateFactionCompletion() && EvaluateRoleCompletion();
         }
 
         public override void Initialize() { }
@@ -31,6 +34,12 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Run()
         {
+            if (!PreEvaluationPass)
+            {
+                MarkAsCompleted();
+                return;
+            }
+
             WoWUnit foundUnit = ObjectManager.GetObjectWoWUnit().FirstOrDefault(unit => unit.Entry == _talkToUnitModel.UnitId);
             Vector3 myPosition = _entityCache.Me.PositionWT;
 
@@ -46,7 +55,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     if (_talkToUnitModel.SkipIfNotFound && EvaluateCompleteCondition())
                     {
                         Logger.LogDebug($"[Step {_talkToUnitModel.Name}]: Skipping unit {_talkToUnitModel.UnitId} because he's not here.");
-                        IsCompleted = true;
+                        MarkAsCompleted();
                         return;
                     }
                     else
@@ -62,7 +71,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 if (foundUnit.IsDead)
                 {
                     Logger.LogDebug($"[Step {_talkToUnitModel.Name}]: Unit {_talkToUnitModel.UnitId} is dead. Skipping");
-                    IsCompleted = true;
+                    MarkAsCompleted();
                     return;
                 }
 
@@ -72,7 +81,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 if (myPosition.DistanceTo(targetPosition) < targetInteractDistance
                     && EvaluateCompleteCondition())
                 {
-                    IsCompleted = true;
+                    MarkAsCompleted();
                     return;
                 }
             }

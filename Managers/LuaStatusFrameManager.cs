@@ -3,9 +3,11 @@ using robotManager.Helpful;
 using System;
 using System.Collections.Generic;
 using System.Timers;
+using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles.Steps;
+using wManager.Wow.Class;
 using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.Managers
@@ -303,6 +305,9 @@ namespace WholesomeDungeonCrawler.Managers
                                 color = "0.5, 0.5, 1";
                             }
 
+                            string roleSuffix = stepsToDisplay[i].StepRole != LFGRoles.Unspecified ? $" [{stepsToDisplay[i].StepRole}]" : "";
+                            string factionSuffix = stepsToDisplay[i].StepFaction != Npc.FactionType.Neutral ? $" [{stepsToDisplay[i].StepFaction}]" : "";
+
                             allLua += $@"
                             if not wdcrawler.allstepsText{i} then
                                 wdcrawler.allstepsText{i} = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
@@ -313,7 +318,7 @@ namespace WholesomeDungeonCrawler.Managers
                             if not wdcrawler.allstepsText{i}:IsVisible() then
                                 wdcrawler.allstepsText{i}:Show()                            
                             end
-                            wdcrawler.allstepsText{i}:SetText(""{allSteps.IndexOf(stepsToDisplay[i]) + 1}. {stepsToDisplay[i].Name}"")
+                            wdcrawler.allstepsText{i}:SetText(""{allSteps.IndexOf(stepsToDisplay[i]) + 1}. {stepsToDisplay[i].Name}{factionSuffix}{roleSuffix}"")
                             wdcrawler.allstepsText{i}:SetTextColor({color})";
 
                             stepsBasePosition -= 17;
