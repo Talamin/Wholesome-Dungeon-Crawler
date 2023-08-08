@@ -238,7 +238,7 @@ namespace WholesomeDungeonCrawler.Managers
             // Noxious Slime gas (Foulspore Caverns)
             new KnownAOE(21070, 8f, _everyone),
             // Proximity Mine (The Blood Furnace)
-            new KnownAOE(181877, 8f, _everyone),
+            new KnownAOE(181877, 8f, _everyoneExceptTank),
             // Liquid Fire (Hellfire Ramparts, last boss)   
             new KnownAOE(181890, 8f, _everyone),
             // Broggok poison cloud (Blood Furnace)

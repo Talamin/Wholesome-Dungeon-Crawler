@@ -19,8 +19,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private readonly IEntityCache _entityCache;
         private readonly IPartyChatManager _partyChatManager;
         private Timer _readyCheckTimer = new Timer();
-        private int _foodMin;
-        private int _drinkMin;
+        //private int _foodMin;
+        //private int _drinkMin;
         private bool _drinkAllowed;
         private bool _imPartyLeader;
         private bool _receivedChatSystemReady;
@@ -40,8 +40,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             StepFaction = regroupModel.StepFaction;
             StepRole = regroupModel.StepRole;
             RegroupSpot = regroupModel.RegroupSpot;
-            _foodMin = wManager.wManagerSetting.CurrentSetting.FoodPercent;
-            _drinkMin = wManager.wManagerSetting.CurrentSetting.DrinkPercent;
+            //_foodMin = wManager.wManagerSetting.CurrentSetting.FoodPercent;
+            //_drinkMin = wManager.wManagerSetting.CurrentSetting.DrinkPercent;
             _drinkAllowed = wManager.wManagerSetting.CurrentSetting.RestingMana;
             Lua.LuaDoString($"SetRaidTarget('player', 0)");
             PreEvaluationPass = EvaluateFactionCompletion();
@@ -85,12 +85,13 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 Logger.LogOnce($"[{_regroupModel.Name}] Stopping move");
                 MovementManager.StopMove();
             }
+            /*
             if (MovementManager.InMoveTo && MovementManager.CurrentMoveTo != RegroupSpot)
             {
                 Logger.LogOnce($"[{_regroupModel.Name}] Stopping move to");
                 MovementManager.StopMoveTo();
             }
-
+            */
             // Move to regroup spot location
             if (!MovementManager.InMovement
                 && _entityCache.Me.PositionWT.DistanceTo(RegroupSpot) > 5f)
@@ -129,7 +130,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 IsCompleted = false;
                 return;
             }
-
+            /*
             // Check for regen conditions
             if (_drinkAllowed && _entityCache.Me.Mana > 0 && _entityCache.Me.ManaPercent < _drinkMin)
             {
@@ -144,7 +145,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 IsCompleted = false;
                 return;
             }
-
+            */
             if (!EvaluateCompleteCondition())
             {
                 IsCompleted = false;

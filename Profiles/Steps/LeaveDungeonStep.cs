@@ -17,8 +17,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private readonly IPartyChatManager _partyChatManager;
         private readonly IProfileManager _profileManager;
         private Timer _readyCheckTimer = new Timer();
-        private int _foodMin;
-        private int _drinkMin;
+        //private int _foodMin;
+        //private int _drinkMin;
         private bool _drinkAllowed;
         private readonly int _readyTargetIndex = 2;
         private bool _imPartyLeader;
@@ -40,8 +40,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             Name = leaveDungeonModel.Name;
             StepFaction = leaveDungeonModel.StepFaction;
             StepRole = leaveDungeonModel.StepRole;
-            _foodMin = wManager.wManagerSetting.CurrentSetting.FoodPercent;
-            _drinkMin = wManager.wManagerSetting.CurrentSetting.DrinkPercent;
+            //_foodMin = wManager.wManagerSetting.CurrentSetting.FoodPercent;
+            //_drinkMin = wManager.wManagerSetting.CurrentSetting.DrinkPercent;
             _drinkAllowed = wManager.wManagerSetting.CurrentSetting.RestingMana;
             Lua.LuaDoString($"SetRaidTarget('player', 0)");
             PreEvaluationPass = EvaluateFactionCompletion() && EvaluateRoleCompletion();
@@ -67,7 +67,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
             MovementManager.StopMove();
             _partyChatManager.SetLeaveDungeonStep(this);
-
+            /*
             // Check for regen conditions
             if (_drinkAllowed && _entityCache.Me.Mana > 0 && _entityCache.Me.ManaPercent < _drinkMin)
             {
@@ -82,7 +82,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 IsCompleted = false;
                 return;
             }
-
+            */
             if (!EvaluateCompleteCondition())
             {
                 IsCompleted = false;

@@ -77,14 +77,14 @@ namespace WholesomeDungeonCrawler.States
                 && !_entityCache.Me.HasDrinkBuff)
             {
                 Vector3 myPos = _entityCache.Me.PositionWT;
-                IWoWPlayer playerToHeal = _entityCache.ListGroupMember
+                WoWPlayer playerToHeal = ObjectManager.GetObjectWoWPlayer()
                     .Where(unit => unit.IsValid && !unit.IsDead && unit.HealthPercent <= _healThreshold)
-                    .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
+                    .OrderBy(unit => unit.Position.DistanceTo(myPos))
                     .FirstOrDefault();
 
                 if (playerToHeal != null)
                 {
-                    Vector3 playerPos = playerToHeal.PositionWT;
+                    Vector3 playerPos = playerToHeal.Position;
 
                     if (playerPos.DistanceTo(myPos) > 25
                         || TraceLine.TraceLineGo(myPos, playerPos, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS))
@@ -104,10 +104,20 @@ namespace WholesomeDungeonCrawler.States
                     Interact.InteractGameObject(playerToHeal.GetBaseAddress);
                     Thread.Sleep(200);
                     SpellManager.CastSpellByNameLUA(_healSPell);
+                    Thread.Sleep(200);
                     while (Conditions.InGameAndConnectedAndAliveAndProductStartedNotInPause && ObjectManager.Me.IsCast)
                     {
+                        int[] realStats = Lua.LuaDoString<int[]>($@"
+                            local result = {{}};
+                            table.insert(result, UnitHealth('{playerToHeal.Name}'));
+                            table.insert(result, UnitHealthMax('{playerToHeal.Name}'));
+                            return unpack(result)
+                        ");
+                        int currentHealth = realStats[0];
+                        int maxHealth = realStats[1];
+                        int currentHealthPercent = currentHealth / maxHealth * 100;
                         Thread.Sleep(100);
-                        if (playerToHeal == null || playerToHeal.HealthPercent >= _healThreshold)
+                        if (playerToHeal == null || currentHealthPercent >= _healThreshold)
                         {
                             Lua.LuaDoString("SpellStopCasting();");
                         }

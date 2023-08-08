@@ -78,14 +78,14 @@ namespace WholesomeDungeonCrawler.States
 
             string spell = _rezzClasses[_entityCache.Me.WoWClass];
             Vector3 myPos = _entityCache.Me.PositionWT;
-            IWoWPlayer playerToResurrect = _entityCache.ListGroupMember
+            WoWPlayer playerToResurrect = ObjectManager.GetObjectWoWPlayer()
                 .Where(unit => unit.IsDead && !_playerRezTimer.ContainsKey(unit.Name))
-                .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
+                .OrderBy(unit => unit.Position.DistanceTo(myPos))
                 .FirstOrDefault();
 
             if (playerToResurrect != null)
             {
-                Vector3 playerPos = playerToResurrect.PositionWT;
+                Vector3 playerPos = playerToResurrect.Position;
 
                 if (playerPos.DistanceTo(myPos) > 25
                     || TraceLine.TraceLineGo(myPos, playerPos, CGWorldFrameHitFlags.HitTestSpellLoS | CGWorldFrameHitFlags.HitTestLOS))

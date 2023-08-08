@@ -10,7 +10,6 @@ using WholesomeDungeonCrawler.Helpers;
 using WholesomeToolbox;
 using wManager;
 using wManager.Plugin;
-using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
 
