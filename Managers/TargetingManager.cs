@@ -47,8 +47,6 @@ namespace WholesomeDungeonCrawler.Managers
 
         public void OnFightHandler(WoWUnit currentTarget, CancelEventArgs canceable)
         {
-            try
-            {
                 if (currentTarget == null)
                 {
                     return;
@@ -75,10 +73,23 @@ namespace WholesomeDungeonCrawler.Managers
 
                 if (_entityCache.IAmTank)
                 {
-                    // Don't override pull step combat
+                    // Pull step combat
                     if (_profileManager.ProfileIsRunning
                         && _profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep pullStep)
                     {
+                        // Tank enemies inside safe spot
+                        IWoWUnit unitToTankDuringPullStep = _entityCache.EnemiesAttackingGroup
+                            .Where(unit => unit.TargetGuid != _entityCache.Me.Guid)
+                            .Where(unit => pullStep.PositionInSafeSpotFightRange(unit.PositionWT) || pullStep.EnemyIsStandingStill(unit.Guid))
+                            .OrderBy(unit => unit.PositionWT.DistanceTo(pullStep.SafeSpotCenter))
+                            .FirstOrDefault();
+                        if (unitToTankDuringPullStep != null && unitToTankDuringPullStep.Guid != myTargetGuid)
+                        {
+                            SwitchTargetAndFight(unitToTankDuringPullStep, canceable, "Protecting group member (Pull Step)");
+                            return;
+                        }
+
+                        // Ignore when outside safespot
                         if (!pullStep.PositionInSafeSpotFightRange(myPos))
                         {
                             return;
@@ -278,11 +289,6 @@ namespace WholesomeDungeonCrawler.Managers
                         }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e.ToString());
-            }
         }
 
         private void DrawEventTargetingManager()

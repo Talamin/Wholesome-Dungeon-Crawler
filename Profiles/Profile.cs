@@ -114,7 +114,7 @@ namespace WholesomeDungeonCrawler.Profiles
                     && i < _profileSteps.Count - 1
                     && !(_profileSteps[i + 1] is RegroupModel))
                 {
-                    _profileSteps.Insert(i + 1, new RegroupStep(new RegroupModel() { Name = $"PTS Regroup {nbPTS--} (auto)", RegroupSpot = pullToSafeSpotStep.SafeSportCenter }, entityCache, partyChatManager));
+                    _profileSteps.Insert(i + 1, new RegroupStep(new RegroupModel() { Name = $"PTS Regroup {nbPTS--} (auto)", RegroupSpot = pullToSafeSpotStep.SafeSpotCenter }, entityCache, partyChatManager));
                 }
             }
 

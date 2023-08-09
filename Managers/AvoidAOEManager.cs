@@ -200,10 +200,10 @@ namespace WholesomeDungeonCrawler.Managers
             // Cancel moves into danger zones
             DangerZone dangerZoneOnTheWay = _dangerZones.FirstOrDefault(dz =>
                 dz.Position.DistanceTo(_entityCache.Me.PositionWT) < dz.Radius + 5
-                && dz.PositionInDangerZone(node));
+                && WTPathFinder.PointDistanceToLine(_entityCache.Me.PositionWT, node, dz.Position) < dz.Radius);
             if (dangerZoneOnTheWay != null && !IAmInDangerZone)
             {
-                Logger.LogOnce($"Can't move, {dangerZoneOnTheWay.Name} is on the next node. Waiting despawn.");
+                Logger.LogOnce($"Can't move, {dangerZoneOnTheWay.Name} is on the path to node. Waiting despawn.");
                 cancelable.Cancel = true;
                 return;
             }
@@ -238,7 +238,7 @@ namespace WholesomeDungeonCrawler.Managers
             // Noxious Slime gas (Foulspore Caverns)
             new KnownAOE(21070, 8f, _everyone),
             // Proximity Mine (The Blood Furnace)
-            new KnownAOE(181877, 8f, _everyoneExceptTank),
+            new KnownAOE(181877, 12f, _everyoneExceptTank),
             // Liquid Fire (Hellfire Ramparts, last boss)   
             new KnownAOE(181890, 8f, _everyone),
             // Broggok poison cloud (Blood Furnace)

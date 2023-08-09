@@ -37,8 +37,9 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public bool PositionInSafeSpotFightRange(Vector3 position) =>
             position.DistanceTo(_safeSpotCenter) <= _safeSpotRadius
             && !TraceLine.TraceLineGo(_safeSpotCenter, position);
+        public bool EnemyIsStandingStill(ulong guid) => _enemiesStandingStill.Exists(e => e.Guid == guid);
         public bool AnEnemyIsStandingStill => _enemiesStandingStill.Count > 0;
-        public Vector3 SafeSportCenter => _safeSpotCenter;
+        public Vector3 SafeSpotCenter => _safeSpotCenter;
 
         public PullToSafeSpotStep(
             PullToSafeSpotModel pullToSafeSpotModel,
