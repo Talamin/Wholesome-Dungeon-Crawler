@@ -23,7 +23,7 @@ namespace WholesomeDungeonCrawler.Managers.ManagedEvents
             // Noxious Slime gas (Foulspore Caverns)
             new KnownAOE(21070, 8f, _everyone),
             // Proximity Mine (The Blood Furnace)
-            new KnownAOE(181877, 8f, _everyone),
+            new KnownAOE(181877, 12f, _everyoneExceptTank),
             // Liquid Fire (Hellfire Ramparts, last boss)   
             new KnownAOE(181890, 8f, _everyone),
             // Broggok poison cloud (Blood Furnace)
@@ -50,9 +50,7 @@ namespace WholesomeDungeonCrawler.Managers.ManagedEvents
             // Living Mojo Puddle - Drakkari Colossus (Gundrak)
             new KnownAOE(59451, 3f, _everyone),
              // Blizzard - Novos (Drak Tharon Keep)
-            new KnownAOE(49034, 9f, _everyone),            
-             // Toxic Waste - Krick (Pit of Saron)
-            new KnownAOE(70436, 5f, _everyone),
+            new KnownAOE(49034, 9f, _everyone),
             // Exploding Orb - Krick (Pit of Saron)
             new KnownAOE(36610, 10f, _everyone),
             // Icy Blast - Scourgelord Tyranos (Pit of Saron)

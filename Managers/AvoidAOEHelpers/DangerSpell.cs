@@ -1,11 +1,8 @@
 ﻿using robotManager.Helpful;
-using System;
 using System.Collections.Generic;
-using System.Drawing;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers.AvoidAOEHelpers;
 using WholesomeDungeonCrawler.Managers.ManagedEvents;
-using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.Managers
 {
@@ -21,7 +18,7 @@ namespace WholesomeDungeonCrawler.Managers
         static readonly double pi8 = System.Math.PI / 8;
         static readonly double pi4 = System.Math.PI / 4;
         static readonly double pi2 = System.Math.PI / 4;
-        static readonly double rt2 = System.Math.Sqrt(2);
+        //static readonly double rt2 = System.Math.Sqrt(2);
         static readonly float MIN = 1;
 
         public DangerSpell(int unitId, int spellId, Shape shape, float size, List<LFGRoles> affectedRoles, double duration)
@@ -56,7 +53,7 @@ namespace WholesomeDungeonCrawler.Managers
                 _ => playerPosition.DistanceTo(zone.Position) < Size,
             };
         }
-
+        /*
         public void Draw(Vector3 dangerPosition, DangerZone zone, Color color, bool filled, int alpha)
         {
             double x = dangerPosition.X + Size * System.Math.Sin(zone.Rotation);
@@ -80,7 +77,7 @@ namespace WholesomeDungeonCrawler.Managers
                     break;
             }
         }
-
+        */
         public override bool Equals(object obj)
         {
             return obj is DangerSpell spell &&

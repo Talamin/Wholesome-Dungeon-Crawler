@@ -9,15 +9,12 @@ namespace WholesomeDungeonCrawler.Managers.AvoidAOEHelpers
         public int Id { get; private set; }
         public float Radius { get; private set; }
         public List<LFGRoles> AffectedRoles { get; private set; }
-        public Func<bool> Condition { get; private set; }
-        public bool IsConditionMet => Condition == null || Condition();
 
-        public KnownAOE(int id, float radius, List<LFGRoles> affectedRoles, Func<bool> condition = null)
+        public KnownAOE(int id, float radius, List<LFGRoles> affectedRoles)
         {
             Id = id;
             Radius = radius;
             AffectedRoles = affectedRoles;
-            Condition = condition;
         }
     }
 }

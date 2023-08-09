@@ -1,11 +1,8 @@
 ﻿using robotManager.Helpful;
-using System;
 using System.Collections.Generic;
-using System.Drawing;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers.AvoidAOEHelpers;
 using WholesomeDungeonCrawler.Managers.ManagedEvents;
-using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.Managers
 {
@@ -16,10 +13,9 @@ namespace WholesomeDungeonCrawler.Managers
         public string Name { get; private set; }
         public Shape Shape { get; private set; }
         public float Size { get; private set; }
-        // Zer0 remove
         public List<LFGRoles> AffectedRoles { get; private set; }
 
-        public DangerBuff(int unitId, int spellId, String name, Shape shape, float size, List<LFGRoles> affectedRoles)
+        public DangerBuff(int unitId, int spellId, string name, Shape shape, float size, List<LFGRoles> affectedRoles)
         {
             UnitId = unitId;
             SpellId = spellId;
@@ -33,13 +29,12 @@ namespace WholesomeDungeonCrawler.Managers
         {
             return position.DistanceTo(zone.Position) < Size;
         }
-
-        // Zer0 less parameters
-        public void Draw(Vector3 position, DangerZone zone, Color color, bool filled, int alpha)
+        /*
+        public void Draw(DangerZone zone)
         {
-            Radar3D.DrawCircle(position, Size, color, filled, alpha);
+            Radar3D.DrawCircle(zone.Position, zone.Radius, Color.Orange, true, 100);
         }
-
+        */
         public override bool Equals(object obj)
         {
             return obj is DangerBuff buff &&

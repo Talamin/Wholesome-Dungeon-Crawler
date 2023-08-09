@@ -1,7 +1,9 @@
 ﻿using robotManager.Helpful;
+using System.Drawing;
 using WholesomeDungeonCrawler.Managers.ManagedEvents;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Enums;
+using wManager.Wow.Helpers;
 
 namespace WholesomeDungeonCrawler.Managers.AvoidAOEHelpers
 {
@@ -56,11 +58,41 @@ namespace WholesomeDungeonCrawler.Managers.AvoidAOEHelpers
         {
             return Danger.PositionInDanger(position, this);
         }
-        // Zer0
-        /*
+        
         public void Draw()
         {
-            Danger.Draw();
-        }*/
+            if (Danger is DangerBuff)
+            {
+                Radar3D.DrawCircle(Position, Radius, Color.Orange, false, 30);
+            }
+            else if (Danger is DangerSpell dangerSpell)
+            {
+                double x = Position.X + dangerSpell.Size * System.Math.Sin(Rotation);
+                double y = Position.Y + dangerSpell.Size * System.Math.Cos(Rotation);
+                double rt2 = System.Math.Sqrt(2);
+                double z = Position.Z;
+                switch (dangerSpell.Shape)
+                {
+                    case Shape.Cone90:
+                        double topX = (x - y) / rt2;
+                        double topY = (x + y) / rt2;
+                        Vector3 topLinePosition = new Vector3(topX, topY, z);
+                        double botX = topY; // Maths works out the same 
+                        double botY = (y - x) / rt2;
+                        Vector3 bottomLinePosition = new Vector3(botX, botY, z);
+                        Radar3D.DrawLine(Position, topLinePosition, Color.Purple, 100);
+                        Radar3D.DrawLine(Position, bottomLinePosition, Color.Purple, 100);
+                        break;
+                    case Shape.Circle:
+                    default:
+                        Radar3D.DrawCircle(Position, dangerSpell.Size, Color.Purple, false, 30);
+                        break;
+                }
+            }
+            else if (Danger is DangerObject)
+            {
+                Radar3D.DrawCircle(Position, Radius, Color.Red, false, 30);
+            }
+        }
     }
 }

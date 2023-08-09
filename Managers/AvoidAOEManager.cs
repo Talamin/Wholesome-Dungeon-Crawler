@@ -1,7 +1,9 @@
 ﻿using robotManager.Helpful;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers.AvoidAOEHelpers;
@@ -26,7 +28,7 @@ namespace WholesomeDungeonCrawler.Managers
         private Dictionary<int, KnownAOE> _knowAOEsDic = new Dictionary<int, KnownAOE>();
 
         private readonly SortedSet<int> _relevantBuffEnemyIds = new SortedSet<int>();
-        private readonly Dictionary<int, DangerSpell> _enemiesSpellsById;
+        private readonly Dictionary<int, DangerSpell> _enemiesSpellsById = new Dictionary<int, DangerSpell>();
         private readonly Lookup<int, DangerBuff> _enemiesBuffsByUnit;
         private Dictionary<int, ForcedSafeZone> _forcedSafeZonesDic = new Dictionary<int, ForcedSafeZone>();
 
@@ -37,11 +39,13 @@ namespace WholesomeDungeonCrawler.Managers
         {
             _entityCache = entityCache;
             _cache = cache;
+
             // TODO: playerDebuffs
 
-            // Zer0 and check for roles
-            _enemiesSpellsById = DangerList.GetEnemySpells.ToDictionary(es => es.SpellId, es => es);
-            _enemiesBuffsByUnit = (Lookup<int, DangerBuff>)DangerList.GetEnemyBuffs.ToLookup(eb => eb.UnitId, eb => eb);
+            // We load the buffs in a Lookup to speed up lookup, multiple keys can be identical
+            _enemiesBuffsByUnit = (Lookup<int, DangerBuff>)DangerList.GetEnemyBuffs
+                .Where(eb => eb.AffectedRoles.Contains(_myRole))
+                .ToLookup(eb => eb.UnitId, eb => eb);
 
             // We load the AOEs in a dictionary to speed up lookup
             foreach (KnownAOE knownAOE in DangerList.GetKnownAOEs)
@@ -55,6 +59,21 @@ namespace WholesomeDungeonCrawler.Managers
                 else
                 {
                     Logger.LogError($"Multiple entries for AOE : {knownAOE.Id}");
+                }
+            }
+
+            // We load the Spells in a dictionary to speed up lookup
+            foreach (DangerSpell dangerSpell in DangerList.GetEnemySpells)
+            {
+                if (!dangerSpell.AffectedRoles.Contains(_myRole)) continue;
+
+                if (!_enemiesSpellsById.ContainsKey(dangerSpell.SpellId))
+                {
+                    _enemiesSpellsById.Add(dangerSpell.SpellId, dangerSpell);
+                }
+                else
+                {
+                    Logger.LogError($"Multiple entries for Spell : {dangerSpell.SpellId}");
                 }
             }
 
@@ -84,6 +103,8 @@ namespace WholesomeDungeonCrawler.Managers
             FightEvents.OnFightLoop += FightEventHandler;
             MovementEvents.OnMovementPulse += MovementEventsOnMovementPulse;
             MovementEvents.OnMoveToPulse += MovementsEventsOnMoveToPulse;
+            if (!Radar3D.IsLaunched) Radar3D.Pulse();
+            Radar3D.OnDrawEvent += DrawEventAOE;
         }
 
         public void Dispose()
@@ -93,6 +114,8 @@ namespace WholesomeDungeonCrawler.Managers
             FightEvents.OnFightLoop -= FightEventHandler;
             MovementEvents.OnMovementPulse -= MovementEventsOnMovementPulse;
             MovementEvents.OnMoveToPulse -= MovementsEventsOnMoveToPulse;
+            Radar3D.OnDrawEvent -= DrawEventAOE;
+            Radar3D.Stop();
         }
 
         public bool CheckSpells(List<string> args)
@@ -100,14 +123,15 @@ namespace WholesomeDungeonCrawler.Managers
             if (int.TryParse(args[8], out int spellId)
                 && _enemiesSpellsById.ContainsKey(spellId))
             {
-                // Search by GUID
-                ulong unitGuid = ulong.Parse(args[2]);
-
+                ulong unitGuid = (ulong)Convert.ToInt64(args[2], 16);
                 DangerSpell enemySpell = _enemiesSpellsById[spellId];
-                IWoWUnit enemy = _entityCache.EnemyUnitsList.FirstOrDefault(e => e.WowUnit.Entry == enemySpell.UnitId);
-                AddSpellDangerZone(enemy, enemySpell);
-                CalculateReposition();
-                return true;
+                IWoWUnit enemy = _entityCache.EnemyUnitsList.FirstOrDefault(e => e.Guid == unitGuid);
+                if (enemy != null)
+                {
+                    AddSpellDangerZone(enemy, enemySpell);
+                    CalculateReposition();
+                    return true;
+                }
             }
             return false;
         }
@@ -321,6 +345,37 @@ namespace WholesomeDungeonCrawler.Managers
                 Logger.LogOnce($"Canceled fight because we need to reposition");
                 Lua.LuaDoString("SpellStopCasting();");
                 cancelable.Cancel = true;
+            }
+        }
+
+        private void DrawEventAOE()
+        {
+            try
+            {
+                if (RepositionInfo != null)
+                {
+                    DangerZone currentDangerZone = RepositionInfo.CurrentDangerZone;
+                    ForcedSafeZone currentforcedSafeZone = RepositionInfo.ForcedSafeZone;
+                    if (currentDangerZone != null)
+                    {
+                        Radar3D.DrawCircle(currentDangerZone.Position, currentDangerZone.Radius, Color.Orange, true, 30);
+                    }
+
+                    if (currentforcedSafeZone != null)
+                    {
+                        Radar3D.DrawCircle(currentforcedSafeZone.ZoneCenter, currentforcedSafeZone.Radius, Color.Blue, false, 30);
+                    }
+                }
+
+                List<DangerZone> dangerZones = new List<DangerZone>(_dangerZones);
+                foreach (DangerZone dangerZone in dangerZones)
+                {
+                    dangerZone.Draw();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex.ToString());
             }
         }
     }

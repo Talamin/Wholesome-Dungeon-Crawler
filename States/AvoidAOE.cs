@@ -1,9 +1,7 @@
 ﻿using robotManager.FiniteStateMachine;
 using robotManager.Helpful;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
@@ -41,16 +39,11 @@ namespace WholesomeDungeonCrawler.States
 
         public void Initialize()
         {
-            // Zer0 back to manager, call draw method
-            if (!Radar3D.IsLaunched) Radar3D.Pulse();
-            Radar3D.OnDrawEvent += DrawEventAOE;
             MovementEvents.OnSeemStuck += SeemStuckHandler;
         }
 
         public void Dispose()
         {
-            Radar3D.OnDrawEvent -= DrawEventAOE;
-            Radar3D.Stop();
             MovementEvents.OnSeemStuck -= SeemStuckHandler;
         }
 
@@ -68,12 +61,13 @@ namespace WholesomeDungeonCrawler.States
                 // If we receive a RepositionInfo from the manager, it means we need to reposition
                 _repositionInfo = _avoidAOEManager.RepositionInfo;
                 if (_repositionInfo != null)
-                {                    
+                {
                     return true;
-                } else
+                }
+                else
                 {
                     _escapePath = null;
-                }                
+                }
                 return false;
             }
         }
@@ -229,56 +223,6 @@ namespace WholesomeDungeonCrawler.States
                 Logger.LogError($"We're stuck, trying another path");
                 _bannedSafeZones.Add(new BannedSafeZone(MovementManager.CurrentPath.Last()));
                 _escapePath = null;
-            }
-        }
-
-        private void DrawEventAOE()
-        {
-            try
-            {
-                if (_repositionInfo != null)
-                {
-                    List<DangerZone> dangerZones = new List<DangerZone>(_repositionInfo.DangerZones);
-                    DangerZone currentDangerZone = _repositionInfo.CurrentDangerZone;
-                    ForcedSafeZone currentforcedSafeZone = _repositionInfo.ForcedSafeZone;
-                    foreach (DangerZone dangerZone in dangerZones)
-                    {
-                        if (dangerZones != null)
-                            Radar3D.DrawCircle(dangerZone.Position, dangerZone.Radius, Color.IndianRed, false, 150);
-                    }
-
-                    if (currentDangerZone != null)
-                    {
-                        Radar3D.DrawCircle(currentDangerZone.Position, currentDangerZone.Radius, Color.Orange, true, 30);
-                    }
-
-                    if (currentforcedSafeZone != null)
-                    {
-                        Radar3D.DrawCircle(currentforcedSafeZone.ZoneCenter, currentforcedSafeZone.Radius, Color.Blue, false, 30);
-                    }
-                    /*
-                    foreach (Vector3 safeSpot in _safeSpots)
-                    {
-                        Radar3D.DrawCircle(safeSpot, 0.2f, Color.Blue, true, 100);
-                    }
-                    */
-                    if (_escapePath != null && _escapePath.Count > 1)
-                    {
-                        for (int i = 0; i < _escapePath.Count - 1; i++)
-                        {
-                            Radar3D.DrawLine(_escapePath[i], _escapePath[i + 1], Color.ForestGreen);
-                        }
-                    }
-
-                    foreach (BannedSafeZone bsz in _bannedSafeZones)
-                    {
-                        Radar3D.DrawCircle(bsz.Position, 3, Color.Red, true, 30);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex.ToString());
             }
         }
     }
