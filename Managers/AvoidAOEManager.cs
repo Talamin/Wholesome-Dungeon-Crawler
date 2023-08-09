@@ -24,18 +24,11 @@ namespace WholesomeDungeonCrawler.Managers
         private LFGRoles _myRole = CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole;
 
         private Dictionary<int, KnownAOE> _knowAOEsDic = new Dictionary<int, KnownAOE>();
-        private static readonly List<LFGRoles> _everyone = new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS };
-        private static readonly List<LFGRoles> _meleeOnly = new List<LFGRoles>() { LFGRoles.Tank, LFGRoles.MDPS };
-        private static readonly List<LFGRoles> _rangedOnly = new List<LFGRoles>() { LFGRoles.Heal, LFGRoles.RDPS };
-        private static readonly List<LFGRoles> _everyoneExceptTank = new List<LFGRoles>() { LFGRoles.Heal, LFGRoles.MDPS, LFGRoles.RDPS };
-        
-        private readonly List<KnownAOE> _knownAOEs;
-        private readonly SortedSet<int> relevantSpellEnemyIds = new SortedSet<int>();
-        private readonly SortedSet<int> relevantBuffEnemyIds = new SortedSet<int>();
-        private readonly Dictionary<int, DangerSpell> enemiesSpellsById;
-        private readonly Lookup<int, DangerBuff> enemiesBuffsByUnit;
+
+        private readonly SortedSet<int> _relevantBuffEnemyIds = new SortedSet<int>();
+        private readonly Dictionary<int, DangerSpell> _enemiesSpellsById;
+        private readonly Lookup<int, DangerBuff> _enemiesBuffsByUnit;
         private Dictionary<int, ForcedSafeZone> _forcedSafeZonesDic = new Dictionary<int, ForcedSafeZone>();
-        private readonly List<ForcedSafeZone> _knownForcedSafeZones;
 
         private bool IAmInDangerZone => _dangerZones.Any(dangerZone => dangerZone.PositionInDangerZone(_entityCache.Me.PositionWT));
         public RepositionInfo RepositionInfo { get; private set; }
@@ -44,14 +37,14 @@ namespace WholesomeDungeonCrawler.Managers
         {
             _entityCache = entityCache;
             _cache = cache;
-            _knownAOEs = DangerList.GetKnownAOEs;
-            _knownForcedSafeZones = DangerList.GetForcedSafeZones;
             // TODO: playerDebuffs
-            enemiesSpellsById = DangerList.GetEnemySpells.ToDictionary(es => es.SpellId, es => es);
-            enemiesBuffsByUnit = (Lookup<int, DangerBuff>)DangerList.GetEnemyBuffs.ToLookup(eb => eb.UnitId, eb => eb);
+
+            // Zer0 and check for roles
+            _enemiesSpellsById = DangerList.GetEnemySpells.ToDictionary(es => es.SpellId, es => es);
+            _enemiesBuffsByUnit = (Lookup<int, DangerBuff>)DangerList.GetEnemyBuffs.ToLookup(eb => eb.UnitId, eb => eb);
 
             // We load the AOEs in a dictionary to speed up lookup
-            foreach (KnownAOE knownAOE in _knownAOEs)
+            foreach (KnownAOE knownAOE in DangerList.GetKnownAOEs)
             {
                 if (!knownAOE.AffectedRoles.Contains(_myRole)) continue;
 
@@ -64,8 +57,9 @@ namespace WholesomeDungeonCrawler.Managers
                     Logger.LogError($"Multiple entries for AOE : {knownAOE.Id}");
                 }
             }
+
             // We load the Forced Safe Zones in a dictionary to speed up lookup
-            foreach (ForcedSafeZone forcedSafeZone in _knownForcedSafeZones)
+            foreach (ForcedSafeZone forcedSafeZone in DangerList.GetForcedSafeZones)
             {
                 if (!_forcedSafeZonesDic.ContainsKey(forcedSafeZone.BossId))
                 {
@@ -76,14 +70,11 @@ namespace WholesomeDungeonCrawler.Managers
                     Logger.LogError($"Multiple entries for Forced Safe Zone : {forcedSafeZone.BossId}");
                 }
             }
-            foreach (DangerSpell es in DangerList.GetEnemySpells)
-            {
-                relevantSpellEnemyIds.Add(es.UnitId);
-            }
+
             foreach (DangerBuff eb in DangerList.GetEnemyBuffs)
             {
-                relevantBuffEnemyIds.Add(eb.UnitId);
-            }            
+                _relevantBuffEnemyIds.Add(eb.UnitId);
+            }
         }
 
         public void Initialize()
@@ -104,39 +95,37 @@ namespace WholesomeDungeonCrawler.Managers
             MovementEvents.OnMoveToPulse -= MovementsEventsOnMoveToPulse;
         }
 
-        public bool CheckSpells(string caster, string sourceName, int spellId, string spellName, List<string> args)
-        {        
-            if (enemiesSpellsById.ContainsKey(spellId))
+        public bool CheckSpells(List<string> args)
+        {
+            if (int.TryParse(args[8], out int spellId)
+                && _enemiesSpellsById.ContainsKey(spellId))
             {
-                DangerSpell enemySpell = enemiesSpellsById[spellId];
-                IWoWUnit enemy = _entityCache.EnemiesAttackingGroup.FirstOrDefault(e => e.WowUnit.Entry == enemySpell.UnitId);
+                // Search by GUID
+                ulong unitGuid = ulong.Parse(args[2]);
+
+                DangerSpell enemySpell = _enemiesSpellsById[spellId];
+                IWoWUnit enemy = _entityCache.EnemyUnitsList.FirstOrDefault(e => e.WowUnit.Entry == enemySpell.UnitId);
                 AddSpellDangerZone(enemy, enemySpell);
                 CalculateReposition();
-                Logger.Log($"Enemy spell cast detected: {caster} - {spellName}...");
-                for (int i = 0; i < args.Count; i++)
-                {
-                    Logger.Log($"{i}:{args[i]}");
-                }
                 return true;
-            }            
+            }
             return false;
         }
 
         private void AddObjectDangerZone(WoWObject wowObject, float radius)
         {
-            if (_dangerZones.Any(dangerZone => dangerZone.Guid == wowObject.Guid && dangerZone.Type==DangerType.Object && dangerZone.Position.DistanceTo(wowObject.Position) < 1f))
+            if (_dangerZones.Any(dangerZone => dangerZone.Guid == wowObject.Guid && dangerZone.Type == DangerType.GameObject && dangerZone.Position.DistanceTo(wowObject.Position) < 1f))
             {
                 return;
             }
-            //RemoveAllObjectDangerZones(wowObject.Guid);
-            Logger.Log($"Creating object danger: {wowObject.Name}.");
+            RemoveAllObjectDangerZones(wowObject.Guid);
             DangerObject dangerObject = new DangerObject(wowObject, radius);
             _dangerZones.Add(new DangerZone(dangerObject));
         }
 
         private void AddSpellDangerZone(IWoWUnit unit, DangerSpell spell)
         {
-            if (_dangerZones.Any(dangerZone => dangerZone.Guid == unit.Guid && dangerZone.Danger.Equals(spell) && dangerZone.Position.DistanceTo(unit.WowUnit.Position) < 1f))
+            if (_dangerZones.Any(dangerZone => dangerZone.Guid == unit.Guid && dangerZone.Danger.Equals(spell)))
             {
                 return;
             }
@@ -145,7 +134,7 @@ namespace WholesomeDungeonCrawler.Managers
 
         private void AddBuffDangerZone(IWoWUnit unit, DangerBuff buff, float duration)
         {
-            if (_dangerZones.Any(dangerZone => dangerZone.Guid == unit.Guid && dangerZone.Danger.Equals(buff) && dangerZone.Position.DistanceTo(unit.WowUnit.Position) < 1f))
+            if (_dangerZones.Any(dangerZone => dangerZone.Guid == unit.Guid && dangerZone.Danger.Equals(buff)))
             {
                 return;
             }
@@ -154,12 +143,14 @@ namespace WholesomeDungeonCrawler.Managers
 
         private void RemoveAllObjectDangerZones(ulong objectGuid)
         {
-            _dangerZones.RemoveAll(dz => dz.Guid == objectGuid && dz.Type==DangerType.Object);
+            _dangerZones.RemoveAll(dz => dz.Guid == objectGuid && dz.Type == DangerType.GameObject);
         }
+
         private void RemoveAllSpellDangerZones(ulong objectGuid)
         {
             _dangerZones.RemoveAll(dz => dz.Guid == objectGuid && dz.Type == DangerType.Spell);
         }
+
         private void RemoveAllBuffDangerZones(ulong objectGuid)
         {
             _dangerZones.RemoveAll(dz => dz.Guid == objectGuid && dz.Type == DangerType.Buff);
@@ -175,7 +166,7 @@ namespace WholesomeDungeonCrawler.Managers
 
             // Clear danger zone if its corresponding object doesn't exist anymore in the OM
             List<ulong> dangerZonesToRemove = _dangerZones
-                .Where(dangerZone => dangerZone.Type == DangerType.Object && !objectList.Exists(wObject => wObject.Guid == dangerZone.Guid))
+                .Where(dangerZone => dangerZone.Type == DangerType.GameObject && !objectList.Exists(wObject => wObject.Guid == dangerZone.Guid))
                 .Select(dangerZone => dangerZone.Guid)
                 .ToList();
             foreach (ulong dzToRemoveGuid in dangerZonesToRemove)
@@ -203,11 +194,11 @@ namespace WholesomeDungeonCrawler.Managers
                 RemoveAllSpellDangerZones(dzToRemoveGuid);
             }
 
-            foreach (IWoWUnit unit in _entityCache.EnemiesAttackingGroup)
+            foreach (IWoWUnit unit in _entityCache.EnemyUnitsList)
             {
-                if (relevantBuffEnemyIds.Contains(unit.Entry))
-                {                    
-                    foreach (DangerBuff spell in enemiesBuffsByUnit[unit.Entry])
+                if (_relevantBuffEnemyIds.Contains(unit.Entry))
+                {
+                    foreach (DangerBuff spell in _enemiesBuffsByUnit[unit.Entry])
                     {
                         if (unit.WowUnit.HaveBuff(spell.Name))
                         {
@@ -223,8 +214,6 @@ namespace WholesomeDungeonCrawler.Managers
             {
                 if (_knowAOEsDic.TryGetValue(wowObject.Entry, out KnownAOE knownAOE))
                 {
-                   // Logger.Log($"Found danger: {wowObject.Guid}.");
-
                     switch (wowObject.Type)
                     {
                         case WoWObjectType.Unit:
@@ -294,7 +283,7 @@ namespace WholesomeDungeonCrawler.Managers
             for (int i = 0; i < path.Count - 1; i++)
             {
                 DangerZone dangerZoneOnTheWay = _dangerZones
-                    .FirstOrDefault(dz => 
+                    .FirstOrDefault(dz =>
                         dz.Position.DistanceTo(_entityCache.Me.PositionWT) < dz.Radius + 5
                         && WTPathFinder.PointDistanceToLine(path[i], path[i + 1], dz.Position) < dz.Radius);
                 if (dangerZoneOnTheWay != null && !IAmInDangerZone)
@@ -333,6 +322,6 @@ namespace WholesomeDungeonCrawler.Managers
                 Lua.LuaDoString("SpellStopCasting();");
                 cancelable.Cancel = true;
             }
-        }        
+        }
     }
 }

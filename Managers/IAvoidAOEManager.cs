@@ -8,6 +8,6 @@ namespace WholesomeDungeonCrawler.Managers
     {
         RepositionInfo RepositionInfo { get; }
 
-        bool CheckSpells(string caster, string sourceName, int spellId, string spellName, List<string> args);
+        bool CheckSpells(List<string> args);
     }
 }

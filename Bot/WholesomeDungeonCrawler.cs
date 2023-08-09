@@ -222,14 +222,8 @@ namespace WholesomeDungeonCrawler.Bot
 
                     if (logType == "SPELL_CAST_SUCCESS"
                         || logType == "SPELL_CAST_START")
-                    {                        
-                        //string timeStamp = args[0];
-                        //string sourceGUID = args[2];
-                        string caster = args[3];
-                        string sourceName = args[4];                                                
-                        int spellId = int.Parse(args[8]);
-                        string spellName = args[9];                          
-                        _avoidAOEManager.CheckSpells(caster, sourceName, spellId, spellName, args);   
+                    {       
+                        _avoidAOEManager.CheckSpells(args);   
                     }
                     break;
             }

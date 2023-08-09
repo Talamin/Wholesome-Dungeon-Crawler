@@ -110,6 +110,7 @@ namespace WholesomeDungeonCrawler.Helpers
             3849, // Deathstalker Adamant (SFK Jail)
             8130, // Sul'lithuz Hatchling (ZF)
             10096, // High Justice Grimstone (BRD)
+            29834, // Drakkari Frenzy (Gundrak)
         };
 
         // These neutral mobs will be pulled when navigating the dungeon as if they were hostile

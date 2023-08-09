@@ -49,6 +49,8 @@ namespace WholesomeDungeonCrawler.Managers.ManagedEvents
             new KnownAOE(60020, 7f, _everyone),
             // Living Mojo Puddle - Drakkari Colossus (Gundrak)
             new KnownAOE(59451, 3f, _everyone),
+             // Blizzard - Novos (Drak Tharon Keep)
+            new KnownAOE(49034, 9f, _everyone),            
              // Toxic Waste - Krick (Pit of Saron)
             new KnownAOE(70436, 5f, _everyone),
             // Exploding Orb - Krick (Pit of Saron)
@@ -63,10 +65,10 @@ namespace WholesomeDungeonCrawler.Managers.ManagedEvents
 
         public static readonly List<DangerSpell> GetEnemySpells = new List<DangerSpell>()
         {
-            
             // Azure Magus, Frostbolt (the nexus) test spell
-            new DangerSpell(26722, 56775, Shape.Cone90, 10, _everyone, 2 ), 
-           
+            new DangerSpell(26722, 56775, Shape.Cone90, 10, _everyone, 2),            
+            // Slad'ran, Poison Nova, Gundrak
+            new DangerSpell(29304, 59842, Shape.Circle, 15, _everyone, 3.5),            
             // Ingvar the Plunderer, Dark Smash, Utgarde Pinacle
             new DangerSpell(23954, 59709, Shape.Cone90, 30, _everyone, 3),
              // Ingvar the Plunderer, Smash, Utgarde Pinacle
@@ -84,7 +86,11 @@ namespace WholesomeDungeonCrawler.Managers.ManagedEvents
             
             // Gundrak - Gal'Drath - Whirling Slash
             new DangerBuff(29306, 59824, "Whirling Slash", Shape.Circle, 7, _everyone ),
+            
+            // Arcane Field - Novos - Drak Tharon Keep
+            new DangerBuff(26631, 47346, "Arcane Field", Shape.Circle, 12, _everyone ),
 
+            
             // Utgarde Pinacle - Skadi the ruthless - Whirlwind
             new DangerBuff(26693, 50228, "Whirlwind", Shape.Circle, 7, _everyone ),
 

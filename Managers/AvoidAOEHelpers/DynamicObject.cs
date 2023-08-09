@@ -14,6 +14,7 @@ namespace WholesomeDungeonCrawler.Managers.AvoidAOEHelpers
             new Vector3(Memory.WowMemory.Memory.ReadFloat(BaseAddress + 0xE8),
                 Memory.WowMemory.Memory.ReadFloat(BaseAddress + 0xEC),
                 Memory.WowMemory.Memory.ReadFloat(BaseAddress + 0xF0));
+
         public override string Name => new Spell(SpellID).Name;
         public override float GetDistance => Position.DistanceTo(ObjectManager.Me.PositionWithoutType);
         public ulong Caster =>

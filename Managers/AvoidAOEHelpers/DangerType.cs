@@ -3,7 +3,7 @@
     public enum DangerType
     {
         None = 0,
-        Object = 1,
+        GameObject = 1,
         Spell = 2,
         Buff = 3,        
     }   

@@ -41,6 +41,7 @@ namespace WholesomeDungeonCrawler.States
 
         public void Initialize()
         {
+            // Zer0 back to manager, call draw method
             if (!Radar3D.IsLaunched) Radar3D.Pulse();
             Radar3D.OnDrawEvent += DrawEventAOE;
             MovementEvents.OnSeemStuck += SeemStuckHandler;
