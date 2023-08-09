@@ -219,7 +219,6 @@ namespace WholesomeDungeonCrawler.Bot
                     break;
                 case "COMBAT_LOG_EVENT_UNFILTERED":
                     string logType = args[1];
-
                     if (logType == "SPELL_CAST_SUCCESS"
                         || logType == "SPELL_CAST_START")
                     {       

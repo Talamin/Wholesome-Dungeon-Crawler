@@ -286,7 +286,7 @@ namespace WholesomeDungeonCrawler.Managers
             bool inSafeZone = forcedSafeZone == null || forcedSafeZone.PositionInSafeZone(myPos);
             if (currentDangerZone != null || !inSafeZone)
             {
-                Logger.Log($"Standing in danger zone!: {currentDangerZone.Name} - {currentDangerZone.Timer?.TimeLeft()}s.");
+                //Logger.Log($"Standing in danger zone!: {currentDangerZone.Name} - {currentDangerZone.Timer?.TimeLeft()}s.");
                 RepositionInfo = new RepositionInfo(_dangerZones, forcedSafeZone, currentDangerZone, inSafeZone);
             }
             else

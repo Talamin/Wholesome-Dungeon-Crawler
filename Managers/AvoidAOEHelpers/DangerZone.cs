@@ -80,8 +80,8 @@ namespace WholesomeDungeonCrawler.Managers.AvoidAOEHelpers
                         double botX = topY; // Maths works out the same 
                         double botY = (y - x) / rt2;
                         Vector3 bottomLinePosition = new Vector3(botX, botY, z);
-                        Radar3D.DrawLine(Position, topLinePosition, Color.Purple, 100);
-                        Radar3D.DrawLine(Position, bottomLinePosition, Color.Purple, 100);
+                        Radar3D.DrawLine(Position, topLinePosition, Color.White, 200);
+                        Radar3D.DrawLine(Position, bottomLinePosition, Color.White, 200);
                         break;
                     case Shape.Circle:
                     default:

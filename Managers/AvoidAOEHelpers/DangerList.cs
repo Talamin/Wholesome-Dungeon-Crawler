@@ -67,10 +67,14 @@ namespace WholesomeDungeonCrawler.Managers.ManagedEvents
             new DangerSpell(26722, 56775, Shape.Cone90, 10, _everyone, 2),            
             // Slad'ran, Poison Nova, Gundrak
             new DangerSpell(29304, 59842, Shape.Circle, 15, _everyone, 3.5),            
-            // Ingvar the Plunderer, Dark Smash, Utgarde Pinacle
+            // Ingvar the Plunderer, Dark Smash, Utgarde Pinacle, Heroic
             new DangerSpell(23954, 59709, Shape.Cone90, 30, _everyone, 3),
-             // Ingvar the Plunderer, Smash, Utgarde Pinacle
+            // Ingvar the Plunderer, Dark Smash, Utgarde Pinacle, Normal
+            new DangerSpell(23954, 42723, Shape.Cone90, 30, _everyone, 3),
+             // Ingvar the Plunderer, Smash, Utgarde Pinacle, Heroic
             new DangerSpell(23954, 59706, Shape.Cone90, 30, _everyone, 3),
+             // Ingvar the Plunderer, Smash, Utgarde Pinacle, Normal
+            new DangerSpell(23954, 42669, Shape.Cone90, 30, _everyone, 3),
             // Poison Nova (Ick  - Pit of Saron)
             new DangerSpell(36476, 70434, Shape.Circle, 20, _everyone, 5 ),
             // Explosive Barrage (Ick  - Pit of Saron)
