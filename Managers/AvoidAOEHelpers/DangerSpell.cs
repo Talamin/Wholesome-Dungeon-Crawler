@@ -31,7 +31,7 @@ namespace WholesomeDungeonCrawler.Managers
             Duration = duration;
         }
 
-        public bool PositionInDanger(Vector3 playerPosition, DangerZone zone)
+        public bool PositionInDanger(Vector3 playerPosition, DangerZone zone, int margin = 0)
         {
             if (playerPosition.DistanceTo(zone.Position) > Size)
                 return false;

@@ -27,7 +27,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         private readonly int _zoneToClearZLimit;
         private readonly Dictionary<ulong, List<Vector3>> _pathsToEnemiesToPull = new Dictionary<ulong, List<Vector3>>(); // unit -> path to unit from safespot
         private readonly Dictionary<ulong, PulledEnemy> _pulledEnemiesDic = new Dictionary<ulong, PulledEnemy>(); // used to detect standing still enemies outside safe zone
-        private List<IWoWUnit> _enemiesStandingStill = new List<IWoWUnit>();
+        private List<ICachedWoWUnit> _enemiesStandingStill = new List<ICachedWoWUnit>();
         private List<WoWUnit> _enemiesToPull = new List<WoWUnit>();
 
         public override string Name { get; }
@@ -89,7 +89,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             // Detect Standing still enemies
             if (_entityCache.EnemiesAttackingGroup.Length > 0)
             {
-                foreach (IWoWUnit unit in _entityCache.EnemiesAttackingGroup)
+                foreach (ICachedWoWUnit unit in _entityCache.EnemiesAttackingGroup)
                 {
                     if (_pulledEnemiesDic.TryGetValue(unit.Guid, out PulledEnemy enemyPulled))
                     {
@@ -130,7 +130,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             }
 
             // If an enemy is in the safe spot
-            IWoWUnit enemyClosestFromSafeSpot = _entityCache.EnemyUnitsList
+            ICachedWoWUnit enemyClosestFromSafeSpot = _entityCache.EnemyUnitsList
                 .OrderBy(e => e.PositionWT.DistanceTo(_safeSpotCenter))
                 .FirstOrDefault(e => PositionInSafeSpotFightRange(e.PositionWT));
             if (enemyClosestFromSafeSpot != null)
@@ -143,7 +143,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             // Attack standing still enemy
             if (_enemiesStandingStill.Count > 0)
             {
-                IWoWUnit standingStillToAttack = _enemiesStandingStill.First();
+                ICachedWoWUnit standingStillToAttack = _enemiesStandingStill.First();
                 Logger.Log($"{standingStillToAttack.Name} is standing still. Attacking.");
                 Fight.StartFight(standingStillToAttack.Guid);
                 return;
@@ -296,7 +296,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             }
         }
 
-        private bool IsUnitAtSafeSPot(IWoWUnit unit) => unit.PositionWT.DistanceTo(_safeSpotCenter) < 3.5f;
+        private bool IsUnitAtSafeSPot(ICachedWoWUnit unit) => unit.PositionWT.DistanceTo(_safeSpotCenter) < 3.5f;
 
         private void OnFightHandler(WoWUnit currentTarget, CancelEventArgs canceable)
         {
@@ -327,7 +327,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 Radar3D.DrawCircle(_zoneToClearPosition, _zoneToClearRadius, Color.Red, false, 50);
                 Radar3D.DrawCircle(_zoneToClearPosition, 1, Color.Red, true, 50);
 
-                foreach (IWoWUnit unit in _entityCache.EnemiesAttackingGroup)
+                foreach (ICachedWoWUnit unit in _entityCache.EnemiesAttackingGroup)
                 {
                     if (PositionInSafeSpotFightRange(unit.PositionWT))
                     {
@@ -341,7 +341,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     }
                 }
 
-                foreach (IWoWUnit unit in _enemiesStandingStill)
+                foreach (ICachedWoWUnit unit in _enemiesStandingStill)
                 {
                     Radar3D.DrawLine(_entityCache.Me.PositionWT, unit.PositionWT, Color.Yellow);
                     Radar3D.DrawCircle(unit.PositionWT, 0.7f, Color.Yellow, false, 100);
@@ -363,7 +363,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             public ulong Guid { get; private set; }
             public bool IsStandingStill => _standingStillSeconds > _maxSecsStandingStill;
 
-            public PulledEnemy(IWoWUnit unit)
+            public PulledEnemy(ICachedWoWUnit unit)
             {
                 Guid = unit.Guid;
             }

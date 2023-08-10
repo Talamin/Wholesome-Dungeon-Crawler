@@ -30,7 +30,7 @@ namespace WholesomeDungeonCrawler.Managers.AvoidAOEHelpers
             Danger = dangerObject;
         }
 
-        public DangerZone(IWoWUnit unit, DangerSpell spell, string spellName)
+        public DangerZone(ICachedWoWUnit unit, DangerSpell spell, string spellName)
         {
             Position = unit.WowUnit.Position;
             Rotation = unit.WowUnit.Rotation;
@@ -42,7 +42,7 @@ namespace WholesomeDungeonCrawler.Managers.AvoidAOEHelpers
             Type = DangerType.Spell;
         }
 
-        public DangerZone(IWoWUnit unit, DangerBuff buff, double duration)
+        public DangerZone(ICachedWoWUnit unit, DangerBuff buff, double duration)
         {
             Position = unit.WowUnit.Position;
             Rotation = unit.WowUnit.Rotation;
@@ -56,7 +56,7 @@ namespace WholesomeDungeonCrawler.Managers.AvoidAOEHelpers
 
         public bool PositionInDangerZone(Vector3 position, int margin = 0)
         {
-            return Danger.PositionInDanger(position, this);
+            return Danger.PositionInDanger(position, this, margin);
         }
         
         public void Draw()

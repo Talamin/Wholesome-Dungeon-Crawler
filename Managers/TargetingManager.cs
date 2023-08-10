@@ -20,8 +20,8 @@ namespace WholesomeDungeonCrawler.Managers
         private readonly IEntityCache _entityCache;
         private readonly long MIN_TARGET_SWAP_HP = 1000;
         private readonly long MIN_TARGET_SWAP_RATIO = 2;
-        private readonly List<IWoWUnit> _lowPrioUnits = new List<IWoWUnit>();
-        private readonly List<IWoWUnit> _highPrioUnits = new List<IWoWUnit>();
+        private readonly List<ICachedWoWUnit> _lowPrioUnits = new List<ICachedWoWUnit>();
+        private readonly List<ICachedWoWUnit> _highPrioUnits = new List<ICachedWoWUnit>();
 
         public TargetingManager(
             IEntityCache entityCache,
@@ -59,8 +59,8 @@ namespace WholesomeDungeonCrawler.Managers
 
                 ulong myTargetGuid = _entityCache.Me.TargetGuid;
                 Vector3 myPos = _entityCache.Me.PositionWT;
-                IWoWUnit myTarget = _entityCache.Target;
-                IWoWPlayer tankUnit = _entityCache.TankUnit;
+                ICachedWoWUnit myTarget = _entityCache.Target;
+                ICachedWoWPlayer tankUnit = _entityCache.TankUnit;
 
                 if (_entityCache.ListGroupMember.Any(member => member.HasDrinkBuff || member.HasFoodBuff)
                     && _entityCache.EnemiesAttackingGroup.Length <= 0)
@@ -78,7 +78,7 @@ namespace WholesomeDungeonCrawler.Managers
                         && _profileManager.CurrentDungeonProfile.CurrentStep is PullToSafeSpotStep pullStep)
                     {
                         // Tank enemies inside safe spot
-                        IWoWUnit unitToTankDuringPullStep = _entityCache.EnemiesAttackingGroup
+                        ICachedWoWUnit unitToTankDuringPullStep = _entityCache.EnemiesAttackingGroup
                             .Where(unit => unit.TargetGuid != _entityCache.Me.Guid)
                             .Where(unit => pullStep.PositionInSafeSpotFightRange(unit.PositionWT) || pullStep.EnemyIsStandingStill(unit.Guid))
                             .OrderBy(unit => unit.PositionWT.DistanceTo(pullStep.SafeSpotCenter))
@@ -111,7 +111,7 @@ namespace WholesomeDungeonCrawler.Managers
                     if (myTarget == null || myTarget.TargetGuid == _entityCache.Me.Guid)
                     {
                         // Check for escort NPCs being targeted
-                        IWoWUnit unitTargetingEscort = _entityCache.EnemyUnitsList
+                        ICachedWoWUnit unitTargetingEscort = _entityCache.EnemyUnitsList
                             .Where(unit => _entityCache.NpcsToDefend.Exists(npcToDefend => npcToDefend.Guid == unit.TargetGuid))
                             .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
                             .FirstOrDefault();
@@ -122,7 +122,7 @@ namespace WholesomeDungeonCrawler.Managers
                         }
 
                         // Check for untanked units
-                        IWoWUnit untankedUnit = _entityCache.EnemiesAttackingGroup
+                        ICachedWoWUnit untankedUnit = _entityCache.EnemiesAttackingGroup
                             .Where(unit => unit.TargetGuid != _entityCache.Me.Guid
                                 && unit.PositionWT.DistanceTo(myPos) <= 60)
                             .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
@@ -134,7 +134,7 @@ namespace WholesomeDungeonCrawler.Managers
                         }
 
                         // Everything is being tanked, switch tank target to lowest HP mob
-                        IWoWUnit weakestEnemy = _entityCache.EnemiesAttackingGroup
+                        ICachedWoWUnit weakestEnemy = _entityCache.EnemiesAttackingGroup
                             .Where(unit => unit.PositionWT.DistanceTo(myPos) <= 60)
                             .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
                             .FirstOrDefault();
@@ -151,7 +151,7 @@ namespace WholesomeDungeonCrawler.Managers
                         // No current or priority targets, get closest enemy in combat
                         if (myTarget == null)
                         {
-                            IWoWUnit closestEnemy = _entityCache.EnemiesAttackingGroup
+                            ICachedWoWUnit closestEnemy = _entityCache.EnemiesAttackingGroup
                                 .Where(unit => unit.PositionWT.DistanceTo(myPos) <= 60)
                                 .OrderBy(unit => unit.PositionWT.DistanceTo(myPos))
                                 .FirstOrDefault();
@@ -173,7 +173,7 @@ namespace WholesomeDungeonCrawler.Managers
                             && tankUnit.TargetGuid > 0
                             && myTargetGuid > 0)
                         {
-                            IWoWUnit unitTargetedByTank = _entityCache.EnemiesAttackingGroup
+                            ICachedWoWUnit unitTargetedByTank = _entityCache.EnemiesAttackingGroup
                                 .Where(unit => unit.Guid == tankUnit.TargetGuid)
                                 .FirstOrDefault();
                             if (unitTargetedByTank != null && unitTargetedByTank.Guid != myTargetGuid)
@@ -199,8 +199,8 @@ namespace WholesomeDungeonCrawler.Managers
                     // Record enmey lists by priority
                     _lowPrioUnits.Clear();
                     _highPrioUnits.Clear();
-                    List<IWoWUnit> filteredEnemies = new List<IWoWUnit>(_entityCache.EnemyUnitsList);
-                    foreach (IWoWUnit enemy in filteredEnemies)
+                    List<ICachedWoWUnit> filteredEnemies = new List<ICachedWoWUnit>(_entityCache.EnemyUnitsList);
+                    foreach (ICachedWoWUnit enemy in filteredEnemies)
                     {
                         if (Lists.SpecialPrioTargets.TryGetValue(enemy.Entry, out SpecialPrio prio))
                         {
@@ -217,7 +217,7 @@ namespace WholesomeDungeonCrawler.Managers
                         // We're targeting a low prio, cancel fight
                         if (_lowPrioUnits.Any(lpu => myTargetGuid == lpu.Guid))
                         {
-                            IWoWUnit newUnit = _entityCache.EnemiesAttackingGroup
+                            ICachedWoWUnit newUnit = _entityCache.EnemiesAttackingGroup
                                 .Where(enemy => !_lowPrioUnits.Exists(en => en.Guid == enemy.Guid))
                                 .OrderBy(enemy => enemy.HealthPercent)
                                 .FirstOrDefault();
@@ -237,7 +237,7 @@ namespace WholesomeDungeonCrawler.Managers
                     {
                         if (_highPrioUnits.Count > 0)
                         {
-                            IWoWUnit prioTarget = _highPrioUnits
+                            ICachedWoWUnit prioTarget = _highPrioUnits
                                 .OrderBy(unit => unit.HealthPercent)
                                 .FirstOrDefault();
                             if (prioTarget.Guid != myTargetGuid)
@@ -251,7 +251,7 @@ namespace WholesomeDungeonCrawler.Managers
                     // Ranged DPS - Kill fleers
                     if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.RDPS)
                     {
-                        IWoWUnit fleer = _entityCache.EnemyUnitsList
+                        ICachedWoWUnit fleer = _entityCache.EnemyUnitsList
                             .Where(unit => unit.Fleeing && unit.PositionWT.DistanceTo(myPos) <= 60)
                             .OrderBy(e => e.HealthPercent)
                             .FirstOrDefault();
@@ -267,7 +267,7 @@ namespace WholesomeDungeonCrawler.Managers
                         // Assist tank
                         if (tankUnit != null)
                         {
-                            IWoWUnit unitTargetedByTank = filteredEnemies
+                            ICachedWoWUnit unitTargetedByTank = filteredEnemies
                                 .Where(unit => unit.TargetGuid == tankUnit.Guid)
                                 .FirstOrDefault();
                             if (unitTargetedByTank != null && unitTargetedByTank.Guid != myTargetGuid)
@@ -278,7 +278,7 @@ namespace WholesomeDungeonCrawler.Managers
                         }
 
                         // Assist any Groupmember if Tank is not here
-                        IWoWUnit unitAttackingMember = filteredEnemies
+                        ICachedWoWUnit unitAttackingMember = filteredEnemies
                             .Where(unit => unit.PositionWT.DistanceTo(myPos) <= 60)
                             .OrderBy(unit => unit.HealthPercent)
                             .FirstOrDefault();
@@ -295,14 +295,14 @@ namespace WholesomeDungeonCrawler.Managers
         {
             try
             {
-                List<IWoWUnit> highPrios = new List<IWoWUnit>(_highPrioUnits);
-                foreach (IWoWUnit unit in highPrios)
+                List<ICachedWoWUnit> highPrios = new List<ICachedWoWUnit>(_highPrioUnits);
+                foreach (ICachedWoWUnit unit in highPrios)
                 {
                     if (unit != null)
                         Radar3D.DrawCircle(unit.PositionWT, 1f, Color.Yellow, true, 30);
                 }
-                List<IWoWUnit> lowPrios = new List<IWoWUnit>(_lowPrioUnits);
-                foreach (IWoWUnit unit in lowPrios)
+                List<ICachedWoWUnit> lowPrios = new List<ICachedWoWUnit>(_lowPrioUnits);
+                foreach (ICachedWoWUnit unit in lowPrios)
                 {
                     if (unit != null)
                         Radar3D.DrawCircle(unit.PositionWT, 1f, Color.Red, true, 30);

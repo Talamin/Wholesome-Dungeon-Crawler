@@ -82,7 +82,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                     return;
                 }
 
-                IWoWUnit unitToDefendAgainst = ShouldDefendAgainst();
+                ICachedWoWUnit unitToDefendAgainst = ShouldDefendAgainst();
                 if (unitToDefendAgainst != null)
                 {
                     Logger.Log($"Defending {_unitToEscort.Name} against {unitToDefendAgainst.Name}");
@@ -98,10 +98,10 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
             }
         }
 
-        public IWoWUnit ShouldDefendAgainst()
+        public ICachedWoWUnit ShouldDefendAgainst()
         {
             if (_unitToEscort == null) return null;
-            foreach (IWoWUnit unit in _entityCache.EnemyUnitsList)
+            foreach (ICachedWoWUnit unit in _entityCache.EnemyUnitsList)
             {
                 if (unit.TargetGuid > 0
                     && unit.TargetGuid == _unitToEscort.Guid

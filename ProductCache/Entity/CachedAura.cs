@@ -2,7 +2,7 @@
 
 namespace WholesomeDungeonCrawler.ProductCache.Entity
 {
-    internal sealed class CachedAura : IAura
+    internal sealed class CachedAura : ICachedAura
     {
         public int Stacks { get; }
         public int TimeLeft { get; }

@@ -5,7 +5,7 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.ProductCache.Entity
 {
-    public interface IWoWUnit
+    public interface ICachedWoWUnit
     {
         string Name { get; }
         int Entry { get; }
@@ -29,7 +29,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         bool IsPartyMember { get; }
         uint GetBaseAddress { get; }
         bool Fleeing { get; }
-        IReadOnlyDictionary<uint, IAura> Auras { get; }
+        IReadOnlyDictionary<uint, ICachedAura> Auras { get; }
         bool HasDrinkBuff { get; }
         bool HasFoodBuff { get; }
         WoWUnit WowUnit { get; }

@@ -1,6 +1,5 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
@@ -8,7 +7,7 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.ProductCache.Entity
 {
-    internal class CachedWoWUnit : IWoWUnit
+    internal class CachedWoWUnit : ICachedWoWUnit
     {
         public string Name { get; }
         public int Entry { get; }
@@ -24,9 +23,9 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public double RagePercent { get; }
         public double FocusPercent { get; }
         public bool InCombatFlagOnly { get; }
-        public  Reaction Reaction { get; }
+        public Reaction Reaction { get; }
         public UnitFlags UnitFlags { get; }
-        public IReadOnlyDictionary<uint, IAura> Auras { get; }   
+        public IReadOnlyDictionary<uint, ICachedAura> Auras { get; }
         public bool IsLootable { get; }
         public bool IsAttackingGroup { get; }
         public bool IsAttackingMe { get; }
@@ -66,7 +65,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
             GetBaseAddress = unit.GetBaseAddress;
 
-            var auras = new Dictionary<uint, IAura>();
+            var auras = new Dictionary<uint, ICachedAura>();
             foreach (var aura in BuffManager.GetAuras(unit.GetBaseAddress))
             {
                 auras[aura.SpellId] = new CachedAura(aura);

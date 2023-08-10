@@ -4,7 +4,7 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.ProductCache.Entity
 {
-    internal class CachedWoWPlayer : CachedWoWUnit, IWoWPlayer
+    internal class CachedWoWPlayer : CachedWoWUnit, ICachedWoWPlayer
     {
         public bool IsConnected { get; }
         public WoWClass WoWClass { get; }

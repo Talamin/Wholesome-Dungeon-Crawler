@@ -132,13 +132,13 @@
     <Compile Include="ProductCache\Entity\CachedWoWPlayer.cs" />
     <Compile Include="ProductCache\Entity\CachedWoWUnits.cs" />
     <Compile Include="ProductCache\Entity\EntityCache.cs" />
-    <Compile Include="ProductCache\Entity\IAura.cs" />
+    <Compile Include="ProductCache\Entity\ICachedAura.cs" />
     <Compile Include="ProductCache\ICache.cs" />
     <Compile Include="ProductCache\ICycleable.cs" />
     <Compile Include="ProductCache\Entity\IEntityCache.cs" />
-    <Compile Include="ProductCache\Entity\IWoWLocalPlayer.cs" />
-    <Compile Include="ProductCache\Entity\IWoWPlayer.cs" />
-    <Compile Include="ProductCache\Entity\IWoWUnit.cs" />
+    <Compile Include="ProductCache\Entity\ICachedWoWLocalPlayer.cs" />
+    <Compile Include="ProductCache\Entity\ICachedWoWPlayer.cs" />
+    <Compile Include="ProductCache\Entity\ICachedWoWUnit.cs" />
     <Compile Include="GUI\AdvancedSettings.xaml.cs">
       <DependentUpon>AdvancedSettings.xaml</DependentUpon>
     </Compile>

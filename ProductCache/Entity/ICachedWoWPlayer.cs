@@ -2,7 +2,7 @@
 
 namespace WholesomeDungeonCrawler.ProductCache.Entity
 {
-    public interface IWoWPlayer : IWoWUnit
+    public interface ICachedWoWPlayer : ICachedWoWUnit
     {
         public bool IsConnected { get; }
         public WoWClass WoWClass { get; }

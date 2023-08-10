@@ -24,7 +24,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
         public override FactionType StepFaction { get; }
         public override LFGRoles StepRole { get; }
         public double GetTimeLeft => _stepTimer == null || _stepTimer.IsReady ? 0 : _stepTimer.TimeLeft();
-        public IWoWUnit ShouldDefendAgainst => _entityCache.EnemyUnitsList
+        public ICachedWoWUnit ShouldDefendAgainst => _entityCache.EnemyUnitsList
                 .Where(unit => unit.PositionWT.DistanceTo(_defendSpotModel.DefendPosition) <= _defendSpotRadius
                     && !Lists.MobsToIgnoreDuringSteps.Contains(unit.Entry)
                     && unit.Reaction <= wManager.Wow.Enums.Reaction.Hostile)
@@ -83,7 +83,7 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 MovementManager.Go(pathToCenter);
             }
 
-            IWoWUnit unitToAttack = ShouldDefendAgainst;
+            ICachedWoWUnit unitToAttack = ShouldDefendAgainst;
             if (unitToAttack != null)
             {
                 Logger.Log($"Defending spot against {unitToAttack.Name}");

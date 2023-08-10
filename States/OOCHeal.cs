@@ -48,7 +48,8 @@ namespace WholesomeDungeonCrawler.States
                     || _entityCache.Me.HasFoodBuff
                     || _entityCache.Me.HasDrinkBuff
                     || _entityCache.EnemiesAttackingGroup.Length > 0
-                    || !_entityCache.ListGroupMember.Any(unit => unit.IsValid && !unit.IsDead && unit.HealthPercent < _healThreshold))
+                    || !_entityCache.ListGroupMember.Any(unit => unit.IsValid && !unit.IsDead && unit.HealthPercent < _healThreshold)
+                    || _entityCache.Me.HealthPercent >= _healThreshold)
                 {
                     return false;
                 }

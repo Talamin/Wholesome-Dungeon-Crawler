@@ -16,7 +16,7 @@ namespace WholesomeDungeonCrawler.States
         private readonly float _lootRange = 3.5f;
 
         private readonly IEntityCache _entityCache;
-        private IWoWUnit _unitToLoot;
+        private ICachedWoWUnit _unitToLoot;
         private List<ulong> _unitsLooted = new List<ulong>();
 
         public CombatTurboLoot(IEntityCache entityCache)
@@ -36,11 +36,11 @@ namespace WholesomeDungeonCrawler.States
 
                 _unitToLoot = null;
                 Vector3 myPosition = _entityCache.Me.PositionWT;
-                List<IWoWUnit> lootableCorpses = _entityCache.LootableUnits
+                List<ICachedWoWUnit> lootableCorpses = _entityCache.LootableUnits
                     .Where(corpse => corpse?.PositionWT.DistanceTo(myPosition) <= _lootRange)
                     .OrderBy(corpse => corpse?.PositionWT.DistanceTo(myPosition))
                     .ToList();
-                foreach (IWoWUnit lootableCorpse in lootableCorpses)
+                foreach (ICachedWoWUnit lootableCorpse in lootableCorpses)
                 {
                     if (!_unitsLooted.Contains(lootableCorpse.Guid))
                     {

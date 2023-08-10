@@ -25,9 +25,9 @@ namespace WholesomeDungeonCrawler.Managers
             Name = name;
         }
 
-        public bool PositionInDanger(Vector3 position, DangerZone zone)
+        public bool PositionInDanger(Vector3 position, DangerZone zone, int margin = 0)
         {
-            return position.DistanceTo(zone.Position) < Size;
+            return position.DistanceTo(zone.Position) < Size + margin;
         }
         /*
         public void Draw(DangerZone zone)

@@ -34,28 +34,28 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             IAmTank = WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Tank;
         }
 
-        public IWoWUnit Target { get; private set; } = Cache(new WoWUnit(0));
-        public IWoWUnit Pet { get; private set; } = Cache(new WoWUnit(0));
-        public IWoWUnit[] GroupPets { get; private set; } = new IWoWUnit[0];
-        public IWoWLocalPlayer Me { get; private set; } = Cache(new WoWLocalPlayer(0));
-        public IWoWUnit[] EnemyUnitsList { get; private set; } = new IWoWUnit[0];
-        public IWoWPlayer[] ListGroupMember { get; private set; } = new IWoWPlayer[0];
+        public ICachedWoWUnit Target { get; private set; } = Cache(new WoWUnit(0));
+        public ICachedWoWUnit Pet { get; private set; } = Cache(new WoWUnit(0));
+        public ICachedWoWUnit[] GroupPets { get; private set; } = new ICachedWoWUnit[0];
+        public ICachedWoWLocalPlayer Me { get; private set; } = Cache(new WoWLocalPlayer(0));
+        public ICachedWoWUnit[] EnemyUnitsList { get; private set; } = new ICachedWoWUnit[0];
+        public ICachedWoWPlayer[] ListGroupMember { get; private set; } = new ICachedWoWPlayer[0];
         public List<string> ListPartyMemberNames { get; private set; } = new List<string>();
-        public IWoWUnit[] EnemiesAttackingGroup { get; private set; } = new IWoWUnit[0];
-        public IWoWPlayer TankUnit { get; private set; }
+        public ICachedWoWUnit[] EnemiesAttackingGroup { get; private set; } = new ICachedWoWUnit[0];
+        public ICachedWoWPlayer TankUnit { get; private set; }
         private List<ulong> _listPartyMemberGuid { get; set; } = new List<ulong>();
         private ulong _tankGuid { get; set; }
         public bool IAmTank { get; private set; }
 
         private List<int> _npcToDefendEntries = new List<int>();
-        public List<IWoWUnit> NpcsToDefend { get; private set; } = new List<IWoWUnit>();
-        public List<IWoWUnit> LootableUnits { get; private set; } = new List<IWoWUnit>();
+        public List<ICachedWoWUnit> NpcsToDefend { get; private set; } = new List<ICachedWoWUnit>();
+        public List<ICachedWoWUnit> LootableUnits { get; private set; } = new List<ICachedWoWUnit>();
         public void AddNpcIdToDefend(int npcId) => _npcToDefendEntries.Add(npcId);
         public void ClearNpcListIdToDefend() => _npcToDefendEntries.Clear();
 
-        private static IWoWLocalPlayer Cache(WoWLocalPlayer player) => new CachedWoWLocalPlayer(player);
-        private static IWoWUnit Cache(WoWUnit unit) => new CachedWoWUnit(unit);
-        private static IWoWPlayer Cache(WoWPlayer player) => new CachedWoWPlayer(player);
+        private static ICachedWoWLocalPlayer Cache(WoWLocalPlayer player) => new CachedWoWLocalPlayer(player);
+        private static ICachedWoWUnit Cache(WoWUnit unit) => new CachedWoWUnit(unit);
+        private static ICachedWoWPlayer Cache(WoWPlayer player) => new CachedWoWPlayer(player);
 
         private void OnObjectManagerPulse()
         {
@@ -63,8 +63,8 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             {
                 Stopwatch watchTotal = Stopwatch.StartNew();
                 Stopwatch watchInit = Stopwatch.StartNew();
-                IWoWLocalPlayer cachedMe;
-                IWoWUnit cachedTarget, cachedPet;
+                ICachedWoWLocalPlayer cachedMe;
+                ICachedWoWUnit cachedTarget, cachedPet;
                 List<WoWUnit> units;
                 List<WoWPlayer> playerUnits;
 
@@ -87,19 +87,19 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 long initTime = watchInit.ElapsedMilliseconds;
                 Stopwatch playersWatch = Stopwatch.StartNew();
 
-                var enemyAttackingGroup = new List<IWoWUnit>();
-                var enemyUnits = new List<IWoWUnit>();
-                var listGroupMember = new List<IWoWPlayer>();
-                var groupPets = new List<IWoWUnit>();
+                var enemyAttackingGroup = new List<ICachedWoWUnit>();
+                var enemyUnits = new List<ICachedWoWUnit>();
+                var listGroupMember = new List<ICachedWoWPlayer>();
+                var groupPets = new List<ICachedWoWUnit>();
 
                 var targetGuid = cachedTarget.Guid;
                 var playerPosition = cachedMe.PositionWT;
 
-                IWoWPlayer tankUnit = null;
+                ICachedWoWPlayer tankUnit = null;
 
                 foreach (WoWPlayer play in playerUnits)
                 {
-                    IWoWPlayer cachedplayer = Cache(play);
+                    ICachedWoWPlayer cachedplayer = Cache(play);
                     if (_listPartyMemberGuid.Contains(cachedplayer.Guid))
                     {
                         listGroupMember.Add(cachedplayer);
@@ -133,7 +133,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                     }
 
                     ulong unitGuid = unit.Guid;
-                    IWoWUnit cachedUnit = unitGuid == targetGuid ? cachedTarget : Cache(unit);
+                    ICachedWoWUnit cachedUnit = unitGuid == targetGuid ? cachedTarget : Cache(unit);
                     bool? cachedReachable = unitGuid == targetGuid ? true : (bool?)null;
                     Vector3 unitPosition = unit.PositionWithoutType;
 

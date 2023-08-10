@@ -8,7 +8,7 @@ namespace WholesomeDungeonCrawler.Helpers
 {
     class TargetingHelper
     {
-        public static void SwitchTargetAndFight(IWoWUnit unit, CancelEventArgs canceable, string reason)
+        public static void SwitchTargetAndFight(ICachedWoWUnit unit, CancelEventArgs canceable, string reason)
         {
             try
             {

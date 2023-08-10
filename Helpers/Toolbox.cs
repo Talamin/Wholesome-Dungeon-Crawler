@@ -70,12 +70,12 @@ namespace WholesomeDungeonCrawler.Helpers
             MovementManager.StopMoveToNewThread();
         }
 
-        public static Vector3 PointInMidOfGroup(IWoWPlayer[] group)
+        public static Vector3 PointInMidOfGroup(ICachedWoWPlayer[] group)
         {
             float xvec = 0, yvec = 0, zvec = 0;
             int counter = 0;
 
-            foreach (IWoWUnit player in group)
+            foreach (ICachedWoWUnit player in group)
             {
                 xvec = xvec + player.PositionWT.X;
                 yvec = yvec + player.PositionWT.Y;

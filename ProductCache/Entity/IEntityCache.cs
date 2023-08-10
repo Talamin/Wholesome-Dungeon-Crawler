@@ -4,17 +4,17 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 {
     public interface IEntityCache : ICycleable
     {
-        IWoWUnit Target { get; }
-        IWoWUnit Pet { get; }
-        IWoWLocalPlayer Me { get; }
-        IWoWPlayer TankUnit { get; }
-        IWoWUnit[] EnemiesAttackingGroup { get; }
-        IWoWUnit[] EnemyUnitsList { get; }
-        IWoWPlayer[] ListGroupMember { get; }
+        ICachedWoWUnit Target { get; }
+        ICachedWoWUnit Pet { get; }
+        ICachedWoWLocalPlayer Me { get; }
+        ICachedWoWPlayer TankUnit { get; }
+        ICachedWoWUnit[] EnemiesAttackingGroup { get; }
+        ICachedWoWUnit[] EnemyUnitsList { get; }
+        ICachedWoWPlayer[] ListGroupMember { get; }
         List<string> ListPartyMemberNames { get; }
-        List<IWoWUnit> NpcsToDefend { get; }
-        List<IWoWUnit> LootableUnits { get; }
-        IWoWUnit[] GroupPets { get; }
+        List<ICachedWoWUnit> NpcsToDefend { get; }
+        List<ICachedWoWUnit> LootableUnits { get; }
+        ICachedWoWUnit[] GroupPets { get; }
         bool IAmTank { get; }
 
         void AddNpcIdToDefend(int npcId);

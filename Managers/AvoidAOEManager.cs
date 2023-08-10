@@ -70,6 +70,7 @@ namespace WholesomeDungeonCrawler.Managers
             FightEvents.OnFightLoop += FightEventHandler;
             MovementEvents.OnMovementPulse += MovementEventsOnMovementPulse;
             MovementEvents.OnMoveToPulse += MovementsEventsOnMoveToPulse;
+            MovementEvents.OnMovementLoop += OnMovementLoop;
             if (!Radar3D.IsLaunched) Radar3D.Pulse();
             Radar3D.OnDrawEvent += DrawEventAOE;
         }
@@ -81,6 +82,7 @@ namespace WholesomeDungeonCrawler.Managers
             FightEvents.OnFightLoop -= FightEventHandler;
             MovementEvents.OnMovementPulse -= MovementEventsOnMovementPulse;
             MovementEvents.OnMoveToPulse -= MovementsEventsOnMoveToPulse;
+            MovementEvents.OnMovementLoop -= OnMovementLoop;
             Radar3D.OnDrawEvent -= DrawEventAOE;
             Radar3D.Stop();
         }
@@ -92,7 +94,7 @@ namespace WholesomeDungeonCrawler.Managers
             {
                 ulong unitGuid = (ulong)Convert.ToInt64(args[2], 16);
                 DangerSpell enemySpell = _enemiesSpellsById[spellId];
-                IWoWUnit enemy = _entityCache.EnemyUnitsList.FirstOrDefault(e => e.Guid == unitGuid);
+                ICachedWoWUnit enemy = _entityCache.EnemyUnitsList.FirstOrDefault(e => e.Guid == unitGuid);
                 if (enemy != null)
                 {
                     AddSpellDangerZone(enemy, enemySpell, args[9]);
@@ -114,7 +116,7 @@ namespace WholesomeDungeonCrawler.Managers
             _dangerZones.Add(new DangerZone(dangerObject));
         }
 
-        private void AddSpellDangerZone(IWoWUnit unit, DangerSpell spell, string spellName)
+        private void AddSpellDangerZone(ICachedWoWUnit unit, DangerSpell spell, string spellName)
         {
             if (_dangerZones.Any(dangerZone => dangerZone.Guid == unit.Guid && dangerZone.Danger.Equals(spell)))
             {
@@ -123,7 +125,7 @@ namespace WholesomeDungeonCrawler.Managers
             _dangerZones.Add(new DangerZone(unit, spell, spellName));
         }
 
-        private void AddBuffDangerZone(IWoWUnit unit, DangerBuff buff, float duration)
+        private void AddBuffDangerZone(ICachedWoWUnit unit, DangerBuff buff, float duration)
         {
             if (_dangerZones.Any(dangerZone => dangerZone.Guid == unit.Guid && dangerZone.Danger.Equals(buff)))
             {
@@ -185,7 +187,7 @@ namespace WholesomeDungeonCrawler.Managers
                 RemoveAllSpellDangerZones(dzToRemoveGuid);
             }
 
-            foreach (IWoWUnit unit in _entityCache.EnemyUnitsList)
+            foreach (ICachedWoWUnit unit in _entityCache.EnemyUnitsList)
             {
                 if (_relevantBuffEnemyIds.Contains(unit.Entry))
                 {
@@ -240,7 +242,7 @@ namespace WholesomeDungeonCrawler.Managers
 
             // Is current fight a Forced Safe Zone fight?
             ForcedSafeZone forcedSafeZone = null;
-            foreach (IWoWUnit enemy in _entityCache.EnemiesAttackingGroup)
+            foreach (ICachedWoWUnit enemy in _entityCache.EnemiesAttackingGroup)
             {
                 if (_forcedSafeZonesDic.ContainsKey(enemy.Entry))
                 {
@@ -262,46 +264,50 @@ namespace WholesomeDungeonCrawler.Managers
             }
         }
 
+        private void OnMovementLoop()
+        {
+            CheckPathForDangerZones(MovementManager.CurrentPath, null);
+        }
+
         private void MovementEventsOnMovementPulse(List<Vector3> path, CancelEventArgs cancelable)
         {
-            if (path == null || path.Count <= 0) return;
-
-            // Don't cancel during pull
-            if (Fight.InFight
-                && _entityCache.Target != null
-                && !_entityCache.Target.WowUnit.InCombat) return;
-
-            for (int i = 0; i < path.Count - 1; i++)
-            {
-                DangerZone dangerZoneOnTheWay = _dangerZones
-                    .FirstOrDefault(dz =>
-                        dz.Position.DistanceTo(_entityCache.Me.PositionWT) < dz.Radius + 5
-                        && WTPathFinder.PointDistanceToLine(path[i], path[i + 1], dz.Position) < dz.Radius);
-                if (dangerZoneOnTheWay != null && !IAmInDangerZone)
-                {
-                    Logger.LogOnce($"Can't move, {dangerZoneOnTheWay.Name} is on the path. Waiting despawn.");
-                    cancelable.Cancel = true;
-                    return;
-                }
-            }
+            CheckPathForDangerZones(path, cancelable);
         }
 
         private void MovementsEventsOnMoveToPulse(Vector3 node, CancelEventArgs cancelable)
         {
-            // Don't cancel during pull
-            if (Fight.InFight
-                && _entityCache.Target != null
-                && !_entityCache.Target.WowUnit.InCombat) return;
+            CheckPathForDangerZones(MovementManager.CurrentPath, cancelable);
+        }
 
-            // Cancel moves into danger zones
-            DangerZone dangerZoneOnTheWay = _dangerZones.FirstOrDefault(dz =>
-                dz.Position.DistanceTo(_entityCache.Me.PositionWT) < dz.Radius + 5
-                && WTPathFinder.PointDistanceToLine(_entityCache.Me.PositionWT, node, dz.Position) < dz.Radius);
-            if (dangerZoneOnTheWay != null && !IAmInDangerZone)
+        private void CheckPathForDangerZones(List<Vector3> currentPath, CancelEventArgs cancelable)
+        {
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            List<DangerZone> dangerZones = new List<DangerZone>(_dangerZones);
+            if (dangerZones.Count > 0)
             {
-                Logger.LogOnce($"Can't move, {dangerZoneOnTheWay.Name} is on the path to node. Waiting despawn.");
-                cancelable.Cancel = true;
-                return;
+                List<Vector3> path = new List<Vector3>(currentPath);
+                if (path == null || path.Count <= 0 || IAmInDangerZone) return;
+                Vector3 myPos = _entityCache.Me.PositionWT;
+
+                // Don't cancel during pull
+                if (Fight.InFight
+                    && _entityCache.Target != null
+                    && !_entityCache.Target.WowUnit.InCombat) return;
+
+                for (int i = 0; i < path.Count - 1; i++)
+                {
+                    DangerZone dangerZoneOnTheWay = dangerZones
+                        .FirstOrDefault(dz =>
+                            dz.Position.DistanceTo(myPos) < dz.Radius + 5
+                            && WTPathFinder.PointDistanceToLine(path[i], path[i + 1], dz.Position) < dz.Radius);
+                    if (dangerZoneOnTheWay != null)
+                    {
+                        Logger.LogOnce($"Stopping move, {dangerZoneOnTheWay.Name} is on the path. Waiting despawn.");
+                        if (cancelable != null) cancelable.Cancel = true;
+                        MovementManager.StopMove();
+                        return;
+                    }
+                }
             }
         }
 

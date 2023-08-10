@@ -19,7 +19,7 @@ namespace WholesomeDungeonCrawler.Managers.ManagedEvents
             new KnownAOE(17742, 8f, _everyone),
             // TBC
             // Creeping Sludge (Foulspore Caverns)
-            new KnownAOE(12222, 8f, _everyone),
+            new KnownAOE(12222, 10f, _everyone),
             // Noxious Slime gas (Foulspore Caverns)
             new KnownAOE(21070, 8f, _everyone),
             // Proximity Mine (The Blood Furnace)

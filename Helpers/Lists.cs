@@ -131,6 +131,7 @@ namespace WholesomeDungeonCrawler.Helpers
             { 11582, new SpecialPrio(0, TargetPriority.High, true) }, // Dark Summoner (Scholomance)
             { 4292, new SpecialPrio(0, TargetPriority.High, true) }, // Scarlet Protector (Armory)
             { 4303, new SpecialPrio(0, TargetPriority.High, true) }, // Scarlet Abott (Cathedral)
+            { 14324, new SpecialPrio(11501, TargetPriority.High) }, // Cho'Rush the Observer (DM North)
             // BC
             { 18176, new SpecialPrio(17941, TargetPriority.High) }, // Tainted Earthgrab Totem (Mennu, Slave Pens)
             { 20208, new SpecialPrio(17941, TargetPriority.High) }, // Mennu's Healing Ward (Mennu, Slave Pens)
@@ -141,7 +142,11 @@ namespace WholesomeDungeonCrawler.Helpers
             { 17954, new SpecialPrio(17798, TargetPriority.High) }, // Naga Distiller (Warlord Kalithresh, Steamvault)
             { 24722, new SpecialPrio(24723, TargetPriority.High) }, // Fell Crystal (Selin FIreheart, Magister's Terrace)
             { 24675, new SpecialPrio(24664, TargetPriority.High) }, // Phoenix egg (Kael'thas Sunstrider, Magister's Terrace)
-            { 24674, new SpecialPrio(24664, TargetPriority.High) }, // Phoenix (Kael'thas Sunstrider, Magister's Terrace)            
+            { 24674, new SpecialPrio(24664, TargetPriority.High) }, // Phoenix (Kael'thas Sunstrider, Magister's Terrace)  
+            { 17540, new SpecialPrio(0, TargetPriority.High, true) }, // Fiendish Hound (Hellfire Ramparts)
+            { 17537, new SpecialPrio(0, TargetPriority.High, true) }, // Vazruden (Hellfire Ramparts)
+            { 17309, new SpecialPrio(0, TargetPriority.High, true) }, // Hellfire Watcher (Hellfire Ramparts)
+
             // Wotlk
             { 5650, new SpecialPrio(0, TargetPriority.High, true) }, // Sandfury Witch Doctor (Zul'Farak)
             { 26918, new SpecialPrio(26763, TargetPriority.High) }, // Chaotic Rift (Anomalus, Nexus)
@@ -150,14 +155,10 @@ namespace WholesomeDungeonCrawler.Helpers
             { 28619, new SpecialPrio(0, TargetPriority.High) }, // Web Wrap (Krik'thir, Azjol Nerub)
             { 28734, new SpecialPrio(28684, TargetPriority.High) }, // Anubar Skirmisher (Krik'thir, Azjol Nerub)
             { 23965, new SpecialPrio(23953, TargetPriority.High) }, // Frost Tomb (Prince Kelesth, Utgard Keep)
-            { 36535, new SpecialPrio(36497, TargetPriority.High) }, // Corrupt Soul (Bronjahm , Forge of Souls)
-            
+            { 36535, new SpecialPrio(36497, TargetPriority.High) }, // Corrupt Soul (Bronjahm , Forge of Souls)            
 
-            { 14324, new SpecialPrio(11501, TargetPriority.High) }, // Cho'Rush the Observer (DM North)
-            { 17540, new SpecialPrio(0, TargetPriority.High, true) }, // Fiendish Hound (Hellfire Ramparts)
-            { 17537, new SpecialPrio(0, TargetPriority.High, true) }, // Vazruden (Hellfire Ramparts)
-            { 17309, new SpecialPrio(0, TargetPriority.High, true) }, // Hellfire Watcher (Hellfire Ramparts)
             // Low
+            { 17990, new SpecialPrio(0, TargetPriority.Low, true) }, // Underbog Mushroom (Underbog)
             { 8996, new SpecialPrio(0, TargetPriority.Low, true) }, // Voidwalker minion (Ragefire Chasm)
             { 2520, new SpecialPrio(0, TargetPriority.Low, true) }, // Remote-Controlled Golem (Deadmines)
             { 8317, new SpecialPrio(0, TargetPriority.Low, true) }, // Atal'ai Deathwalker's Spirit (Temple)

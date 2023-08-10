@@ -31,7 +31,7 @@ namespace WholesomeDungeonCrawler.States
                     return false;
                 }
 
-                foreach (IWoWPlayer player in _entityCache.ListGroupMember)
+                foreach (ICachedWoWPlayer player in _entityCache.ListGroupMember)
                 {
                     if (!player.IsConnected)
                     {

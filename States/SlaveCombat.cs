@@ -17,6 +17,7 @@ namespace WholesomeDungeonCrawler.States
         private readonly ICache _cache;
         private readonly IEntityCache _entityCache;
         private readonly IProfileManager _profileManager;
+        private ICachedWoWUnit _foundtarget;
 
         public SlaveCombat(
             ICache iCache, 
@@ -27,8 +28,6 @@ namespace WholesomeDungeonCrawler.States
             _entityCache = EntityCache;
             _profileManager = profileManager;
         }
-
-        private IWoWUnit Target;
 
         public override bool NeedToRun
         {
@@ -56,31 +55,31 @@ namespace WholesomeDungeonCrawler.States
                         return false;
                 }
 
-                Target = null;
+                _foundtarget = null;
 
                 // Defend tank
                 if (_entityCache.TankUnit != null)
                 {
-                    IWoWUnit attackingTank = _entityCache.EnemiesAttackingGroup
+                    ICachedWoWUnit attackingTank = _entityCache.EnemiesAttackingGroup
                         .Where(unit => unit.TargetGuid == _entityCache.TankUnit.Guid)
                         .OrderBy(unit => unit.PositionWT.DistanceTo(_entityCache.TankUnit.PositionWT))
                         .FirstOrDefault();
                     if (attackingTank != null)
                     {
-                        Target = attackingTank;
-                        Logger.Log($"SlaveCombat: Target attacking tank {Target.Name}, start defending");
+                        _foundtarget = attackingTank;
+                        Logger.Log($"SlaveCombat: Target attacking tank {_foundtarget.Name}, start defending");
                         return true;
                     }
                 }
 
                 // Defend players when the tank is dead, out of OM, or has no target
-                IWoWUnit attackingGroup = _entityCache.EnemiesAttackingGroup
+                ICachedWoWUnit attackingGroup = _entityCache.EnemiesAttackingGroup
                     .OrderBy(unit => unit.PositionWT.DistanceTo(_entityCache.Me.PositionWT))
                     .FirstOrDefault();
                 if (attackingGroup != null)
                 {
-                    Target = attackingGroup;
-                    Logger.Log($"SlaveCombat: Target attacking player {Target.Name}, start defending");
+                    _foundtarget = attackingGroup;
+                    Logger.Log($"SlaveCombat: Target attacking player {_foundtarget.Name}, start defending");
                     return true;
                 }
 
@@ -91,9 +90,9 @@ namespace WholesomeDungeonCrawler.States
         public override void Run()
         {
             MovementManager.StopMove();
-            Fight.StopFight();
-            ObjectManager.Me.Target = Target.Guid;
-            Fight.StartFight(Target.Guid, false);
+            //Fight.StopFight();
+            //ObjectManager.Me.Target = _foundtarget.Guid;
+            Fight.StartFight(_foundtarget.Guid, false);
         }
     }
 }

@@ -76,7 +76,7 @@ namespace WholesomeDungeonCrawler.States
         {
             Vector3 myPos = _entityCache.Me.PositionWT;
             _bannedSafeZones.RemoveAll(bsz => bsz.ShouldBeRemoved);
-            List<Vector3> currentPath = MovementManager.CurrentPath;
+            List<Vector3> currentPath = new List<Vector3>(MovementManager.CurrentPath);
 
             // We are repositioning
             if (_escapePath != null)
@@ -86,6 +86,7 @@ namespace WholesomeDungeonCrawler.States
                     MovementManager.Go(_escapePath);
                     return;
                 }
+
                 // We are not on the right path, cancel
                 if (currentPath.Last() != _escapePath.Last())
                 {
@@ -96,7 +97,7 @@ namespace WholesomeDungeonCrawler.States
                 }
                 else
                 {
-                    if (myPos.DistanceTo(currentPath.Last()) < 2f)
+                    if (myPos.DistanceTo(currentPath.Last()) < 3f)
                     {
                         Logger.Log($"Safe spot reached.");
                         MovementManager.StopMove();
@@ -124,13 +125,14 @@ namespace WholesomeDungeonCrawler.States
             int nbSpotsTooCloseToEnemy = 0;
             int nbSpotsOutsideFSZ = 0;
             int range = 50;
+            List<DangerZone> dangerZones = new List<DangerZone>(_repositionInfo.DangerZones);
 
             for (int y = -range; y <= range; y += 5)
             {
                 for (int x = -range; x <= range; x += 5)
                 {
                     Vector3 gridPosition = referenceGridPosition + new Vector3(x, y, 0);
-                    if (_repositionInfo.DangerZones.Any(dangerZone => dangerZone.PositionInDangerZone(gridPosition, 4)))
+                    if (dangerZones.Any(dangerZone => dangerZone.PositionInDangerZone(gridPosition, 5)))
                     {
                         nbSpotsInDangerZone++;
                         continue;
@@ -168,7 +170,7 @@ namespace WholesomeDungeonCrawler.States
             }
 
             // Prefer a position nearby myself
-            IWoWPlayer tank = _entityCache.TankUnit;
+            ICachedWoWPlayer tank = _entityCache.TankUnit;
             List<Vector3> closestSpotsFromPreferred = safeSpots
                 .OrderBy(spot => myPos.DistanceTo(spot))
                 .ToList();

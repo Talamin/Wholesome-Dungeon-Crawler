@@ -3,7 +3,7 @@ using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.ProductCache.Entity
 {
-    internal sealed class CachedWoWLocalPlayer : CachedWoWPlayer, IWoWLocalPlayer
+    internal sealed class CachedWoWLocalPlayer : CachedWoWPlayer, ICachedWoWLocalPlayer
     {
         public Vector3 PositionCorpse { get; }
         public bool Swimming { get; }

@@ -26,7 +26,7 @@ namespace WholesomeDungeonCrawler.States
         private readonly IPartyChatManager _partyChatManager;
         private readonly ICache _cache;
         private readonly IProfileManager _profileManager;
-        private (IWoWUnit unit, float pathDistance) _unitOnPath = (null, 0);
+        private (ICachedWoWUnit unit, float pathDistance) _unitOnPath = (null, 0);
         private List<Vector3> _pointsAlongPathSegments = new List<Vector3>();
         private (Vector3 a, Vector3 b) _dangerTraceline = (null, null);
         private List<TraceLineResult> _losCache = new List<TraceLineResult>();
@@ -129,7 +129,7 @@ namespace WholesomeDungeonCrawler.States
                     if (_entityCache.IAmTank && _unitOnPath.unit != null)
                     {
                         _linesAllPathsInfront = MoveHelper.GetFrontLinesOnPath(_profileManager.CurrentDungeonProfile.AllMoveAlongNodes, int.MaxValue);
-                        foreach (IWoWPlayer player in _entityCache.ListGroupMember)
+                        foreach (ICachedWoWPlayer player in _entityCache.ListGroupMember)
                         {
                             if (MoveHelper.PositionIsAlongPath(player.PositionWT, _linesAllPathsInfront)
                                 && myPos.DistanceTo(player.PositionWT) >= 10)
@@ -209,7 +209,7 @@ namespace WholesomeDungeonCrawler.States
             }
         }
 
-        private (IWoWUnit unit, float pathDistance) EnemyAlongTheLine(List<Vector3> path, IWoWUnit[] hostileUnits)
+        private (ICachedWoWUnit unit, float pathDistance) EnemyAlongTheLine(List<Vector3> path, ICachedWoWUnit[] hostileUnits)
         {
             _pointsAlongPathSegments = Toolbox.GetPointsAlongPath(path, 3f, float.MaxValue);
             List<ulong> unreachableMobsGuid = new List<ulong>();
@@ -222,7 +222,7 @@ namespace WholesomeDungeonCrawler.States
                 float segmentLength = segmentStart.DistanceTo(segmentEnd);
                 
                 // check if units have LoS/path from point
-                foreach (IWoWUnit unit in hostileUnits)
+                foreach (ICachedWoWUnit unit in hostileUnits)
                 {
                     if ((unit.Reaction >= Reaction.Neutral && !Lists.NeutralsToAttackDuringPathCheck.Contains(unit.Entry))
                         || Lists.MobsToIgnoreDuringSteps.Contains(unit.Entry)
@@ -292,9 +292,9 @@ namespace WholesomeDungeonCrawler.States
             public List<Vector3> Path;
             public float PathLength;
             public float Distance;
-            public IWoWUnit Unit;
+            public ICachedWoWUnit Unit;
 
-            public TraceLineResult(Vector3 start, Vector3 end, IWoWUnit unit)
+            public TraceLineResult(Vector3 start, Vector3 end, ICachedWoWUnit unit)
             {
                 Unit = unit;
                 Start = start;
