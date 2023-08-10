@@ -30,12 +30,12 @@ namespace WholesomeDungeonCrawler.Managers.AvoidAOEHelpers
             Danger = dangerObject;
         }
 
-        public DangerZone(IWoWUnit unit, DangerSpell spell)
+        public DangerZone(IWoWUnit unit, DangerSpell spell, string spellName)
         {
             Position = unit.WowUnit.Position;
             Rotation = unit.WowUnit.Rotation;
             Guid = unit.Guid;
-            Name = string.IsNullOrEmpty(unit.Name) ? "Unknown object" : unit.Name;
+            Name = string.IsNullOrEmpty(spellName) ? "Unknown spell" : spellName;
             ObjectType = WoWObjectType.Unit;
             Danger = spell;
             Timer = new Timer(spell.Duration * 1000);
@@ -47,7 +47,7 @@ namespace WholesomeDungeonCrawler.Managers.AvoidAOEHelpers
             Position = unit.WowUnit.Position;
             Rotation = unit.WowUnit.Rotation;
             Guid = unit.Guid;
-            Name = string.IsNullOrEmpty(unit.Name) ? "Unknown object" : unit.Name;
+            Name = string.IsNullOrEmpty(buff.Name) ? "Unknown buff" : buff.Name;
             ObjectType = WoWObjectType.Unit;
             Danger = buff;
             Timer = new Timer(duration);

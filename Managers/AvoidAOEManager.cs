@@ -42,53 +42,20 @@ namespace WholesomeDungeonCrawler.Managers
 
             // TODO: playerDebuffs
 
-            // We load the buffs in a Lookup to speed up lookup, multiple keys can be identical
             _enemiesBuffsByUnit = (Lookup<int, DangerBuff>)DangerList.GetEnemyBuffs
                 .Where(eb => eb.AffectedRoles.Contains(_myRole))
                 .ToLookup(eb => eb.UnitId, eb => eb);
 
-            // We load the AOEs in a dictionary to speed up lookup
-            foreach (KnownAOE knownAOE in DangerList.GetKnownAOEs)
-            {
-                if (!knownAOE.AffectedRoles.Contains(_myRole)) continue;
+            _knowAOEsDic = DangerList.GetKnownAOEs
+                .Where(kaoe => kaoe.AffectedRoles.Contains(_myRole))
+                .ToDictionary(kaoe => kaoe.Id, kaoe => kaoe);
 
-                if (!_knowAOEsDic.ContainsKey(knownAOE.Id))
-                {
-                    _knowAOEsDic.Add(knownAOE.Id, knownAOE);
-                }
-                else
-                {
-                    Logger.LogError($"Multiple entries for AOE : {knownAOE.Id}");
-                }
-            }
+            _enemiesSpellsById = DangerList.GetEnemySpells
+                .Where(es => es.AffectedRoles.Contains(_myRole))
+                .ToDictionary(es => es.SpellId, es => es);
 
-            // We load the Spells in a dictionary to speed up lookup
-            foreach (DangerSpell dangerSpell in DangerList.GetEnemySpells)
-            {
-                if (!dangerSpell.AffectedRoles.Contains(_myRole)) continue;
-
-                if (!_enemiesSpellsById.ContainsKey(dangerSpell.SpellId))
-                {
-                    _enemiesSpellsById.Add(dangerSpell.SpellId, dangerSpell);
-                }
-                else
-                {
-                    Logger.LogError($"Multiple entries for Spell : {dangerSpell.SpellId}");
-                }
-            }
-
-            // We load the Forced Safe Zones in a dictionary to speed up lookup
-            foreach (ForcedSafeZone forcedSafeZone in DangerList.GetForcedSafeZones)
-            {
-                if (!_forcedSafeZonesDic.ContainsKey(forcedSafeZone.BossId))
-                {
-                    _forcedSafeZonesDic.Add(forcedSafeZone.BossId, forcedSafeZone);
-                }
-                else
-                {
-                    Logger.LogError($"Multiple entries for Forced Safe Zone : {forcedSafeZone.BossId}");
-                }
-            }
+            _forcedSafeZonesDic = DangerList.GetForcedSafeZones
+                .ToDictionary(es => es.BossId, es => es);
 
             foreach (DangerBuff eb in DangerList.GetEnemyBuffs)
             {
@@ -128,7 +95,7 @@ namespace WholesomeDungeonCrawler.Managers
                 IWoWUnit enemy = _entityCache.EnemyUnitsList.FirstOrDefault(e => e.Guid == unitGuid);
                 if (enemy != null)
                 {
-                    AddSpellDangerZone(enemy, enemySpell);
+                    AddSpellDangerZone(enemy, enemySpell, args[9]);
                     CalculateReposition();
                     return true;
                 }
@@ -147,13 +114,13 @@ namespace WholesomeDungeonCrawler.Managers
             _dangerZones.Add(new DangerZone(dangerObject));
         }
 
-        private void AddSpellDangerZone(IWoWUnit unit, DangerSpell spell)
+        private void AddSpellDangerZone(IWoWUnit unit, DangerSpell spell, string spellName)
         {
             if (_dangerZones.Any(dangerZone => dangerZone.Guid == unit.Guid && dangerZone.Danger.Equals(spell)))
             {
                 return;
             }
-            _dangerZones.Add(new DangerZone(unit, spell));
+            _dangerZones.Add(new DangerZone(unit, spell, spellName));
         }
 
         private void AddBuffDangerZone(IWoWUnit unit, DangerBuff buff, float duration)
