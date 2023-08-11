@@ -431,8 +431,9 @@ namespace WholesomeDungeonCrawler.GUI
                 if (CurrentDeathrunCollection != null
                     && CurrentDeathrunCollection.Count > 0)
                 {
+                    List<Vector3> deathrunColl = new List<Vector3>(CurrentDeathrunCollection);
                     Vector3 deadpreviousVector = new Vector3();
-                    foreach (Vector3 node in CurrentDeathrunCollection)
+                    foreach (Vector3 node in deathrunColl)
                     {
                         if (deadpreviousVector == new Vector3())
                         {

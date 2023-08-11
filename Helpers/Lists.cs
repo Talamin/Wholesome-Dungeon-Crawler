@@ -132,6 +132,7 @@ namespace WholesomeDungeonCrawler.Helpers
             { 4292, new SpecialPrio(0, TargetPriority.High, true) }, // Scarlet Protector (Armory)
             { 4303, new SpecialPrio(0, TargetPriority.High, true) }, // Scarlet Abott (Cathedral)
             { 14324, new SpecialPrio(11501, TargetPriority.High) }, // Cho'Rush the Observer (DM North)
+            { 5650, new SpecialPrio(0, TargetPriority.High, true) }, // Sandfury Witch Doctor (Zul'Farak)
             // BC
             { 18176, new SpecialPrio(17941, TargetPriority.High) }, // Tainted Earthgrab Totem (Mennu, Slave Pens)
             { 20208, new SpecialPrio(17941, TargetPriority.High) }, // Mennu's Healing Ward (Mennu, Slave Pens)
@@ -146,9 +147,10 @@ namespace WholesomeDungeonCrawler.Helpers
             { 17540, new SpecialPrio(0, TargetPriority.High, true) }, // Fiendish Hound (Hellfire Ramparts)
             { 17537, new SpecialPrio(0, TargetPriority.High, true) }, // Vazruden (Hellfire Ramparts)
             { 17309, new SpecialPrio(0, TargetPriority.High, true) }, // Hellfire Watcher (Hellfire Ramparts)
+            { 17826, new SpecialPrio(0, TargetPriority.High, true) }, // Swamplord Musel'ek (Underbog)
+            { 18317, new SpecialPrio(0, TargetPriority.High, true) }, // Ethereal Priest (Mana Tombs)
 
             // Wotlk
-            { 5650, new SpecialPrio(0, TargetPriority.High, true) }, // Sandfury Witch Doctor (Zul'Farak)
             { 26918, new SpecialPrio(26763, TargetPriority.High) }, // Chaotic Rift (Anomalus, Nexus)
             { 30176, new SpecialPrio(29309, TargetPriority.High) }, // Ahn'kahar Guardian (Elder Nadox, Old Kingdom)
             { 30385, new SpecialPrio(29310, TargetPriority.High) }, // Twilight Volunteer (Jedoga Shadowseer, Old Kingdom)
