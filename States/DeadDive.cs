@@ -28,12 +28,9 @@ namespace WholesomeDungeonCrawler.States
                 {
                     return false;
                 }
-                /*
-                return _entityCache.Me.Auras.ContainsKey(8326) 
-                    && MovementManager.CurrentPath.Find(x => x == MovementManager.CurrentMoveTo) != null 
-                    && MovementManager.CurrentPath.Find(x => x == MovementManager.CurrentMoveTo).Type == "Swimming";*/
-                return MovementManager.CurrentMoveTo != null
-                    && MovementManager.CurrentMoveTo.Type == "Swimming";
+                
+                return MovementManager.CurrentPath.Find(node => node == MovementManager.CurrentMoveTo) != null 
+                    && MovementManager.CurrentPath.Find(node => node == MovementManager.CurrentMoveTo).Type == "Swimming";
             }
         }
 
@@ -43,6 +40,9 @@ namespace WholesomeDungeonCrawler.States
             MovementManager.StopMove();
             MovementManager.GoUnderWater();
             Thread.Sleep(1000);
+            Lua.LuaDoString("SitStandOrDescendStart();");
+            Thread.Sleep(500);
+            Lua.LuaDoString("DescendStop();");
         }
     }
 }
