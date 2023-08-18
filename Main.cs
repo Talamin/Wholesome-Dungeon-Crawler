@@ -38,16 +38,15 @@ public class Main : IProduct
     {
         try
         {
-            /*
-            if (AutoUpdater.CheckUpdate(_productVersion))
+            if (WholesomeDungeonCrawlerSettings.CurrentSetting.EnableAutoUpdate
+                && AutoUpdater.CheckUpdate(_productVersion))
             {
                 return;
             }
-            */
 
             if (ObjectManager.Me.Faction == 35)
             {
-                Logger.LogError($"WARNING: You are you in GM mode. Unexpected behavior will happen.");
+                Logger.LogError($"WARNING: You are in GM mode. Unexpected behavior will happen!");
             }
 
             if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Unspecified)
@@ -55,6 +54,7 @@ public class Main : IProduct
                 Logger.LogError($"You must select a role in the product settings first!");
                 return;
             }
+
             if (WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole != LFGRoles.Tank
                 && string.IsNullOrEmpty(WholesomeDungeonCrawlerSettings.CurrentSetting.TankName.Trim()))
             {

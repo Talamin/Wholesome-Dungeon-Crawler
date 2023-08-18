@@ -14,7 +14,7 @@
                  ShowIconOnTitleBar="True"
                  TitleCaps="False"
                  FontFamily="Trebuchet MS"
-             Title="Settings" SizeToContent="WidthAndHeight" MinHeight="150" MinWidth="300" MaxWidth="500" MaxHeight="600" Closing="MetroWindow_Closing">
+             Title="Settings" SizeToContent="WidthAndHeight" MinHeight="150" MinWidth="300" MaxWidth="700" MaxHeight="700" Closing="MetroWindow_Closing">
     <Controls:MetroWindow.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -44,25 +44,13 @@
                         <Setter Property="Controls:ControlsHelper.HeaderFontWeight" Value="Bold" />
                     </Style>
                 </Controls:MetroAnimatedTabControl.Resources>
-                <Controls:MetroTabItem Header="General">
+                <Controls:MetroTabItem Header="User">
 
                     <StackPanel HorizontalAlignment="Center">
-                        <!--<GroupBox x:Name="gbFollowDistance" Width="200" Header="Following Distance" BorderBrush="{x:Null}">
-                            <GroupBox.Background>
-                                <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
-                                    <GradientStop Color="#FF34e89e" Offset="0"/>
-                                    <GradientStop Color="#FF0f3443" Offset="1"/>
-                                </LinearGradientBrush>
-                            </GroupBox.Background>
-                            <StackPanel>
-                                <Controls:NumericUpDown Controls:TextBoxHelper.Watermark="Out of combat" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding OOCFollowDistance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                <Controls:NumericUpDown Controls:TextBoxHelper.Watermark="In combat (healers)" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" BorderBrush="{x:Null}" Value="{Binding CombatFollowDistance, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            </StackPanel>
-                        </GroupBox>-->
-                        <StackPanel Margin="5">
+                        <StackPanel Margin="5 20 5 0" x:Name="tbTankNameStackPanel">
                             <TextBox x:Name="tbTankName" Controls:TextBoxHelper.Watermark="Please enter tank name" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="5" Text="{Binding TankName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
                         </StackPanel>
-                        <StackPanel Margin="5">
+                        <StackPanel Margin="5 20 5 0"  x:Name="cbSelectDungeonStackPanel">
                             <Label
                                 Margin="0"
                                 HorizontalAlignment="Center"
@@ -73,7 +61,7 @@
                                 SelectedValue="{Binding SelectedDungeon, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                 Height="30" />
                         </StackPanel>
-                        <StackPanel x:Name="spPartyGrid" Margin="5">
+                        <StackPanel x:Name="spPartyGrid" Margin="5 20 5 0">
                             <DataGrid x:Name="dgParty" Margin="5" CanUserAddRows="False" IsReadOnly="True" MaxHeight="300" AutoGenerateColumns="False">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Party member names" Binding="{Binding}"/>
@@ -84,43 +72,24 @@
                                 <Button x:Name="btnDeletePartyMember" Content="Delete" Margin="0 5 5 5"/>
                             </StackPanel>
                         </StackPanel>
-                        <StackPanel x:Name="txtErrorChooseRoleFirst" Orientation="Horizontal"  Margin="5">
+                        <StackPanel x:Name="txtErrorChooseRoleFirst" Orientation="Horizontal" Margin="5 20 5 0" >
                             <TextBlock  Margin="15">Please choose a role first</TextBlock>
                         </StackPanel>
                         
                     </StackPanel>
 
                 </Controls:MetroTabItem>
-                <!--<Controls:MetroTabItem Header="Dungeons">
-
-                    <StackPanel HorizontalAlignment="Center">
-                        <GroupBox Header="Specific Dungeons to Queue for" BorderBrush="{x:Null}" MinWidth="200">
-                            <GroupBox.Background>
-                                <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
-                                    <GradientStop Color="#FFFF7C00" Offset="0"/>
-                                    <GradientStop Color="#FFFF0054" Offset="1"/>
-                                </LinearGradientBrush>
-                            </GroupBox.Background>
-                            <StackPanel>
-                                <DataGrid x:Name="dgDungeons" AutoGenerateColumns="False" MaxHeight="400">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" ></DataGridTextColumn>
-                                        <Controls:DataGridNumericUpDownColumn Header="Minlvl" Binding="{Binding MinLevel}" ></Controls:DataGridNumericUpDownColumn>
-                                        <Controls:DataGridNumericUpDownColumn Header="Maxlvl" Binding="{Binding MaxLevel}" ></Controls:DataGridNumericUpDownColumn>
-                                        <DataGridCheckBoxColumn ElementStyle="{DynamicResource MetroDataGridCheckBox}"
-                                                                EditingElementStyle="{DynamicResource MetroDataGridCheckBox}" 
-                                                                Header="Enabled" Binding="{Binding Enabled}" ></DataGridCheckBoxColumn>
-                                    </DataGrid.Columns>
-                                </DataGrid>
-
-                            </StackPanel>
-                        </GroupBox>
+                <Controls:MetroTabItem Header="Product">
+                    <StackPanel Margin="5 20 5 5" MinHeight="130">
+                        <StackPanel Margin="5" HorizontalAlignment="Center">
+                            <Controls:ToggleSwitch IsChecked="{Binding EnableAutoUpdate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Auto Update Enabled" OffLabel="Auto Update Disabled" />
+                        </StackPanel>
+                        <StackPanel Margin="5" HorizontalAlignment="Center">
+                            <Button x:Name="btnDownloadProfiles" Content="Download Profiles" Margin="5" Click="btnDownloadProfiles_Click"/>
+                        </StackPanel>
                     </StackPanel>
-
-                </Controls:MetroTabItem>-->
-                
+                </Controls:MetroTabItem>                
             </Controls:MetroAnimatedTabControl>
-
         </StackPanel>
     </Grid>
 </Controls:MetroWindow>

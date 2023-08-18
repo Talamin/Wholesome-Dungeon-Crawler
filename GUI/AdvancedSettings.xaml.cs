@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using System.Windows.Controls;
 using System.Windows.Media;
 using WholesomeDungeonCrawler.Helpers;
@@ -18,8 +20,9 @@ namespace WholesomeDungeonCrawler.GUI
 {
     public partial class AdvancedSettings
     {
-        private MetroDialogSettings basicDialogSettings;
-        private MetroDialogSettings addDialogSettings;
+        private MetroDialogSettings _basicDialogSettings;
+        private MetroDialogSettings _addDialogSettings;
+        private MetroDialogSettings _yesNoAlwaysDialogSettings = new MetroDialogSettings();
 
         public AdvancedSettings()
         {
@@ -32,11 +35,23 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
+                _yesNoAlwaysDialogSettings = new MetroDialogSettings()
+                {
+                    AffirmativeButtonText = "Yes",
+                    NegativeButtonText = "No",
+                    FirstAuxiliaryButtonText = "Always",
+                    ColorScheme = MetroDialogColorScheme.Accented,
+                    AnimateHide = false,
+                    AnimateShow = false,
+                    DialogMessageFontSize = 13,
+                    DialogTitleFontSize = 18,
+                };
+
                 ObservableCollection<string> partyMemberCollection = new ObservableCollection<string>(CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.GroupMembers);
                 dgParty.ItemsSource = partyMemberCollection;
                 txtErrorChooseRoleFirst.Visibility = System.Windows.Visibility.Collapsed;
 
-                addDialogSettings = new MetroDialogSettings()
+                _addDialogSettings = new MetroDialogSettings()
                 {
                     AffirmativeButtonText = "Add",
                     NegativeButtonText = "Cancel",
@@ -45,7 +60,7 @@ namespace WholesomeDungeonCrawler.GUI
                     ColorScheme = MetroDialogColorScheme.Accented
                 };
 
-                basicDialogSettings = new MetroDialogSettings()
+                _basicDialogSettings = new MetroDialogSettings()
                 {
                     AnimateHide = true,
                     AnimateShow = true,
@@ -56,10 +71,10 @@ namespace WholesomeDungeonCrawler.GUI
                 {
                     if (partyMemberCollection.Count >= 4)
                     {
-                        await this.ShowMessageAsync("Warning", "Cannot add more than 4 players to invite.", MessageDialogStyle.Affirmative, basicDialogSettings);
+                        await this.ShowMessageAsync("Warning", "Cannot add more than 4 players to invite.", MessageDialogStyle.Affirmative, _basicDialogSettings);
                     }
 
-                    var x = await this.ShowInputAsync("Add", "Party Member Name", addDialogSettings);
+                    var x = await this.ShowInputAsync("Add", "Party Member Name", _addDialogSettings);
                     if (x != null)
                     {
                         partyMemberCollection.Add(x);
@@ -79,32 +94,32 @@ namespace WholesomeDungeonCrawler.GUI
 
                 if (CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Unspecified)
                 {
-                    tbTankName.Visibility = System.Windows.Visibility.Collapsed;
+                    tbTankNameStackPanel.Visibility = System.Windows.Visibility.Collapsed;
+                    cbSelectDungeonStackPanel.Visibility = System.Windows.Visibility.Collapsed;
                     spPartyGrid.Visibility = System.Windows.Visibility.Collapsed;
+
                     txtErrorChooseRoleFirst.Visibility = System.Windows.Visibility.Visible;
                 }
-
-                if (CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Tank)
+                else if (CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.LFGRole == LFGRoles.Tank)
                 {
-                    CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.TankName = ObjectManager.Me.Name;
-                    tbTankName.Visibility = System.Windows.Visibility.Collapsed;
-                    cbSelectDungeon.Visibility = System.Windows.Visibility.Visible;
+                    tbTankNameStackPanel.Visibility = System.Windows.Visibility.Collapsed;
+                    cbSelectDungeonStackPanel.Visibility = System.Windows.Visibility.Visible;
                     spPartyGrid.Visibility = System.Windows.Visibility.Visible;
+
+                    CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.TankName = ObjectManager.Me.Name;
                 }
                 else
                 {
-                    tbTankName.Visibility = System.Windows.Visibility.Visible;
+                    tbTankNameStackPanel.Visibility = System.Windows.Visibility.Visible;
+                    cbSelectDungeonStackPanel.Visibility = System.Windows.Visibility.Collapsed;
                     spPartyGrid.Visibility = System.Windows.Visibility.Collapsed;
-                    cbSelectDungeon.Visibility = System.Windows.Visibility.Collapsed;
                 }
 
                 // dungeon selection
                 List<DungeonModel> availableDungeons = Toolbox.GetListAvailableDungeons();
                 cbSelectDungeon.Items.Clear();
                 cbSelectDungeon.SelectedValuePath = "Key";
-                //cbSelectDungeon.DisplayMemberPath = "Value";
 
-                //cbSelectDungeon.Items.Add(new KeyValuePair<int, string>(-1, "Random Dungeon"));
                 cbSelectDungeon.Items.Add(new WDCComboboxItem()
                 {
                     Key = -1,
@@ -177,6 +192,62 @@ namespace WholesomeDungeonCrawler.GUI
         private void cbSelectDungeon_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             CrawlerSettings.WholesomeDungeonCrawlerSettings.CurrentSetting.Save();
+        }
+
+        private async void btnDownloadProfiles_Click(object sender, EventArgs e)
+        {
+            string folderName = Others.GetCurrentDirectory + @"\Profiles\Wholesome-Dungeon-Crawler-Profiles";
+            string dataZipFile = Others.GetCurrentDirectory + @"\Data\WDC-Profiles.zip";
+            Directory.CreateDirectory(folderName);
+            string onlineZipLink = "https://github.com/Talamin/Wholesome-Dungeon-Crawler-Profiles/archive/refs/heads/main.zip";
+            byte[] onlineZipContent = new System.Net.WebClient { Encoding = Encoding.UTF8 }.DownloadData(onlineZipLink);
+            File.WriteAllBytes(dataZipFile, onlineZipContent);
+            int nbDownloaded = 0;
+            int nbNew = 0;
+            int nbOverwritten = 0;
+            bool alwaysOverwrite = false;
+            using (ZipArchive zip = ZipFile.OpenRead(dataZipFile))
+            {
+                foreach (ZipArchiveEntry entry in zip.Entries)
+                {
+                    if (!entry.FullName.EndsWith(".json")) continue;
+                    nbDownloaded++;
+                    string path = entry.FullName.Substring(entry.FullName.IndexOf('/') + 1); // Ignore top folder
+                    string directory = path.Substring(0, path.LastIndexOf("/"));
+                    Directory.CreateDirectory($"{folderName}/{directory}");
+                    string finalFilePath = $"{folderName}/{path}";
+                    if (!File.Exists(finalFilePath))
+                    {
+                        entry.ExtractToFile(finalFilePath);
+                        nbNew++;
+                        Logger.Log($"Downloaded new profile {entry.Name}");
+                    }
+                    else
+                    {
+                        FileInfo fi = new FileInfo(finalFilePath);
+                        if (fi.Length != entry.Length)
+                        {
+                            bool overWriteOnce = false;
+                            if (!alwaysOverwrite)
+                            {
+                                MessageDialogResult overWriteDialog = await this.ShowMessageAsync("Profiles download", $"{entry.Name} was modified.\rOverwrite?", MessageDialogStyle.AffirmativeAndNegativeAndSingleAuxiliary, _yesNoAlwaysDialogSettings);
+                                overWriteOnce = overWriteDialog == MessageDialogResult.Affirmative;
+                                if (overWriteDialog == MessageDialogResult.FirstAuxiliary)
+                                    alwaysOverwrite = true;
+                            }
+
+                            if (overWriteOnce || alwaysOverwrite)
+                            {
+                                entry.ExtractToFile(finalFilePath, true);
+                                nbOverwritten++;
+                                Logger.Log($"Downloaded profile {entry.Name} [Overwritten]");
+                            }
+                        }
+                    }
+                }
+            }
+            File.Delete(dataZipFile);
+            await this.ShowMessageAsync("Profiles download", $"{nbDownloaded} profiles online\r{nbNew} were added\r{nbOverwritten} were overwritten", MessageDialogStyle.Affirmative, _basicDialogSettings);
         }
     }
 }

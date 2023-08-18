@@ -18,6 +18,7 @@ namespace WholesomeDungeonCrawler.CrawlerSettings
         public LFGRoles LFGRole { get; set; }
         public double LastUpdateDate { get; set; }
         public int SelectedDungeon { get; set; } = -1;
+        public bool EnableAutoUpdate { get; set; }
 
         public WholesomeDungeonCrawlerSettings()
         {
@@ -26,6 +27,7 @@ namespace WholesomeDungeonCrawler.CrawlerSettings
             GroupMembers = new List<string>();
             LFGRole = LFGRoles.Unspecified;
             SelectedDungeon = -1;
+            EnableAutoUpdate = true;
         }
 
         public static WholesomeDungeonCrawlerSettings CurrentSetting { get; set; }
