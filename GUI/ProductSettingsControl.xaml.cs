@@ -39,6 +39,17 @@ namespace WholesomeDungeonCrawler.GUI
         {
             try
             {
+                // Refresh client LFD list
+                Lua.LuaDoString($@"
+                    if not LFDQueueFrame:IsVisible() then
+                        LFDMicroButton:Click();
+                    end
+                    if not LFDQueueFrameSpecific:IsVisible() then
+                        LFDQueueFrameTypeDropDownButton:Click();
+                        DropDownList1Button1:Click();
+                    end
+                    LFDMicroButton:Click();
+                ");
                 AdvancedSettings advancedSettings = new AdvancedSettings();
                 advancedSettings.ShowDialog();
             }

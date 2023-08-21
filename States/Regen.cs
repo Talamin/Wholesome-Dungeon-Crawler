@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
-using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles.Steps;
 using wManager;
@@ -118,12 +117,12 @@ namespace WholesomeDungeonCrawler.States
                 return unpack(result)
             ");
 
-            int currentHealth = realStats[0];
-            int maxHealth = realStats[1];
-            int currentMana = realStats[2];
-            int maxMana = realStats[3];
-            int currentHealthPercent = currentHealth / maxHealth * 100;
-            int currentManaPercent = maxMana > 0 ? currentMana / maxMana * 100 : 100;
+            float currentHealth = realStats[0];
+            float maxHealth = realStats[1];
+            float currentMana = realStats[2];
+            float maxMana = realStats[3];
+            float currentHealthPercent = currentHealth / maxHealth * 100;
+            float currentManaPercent = maxMana > 0 ? currentMana / maxMana * 100 : 100;
 
             // Currently eating
             if (_entityCache.Me.HasFoodBuff
