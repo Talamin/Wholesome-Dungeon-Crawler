@@ -7,7 +7,9 @@ using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeToolbox;
 using wManager;
+using wManager.Wow.Bot.Tasks;
 using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.States
 {
@@ -91,8 +93,9 @@ namespace WholesomeDungeonCrawler.States
                 }
                 else
                 {
-                    Logger.LogError($"[TurboLoot] {_unitToLoot.Name}'s corpse seems unreachable. Skipping loot.");
-                    _lootedUnits.Add(new LootedUnit(_unitToLoot.Guid));
+                    Logger.Log($"[TurboLoot] {_unitToLoot.Name}'s corpse seems unreachable. Trying normal loot.");
+                    _lootedUnits.Add(new LootedUnit(_unitToLoot.Guid)); 
+                    LootingTask.Pulse(new List<WoWUnit>() { _unitToLoot.WowUnit });
                 }
             }
         }

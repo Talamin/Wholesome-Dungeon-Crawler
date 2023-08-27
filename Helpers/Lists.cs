@@ -88,7 +88,7 @@ namespace WholesomeDungeonCrawler.Helpers
             new DungeonModel { Name="The Nexus", IsHeroic = true, DungeonId=226, MapId=576, ContinentId=571, EntranceLoc=new Vector3(3906.412, 6985.285, 69.4881, "None") },
 
             // Raids
-            new DungeonModel { Name="Molten Core", IsRaid = true, MapId=409 },
+            new DungeonModel { Name="Molten Core", IsRaid = true, MapId=409, EntranceLoc=null },
 
         }.OrderBy(dungeon => dungeon.Name).ToList();
 

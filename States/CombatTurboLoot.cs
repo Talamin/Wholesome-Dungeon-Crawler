@@ -36,7 +36,8 @@ namespace WholesomeDungeonCrawler.States
 
                 _unitToLoot = null;
                 Vector3 myPosition = _entityCache.Me.PositionWT;
-                List<ICachedWoWUnit> lootableCorpses = _entityCache.LootableUnits
+                List<ICachedWoWUnit> lootables = new List<ICachedWoWUnit>(_entityCache.LootableUnits);
+                List<ICachedWoWUnit> lootableCorpses = lootables
                     .Where(corpse => corpse?.PositionWT.DistanceTo(myPosition) <= _lootRange)
                     .OrderBy(corpse => corpse?.PositionWT.DistanceTo(myPosition))
                     .ToList();
@@ -85,11 +86,6 @@ namespace WholesomeDungeonCrawler.States
                 if (resultSuccess)
                 {
                     MovementManager.Go(pathToCorpse);
-                }
-                else
-                {
-                    Logger.LogError($"[CombatLoot] {_unitToLoot.Name}'s corpse seems unreachable. Skipping loot.");
-                    _unitsLooted.Add(_unitToLoot.Guid);
                 }
             }
         }

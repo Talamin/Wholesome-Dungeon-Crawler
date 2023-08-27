@@ -66,7 +66,7 @@ namespace WholesomeDungeonCrawler.Managers
             {
                 Logger.Log($"You're dead without a profile loaded. Looking for closest dungeon entrance");
                 List<DungeonModel> closestDungeons = Lists.AllDungeons
-                    .Where(model => model.ContinentId == Usefuls.ContinentId)
+                    .Where(model => model.EntranceLoc != null && model.ContinentId == Usefuls.ContinentId)
                     .OrderBy(model => _entityCache.Me.PositionCorpse.DistanceTo(model.EntranceLoc))
                     .ToList();
                 if (closestDungeons.Count <= 0)

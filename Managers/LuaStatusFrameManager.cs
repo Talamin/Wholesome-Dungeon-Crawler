@@ -105,7 +105,7 @@ namespace WholesomeDungeonCrawler.Managers
                             wdcrawler.title = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
                         end
                         wdcrawler.title:SetPoint(""TOP"", 0, -20)
-                        wdcrawler.title:SetText(""WholesomeDCrawler Status"")
+                        wdcrawler.title:SetText(""Wholesome Dungeon Crawler"")
                         wdcrawler.title:SetTextColor(0.25, 0.9, 0.6, 1)
                         wdcrawler.title:SetFont(""Fonts\\ARIALN.TTF"", 15, ""OUTLINE"")
                         

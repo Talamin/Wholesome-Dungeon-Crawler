@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
@@ -213,8 +214,11 @@ namespace WholesomeDungeonCrawler.Bot
                     _cache.CacheInLoadingScreen(id);
                     break;
                 case "PLAYER_LEVEL_UP":
-                    SpellManager.UpdateSpellBook();
-                    CustomClass.ResetCustomClass();
+                    Task.Factory.StartNew(() =>
+                    {
+                        SpellManager.UpdateSpellBook();
+                        CustomClass.ResetCustomClass();
+                    });
                     _profileManager?.UpdateAvailableDungeonList();
                     break;
                 case "COMBAT_LOG_EVENT_UNFILTERED":

@@ -103,7 +103,7 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
             MovementManager.StopMove();
 
             // We get stats from LUA because wrobot's object manager returns obsolete health/mana info
@@ -143,6 +143,7 @@ namespace WholesomeDungeonCrawler.States
             }
 
             if (currentHealthPercent < wManagerSetting.CurrentSetting.FoodPercent
+                && currentHealthPercent < wManagerSetting.CurrentSetting.FoodMaxPercent
                 && !_entityCache.Me.HasFoodBuff
                 && !string.IsNullOrEmpty(_selectedFood))
             {
@@ -156,6 +157,7 @@ namespace WholesomeDungeonCrawler.States
             }
 
             if (currentManaPercent < wManagerSetting.CurrentSetting.DrinkPercent
+                && currentManaPercent < wManagerSetting.CurrentSetting.DrinkMaxPercent
                 && !_entityCache.Me.HasDrinkBuff
                 && !string.IsNullOrEmpty(_selectedDrink))
             {
