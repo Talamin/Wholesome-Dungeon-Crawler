@@ -205,6 +205,7 @@ namespace WholesomeDungeonCrawler.Managers
                 Logger.Log(log);
                 Thread.Sleep(waitTime);
                 Logger.Log($"-----------------------------------------");
+                wManager.Statistics.Reset();
                 _currentProfile.SetFirstLaunchStep();
                 return;
             }

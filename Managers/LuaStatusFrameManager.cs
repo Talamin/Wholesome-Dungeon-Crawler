@@ -1,5 +1,4 @@
-﻿
-using robotManager.Helpful;
+﻿using robotManager.Helpful;
 using System;
 using System.Collections.Generic;
 using System.Timers;
@@ -9,6 +8,7 @@ using WholesomeDungeonCrawler.ProductCache.Entity;
 using WholesomeDungeonCrawler.Profiles.Steps;
 using wManager.Wow.Class;
 using wManager.Wow.Helpers;
+using wManager.Wow.ObjectManager;
 
 namespace WholesomeDungeonCrawler.Managers
 {
@@ -21,7 +21,9 @@ namespace WholesomeDungeonCrawler.Managers
         private string _currentState = null;
         private string _tankName = null;
         private string _dungeonName = null;
+        private int _xpHour = -1;
         private static readonly int _defaultFrameHeight = 160;
+
         // Mem
         private string _lastStepName;
         private bool _lastStepCompletion;
@@ -96,7 +98,7 @@ namespace WholesomeDungeonCrawler.Managers
                         end
                         wdcrawler:SetFrameStrata(""BACKGROUND"")
                         wdcrawler:SetWidth(250)
-                        wdcrawler:SetHeight(160)
+                        wdcrawler:SetHeight(180)
                         wdcrawler:SetBackdrop(StaticPopup1:GetBackdrop())
                         wdcrawler:SetBackdropBorderColor(0, 0, 0, 0)                            
                         wdcrawler:SetPoint(""RIGHT"", -100, 0)
@@ -109,6 +111,7 @@ namespace WholesomeDungeonCrawler.Managers
                         wdcrawler.title:SetTextColor(0.25, 0.9, 0.6, 1)
                         wdcrawler.title:SetFont(""Fonts\\ARIALN.TTF"", 15, ""OUTLINE"")
                         
+                        -- STATUS
                         if not wdcrawler.status then
                             wdcrawler.status = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
                         end
@@ -125,6 +128,7 @@ namespace WholesomeDungeonCrawler.Managers
                         wdcrawler.statustext:SetTextColor(1, 1, 1, 1)
                         wdcrawler.statustext:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
 
+                        -- STATE
                         if not wdcrawler.state then
                             wdcrawler.state = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
                         end
@@ -141,6 +145,7 @@ namespace WholesomeDungeonCrawler.Managers
                         wdcrawler.statetext:SetTextColor(1, 1, 1, 1)
                         wdcrawler.statetext:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
 
+                        -- TANK
                         if not wdcrawler.following then
                             wdcrawler.following = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
                         end
@@ -157,6 +162,7 @@ namespace WholesomeDungeonCrawler.Managers
                         wdcrawler.followingtext:SetTextColor(1, 1, 1, 1)
                         wdcrawler.followingtext:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
 
+                        -- DUNGEON
                         if not wdcrawler.dungeon then
                             wdcrawler.dungeon = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
                         end
@@ -173,10 +179,28 @@ namespace WholesomeDungeonCrawler.Managers
                         wdcrawler.dungeontext:SetTextColor(1, 1, 1, 1)
                         wdcrawler.dungeontext:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
 
+                        -- XP/HOUR
+                        if not wdcrawler.xphour then
+                            wdcrawler.xphour = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
+                        end
+                        wdcrawler.xphour:SetPoint(""TOPLEFT"", 20, -120)
+                        wdcrawler.xphour:SetText(""XP/Hour:"")
+                        wdcrawler.xphour:SetTextColor(0.25, 0.9, 0.6, 1)
+                        wdcrawler.xphour:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
+
+                        if not wdcrawler.xphourtext then
+                            wdcrawler.xphourtext = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
+                        end
+                        wdcrawler.xphourtext:ClearAllPoints()
+                        wdcrawler.xphourtext:SetPoint(""LEFT"",wdcrawler.xphour,""RIGHT"", 0,0)
+                        wdcrawler.xphourtext:SetTextColor(1, 1, 1, 1)
+                        wdcrawler.xphourtext:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
+
+                        -- ALL STEPS
                         if not wdcrawler.allsteps then
                             wdcrawler.allsteps = wdcrawler:CreateFontString(nil, ""BACKGROUND"", ""GameFontNormal"")
                         end
-                        wdcrawler.allsteps:SetPoint(""TOPLEFT"", 20, -120)
+                        wdcrawler.allsteps:SetPoint(""TOPLEFT"", 20, -140)
                         wdcrawler.allsteps:SetText(""Steps:"")
                         wdcrawler.allsteps:SetTextColor(0.25, 0.9, 0.6, 1)
                         wdcrawler.allsteps:SetFont(""Fonts\\ARIALN.TTF"", 12, ""OUTLINE"")
@@ -219,6 +243,15 @@ namespace WholesomeDungeonCrawler.Managers
             try
             {
                 string allLua = "";
+
+                // XP/Hour
+                int xpHour = wManager.Statistics.ExperienceByHr();
+                if (xpHour != _xpHour)
+                {
+                    allLua += @$"
+                    wdcrawler.xphourtext:SetText(""{xpHour}"")";
+                    _xpHour = xpHour;
+                }
 
                 // Dungeon Name
                 string dungeonName = _profileManager.CurrentDungeonProfile != null ? _profileManager.CurrentDungeonProfile.FileName : "N/A";
