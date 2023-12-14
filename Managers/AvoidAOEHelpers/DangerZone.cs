@@ -11,6 +11,7 @@ namespace WholesomeDungeonCrawler.Managers.AvoidAOEHelpers
     {
         public Vector3 Position { get; private set; }
         public float Radius { get; private set; }
+        public int ExtraMargin { get; private set; } // keep running for extra distance
         public ulong Guid { get; private set; }
         public string Name { get; private set; }
         public WoWObjectType ObjectType { get; private set; }
@@ -21,6 +22,7 @@ namespace WholesomeDungeonCrawler.Managers.AvoidAOEHelpers
 
         public DangerZone(DangerObject dangerObject)
         {
+            ExtraMargin = dangerObject.ExtraMargin;
             Position = dangerObject.WowObject.Position;
             Guid = dangerObject.WowObject.Guid;
             Name = string.IsNullOrEmpty(dangerObject.WowObject.Name) ? "Unknown object" : dangerObject.WowObject.Name;

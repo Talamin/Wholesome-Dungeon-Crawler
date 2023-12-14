@@ -105,14 +105,14 @@ namespace WholesomeDungeonCrawler.Managers
             return false;
         }
 
-        private void AddObjectDangerZone(WoWObject wowObject, float radius)
+        private void AddObjectDangerZone(WoWObject wowObject, KnownAOE knownAOE)
         {
             if (_dangerZones.Any(dangerZone => dangerZone.Guid == wowObject.Guid && dangerZone.Type == DangerType.GameObject && dangerZone.Position.DistanceTo(wowObject.Position) < 1f))
             {
                 return;
             }
             RemoveAllObjectDangerZones(wowObject.Guid);
-            DangerObject dangerObject = new DangerObject(wowObject, radius);
+            DangerObject dangerObject = new DangerObject(wowObject, knownAOE);
             _dangerZones.Add(new DangerZone(dangerObject));
         }
 
@@ -213,7 +213,7 @@ namespace WholesomeDungeonCrawler.Managers
                             WoWUnit unit = wowObject as WoWUnit;
                             if (unit.IsAlive)
                             {
-                                AddObjectDangerZone(wowObject, knownAOE.Radius);
+                                AddObjectDangerZone(wowObject, knownAOE);
                             }
                             else
                             {
@@ -222,10 +222,10 @@ namespace WholesomeDungeonCrawler.Managers
                             break;
                         case WoWObjectType.DynamicObject:
                             DynamicObject dObject = new DynamicObject(wowObject.GetBaseAddress);
-                            AddObjectDangerZone(dObject, knownAOE.Radius);
+                            AddObjectDangerZone(dObject, knownAOE);
                             break;
                         case WoWObjectType.GameObject:
-                            AddObjectDangerZone(wowObject, knownAOE.Radius);
+                            AddObjectDangerZone(wowObject, knownAOE);
                             break;
                         default:
                             break;
@@ -238,6 +238,9 @@ namespace WholesomeDungeonCrawler.Managers
 
         private void CalculateReposition()
         {
+            // Don't cancel escape
+            if (RepositionInfo != null && MovementManager.InMovement) return;
+
             Vector3 myPos = _entityCache.Me.PositionWT;
 
             // Is current fight a Forced Safe Zone fight?
@@ -281,7 +284,9 @@ namespace WholesomeDungeonCrawler.Managers
 
         private void CheckPathForDangerZones(List<Vector3> currentPath, CancelEventArgs cancelable)
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
+            // Don't cancel if fleeing
+            if (RepositionInfo != null) return;
+
             List<DangerZone> dangerZones = new List<DangerZone>(_dangerZones);
             if (dangerZones.Count > 0)
             {
@@ -294,7 +299,7 @@ namespace WholesomeDungeonCrawler.Managers
                     && _entityCache.Target != null
                     && !_entityCache.Target.WowUnit.InCombat) return;
 
-                for (int i = 0; i < path.Count - 1; i++)
+                    for (int i = 0; i < path.Count - 1; i++)
                 {
                     DangerZone dangerZoneOnTheWay = dangerZones
                         .FirstOrDefault(dz =>

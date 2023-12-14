@@ -10,16 +10,18 @@ namespace WholesomeDungeonCrawler.Managers
     {
         public ulong Guid { get; private set; }
         public WoWObject WowObject { get; private set; }
+        public int ExtraMargin { get; private set; } // keep running for extra distance
         public string Name { get; private set; }
         public float Size { get; private set; }
         public DangerType Type { get; private set; }
 
-        public DangerObject(WoWObject wowObject, float radius)
+        public DangerObject(WoWObject wowObject, KnownAOE knownAOE)
         {
             WowObject = wowObject;
             Guid = wowObject.Guid;
             Name = string.IsNullOrEmpty(wowObject.Name) ? "Unknown object" : wowObject.Name;
-            Size = radius;
+            Size = knownAOE.Radius;
+            ExtraMargin = knownAOE.ExtraMargin;
             Type = DangerType.GameObject;
         }
 

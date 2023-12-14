@@ -132,7 +132,7 @@ namespace WholesomeDungeonCrawler.States
                 for (int x = -range; x <= range; x += 5)
                 {
                     Vector3 gridPosition = referenceGridPosition + new Vector3(x, y, 0);
-                    if (dangerZones.Any(dangerZone => dangerZone.PositionInDangerZone(gridPosition, 5)))
+                    if (dangerZones.Any(dangerZone => dangerZone.PositionInDangerZone(gridPosition, 5 + _repositionInfo.CurrentDangerZone.ExtraMargin)))
                     {
                         nbSpotsInDangerZone++;
                         continue;

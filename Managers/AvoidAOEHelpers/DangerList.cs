@@ -17,11 +17,11 @@ namespace WholesomeDungeonCrawler.Managers.ManagedEvents
             // Classic
             // Cloud of Disease (Scholomance)
             new KnownAOE(17742, 8f, _everyone),
-            // TBC
             // Creeping Sludge (Foulspore Caverns)
-            new KnownAOE(12222, 10f, _everyone),
+            new KnownAOE(12222, 10f, _everyone, extraMargin: 10),
             // Noxious Slime gas (Foulspore Caverns)
             new KnownAOE(21070, 8f, _everyone),
+            // TBC
             // Proximity Mine (The Blood Furnace)
             new KnownAOE(181877, 12f, _everyoneExceptTank),
             // Liquid Fire (Hellfire Ramparts, last boss)   
@@ -98,14 +98,12 @@ namespace WholesomeDungeonCrawler.Managers.ManagedEvents
 
             // Pit of Saron - Ick - Pursuit 
             new DangerBuff(36476, 68987, "Pursuit", Shape.Circle, 10, _everyone ),
-
         };
 
         public static List<ForcedSafeZone> GetForcedSafeZones = new List<ForcedSafeZone>()
         { 
             // Shirrak fight - Auchenai Crypt  
             new ForcedSafeZone(18371, new Vector3(-51.94074, -163.6697, 26.36175, "None"), 40),
-
         };
     }
 }
