@@ -268,7 +268,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
         public void CacheGroupMembers(string trigger)
         {
-            Logger.LogDebug($"CacheGroupMembers called by {trigger}");
+            //Logger.LogDebug($"CacheGroupMembers called by {trigger}");
             CachePartyMembersInfo();
         }
     }
