@@ -123,7 +123,7 @@ namespace WholesomeDungeonCrawler.States
                     }
 
                     _linesToCheck = MoveHelper.GetFrontLinesOnPath(currentMMPath);
-                    _unitOnPath = EnemyAlongTheLine(_linesToCheck, _entityCache.EnemyUnitsList);
+                    _unitOnPath = EnemyAlongTheLine(_linesToCheck, _entityCache.EnemyUnitsList.Where(u => !wManager.wManagerSetting.IsBlackListed(u.Guid)).ToArray());
 
                     // TANK - Check for followers along the line in front
                     if (_entityCache.IAmTank && _unitOnPath.unit != null)
