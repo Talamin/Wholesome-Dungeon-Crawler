@@ -1,4 +1,5 @@
 ﻿using robotManager.Helpful;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -121,12 +122,29 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
                 return;
             }
 
-            // Check if everyone is here
-            if (_entityCache.ListGroupMember.Length != _entityCache.ListPartyMemberNames.Count
-                || _entityCache.ListGroupMember.Any(member => member.PositionWT.DistanceTo(RegroupSpot) > 8f)
-                || _entityCache.Me.PositionWT.DistanceTo(RegroupSpot) > 8f)
+            // Check if everyone is around
+            if (_entityCache.ListGroupMember.Length != _entityCache.ListPartyMemberNames.Count)
             {
-                Logger.LogOnce($"Waiting for the team to regroup.");
+                Logger.LogOnce($"A member is missing ({_entityCache.ListGroupMember.Length}/{_entityCache.ListPartyMemberNames.Count}). Waiting.");
+                IsCompleted = false;
+                return;
+            }
+
+            // Check if everyone is at regroup spot
+            List<ICachedWoWPlayer> playersNotAtSpot = _entityCache.ListGroupMember
+                .Where(member => member.PositionWT.DistanceTo(RegroupSpot) > 8f)
+                .ToList();
+            if (playersNotAtSpot.Count > 0)
+            {
+                Logger.LogOnce($"Missing {playersNotAtSpot.Count} group members at the regroup spot. Waiting.");
+                IsCompleted = false;
+                return;
+            }
+
+            // Check if I am at regroup spot
+            if (_entityCache.Me.PositionWT.DistanceTo(RegroupSpot) > 8f)
+            {
+                Logger.LogOnce($"I am not at the regroup spot. Waiting.");
                 IsCompleted = false;
                 return;
             }

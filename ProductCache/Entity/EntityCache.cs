@@ -36,15 +36,13 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
         public ICachedWoWUnit Target { get; private set; } = Cache(new WoWUnit(0));
         public ICachedWoWUnit Pet { get; private set; } = Cache(new WoWUnit(0));
-        public ICachedWoWUnit[] GroupPets { get; private set; } = new ICachedWoWUnit[0];
         public ICachedWoWLocalPlayer Me { get; private set; } = Cache(new WoWLocalPlayer(0));
         public ICachedWoWUnit[] EnemyUnitsList { get; private set; } = new ICachedWoWUnit[0];
         public ICachedWoWPlayer[] ListGroupMember { get; private set; } = new ICachedWoWPlayer[0];
         public List<string> ListPartyMemberNames { get; private set; } = new List<string>();
         public ICachedWoWUnit[] EnemiesAttackingGroup { get; private set; } = new ICachedWoWUnit[0];
         public ICachedWoWPlayer TankUnit { get; private set; }
-        private List<ulong> _listPartyMemberGuid { get; set; } = new List<ulong>();
-        private ulong _tankGuid { get; set; }
+        private string _tankName { get; set; }
         public bool IAmTank { get; private set; }
 
         private List<int> _npcToDefendEntries = new List<int>();
@@ -76,9 +74,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 lock (cacheLock)
                 {
                     cachedMe = Cache(ObjectManager.Me);
-                    //Stopwatch watchTarget = Stopwatch.StartNew();
                     cachedTarget = ObjectManager.Target.Guid != 0 ? Cache(ObjectManager.Target) : Cache(new WoWUnit(0)); // Is occasionally slow with shaman for some reason
-                    //if (watchTarget.ElapsedMilliseconds > 50) Logger.LogError($"Target took {watchTarget.ElapsedMilliseconds}");
                     cachedPet = IAmShaman ? Cache(new WoWUnit(0)) : Cache(ObjectManager.Pet);
                     units = ObjectManager.GetObjectWoWUnit();
                     playerUnits = ObjectManager.GetObjectWoWPlayer();
@@ -90,7 +86,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 var enemyAttackingGroup = new List<ICachedWoWUnit>();
                 var enemyUnits = new List<ICachedWoWUnit>();
                 var listGroupMember = new List<ICachedWoWPlayer>();
-                var groupPets = new List<ICachedWoWUnit>();
 
                 var targetGuid = cachedTarget.Guid;
                 var playerPosition = cachedMe.PositionWT;
@@ -100,10 +95,10 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 foreach (WoWPlayer play in playerUnits)
                 {
                     ICachedWoWPlayer cachedplayer = Cache(play);
-                    if (_listPartyMemberGuid.Contains(cachedplayer.Guid))
+                    if (ListPartyMemberNames.Contains(cachedplayer.Name))
                     {
                         listGroupMember.Add(cachedplayer);
-                        if (cachedplayer.Guid == _tankGuid)
+                        if (cachedplayer.Name == _tankName)
                         {
                             tankUnit = cachedplayer;
                         }
@@ -121,7 +116,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
                 List<ulong> allTeamGuids = new List<ulong>();
                 allTeamGuids.Add(cachedMe.Guid);
-                allTeamGuids.AddRange(GroupPets.Select(gp => gp.Guid));
                 allTeamGuids.AddRange(ListGroupMember.Select(lgm => lgm.Guid));
 
                 foreach (WoWUnit unit in units)
@@ -136,12 +130,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                     ICachedWoWUnit cachedUnit = unitGuid == targetGuid ? cachedTarget : Cache(unit);
                     bool? cachedReachable = unitGuid == targetGuid ? true : (bool?)null;
                     Vector3 unitPosition = unit.PositionWithoutType;
-
-                    if (_listPartyMemberGuid.Contains(unit.PetOwnerGuid) || unit.IsMyPet)
-                    {
-                        groupPets.Add(cachedUnit);
-                        continue;
-                    }
 
                     if (unit.IsAlive && _npcToDefendEntries.Contains(unit.Entry))
                     {
@@ -179,7 +167,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
                 EnemiesAttackingGroup = enemyAttackingGroup.ToArray();
                 EnemyUnitsList = enemyUnits.ToArray();
-                GroupPets = groupPets.ToArray(); // Also contains totems
 
                 long enemiesTime = enemiesWatch.ElapsedMilliseconds;
 
@@ -192,72 +179,49 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             }
         }
 
-        // Records name and GUIDs of other players even if outside object manager
+        // Records name of other players even if outside object manager
         private void CachePartyMembersInfo()
         {
             lock (cacheLock)
             {
                 try
                 {
-                    //Stopwatch watch = Stopwatch.StartNew();
                     string pList = Lua.LuaDoString<string>(@"
                         plist='';
                         for i=1,4 do
                             local unitName = UnitName('party'..i);
                             local unitGuid = UnitGUID('party'..i);
                             if unitName then
-                                plist = plist .. unitName .. '|' .. tonumber(unitGuid) ..',';
+                                plist = plist .. unitName ..',';
                             end
                         end
                         return plist;
                     ");
-                    //long luaTime = watch.ElapsedMilliseconds;
+
                     if (string.IsNullOrEmpty(pList))
                     {
                         ListPartyMemberNames.Clear();
-                        _listPartyMemberGuid.Clear();
                         return;
                     }
 
-                    List<string> namesAndGuid = pList.Remove(pList.Length - 1, 1).Split(',').ToList();
+                    List<string> luaNames = pList.Remove(pList.Length - 1, 1).Split(',').ToList();
                     List<string> partyNames = new List<string>();
-                    List<ulong> partyGuids = new List<ulong>();
-                    foreach (string nameAndGuid in namesAndGuid)
+                    foreach (string name in luaNames)
                     {
-                        string[] splitNameAndGuid = nameAndGuid.Split('|');
-                        if (splitNameAndGuid.Length != 2)
+                        string[] splitNames = name.Split('|');
+                        if (name == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
                         {
-                            Logger.LogError($"ERROR: splitNameAndGuid's {nameAndGuid} length wasn't 2!");
-                            continue;
+                            _tankName = name;
                         }
-
-                        if (ulong.TryParse(splitNameAndGuid[1], out ulong guid))
-                        {
-                            string memberName = splitNameAndGuid[0];
-                            if (memberName == WholesomeDungeonCrawlerSettings.CurrentSetting.TankName)
-                            {
-                                _tankGuid = guid;
-                            }
-                            partyNames.Add(memberName);
-                            partyGuids.Add(guid);
-                        }
-                        else
-                        {
-                            Logger.LogError($"ERROR: unit guid {splitNameAndGuid[1]} couldn't be parsed!");
-                            continue;
-                        }
+                        partyNames.Add(name);
                     }
-                    //long parseTime = watch.ElapsedMilliseconds;
 
-                    if (!Enumerable.SequenceEqual(ListPartyMemberNames, partyNames)
-                        || !Enumerable.SequenceEqual(_listPartyMemberGuid, partyGuids))
+                    if (!Enumerable.SequenceEqual(ListPartyMemberNames, partyNames))
                     {
-                        Logger.Log($"Party: {string.Join(", ", partyNames)} with GUIDs {string.Join(", ", partyGuids)}");
+                        Logger.Log($"Party: {string.Join(", ", partyNames)}");
                     }
 
                     ListPartyMemberNames = partyNames;
-                    _listPartyMemberGuid = partyGuids;
-                    //Logger.LogError($"Party UP {watch.ElapsedMilliseconds} [lua {luaTime}] [parse [{parseTime}]] ");
                 }
                 catch (Exception e)
                 {
@@ -268,7 +232,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
         public void CacheGroupMembers(string trigger)
         {
-            //Logger.LogDebug($"CacheGroupMembers called by {trigger}");
             CachePartyMembersInfo();
         }
     }

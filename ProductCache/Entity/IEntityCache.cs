@@ -14,7 +14,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         List<string> ListPartyMemberNames { get; }
         List<ICachedWoWUnit> NpcsToDefend { get; }
         List<ICachedWoWUnit> LootableUnits { get; }
-        ICachedWoWUnit[] GroupPets { get; }
+        //ICachedWoWUnit[] GroupPets { get; }
         bool IAmTank { get; }
 
         void AddNpcIdToDefend(int npcId);
