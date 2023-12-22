@@ -56,6 +56,8 @@ namespace WholesomeDungeonCrawler.Managers
         /*
         public void Draw(Vector3 dangerPosition, DangerZone zone, Color color, bool filled, int alpha)
         {
+            if (!WholesomeDungeonCrawlerSettings.CurrentSetting.EnableDevMode) return;
+
             double x = dangerPosition.X + Size * System.Math.Sin(zone.Rotation);
             double y = dangerPosition.Y + Size * System.Math.Cos(zone.Rotation);
             double z = dangerPosition.Z;

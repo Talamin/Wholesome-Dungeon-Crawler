@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers.AvoidAOEHelpers;
 using WholesomeDungeonCrawler.Managers.ManagedEvents;
@@ -71,8 +72,11 @@ namespace WholesomeDungeonCrawler.Managers
             MovementEvents.OnMovementPulse += MovementEventsOnMovementPulse;
             MovementEvents.OnMoveToPulse += MovementsEventsOnMoveToPulse;
             MovementEvents.OnMovementLoop += OnMovementLoop;
-            if (!Radar3D.IsLaunched) Radar3D.Pulse();
-            Radar3D.OnDrawEvent += DrawEventAOE;
+            if (WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar)
+            {
+                if (!Radar3D.IsLaunched) Radar3D.Pulse();
+                Radar3D.OnDrawEvent += DrawEventAOE;
+            }
         }
 
         public void Dispose()
@@ -83,7 +87,8 @@ namespace WholesomeDungeonCrawler.Managers
             MovementEvents.OnMovementPulse -= MovementEventsOnMovementPulse;
             MovementEvents.OnMoveToPulse -= MovementsEventsOnMoveToPulse;
             MovementEvents.OnMovementLoop -= OnMovementLoop;
-            Radar3D.OnDrawEvent -= DrawEventAOE;
+            if (WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar)
+                Radar3D.OnDrawEvent -= DrawEventAOE;
             Radar3D.Stop();
         }
 
@@ -328,6 +333,8 @@ namespace WholesomeDungeonCrawler.Managers
 
         private void DrawEventAOE()
         {
+            if (!WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar) return;
+
             try
             {
                 if (RepositionInfo != null)

@@ -1,5 +1,6 @@
 ﻿using robotManager.Helpful;
 using System.Drawing;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Managers.ManagedEvents;
 using WholesomeDungeonCrawler.ProductCache.Entity;
 using wManager.Wow.Enums;
@@ -60,9 +61,11 @@ namespace WholesomeDungeonCrawler.Managers.AvoidAOEHelpers
         {
             return Danger.PositionInDanger(position, this, margin);
         }
-        
+
         public void Draw()
         {
+            if (!WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar) return;
+
             if (Danger is DangerBuff)
             {
                 Radar3D.DrawCircle(Position, Radius, Color.Orange, false, 30);

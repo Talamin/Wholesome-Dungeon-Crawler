@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.ProductCache;
@@ -47,14 +48,20 @@ namespace WholesomeDungeonCrawler.States
 
         public void Initialize()
         {
-            if (!Radar3D.IsLaunched) Radar3D.Pulse();
-            Radar3D.OnDrawEvent += DrawEventAOEPathAhead;
+            if (WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar)
+            {
+                if (!Radar3D.IsLaunched) Radar3D.Pulse();
+                Radar3D.OnDrawEvent += DrawEventAOEPathAhead;
+            }
         }
 
         public void Dispose()
         {
-            Radar3D.OnDrawEvent -= DrawEventAOEPathAhead;
-            Radar3D.Stop();
+            if (WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar)
+            {
+                Radar3D.OnDrawEvent -= DrawEventAOEPathAhead;
+                Radar3D.Stop();
+            }
         }
 
         public override bool NeedToRun
@@ -220,7 +227,7 @@ namespace WholesomeDungeonCrawler.States
                 Vector3 segmentStart = _pointsAlongPathSegments[i];
                 Vector3 segmentEnd = _pointsAlongPathSegments[i + 1];
                 float segmentLength = segmentStart.DistanceTo(segmentEnd);
-                
+
                 // check if units have LoS/path from point
                 foreach (ICachedWoWUnit unit in hostileUnits)
                 {
@@ -318,6 +325,8 @@ namespace WholesomeDungeonCrawler.States
 
         private void DrawEventAOEPathAhead()
         {
+            if (!WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar) return;
+
             try
             {
                 if (_unitOnPath.unit != null)

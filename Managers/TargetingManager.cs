@@ -35,16 +35,22 @@ namespace WholesomeDungeonCrawler.Managers
         public void Initialize()
         {
             wManager.Events.FightEvents.OnFightLoop += OnFightHandler;
-            if (!Radar3D.IsLaunched) Radar3D.Pulse();
-            Radar3D.OnDrawEvent += DrawEventTargetingManager;
+            if (WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar)
+            {
+                if (!Radar3D.IsLaunched) Radar3D.Pulse();
+                Radar3D.OnDrawEvent += DrawEventTargetingManager;
+            }
             LoggingEvents.OnAddLog += LogEvent;
         }
 
         public void Dispose()
         {
             wManager.Events.FightEvents.OnFightLoop -= OnFightHandler;
-            Radar3D.OnDrawEvent -= DrawEventTargetingManager;
-            Radar3D.Stop();
+            if (WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar)
+            {
+                Radar3D.OnDrawEvent -= DrawEventTargetingManager;
+                Radar3D.Stop();
+            }
             LoggingEvents.OnAddLog -= LogEvent;
         }
         private void LogEvent(Logging.Log log)
@@ -306,6 +312,8 @@ namespace WholesomeDungeonCrawler.Managers
 
         private void DrawEventTargetingManager()
         {
+            if (!WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar) return;
+
             try
             {
                 List<ICachedWoWUnit> highPrios = new List<ICachedWoWUnit>(_highPrioUnits);

@@ -32,7 +32,8 @@ namespace WholesomeDungeonCrawler.Managers
         /*
         public void Draw(Vector3 position, DangerZone zone, Color color, bool filled, int alpha)
         {
-            Radar3D.DrawCircle(position, Size, color, filled, alpha);
+            if (WholesomeDungeonCrawlerSettings.CurrentSetting.EnableDevMode)
+                Radar3D.DrawCircle(position, Size, color, filled, alpha);
         }
         */
         public override bool Equals(object obj)

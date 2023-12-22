@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Models;
 using WholesomeDungeonCrawler.ProductCache.Entity;
@@ -69,8 +70,11 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Initialize()
         {
-            if (!Radar3D.IsLaunched) Radar3D.Pulse();
-            Radar3D.OnDrawEvent += OnDrawEvent;
+            if (WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar)
+            {
+                if (!Radar3D.IsLaunched) Radar3D.Pulse();
+                Radar3D.OnDrawEvent += OnDrawEvent;
+            }
             ObjectManagerEvents.OnObjectManagerPulsed += OnObjectManagerPulse;
             FightEvents.OnFightLoop += OnFightHandler;
             FightEvents.OnFightStart += OnFightHandler;
@@ -78,7 +82,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         public override void Dispose()
         {
-            Radar3D.OnDrawEvent -= OnDrawEvent;
+            if (WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar)
+                Radar3D.OnDrawEvent -= OnDrawEvent;
             ObjectManagerEvents.OnObjectManagerPulsed -= OnObjectManagerPulse;
             FightEvents.OnFightLoop -= OnFightHandler;
             FightEvents.OnFightStart -= OnFightHandler;
@@ -320,6 +325,8 @@ namespace WholesomeDungeonCrawler.Profiles.Steps
 
         private void OnDrawEvent()
         {
+            if (!WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar) return;
+
             try
             {
                 Radar3D.DrawCircle(_safeSpotCenter, _safeSpotRadius, Color.Green, false, 50);

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.Helpers;
 
@@ -14,14 +15,20 @@ namespace WholesomeDungeonCrawler.Managers
 
         public void Initialize()
         {
-            if (!Radar3D.IsLaunched) Radar3D.Pulse();
-            Radar3D.OnDrawEvent += DrawEventPathManager;
+            if (WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar)
+            {
+                if (!Radar3D.IsLaunched) Radar3D.Pulse();
+                Radar3D.OnDrawEvent += DrawEventPathManager;
+            }
         }
 
         public void Dispose()
         {
-            Radar3D.OnDrawEvent -= DrawEventPathManager;
-            Radar3D.Stop();
+            if (WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar)
+            {
+                Radar3D.OnDrawEvent -= DrawEventPathManager;
+                Radar3D.Stop();
+            }
         }
 
         public void SetNextNode(Vector3 nextNode)
@@ -36,6 +43,8 @@ namespace WholesomeDungeonCrawler.Managers
 
         private void DrawEventPathManager()
         {
+            if (!WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar) return;
+
             try
             {
                 if (_nextPathNode != null)

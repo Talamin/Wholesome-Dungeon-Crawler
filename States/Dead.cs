@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading;
+using WholesomeDungeonCrawler.CrawlerSettings;
 using WholesomeDungeonCrawler.Helpers;
 using WholesomeDungeonCrawler.Managers;
 using WholesomeDungeonCrawler.Models;
@@ -25,7 +26,7 @@ namespace WholesomeDungeonCrawler.States
         private robotManager.Helpful.Timer _forceReleaseTimer = null;
         private int _forceReleaseTimeInSeconds = 180;
 
-        public Dead(IEntityCache iEntityCache, 
+        public Dead(IEntityCache iEntityCache,
             IProfileManager profilemanager)
         {
             _entityCache = iEntityCache;
@@ -34,14 +35,20 @@ namespace WholesomeDungeonCrawler.States
 
         public void Initalize()
         {
-            if (!Radar3D.IsLaunched) Radar3D.Pulse();
-            Radar3D.OnDrawEvent += DrawEventDeadState;
+            if (WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar)
+            {
+                if (!Radar3D.IsLaunched) Radar3D.Pulse();
+                Radar3D.OnDrawEvent += DrawEventDeadState;
+            }
         }
 
         public void Dispose()
         {
-            Radar3D.OnDrawEvent += DrawEventDeadState;
-            Radar3D.Stop();
+            if (WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar)
+            {
+                Radar3D.OnDrawEvent -= DrawEventDeadState;
+                Radar3D.Stop();
+            }
         }
 
         private List<WoWClass> _rezzClasses = new List<WoWClass> { WoWClass.Druid, WoWClass.Paladin, WoWClass.Priest, WoWClass.Shaman };
@@ -100,7 +107,7 @@ namespace WholesomeDungeonCrawler.States
                     DeathRun closestDeathRun = null;
                     float closestDistance = float.MaxValue;
                     Vector3 myPos = _entityCache.Me.PositionWT;
-                    foreach (DeathRun deathRun in  _profileManager.CurrentDungeonProfile.DeathRunPaths)
+                    foreach (DeathRun deathRun in _profileManager.CurrentDungeonProfile.DeathRunPaths)
                     {
                         if (deathRun.Path.Count <= 0)
                         {
@@ -203,8 +210,10 @@ namespace WholesomeDungeonCrawler.States
 
         private void DrawEventDeadState()
         {
+            if (!WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar) return;
+
             if (_profileManager.ProfileIsRunning
-                && _entityCache.Me.IsDead) 
+                && _entityCache.Me.IsDead)
             {
                 foreach (DeathRun deathRunPath in _profileManager.CurrentDungeonProfile.DeathRunPaths)
                 {

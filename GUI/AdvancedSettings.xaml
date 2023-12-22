@@ -85,6 +85,9 @@
                             <Controls:ToggleSwitch IsChecked="{Binding EnableAutoUpdate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Auto Update Enabled" OffLabel="Auto Update Disabled" />
                         </StackPanel>
                         <StackPanel Margin="5" HorizontalAlignment="Center">
+                            <Controls:ToggleSwitch IsChecked="{Binding EnableRadar, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="3D Radar Enabled" OffLabel="3D Radar Disabled" />
+                        </StackPanel>
+                        <StackPanel Margin="5" HorizontalAlignment="Center">
                             <Button x:Name="btnDownloadProfiles" Content="Download Profiles" Margin="5" Click="btnDownloadProfiles_Click"/>
                         </StackPanel>
                     </StackPanel>
