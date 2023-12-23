@@ -35,7 +35,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         }
 
         public ICachedWoWUnit Target { get; private set; } = Cache(new WoWUnit(0));
-        public ICachedWoWUnit Pet { get; private set; } = Cache(new WoWUnit(0));
+        public ICachedWoWUnit Pet { get; private set; } = Cache(new WoWUnit(0)); 
         public ICachedWoWLocalPlayer Me { get; private set; } = Cache(new WoWLocalPlayer(0));
         public ICachedWoWUnit[] EnemyUnitsList { get; private set; } = new ICachedWoWUnit[0];
         public ICachedWoWPlayer[] ListGroupMember { get; private set; } = new ICachedWoWPlayer[0];
@@ -44,8 +44,6 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public ICachedWoWPlayer TankUnit { get; private set; }
         private string _tankName { get; set; }
         public bool IAmTank { get; private set; }
-
-        private List<int> _npcToDefendEntries = new List<int>();
         public List<ICachedWoWUnit> NpcsToDefend { get; private set; } = new List<ICachedWoWUnit>();
         public List<ICachedWoWUnit> LootableUnits { get; private set; } = new List<ICachedWoWUnit>();
         public void AddNpcIdToDefend(int npcId) => _npcToDefendEntries.Add(npcId);
@@ -54,6 +52,9 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         private static ICachedWoWLocalPlayer Cache(WoWLocalPlayer player) => new CachedWoWLocalPlayer(player);
         private static ICachedWoWUnit Cache(WoWUnit unit) => new CachedWoWUnit(unit);
         private static ICachedWoWPlayer Cache(WoWPlayer player) => new CachedWoWPlayer(player);
+
+        private List<string> _petnames = new List<string>();
+        private List<int> _npcToDefendEntries = new List<int>();
 
         private void OnObjectManagerPulse()
         {
@@ -86,6 +87,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 var enemyAttackingGroup = new List<ICachedWoWUnit>();
                 var enemyUnits = new List<ICachedWoWUnit>();
                 var listGroupMember = new List<ICachedWoWPlayer>();
+                var petNames = new List<string>();
 
                 var targetGuid = cachedTarget.Guid;
                 var playerPosition = cachedMe.PositionWT;
@@ -114,9 +116,8 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                 LootableUnits.Clear();
                 TankUnit = tankUnit;
 
-                List<ulong> allTeamGuids = new List<ulong>();
-                allTeamGuids.Add(cachedMe.Guid);
-                allTeamGuids.AddRange(ListGroupMember.Select(lgm => lgm.Guid));
+                List<string> allTeamNames = new List<string> { cachedMe.Name };
+                allTeamNames.AddRange(ListGroupMember.Select(lgm => lgm.Name));
 
                 foreach (WoWUnit unit in units)
                 {
@@ -130,6 +131,12 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                     ICachedWoWUnit cachedUnit = unitGuid == targetGuid ? cachedTarget : Cache(unit);
                     bool? cachedReachable = unitGuid == targetGuid ? true : (bool?)null;
                     Vector3 unitPosition = unit.PositionWithoutType;
+
+                    if (unit.IsPet && unit.Reaction > Reaction.Neutral)
+                    {
+                        petNames.Add(unit.Name);
+                        continue;
+                    }
 
                     if (unit.IsAlive && _npcToDefendEntries.Contains(unit.Entry))
                     {
@@ -152,9 +159,9 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                         && unit.PositionWithoutType.DistanceTo(playerPosition) <= 70)
                     {
                         enemyUnits.Add(cachedUnit);
-                        ulong unitTargetGuid = unit.Target;
-                        if (unitTargetGuid != 0
-                            && allTeamGuids.Contains(unitTargetGuid))
+                        WoWUnit unitTarget = unit.TargetObject;
+                        if (unitTarget != null
+                            && (allTeamNames.Contains(unitTarget.Name) || _petnames.Contains(unitTarget.Name)))
                         {
                             enemyAttackingGroup.Add(cachedUnit);
                         }
@@ -167,6 +174,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
                 EnemiesAttackingGroup = enemyAttackingGroup.ToArray();
                 EnemyUnitsList = enemyUnits.ToArray();
+                _petnames = petNames;
 
                 long enemiesTime = enemiesWatch.ElapsedMilliseconds;
 
