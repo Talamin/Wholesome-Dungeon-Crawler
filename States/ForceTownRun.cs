@@ -43,7 +43,7 @@ namespace WholesomeDungeonCrawler.States
 
         public override void Run()
         {
-            Logger.LogOnce($"We need a town run, leaving dungeon");
+            Logger.LogOnce($"Durability under 30%. We need to repair, leaving dungeon");
             MovementManager.StopMove();
             Thread.Sleep(1000);
             Lua.LuaDoString("LFGTeleport(true);");
