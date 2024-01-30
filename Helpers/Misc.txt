@@ -25,17 +25,18 @@ private readonly Dictionary<int, float> _knowAOEs = new Dictionary<int, float> /
     {56867, 4f}, // Poison Cloud (Savage Cave Beast - Old Kingdom)            
     {53400, 4f}, // Acid Cloud (Hadronox)
     {59419, 4f}, // Acid Cloud (Hadronox - Heroic)            
-    {50752, 4f}, // Storm of Grief (Maiden of Grief)
-    {59772, 4f}, // Storm of Grief (Maiden of Grief - Heroic)
+    //{50752, 4f}, // Storm of Grief (Maiden of Grief)
+    //{59772, 4f}, // Storm of Grief (Maiden of Grief - Heroic)
     {50915, 4f}, // Raging Consecration (High General Abbendis - Dragonblight)
     {59451, 4f}, // Mojo Puddle
     {58994, 4f}, // Mojo Puddle - Heroic
     {55627, 4f}, // Mojo Puddle
     {62466, 4f}, // Lightning Charge (Thorim)
-    {36536, 4f },// Well of  Souls
+    {36536, 4f}, // Well of Souls
     {68820, 4f}, // Well Of Souls (Devourer of Souls - Forge of Souls)
     {68863, 4f}, // Well Of Souls (Devourer of Souls - Forge of Souls - Heroic)
-
+    {68854, 4f}, // Well Of Souls (Devourer of Souls - Forge of Souls - Heroic Unit)
+    
     //Raid
     {62548, 4f}, // Scorch (Ignis-10)
     {62549, 4f}, // Scorch (Ignis-10)

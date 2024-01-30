@@ -38,6 +38,9 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         public ICachedWoWUnit Pet { get; private set; } = Cache(new WoWUnit(0)); 
         public ICachedWoWLocalPlayer Me { get; private set; } = Cache(new WoWLocalPlayer(0));
         public ICachedWoWUnit[] EnemyUnitsList { get; private set; } = new ICachedWoWUnit[0];
+
+        public ICachedWoWUnit[] InterestingUnitsList { get; private set; } = new ICachedWoWUnit[0];
+
         public ICachedWoWPlayer[] ListGroupMember { get; private set; } = new ICachedWoWPlayer[0];
         public List<string> ListPartyMemberNames { get; private set; } = new List<string>();
         public ICachedWoWUnit[] EnemiesAttackingGroup { get; private set; } = new ICachedWoWUnit[0];
@@ -86,6 +89,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
                 var enemyAttackingGroup = new List<ICachedWoWUnit>();
                 var enemyUnits = new List<ICachedWoWUnit>();
+                var interestingUnits = new List<ICachedWoWUnit>();
                 var listGroupMember = new List<ICachedWoWPlayer>();
                 var petNames = new List<string>();
 
@@ -127,10 +131,17 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
                         continue;
                     }
 
+                    
+
                     ulong unitGuid = unit.Guid;
                     ICachedWoWUnit cachedUnit = unitGuid == targetGuid ? cachedTarget : Cache(unit);
                     bool? cachedReachable = unitGuid == targetGuid ? true : (bool?)null;
                     Vector3 unitPosition = unit.PositionWithoutType;
+
+                    if (Lists.InterestingUnits.Contains(unit.Entry))
+                    {
+                        interestingUnits.Add(cachedUnit);
+                    }
 
                     if (unit.IsPet && unit.Reaction > Reaction.Neutral)
                     {
@@ -174,6 +185,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
 
                 EnemiesAttackingGroup = enemyAttackingGroup.ToArray();
                 EnemyUnitsList = enemyUnits.ToArray();
+                InterestingUnitsList = interestingUnits.ToArray();
                 _petnames = petNames;
 
                 long enemiesTime = enemiesWatch.ElapsedMilliseconds;

@@ -53,8 +53,22 @@ namespace WholesomeDungeonCrawler.Managers.AvoidAOEHelpers
             Name = string.IsNullOrEmpty(buff.Name) ? "Unknown buff" : buff.Name;
             ObjectType = WoWObjectType.Unit;
             Danger = buff;
+            Radius = buff.Size;
             Timer = new Timer(duration);
             Type = DangerType.Buff;
+        }
+
+        public DangerZone(ICachedWoWUnit unit, DangerDebuff debuff, double duration)
+        {
+            Position = unit.WowUnit.Position;
+            Rotation = unit.WowUnit.Rotation;
+            Guid = unit.Guid;
+            Name = string.IsNullOrEmpty(debuff.Name) ? "Unknown buff" : debuff.Name;
+            ObjectType = WoWObjectType.Unit;
+            Danger = debuff;
+            Radius = debuff.Size;
+            Timer = new Timer(duration);
+            Type = DangerType.Debuff;
         }
 
         public bool PositionInDangerZone(Vector3 position, int margin = 0)
@@ -66,7 +80,7 @@ namespace WholesomeDungeonCrawler.Managers.AvoidAOEHelpers
         {
             if (!WholesomeDungeonCrawlerSettings.CurrentSetting.EnableRadar) return;
 
-            if (Danger is DangerBuff)
+            if (Danger is DangerBuff || Danger is DangerDebuff)
             {
                 Radar3D.DrawCircle(Position, Radius, Color.Orange, false, 30);
             }

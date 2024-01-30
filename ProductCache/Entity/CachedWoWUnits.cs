@@ -1,6 +1,7 @@
 ﻿using robotManager.Helpful;
 using System.Collections.Generic;
 using System.Linq;
+using WholesomeDungeonCrawler.Helpers;
 using wManager.Wow.Enums;
 using wManager.Wow.Helpers;
 using wManager.Wow.ObjectManager;
@@ -41,7 +42,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
             Name = unit.Name;
             Entry = unit.Entry;
             Guid = unit.Guid;
-            IsValid = unit.IsValid;
+            IsValid = unit.IsValid;           
             IsDead = unit.IsDead;
             PositionWT = unit.PositionWithoutType;
             HealthPercent = unit.HealthPercent;

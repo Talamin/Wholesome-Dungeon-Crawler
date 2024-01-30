@@ -653,6 +653,23 @@ namespace WholesomeDungeonCrawler.GUI
                     $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
             }
         }
+        private async void miDefendVioletHoldStep_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var x = await this.ShowInputAsync("Add", "Step", _addDialogSettings);
+                if (x != null)
+                {
+                    DefendVioletHoldModel stepModel = new DefendVioletHoldModel() { Name = x };
+                    InsertStepIntoList(stepModel);
+                }
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync("Error.", $"Error message: {ex.Message}\n\n" +
+                    $"Details:\n\n{ex.StackTrace}", MessageDialogStyle.Affirmative, _basicDialogSettings);
+            }
+        }
 
         private async void miFollowUnitStep_Click(object sender, RoutedEventArgs e)
         {

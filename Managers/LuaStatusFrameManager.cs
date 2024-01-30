@@ -367,10 +367,11 @@ namespace WholesomeDungeonCrawler.Managers
                     if (currentStep != null)
                     {
                         // Defend spot timer
-                        if (currentStep is DefendSpotStep defendSpotStep)
+                        if (currentStep is DefendSpotStep || currentStep is DefendVioletHoldStep)
                         {
+
                             shouldShowTimer = true;
-                            double timeLeft = defendSpotStep.GetTimeLeft;
+                            double timeLeft = currentStep is DefendSpotStep defendStep ? defendStep.GetTimeLeft: ((DefendVioletHoldStep)currentStep).GetTimeLeft;
                             if (timeLeft > 0)
                             {
                                 allLua += $@"

@@ -41,6 +41,8 @@ namespace WholesomeDungeonCrawler.States
 
                 if (_entityCache.Target.IsDead)
                 {
+                    //Logger.Log($"{_entityCache.Target.Name} is dead, dropping target");
+
                     Interact.ClearTarget();
                 }
 

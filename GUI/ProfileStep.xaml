@@ -221,7 +221,48 @@
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>
-            
+
+                <!--Defend Violet Hold-->
+                <StackPanel>
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=ProfileStepControl, Path=SelectedItem, Converter={StaticResource TypeConverter}}" Value="DefendVioletHoldModel">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <GroupBox Header="Defend Violet Hold Step" BorderBrush="{x:Null}">
+                        <GroupBox.Background>
+                            <LinearGradientBrush EndPoint="1,1" StartPoint="0,0">
+                                <GradientStop Color="#FF34e89e" Offset="0"/>
+                                <GradientStop Color="#FF0f3443" Offset="1"/>
+                            </LinearGradientBrush>
+                        </GroupBox.Background>
+                        <StackPanel>
+
+                            <StackPanel Orientation="Horizontal"  Margin="5">
+                                <TextBox Name="txtDefendVioletHoldTargetPos" MinWidth="200" Controls:TextBoxHelper.UseFloatingWatermark="True" Controls:TextBoxHelper.Watermark="Defend Position" Margin="5">
+                                    <TextBox.Text>
+                                        <Binding  NotifyOnValidationError="True" UpdateSourceTrigger="PropertyChanged" Path="SelectedItem.DefendPosition" Converter="{StaticResource TextBoxVectorConverter}">
+                                            <Binding.ValidationRules>
+                                                <local:VectorValidation/>
+                                            </Binding.ValidationRules>
+                                        </Binding>
+                                    </TextBox.Text>
+                                </TextBox>
+                                <Button x:Name="btnDefendVioletHoldGetCurrentPos" Content="Get Current Position" Margin="5" Click="btnDefendVioletHoldGetCurrentPos_Click" />
+                            </StackPanel>
+                            <Controls:NumericUpDown x:Name="txtDefendVioletHoldRadius" Controls:TextBoxHelper.Watermark="Defend radius" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="10 5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.DefendSpotRadius, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Controls:NumericUpDown x:Name="txtDefendVioletHoldTimer" Controls:TextBoxHelper.Watermark="Duration in seconds" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="10 5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.Timer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Controls:NumericUpDown x:Name="txtDefendVioletHoldtZLimit" Controls:TextBoxHelper.Watermark="Z Limit" Controls:TextBoxHelper.UseFloatingWatermark="True" Margin="10 5" BorderBrush="{x:Null}" Value="{Binding SelectedItem.DefendSpotZLimit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                            <Controls:ToggleSwitch x:Name="chkDefendVioletHoldResetTimerOnCombat" IsChecked="{Binding SelectedItem.ResetTimerOnCombat, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" OnLabel="Reset Timer on combat" OffLabel="Reset Timer on combat" Margin="10 5"/>
+                        </StackPanel>
+                    </GroupBox>
+                </StackPanel>
+
                 <!--FollowUnit-->
                 <StackPanel>
                     <StackPanel.Style>

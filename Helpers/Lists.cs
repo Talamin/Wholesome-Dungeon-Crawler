@@ -116,7 +116,32 @@ namespace WholesomeDungeonCrawler.Helpers
             8130, // Sul'lithuz Hatchling (ZF)
             10096, // High Justice Grimstone (BRD)
             29834, // Drakkari Frenzy (Gundrak)
+            28965, // Titanium Thunderer (Halls of Lightning)
+            28961, // Titanium Siegebreaker (Halls of Lightning)
         };
+
+        public static readonly HashSet<int> MobsToIgnoreDefendingVioletHold = new HashSet<int>
+        {
+             31134, // Cynagosia (Violet Hold)
+             29315, // Erekem (Violet Hold)
+             29313,  // Ichoron (Violet Hold)
+             29312, // Lavanthor (Violet Hold)
+             29316,  // Moragg (Violet Hold)
+             29266,  // Xevozz (Violet Hold)
+             29314, // Zuramat the Obliterator (Violet Hold)
+        };
+
+        public static readonly Dictionary<int, Vector3> VioletHoldBossPositions = new Dictionary<int, Vector3>
+        {
+            { 31134, new Vector3(0,0,0) },// Cynagosia (Violet Hold)
+            { 29315, new Vector3(1871.46 , 871.036 , 43.33193) }, // Erekem (Violet Hold)
+            { 29313, new Vector3(1942.04 , 749.523 , 30.9523) },  // Ichoron (Violet Hold)
+            { 29312, new Vector3(1844.56 , 748.708 , 38.65888) }, // Lavanthor (Violet Hold)
+            { 29316, new Vector3(1893.9 , 728.126 , 47.66684) },  // Moragg (Violet Hold)
+            { 29266, new Vector3(1908.42 , 845.85 , 38.63623) },  // Xevozz (Violet Hold)
+            { 29314, new Vector3(1934.15 , 860.946 , 47.21163) }, // Zuramat the Obliterator (Violet Hold)
+        };
+
 
         // These neutral mobs will be pulled when navigating the dungeon as if they were hostile
         public static readonly HashSet<int> NeutralsToAttackDuringPathCheck = new HashSet<int>
@@ -129,6 +154,9 @@ namespace WholesomeDungeonCrawler.Helpers
         // These mobs will have a different target priority (only during fights and if they are actively engaged with your team)
         public static readonly Dictionary<int, SpecialPrio> SpecialPrioTargets = new Dictionary<int, SpecialPrio>
         {
+
+            // Unit - (when in fight with, proprity)
+
             // High
             // Classic
             { 23775, new SpecialPrio(23682, TargetPriority.High) }, // Head of the Horseman (Haloween Event)
@@ -161,23 +189,49 @@ namespace WholesomeDungeonCrawler.Helpers
             { 26918, new SpecialPrio(26763, TargetPriority.High) }, // Chaotic Rift (Anomalus, Nexus)
             { 30176, new SpecialPrio(29309, TargetPriority.High) }, // Ahn'kahar Guardian (Elder Nadox, Old Kingdom)
             { 30385, new SpecialPrio(29310, TargetPriority.High) }, // Twilight Volunteer (Jedoga Shadowseer, Old Kingdom)
+            { 29310, new SpecialPrio(29310, TargetPriority.High) }, // Twilight Initiate(Jedoga Shadowseer, Old Kingdom)            
             { 28619, new SpecialPrio(0, TargetPriority.High) }, // Web Wrap (Krik'thir, Azjol Nerub)
             { 28734, new SpecialPrio(28684, TargetPriority.High) }, // Anubar Skirmisher (Krik'thir, Azjol Nerub)
             { 23965, new SpecialPrio(23953, TargetPriority.High) }, // Frost Tomb (Prince Kelesth, Utgard Keep)
-            { 36535, new SpecialPrio(36497, TargetPriority.High) }, // Corrupt Soul (Bronjahm , Forge of Souls)            
+            { 27975, new SpecialPrio(0, TargetPriority.High) }, // Maiden of Grief (Halls of Stone drop target bugfix?)
+            { 29321, new SpecialPrio(0, TargetPriority.High) }, // Ichoron Globule (Violet Hold)
+            { 26929, new SpecialPrio(0, TargetPriority.High) }, // Grand Magus Telestra (Nexus)
+            
+          //  { 36535, new SpecialPrio(36497, TargetPriority.High) }, // Corrupt Soul (Bronjahm , Forge of Souls)            
 
             // Low
             { 17990, new SpecialPrio(0, TargetPriority.Low, true) }, // Underbog Mushroom (Underbog)
             { 8996, new SpecialPrio(0, TargetPriority.Low, true) }, // Voidwalker minion (Ragefire Chasm)
             { 2520, new SpecialPrio(0, TargetPriority.Low, true) }, // Remote-Controlled Golem (Deadmines)
             { 8317, new SpecialPrio(0, TargetPriority.Low, true) }, // Atal'ai Deathwalker's Spirit (Temple)
+
+            
     }   ;
 
         // These mobs will be completely ignored in the entity cache.
         // Careful with this one, the group won't even defend against them.
         public static readonly HashSet<int> IgnoredMobs = new HashSet<int>
         {
-            191016, // Seed Pod (Nexus)
+            //191016, // Seed Pod (Nexus)
+            26793, // Crystal Flayer 
+        };
+
+        public static readonly List<uint> DontAttackWithBuff = new List<uint>
+        {
+            48082, // Seed Pod buff on Crystal Flayer (Nexus)
+            48294, // Bane King Ymiron
+        };
+
+        public static readonly HashSet<int> IgnoredMobsWithBuff = new HashSet<int>
+        {
+            48082, // Seed Pod buff on Crystal Flayer (Nexus)
+            48294, // Bane King Ymiron
+        };
+
+
+        public static readonly HashSet<int> InterestingUnits = new HashSet<int>
+        {
+            31011, // Portals in Violet Hold
         };
     }
 }

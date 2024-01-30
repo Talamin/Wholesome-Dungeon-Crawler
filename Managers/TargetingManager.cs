@@ -71,8 +71,9 @@ namespace WholesomeDungeonCrawler.Managers
                 return;
             }
 
-            if (_entityCache.Target.IsDead)
+            if (_entityCache.Target.IsDead || _entityCache.Target.WowUnit.HaveBuff(Lists.DontAttackWithBuff))
             {
+               // Logger.Log($"{_entityCache.Target.Name} is dead, clearing target");
                 Interact.ClearTarget();
             }
 
@@ -88,6 +89,22 @@ namespace WholesomeDungeonCrawler.Managers
                 canceable.Cancel = true;
                 MovementManager.StopMove();
                 return;
+            }
+
+            // Record enmey lists by priority
+            _lowPrioUnits.Clear();
+            _highPrioUnits.Clear();
+            List<ICachedWoWUnit> filteredEnemies = new List<ICachedWoWUnit>(_entityCache.EnemyUnitsList);
+            foreach (ICachedWoWUnit enemy in filteredEnemies)
+            {
+                if (Lists.SpecialPrioTargets.TryGetValue(enemy.Entry, out SpecialPrio prio))
+                {
+                    if (enemy.WowUnit.HaveBuff(Lists.DontAttackWithBuff)) continue;
+                    if (prio.WhenAttackingGroup && !enemy.IsAttackingGroup) continue;
+                    if (prio.WhenInFightWith > 0 && !filteredEnemies.Any(ifEnemy => ifEnemy.IsAttackingGroup && ifEnemy.Entry == prio.WhenInFightWith)) continue;
+                    if (prio.TargetPriority == TargetPriority.Low) _lowPrioUnits.Add(enemy);
+                    if (prio.TargetPriority == TargetPriority.High) _highPrioUnits.Add(enemy);
+                }
             }
 
             if (_entityCache.IAmTank)
@@ -213,22 +230,7 @@ namespace WholesomeDungeonCrawler.Managers
                     canceable.Cancel = true;
                     Interact.ClearTarget();
                     return;
-                }
-
-                // Record enmey lists by priority
-                _lowPrioUnits.Clear();
-                _highPrioUnits.Clear();
-                List<ICachedWoWUnit> filteredEnemies = new List<ICachedWoWUnit>(_entityCache.EnemyUnitsList);
-                foreach (ICachedWoWUnit enemy in filteredEnemies)
-                {
-                    if (Lists.SpecialPrioTargets.TryGetValue(enemy.Entry, out SpecialPrio prio))
-                    {
-                        if (prio.WhenAttackingGroup && !enemy.IsAttackingGroup) continue;
-                        if (prio.WhenInFightWith > 0 && !filteredEnemies.Any(ifEnemy => ifEnemy.IsAttackingGroup && ifEnemy.Entry == prio.WhenInFightWith)) continue;
-                        if (prio.TargetPriority == TargetPriority.Low) _lowPrioUnits.Add(enemy);
-                        if (prio.TargetPriority == TargetPriority.High) _highPrioUnits.Add(enemy);
-                    }
-                }
+                }                
 
                 // If other units are fighting
                 if (_entityCache.EnemiesAttackingGroup.Count() > _lowPrioUnits.Count)

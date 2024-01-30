@@ -17,9 +17,9 @@ namespace WholesomeDungeonCrawler.Managers
 
         static readonly double pi8 = System.Math.PI / 8;
         static readonly double pi4 = System.Math.PI / 4;
-        static readonly double pi2 = System.Math.PI / 4;
+        static readonly double pi2 = System.Math.PI / 2;
         //static readonly double rt2 = System.Math.Sqrt(2);
-        static readonly float MIN = 1;
+        static readonly float MIN = 2;
 
         public DangerSpell(int unitId, int spellId, Shape shape, float size, List<LFGRoles> affectedRoles, double duration)
         {
@@ -33,15 +33,15 @@ namespace WholesomeDungeonCrawler.Managers
 
         public bool PositionInDanger(Vector3 playerPosition, DangerZone zone, int margin = 0)
         {
-            if (playerPosition.DistanceTo(zone.Position) > Size)
+            if (playerPosition.DistanceTo(zone.Position) > Size + margin)
                 return false;
-            if (playerPosition.DistanceTo(zone.Position) < MIN)
+            if (playerPosition.DistanceTo(zone.Position) < MIN + margin)
                 return true;
             if (Shape == Shape.Circle)
-                return playerPosition.DistanceTo(zone.Position) < Size;
+                return playerPosition.DistanceTo(zone.Position) < Size + margin;
 
             Vector3 position = zone.Position;
-            double angle = (double)zone.Rotation;
+            double angle = zone.Rotation;
             float dx = playerPosition.X - position.X;
             float dy = playerPosition.Y - position.Y;
             double playerAngle = System.Math.Atan2(dy, dx);

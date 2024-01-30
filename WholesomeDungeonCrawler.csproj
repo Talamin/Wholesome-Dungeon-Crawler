@@ -53,33 +53,54 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="authManager">
+      <HintPath>..\WDC References\authManager.dll</HintPath>
+    </Reference>
+    <Reference Include="ControlzEx">
+      <HintPath>..\WDC References\ControlzEx.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\WDC References\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="MahApps.Metro, Version=1.6.5.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Dependencies\MahApps.Metro.dll</HintPath>
+      <HintPath>..\WDC References\MahApps.Metro.dll</HintPath>
     </Reference>
     <Reference Include="MahApps.Metro.IconPacks.Material, Version=2.3.0.4, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Dependencies\MahApps.Metro.IconPacks.Material.dll</HintPath>
+      <HintPath>..\WDC References\MahApps.Metro.IconPacks.Material.dll</HintPath>
     </Reference>
     <Reference Include="MemoryRobot, Version=1.0.7916.19022, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Dependencies\MemoryRobot.dll</HintPath>
+      <HintPath>..\WDC References\MemoryRobot.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Neo.Lua">
+      <HintPath>..\WDC References\Neo.Lua.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Dependencies\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\WDC References\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="RDManaged">
-      <HintPath>Dependencies\RDManaged.dll</HintPath>
+      <HintPath>..\WDC References\RDManaged.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="robotManager, Version=1.0.0.20232, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Dependencies\robotManager.dll</HintPath>
+      <HintPath>..\WDC References\robotManager.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="rStyle">
+      <HintPath>..\WDC References\rStyle.dll</HintPath>
+    </Reference>
+    <Reference Include="ScintillaNET">
+      <HintPath>..\WDC References\ScintillaNET.dll</HintPath>
+    </Reference>
+    <Reference Include="ScintillaNET.WPF">
+      <HintPath>..\WDC References\ScintillaNET.WPF.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -97,13 +118,14 @@
     <Reference Include="WindowsBase" />
     <Reference Include="wManager, Version=1.0.0.20240, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>Dependencies\wManager.dll</HintPath>
+      <HintPath>..\WDC References\wManager.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\Toolbox.cs" />
     <Compile Include="Managers\AvoidAOEHelpers\BannedSafeZone.cs" />
+    <Compile Include="Managers\AvoidAOEHelpers\DangerDebuff.cs" />
     <Compile Include="Managers\AvoidAOEHelpers\DangerObject.cs" />
     <Compile Include="Managers\AvoidAOEHelpers\DangerZone.cs" />
     <Compile Include="Managers\AvoidAOEHelpers\DynamicObject.cs" />
@@ -149,6 +171,7 @@
     <Compile Include="Managers\PartyChatManager.cs" />
     <Compile Include="Managers\TargetingManager.cs" />
     <Compile Include="Profiles\IProfile.cs" />
+    <Compile Include="Profiles\Steps\DefendVioletHoldStep.cs" />
     <Compile Include="Profiles\Steps\DefendSpotStep.cs" />
     <Compile Include="Profiles\Steps\FollowUnitStep.cs" />
     <Compile Include="Profiles\Steps\IStep.cs" />

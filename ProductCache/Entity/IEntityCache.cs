@@ -10,6 +10,7 @@ namespace WholesomeDungeonCrawler.ProductCache.Entity
         ICachedWoWPlayer TankUnit { get; }
         ICachedWoWUnit[] EnemiesAttackingGroup { get; }
         ICachedWoWUnit[] EnemyUnitsList { get; }
+        ICachedWoWUnit[] InterestingUnitsList { get; }
         ICachedWoWPlayer[] ListGroupMember { get; }
         List<string> ListPartyMemberNames { get; }
         List<ICachedWoWUnit> NpcsToDefend { get; }

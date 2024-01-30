@@ -85,6 +85,14 @@ namespace WholesomeDungeonCrawler.Models
         public int DefendSpotZLimit { get; set; } = 5;
         public bool ResetTimerOnCombat { get; set; }
     }
+    public class DefendVioletHoldModel : StepModel
+    {
+        public Vector3 DefendPosition { get; set; }
+        public int Timer { get; set; }
+        public int DefendSpotRadius { get; set; } = 30;
+        public int DefendSpotZLimit { get; set; } = 5;
+        public bool ResetTimerOnCombat { get; set; }
+    }
 
     public class FollowUnitModel : StepModel
     {

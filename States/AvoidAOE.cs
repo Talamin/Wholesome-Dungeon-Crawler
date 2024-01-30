@@ -124,22 +124,25 @@ namespace WholesomeDungeonCrawler.States
             int nbSpotsInDangerZone = 0;
             int nbSpotsTooCloseToEnemy = 0;
             int nbSpotsOutsideFSZ = 0;
-            int range = 50;
+            int range = 30;
+            int stepSize = 5;
             List<DangerZone> dangerZones = new List<DangerZone>(_repositionInfo.DangerZones);
 
-            for (int y = -range; y <= range; y += 5)
+            for (int y = -range; y <= range; y += stepSize)
             {
-                for (int x = -range; x <= range; x += 5)
+                for (int x = -range; x <= range; x += stepSize)
                 {
                     Vector3 gridPosition = referenceGridPosition + new Vector3(x, y, 0);
-                    if (dangerZones.Any(dangerZone => dangerZone.PositionInDangerZone(gridPosition, 5 + _repositionInfo.CurrentDangerZone.ExtraMargin)))
+                    if (dangerZones.Any(dangerZone => dangerZone.PositionInDangerZone(gridPosition, stepSize + _repositionInfo.CurrentDangerZone.ExtraMargin)))
                     {
                         nbSpotsInDangerZone++;
                         continue;
                     }
-
-                    if (_entityCache.EnemyUnitsList.Any(enemy => enemy.TargetGuid <= 0 && gridPosition.DistanceTo(enemy.PositionWT) < 30)) // don't go towards unpulled enemies
+                    // don't go towards unpulled enemies
+                    var closeEnemy = _entityCache.EnemyUnitsList.FirstOrDefault(enemy => !enemy.IsAttackingMe && !enemy.IsAttackingGroup && !enemy.InCombatFlagOnly && enemy.TargetGuid <= 0 && gridPosition.DistanceTo(enemy.PositionWT) < 30 && enemy.Entry != 29573 && enemy.Entry != 29830);
+                    if (closeEnemy != null)
                     {
+                        Logger.LogOnce($"Enemy is blocking this spot ({closeEnemy.Name})");
                         nbSpotsTooCloseToEnemy++;
                         continue;
                     }
@@ -168,13 +171,19 @@ namespace WholesomeDungeonCrawler.States
                 _banStateTimer = new Timer(5 * 1000);
                 return;
             }
-
-            // Prefer a position nearby myself
+            Stopwatch posWatch = Stopwatch.StartNew();
+            // Prefer a position nearby me and target
+            ICachedWoWUnit target = _entityCache.Target;
             ICachedWoWPlayer tank = _entityCache.TankUnit;
+            Vector3 midPoint = myPos;
+            if (target != null)
+            {
+                Vector3 targetPos = target.PositionWT;
+                midPoint = new Vector3((myPos.X + targetPos.X) / 2, (myPos.Y + targetPos.Y) / 2, (myPos.Z + targetPos.Z) / 2);
+            }
             List<Vector3> closestSpotsFromPreferred = safeSpots
                 .OrderBy(spot => myPos.DistanceTo(spot))
                 .ToList();
-            Stopwatch posWatch = Stopwatch.StartNew();
             foreach (Vector3 spot in closestSpotsFromPreferred)
             {
                 // Should always be in range of tank

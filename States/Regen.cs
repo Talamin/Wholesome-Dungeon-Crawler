@@ -40,8 +40,16 @@ namespace WholesomeDungeonCrawler.States
 
                 // Interrupt regen if defend spot attacked
                 if (_profileManager.ProfileIsRunning
-                    && _profileManager.CurrentDungeonProfile.CurrentStep is DefendSpotStep defendSpotStep
+                    && _profileManager.CurrentDungeonProfile.CurrentStep is DefendSpotStep defendSpotStep 
                     && defendSpotStep.ShouldDefendAgainst != null)
+                {
+                    return false;
+                }
+
+                // Interrupt regen if defend violet hold spot attacked
+                if (_profileManager.ProfileIsRunning
+                    && _profileManager.CurrentDungeonProfile.CurrentStep is DefendVioletHoldStep defendVioletHoldStep
+                    && defendVioletHoldStep.ShouldDefendAgainst != null)
                 {
                     return false;
                 }

@@ -229,7 +229,16 @@ namespace WholesomeDungeonCrawler.GUI
                 txtDefendSpotTargetPos.Text = TextBoxVectorConverter.GetStringFromVector3(currentPos);
             }
         }
-
+        private void btnDefendVioletHoldGetCurrentPos_Click(object sender, RoutedEventArgs e)
+        {
+            var currentPos = ObjectManager.Me.Position;
+            if (currentPos != null)
+            {
+                ((DefendVioletHoldModel)this.SelectedItem).DefendPosition = currentPos;
+                txtDefendSpotTargetPos.Text = TextBoxVectorConverter.GetStringFromVector3(currentPos);
+            }
+        }
+        
         private void btnGetFollowUnitId_Click(object sender, RoutedEventArgs e)
         {
             var target = ObjectManager.Target;

@@ -80,6 +80,11 @@ namespace WholesomeDungeonCrawler.Profiles
                         AllMoveAlongNodes.Add(defendSpotModel.DefendPosition);
                         _profileSteps.Add(new DefendSpotStep(defendSpotModel, entityCache));
                         break;
+                    case DefendVioletHoldModel _:
+                        DefendVioletHoldModel defendVioletHoldModel = model as DefendVioletHoldModel;
+                        AllMoveAlongNodes.Add(defendVioletHoldModel.DefendPosition);
+                        _profileSteps.Add(new DefendVioletHoldStep(defendVioletHoldModel, entityCache));
+                        break;
                     case RegroupModel _:
                         RegroupModel regroupModel = model as RegroupModel;
                         AllMoveAlongNodes.Add(regroupModel.RegroupSpot);

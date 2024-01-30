@@ -86,6 +86,7 @@
                                             <!--<MenuItem x:Name="miGoToStep" Header="GoToStep" Click="miGoToStep_Click" />-->
                                             <MenuItem x:Name="miTalkToUnitStep" Header="Talk to unit" Click="miTalkToUnitStep_Click" />
                                             <MenuItem x:Name="miDefendSpotStep" Header="Defend spot" Click="miDefendSpotStep_Click" />
+                                            <MenuItem x:Name="miVioletHoldStep" Header="Defend Violet Hold spot" Click="miDefendVioletHoldStep_Click" />
                                             <MenuItem x:Name="miFollowUnitStep" Header="Follow and defend unit" Click="miFollowUnitStep_Click" />
                                             <MenuItem x:Name="regroupStep" Header="Regroup" Click="regroupStep_Click" />
                                             <MenuItem x:Name="jumpToStep" Header="Jump to step" Click="jumpToStep_Click" />

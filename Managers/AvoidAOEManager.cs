@@ -29,8 +29,12 @@ namespace WholesomeDungeonCrawler.Managers
         private Dictionary<int, KnownAOE> _knowAOEsDic = new Dictionary<int, KnownAOE>();
 
         private readonly SortedSet<int> _relevantBuffEnemyIds = new SortedSet<int>();
+        private readonly SortedSet<int> _relevantDebuffEnemyIds = new SortedSet<int>();
+
         private readonly Dictionary<int, DangerSpell> _enemiesSpellsById = new Dictionary<int, DangerSpell>();
         private readonly Lookup<int, DangerBuff> _enemiesBuffsByUnit;
+        private readonly Lookup<int, DangerDebuff> _enemiesDebuffsByUnit;
+
         private Dictionary<int, ForcedSafeZone> _forcedSafeZonesDic = new Dictionary<int, ForcedSafeZone>();
 
         private bool IAmInDangerZone => _dangerZones.Any(dangerZone => dangerZone.PositionInDangerZone(_entityCache.Me.PositionWT));
@@ -41,9 +45,11 @@ namespace WholesomeDungeonCrawler.Managers
             _entityCache = entityCache;
             _cache = cache;
 
-            // TODO: playerDebuffs
-
             _enemiesBuffsByUnit = (Lookup<int, DangerBuff>)DangerList.GetEnemyBuffs
+                .Where(eb => eb.AffectedRoles.Contains(_myRole))
+                .ToLookup(eb => eb.UnitId, eb => eb);
+
+            _enemiesDebuffsByUnit = (Lookup<int, DangerDebuff>)DangerList.GetEnemyDebuffs
                 .Where(eb => eb.AffectedRoles.Contains(_myRole))
                 .ToLookup(eb => eb.UnitId, eb => eb);
 
@@ -62,6 +68,12 @@ namespace WholesomeDungeonCrawler.Managers
             {
                 _relevantBuffEnemyIds.Add(eb.UnitId);
             }
+
+            foreach (DangerDebuff eb in DangerList.GetEnemyDebuffs)
+            {
+                _relevantDebuffEnemyIds.Add(eb.UnitId);
+            }
+
         }
 
         public void Initialize()
@@ -139,6 +151,15 @@ namespace WholesomeDungeonCrawler.Managers
             _dangerZones.Add(new DangerZone(unit, buff, duration));
         }
 
+        private void AddDebuffDangerZone(ICachedWoWUnit unit, DangerDebuff buff, float duration)
+        {
+            if (_dangerZones.Any(dangerZone => dangerZone.Guid == unit.Guid && dangerZone.Danger.Equals(buff)))
+            {
+                return;
+            }
+            _dangerZones.Add(new DangerZone(unit, buff, duration));
+        }
+
         private void RemoveAllObjectDangerZones(ulong objectGuid)
         {
             _dangerZones.RemoveAll(dz => dz.Guid == objectGuid && dz.Type == DangerType.GameObject);
@@ -154,13 +175,18 @@ namespace WholesomeDungeonCrawler.Managers
             _dangerZones.RemoveAll(dz => dz.Guid == objectGuid && dz.Type == DangerType.Buff);
         }
 
+        private void RemoveAllDebuffDangerZones(ulong objectGuid)
+        {
+            _dangerZones.RemoveAll(dz => dz.Guid == objectGuid && dz.Type == DangerType.Debuff);
+        }
+
         private void OnObjectManagerPulse()
         {
             Stopwatch watch = Stopwatch.StartNew();
 
             List<WoWObject> objectList = ObjectManager.ObjectList;
 
-            //Logger.Log($"OM has pulsed! Currently : {_dangerZones.Count} Zones under management.");
+           // Logger.Log($"OM has pulsed! Currently : {_dangerZones.Count} Zones under management.");
 
             // Clear danger zone if its corresponding object doesn't exist anymore in the OM
             List<ulong> dangerZonesToRemove = _dangerZones
@@ -172,14 +198,49 @@ namespace WholesomeDungeonCrawler.Managers
                 RemoveAllObjectDangerZones(dzToRemoveGuid);
             }
 
-            // Clear buff zones if their corresponding timers have expired
-            List<ulong> expiredDangerZones = _dangerZones
-                .Where(dangerZone => dangerZone.Type == DangerType.Buff && dangerZone.Timer != null && dangerZone.Timer.IsReady)
-                .Select(dangerZone => dangerZone.Guid)
-                .ToList();
-            foreach (ulong dzToRemoveGuid in expiredDangerZones)
+            // Clear buff / debuff zones if their corresponding timers have expired or subject has moved
+            List<ulong> expiredDangerBuffs = new List<ulong>();
+            List<ulong> expiredDangerDebuffs = new List<ulong>();
+            foreach (DangerZone dangerZone in _dangerZones)
+            {
+                if (dangerZone.Type == DangerType.Buff)
+                {
+                    if (dangerZone.Timer != null && dangerZone.Timer.IsReady)
+                    {
+                        expiredDangerBuffs.Add(dangerZone.Guid);
+                    }                        
+                    else
+                    {
+                        ICachedWoWUnit enemy = _entityCache.EnemyUnitsList.FirstOrDefault(e => e.Guid == dangerZone.Guid);
+                        if (enemy == null || dangerZone.Position.DistanceTo(enemy.WowUnit.Position) > 1)
+                        {
+                            expiredDangerBuffs.Add(dangerZone.Guid);
+                        }
+                    }
+                } 
+                else if (dangerZone.Type == DangerType.Debuff)
+                {
+                    if (dangerZone.Timer != null && dangerZone.Timer.IsReady)
+                    {
+                        expiredDangerBuffs.Add(dangerZone.Guid);
+                    }
+                    else
+                    {
+                        ICachedWoWUnit unit = _entityCache.ListGroupMember.FirstOrDefault(u => u.Guid == dangerZone.Guid);
+                        if (unit == null || dangerZone.Position.DistanceTo(unit.WowUnit.Position) > 1)
+                        {
+                            expiredDangerDebuffs.Add(dangerZone.Guid);
+                        }
+                    }
+                }
+            }
+            foreach (ulong dzToRemoveGuid in expiredDangerBuffs)
             {
                 RemoveAllBuffDangerZones(dzToRemoveGuid);
+            }
+            foreach (ulong dzToRemoveGuid in expiredDangerDebuffs)
+            {
+                RemoveAllDebuffDangerZones(dzToRemoveGuid);
             }
 
             // Clear Spell zones if their corresponding timers have expired
@@ -192,6 +253,7 @@ namespace WholesomeDungeonCrawler.Managers
                 RemoveAllSpellDangerZones(dzToRemoveGuid);
             }
 
+            // Add new buff zones
             foreach (ICachedWoWUnit unit in _entityCache.EnemyUnitsList)
             {
                 if (_relevantBuffEnemyIds.Contains(unit.Entry))
@@ -206,8 +268,24 @@ namespace WholesomeDungeonCrawler.Managers
                     }
                 }
             }
+            // Add new debuff zones
+            foreach (ICachedWoWUnit unit in _entityCache.EnemyUnitsList)
+            {
+                if (_relevantDebuffEnemyIds.Contains(unit.Entry))
+                {
+                    foreach (DangerDebuff debuff in _enemiesDebuffsByUnit[unit.Entry])
+                    {
+                        foreach (ICachedWoWPlayer player in _entityCache.ListGroupMember)
+                        if (player.WowUnit.HaveBuff(debuff.Name))
+                        {
+                            Logger.Log($"Creating debuff danger: {debuff.Name} on {player.Name} for {player.WowUnit.BuffTimeLeft(debuff.Name)}s.");
+                            AddDebuffDangerZone(player, debuff, player.WowUnit.BuffTimeLeft(debuff.Name));
+                        }
+                    }
+                }
+            }
 
-            // Record danger zones
+            // Add new object zones
             foreach (WoWObject wowObject in objectList)
             {
                 if (_knowAOEsDic.TryGetValue(wowObject.Entry, out KnownAOE knownAOE))
@@ -237,7 +315,6 @@ namespace WholesomeDungeonCrawler.Managers
                     }
                 }
             }
-
             CalculateReposition();
         }
 

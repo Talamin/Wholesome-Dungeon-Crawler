@@ -51,7 +51,7 @@ namespace WholesomeDungeonCrawler.States
                 }
 
                 if (_entityCache.Target.IsDead)
-                {
+                {                                   
                     Interact.ClearTarget();
                 }
 
